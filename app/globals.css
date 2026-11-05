@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --royal-900: #0A1F5C;
+  --royal-700: #12338F;
+  --royal-600: #1A44B8;
+  --royal-500: #2F5FD6;
+  --royal-100: #E3EAFB;
+  --sand-50: #FBF8F1;
+  --sand-100: #F5EFE0;
+  --sand-200: #EADFC8;
+  --sand-400: #D4BE92;
+  --ink: #0B1330;
+}
+
+body {
+  color: var(--ink);
+  background: var(--sand-50);
+  font-family: var(--font-inter), sans-serif;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom Scrollbar - apply strictly to root page scrollbar, never to horizontal UI cards/ribbons */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: #F5EFE0;
+}
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: #12338F;
+  border-radius: 4px;
+}
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: #0A1F5C;
+}
+
+/* Bulletproof No Scrollbar Utility */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar,
+.scrollbar-none {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+
+/* Smooth Focus Rings */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid #2F5FD6;
+  outline-offset: 2px;
+}
+
+/* Subtle animation classes */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.glass-nav {
+  background: rgba(251, 248, 241, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.royal-gradient {
+  background: linear-gradient(135deg, #0A1F5C 0%, #12338F 60%, #1A44B8 100%);
+}
+
+.sand-gradient {
+  background: linear-gradient(180deg, #FBF8F1 0%, #F5EFE0 100%);
+}
+
+/* Bulletproof Hardware-Accelerated Horizontal Infinite Marquee */
+@keyframes marqueeHorizontal {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  display: flex !important;
+  width: max-content !important;
+  animation: marqueeHorizontal 28s linear infinite !important;
+  will-change: transform;
+}
+
+.animate-marquee-slow {
+  display: flex !important;
+  width: max-content !important;
+  animation: marqueeHorizontal 42s linear infinite !important;
+  will-change: transform;
+}
+
+.animate-marquee-fast {
+  display: flex !important;
+  width: max-content !important;
+  animation: marqueeHorizontal 20s linear infinite !important;
+  will-change: transform;
+}
+
+/* Pause controls on user hover or button toggle */
+.marquee-paused {
+  animation-play-state: paused !important;
+}
