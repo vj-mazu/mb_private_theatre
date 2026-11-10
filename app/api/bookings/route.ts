@@ -387,11 +387,9 @@ export async function POST(request: NextRequest) {
       `💰 *Total:* ₹${total} (Advance Paid: ₹${advancePaid}, Due: ₹${balance})`;
 
     try {
-      await Promise.allSettled([
-        sendWhatsAppMessage(cleanPhone, whatsappMessage),
-        sendSMSMessage(cleanPhone, `Movie Bash: Reservation Confirmed! Ref: ${bookingRef}, Screen: ${theatreName}${packageName ? ` (${packageName})` : ''}, Date: ${booking_date} @ ${slotTime}. Location: ${branchName}. Helpline: +91 99029 23656`),
-        sendWhatsAppMessage(adminPhone, adminNotification)
-      ]);
+      // 1. Direct automated WhatsApp notification to Admin manager phone (9448986953)
+      const adminResult = await sendWhatsAppMessage(adminPhone, adminNotification);
+      console.log('[Twilio Admin WhatsApp Dispatch Result]:', adminResult);
     } catch (dispatchErr) {
       console.warn('[Twilio Cloud Dispatch Warning]:', dispatchErr);
     }
