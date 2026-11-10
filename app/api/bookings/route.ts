@@ -380,6 +380,17 @@ export async function POST(request: NextRequest) {
     // Dispatch automated WhatsApp & SMS confirmations
     // NOTE: On Vercel serverless, we MUST await external fetch calls so Vercel does not terminate the lambda before the network packet is sent!
     const adminPhone = process.env.TWILIO_ADMIN_WHATSAPP || '9902923656';
+    const adminNotification = 
+      `🚨 *NEW BOOKING RECEIVED (${bookingRef})*\n` +
+      `👤 *Guest:* ${customer_name} (${cleanPhone})\n` +
+      `🎭 *Screen:* ${theatreName} (${branchName})\n` +
+      (packageName ? `📦 *Package:* ${packageName}\n` : '') +
+      (cake_flavor ? `🎂 *Cake:* 500g ${cake_flavor}\n` : '') +
+      `📅 *Date & Slot:* ${booking_date} @ ${slotTime}` + (extra_hours ? ` (+1 Hr Extension)` : '') + `\n` +
+      `👥 *Guests:* ${Number(guests) || 2}` + (extraGuestsCount > 0 ? ` (+${extraGuestsCount} extra)` : '') + `\n` +
+      (addonsListText ? `🎁 *Add-ons:* ${addonsListText}\n` : '') +
+      `💰 *Total:* ₹${total} (Advance Paid: ₹${advancePaid}, Due: ₹${balance})`;
+
     try {
       await Promise.allSettled([
         sendWhatsAppMessage(cleanPhone, whatsappMessage),
