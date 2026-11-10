@@ -196,9 +196,11 @@ export async function POST(request: NextRequest) {
       `🗺️ *Map Directions:* ${enriched.map_url}\n\n` +
       `Please arrive 10 minutes prior to your screening. For queries, call us at *+91 99029 23656*. Have a wonderful celebration! 🎉`;
 
-    sendWhatsAppMessage(cleanCustomerPhone, phoneBookingMessage).catch(err => {
+    try {
+      await sendWhatsAppMessage(cleanCustomerPhone, phoneBookingMessage);
+    } catch (err) {
       console.warn('[Twilio WhatsApp Manual Booking Dispatch Error]:', err);
-    });
+    }
 
     return NextResponse.json({ success: true, data: enriched });
   } catch (error: any) {

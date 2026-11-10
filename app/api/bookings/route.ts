@@ -271,22 +271,17 @@ export async function POST(request: NextRequest) {
             );
           }
 
-          // Update or insert customer
-          const [existingCust] = await txn.query(
-            'SELECT * FROM `customers` WHERE `phone` = ?', [cleanPhone]
-          ) as any[];
-          
-          if (existingCust && existingCust.length > 0) {
-            await txn.query(
-              'UPDATE `customers` SET `total_bookings` = `total_bookings` + 1, `lifetime_spend` = `lifetime_spend` + ? WHERE `phone` = ?',
-              [total, cleanPhone]
-            );
-          } else {
-            await txn.query(
-              'INSERT INTO `customers` (`name`, `phone`, `email`, `total_bookings`, `lifetime_spend`) VALUES (?, ?, ?, 1, ?)',
-              [customer_name, cleanPhone, customer_email || '', total]
-            );
-          }
+          // Upsert customer atomically (handles both new and repeat customers seamlessly)
+          await txn.query(
+            `INSERT INTO \`customers\` (\`name\`, \`phone\`, \`email\`, \`total_bookings\`, \`lifetime_spend\`) 
+             VALUES (?, ?, ?, 1, ?)
+             ON DUPLICATE KEY UPDATE
+               \`name\` = VALUES(\`name\`),
+               \`email\` = COALESCE(NULLIF(VALUES(\`email\`), ''), \`email\`),
+               \`total_bookings\` = \`total_bookings\` + 1,
+               \`lifetime_spend\` = \`lifetime_spend\` + VALUES(\`lifetime_spend\`)`,
+            [customer_name, cleanPhone, customer_email || '', total]
+          );
 
           // Increment coupon usage atomically
           if (couponId) {
