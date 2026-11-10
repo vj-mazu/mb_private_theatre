@@ -377,32 +377,18 @@ export async function POST(request: NextRequest) {
 
     const whatsappUrl = `https://wa.me/919902923656?text=${encodeURIComponent(whatsappMessage)}`;
 
-    // Asynchronously dispatch automated WhatsApp message via Twilio (non-blocking)
-    sendWhatsAppMessage(cleanPhone, whatsappMessage).catch(err => {
-      console.warn('[Twilio WhatsApp Dispatch Error - Customer]:', err);
-    });
-
-    // Also dispatch direct SMS confirmation to customer mobile phone
-    sendSMSMessage(cleanPhone, `Movie Bash: Reservation Confirmed! Ref: ${bookingRef}, Screen: ${theatreName}${packageName ? ` (${packageName})` : ''}, Date: ${booking_date} @ ${slotTime}. Location: ${branchName}. Helpline: +91 99029 23656`).catch(err => {
-      console.warn('[Twilio SMS Dispatch Error - Customer]:', err);
-    });
-
-    // Notify venue manager if admin WhatsApp is configured
+    // Dispatch automated WhatsApp & SMS confirmations
+    // NOTE: On Vercel serverless, we MUST await external fetch calls so Vercel does not terminate the lambda before the network packet is sent!
     const adminPhone = process.env.TWILIO_ADMIN_WHATSAPP || '9902923656';
-    const adminNotification = 
-      `🚨 *NEW BOOKING RECEIVED (${bookingRef})*\n` +
-      `👤 *Guest:* ${customer_name} (${cleanPhone})\n` +
-      `🎭 *Screen:* ${theatreName} (${branchName})\n` +
-      (packageName ? `📦 *Package:* ${packageName}\n` : '') +
-      (cake_flavor ? `🎂 *Cake:* 500g ${cake_flavor}\n` : '') +
-      `📅 *Date & Slot:* ${booking_date} @ ${slotTime}` + (extra_hours ? ` (+1 Hr Extension)` : '') + `\n` +
-      `👥 *Guests:* ${Number(guests) || 2}` + (extraGuestsCount > 0 ? ` (+${extraGuestsCount} extra)` : '') + `\n` +
-      (addonsListText ? `🎁 *Add-ons:* ${addonsListText}\n` : '') +
-      `💰 *Total:* ₹${total} (Advance Paid: ₹${advancePaid}, Due: ₹${balance})`;
-    
-    sendWhatsAppMessage(adminPhone, adminNotification).catch(err => {
-      console.warn('[Twilio WhatsApp Dispatch Error - Admin]:', err);
-    });
+    try {
+      await Promise.allSettled([
+        sendWhatsAppMessage(cleanPhone, whatsappMessage),
+        sendSMSMessage(cleanPhone, `Movie Bash: Reservation Confirmed! Ref: ${bookingRef}, Screen: ${theatreName}${packageName ? ` (${packageName})` : ''}, Date: ${booking_date} @ ${slotTime}. Location: ${branchName}. Helpline: +91 99029 23656`),
+        sendWhatsAppMessage(adminPhone, adminNotification)
+      ]);
+    } catch (dispatchErr) {
+      console.warn('[Twilio Cloud Dispatch Warning]:', dispatchErr);
+    }
 
     return NextResponse.json({
       success: true,

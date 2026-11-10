@@ -36,6 +36,8 @@ export async function sendWhatsAppMessage(
   const formattedTo = `whatsapp:+${cleanNumber}`;
   const formattedFrom = fromNumber.startsWith('whatsapp:') ? fromNumber : `whatsapp:${fromNumber}`;
 
+  console.log(`[Twilio WhatsApp] Sending to ${formattedTo} from ${formattedFrom}...`);
+
   try {
     const endpoint = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
     const authHeader = 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64');
@@ -55,6 +57,7 @@ export async function sendWhatsAppMessage(
     });
 
     let data = await res.json();
+    console.log(`[Twilio WhatsApp Response] Status: ${res.status}`, data);
 
     // If custom number is not yet an approved WhatsApp channel (Error 63007), fallback to Twilio WhatsApp Sandbox
     if (!res.ok && data.code === 63007 && formattedFrom !== 'whatsapp:+14155238886') {
