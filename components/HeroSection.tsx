@@ -233,9 +233,8 @@ export default function HeroSection() {
         const hRight = (baseHeight + heightCurve * Math.pow(rightQ, 2.6)) * u;
         const maxH = Math.max(hLeft, hRight);
 
-        // Position card
-        el.style.left = `${pushedX - width / 2}px`;
-        el.style.top = `${cardCenterY - maxH / 2}px`;
+        // Hardware-accelerated GPU translate3d (avoids expensive DOM reflow)
+        el.style.transform = `translate3d(${pushedX - width / 2}px, ${cardCenterY - maxH / 2}px, 0)`;
         el.style.width = `${width}px`;
         el.style.height = `${maxH}px`;
 
@@ -251,6 +250,16 @@ export default function HeroSection() {
           ${width}px ${botR}px,
           0px ${botL}px
         )`;
+
+        // Ultra-performance: only play videos for visible cards in viewport (d < 1.1)
+        const v = el.querySelector('video');
+        if (v) {
+          if (d < 1.1) {
+            if (v.paused) v.play().catch(() => {});
+          } else {
+            if (!v.paused) v.pause();
+          }
+        }
       });
 
       animFrameIdRef.current = requestAnimationFrame(renderLoop);

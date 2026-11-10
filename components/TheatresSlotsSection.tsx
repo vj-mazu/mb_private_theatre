@@ -26,6 +26,141 @@ export default function TheatresSlotsSection() {
     price: string;
   } | null>(null);
 
+  const [activePackageTab, setActivePackageTab] = useState<{ [theatreId: number]: 'standard' | 'premium' | 'custom' }>({
+    1: 'standard',
+    2: 'standard',
+    3: 'standard'
+  });
+
+  const roomPackagesInfo: { [key: number]: any } = {
+    1: {
+      standard: {
+        name: 'Standard Package',
+        price: '₹1,499',
+        originalPrice: '₹1,890',
+        badge: 'Most Popular',
+        features: [
+          '🎂 500g Cake Included',
+          '🌫️ 1 Fog Entry (1 Pot)',
+          '🔢 LED Number (Year/Age)',
+          '🎈 Premium Decoration',
+          '📽️ JBL 5.1 Dolby & Projector',
+          '🪧 Name Board & 💡 HBD Neon'
+        ]
+      },
+      premium: {
+        name: 'Premium VIP',
+        price: '₹2,800',
+        originalPrice: '₹3,297',
+        badge: 'VIP Grand',
+        features: [
+          '✨ Standard Package +',
+          '🌫️ 2 Pots Fog Entry (Total 2)',
+          '✨ Cold Pyro Sparkle Entry',
+          '🌹 Rose Petals Heart & Candles',
+          '🅰️ 1-Foot Personalized LED Name',
+          '🫧 Bubbles Machine'
+        ]
+      },
+      custom: {
+        name: 'Custom (Room Only)',
+        price: '₹899',
+        badge: 'Build Your Own',
+        features: [
+          '🎬 2 Hours Private Screen Hall Only',
+          '🎂 Add 500g Cake (₹499)',
+          '🌫️ Fog Entry (1 Pot ₹399 / 2 Pots ₹750)',
+          '✨ Cold Pyro (₹799) & 🌹 Decor (₹250)',
+          '🅰️ LED Name (₹250) & 📸 Photography'
+        ]
+      }
+    },
+    2: {
+      standard: {
+        name: 'Standard Package',
+        price: '₹2,200',
+        originalPrice: '₹2,650',
+        badge: 'Most Popular',
+        features: [
+          '🎂 500g Pastry Cake Included',
+          '🌫️ Fog Entry – 1 Pot',
+          '🔢 LED Number',
+          '🎈 Premium Decoration',
+          '📽️ JBL Pro Audio & 135" Screen',
+          '🪧 Name Board & 💡 HBD Neon'
+        ]
+      },
+      premium: {
+        name: 'Premium VIP',
+        price: '₹3,500',
+        originalPrice: '₹4,200',
+        badge: 'VIP Grand',
+        features: [
+          '✨ Standard Package +',
+          '🌫️ 2 Pots Fog Entry (Total 2)',
+          '✨ Cold Fire Pyro Sparkle 🎇',
+          '🌹 Rose Table Decor with Candles',
+          '🔤 1-Foot LED Name Letters',
+          '🫧 Bubbles Machine'
+        ]
+      },
+      custom: {
+        name: 'Custom (Room Only)',
+        price: '₹1,699',
+        badge: 'Build Your Own',
+        features: [
+          '🎬 2 Hours Private Screen Hall Only',
+          '🎂 Add Cake (₹499)',
+          '🌫️ Fog Entry (1 Pot ₹399 / 2 Pots ₹750)',
+          '✨ Cold Pyro (₹799) & 🌹 Decor (₹250)',
+          '🔤 LED Name (₹250) & 📸 Photography'
+        ]
+      }
+    },
+    3: {
+      standard: {
+        name: 'Standard Package',
+        price: '₹2,200',
+        originalPrice: '₹2,650',
+        badge: 'Most Popular',
+        features: [
+          '🎂 500g Pastry Cake Included',
+          '🌫️ Fog Entry – 1 Pot',
+          '🔢 LED Number (Age)',
+          '🎈 Premium Decoration',
+          '📽️ Dolby 7.1.2 & 150" Giant Screen',
+          '🪧 Name Board & 💡 HBD Neon'
+        ]
+      },
+      premium: {
+        name: 'Premium VIP',
+        price: '₹3,500',
+        originalPrice: '₹4,200',
+        badge: 'VIP Grand',
+        features: [
+          '✨ Standard Package +',
+          '🌫️ 2 Pots Fog Entry (Total 2)',
+          '✨ Cold Fire Pyro Sparkle 🎇',
+          '🌹 Rose / HBD Table Decor & Candles',
+          '🔤 1-Foot LED Name Letters',
+          '🫧 Bubbles Machine'
+        ]
+      },
+      custom: {
+        name: 'Custom (Room Only)',
+        price: '₹1,699',
+        badge: 'Build Your Own',
+        features: [
+          '🎬 2 Hours Private Screen Hall Only',
+          '🎂 Add Cake (₹499)',
+          '🌫️ Fog Entry (1 Pot ₹399 / 2 Pots ₹750)',
+          '✨ Cold Pyro (₹799) & 🌹 Decor (₹250)',
+          '🔤 LED Name (₹250) & 📸 Photography'
+        ]
+      }
+    }
+  };
+
   // Fetch real-time availability whenever activeBranch or selectedDate changes
   useEffect(() => {
     async function loadAvailability() {
@@ -84,12 +219,12 @@ export default function TheatresSlotsSection() {
     'electronic-city': [
       {
         id: 1,
-        name: 'Couple Theater',
+        name: 'Couple Room',
         category: 'Couple',
         emoji: '🎬',
         capacity: 'Up to 2 Guests',
-        price: '₹899',
-        tag: 'Most Popular for Dates',
+        price: '₹1,499',
+        tag: 'Standard ₹1,499 • Custom ₹899',
         image: '/images/couple_1.webp',
         galleryPhotos: couplePhotos,
         amenities: [
@@ -111,12 +246,12 @@ export default function TheatresSlotsSection() {
       },
       {
         id: 2,
-        name: 'Celebration Theater',
+        name: 'Celebration Room',
         category: 'Celebration',
         emoji: '🎉',
         capacity: 'Up to 6 Guests',
-        price: '₹1,499',
-        tag: 'Best for Birthdays & Anniversaries',
+        price: '₹2,200',
+        tag: 'Standard ₹2,200 • Custom ₹1,699',
         image: '/images/celebration_2.webp',
         galleryPhotos: celebrationPhotos,
         amenities: [
@@ -138,12 +273,12 @@ export default function TheatresSlotsSection() {
       },
       {
         id: 3,
-        name: 'Family Theater',
+        name: 'Family Room',
         category: 'Family',
         emoji: '👨‍👩‍👧‍👦',
-        capacity: 'Up to 12-20 Guests',
-        price: '₹1,699',
-        tag: 'Spacious Group Screening',
+        capacity: 'Up to 6 Guests',
+        price: '₹2,200',
+        tag: 'Standard ₹2,200 • Custom ₹1,699',
         image: '/images/ambience_2.webp',
         galleryPhotos: familyPhotos,
         amenities: [
@@ -277,7 +412,8 @@ export default function TheatresSlotsSection() {
   const currentTheatres = theatresData[activeBranch];
 
   const handleSlotClick = (theatreId: number, slotId: number) => {
-    router.push(`/book-now?branch=${activeBranch}&theatre=${theatreId}&date=${selectedDate}&slot=${slotId}`);
+    const pkg = activePackageTab[theatreId] || 'standard';
+    router.push(`/book-now?branch=${activeBranch}&theatre=${theatreId}&date=${selectedDate}&slot=${slotId}&package=${pkg}`);
   };
 
   return (
@@ -581,20 +717,83 @@ export default function TheatresSlotsSection() {
                     </button>
                   </div>
 
-                  {/* Included Highlights */}
-                  <div>
-                    <span className="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-royal-700 mb-1.5 sm:mb-2">
-                      Included Highlights
-                    </span>
-                    <ul className="space-y-1 sm:space-y-1.5">
-                      {theatre.amenities.slice(0, 3).map((item, idx) => (
-                        <li key={idx} className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-slate-700">
-                          <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-royal-600 shrink-0" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  {/* Package Selector & Included Amenities (Electronic City) */}
+                  {roomPackagesInfo[theatre.id] ? (
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="block text-[10px] sm:text-xs font-black uppercase tracking-wider text-royal-900">
+                          Package Options &amp; Inclusions
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-500">Click to preview</span>
+                      </div>
+
+                      {/* Package Pills */}
+                      <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-slate-100 border border-slate-200 text-center">
+                        {(['standard', 'premium', 'custom'] as const).map((pkgKey) => {
+                          const isSelected = (activePackageTab[theatre.id] || 'standard') === pkgKey;
+                          const pkg = roomPackagesInfo[theatre.id][pkgKey];
+                          return (
+                            <button
+                              key={pkgKey}
+                              type="button"
+                              onClick={() => setActivePackageTab(prev => ({ ...prev, [theatre.id]: pkgKey }))}
+                              className={`py-1.5 px-1 rounded-lg text-[10px] sm:text-[11px] font-black transition-all cursor-pointer ${
+                                isSelected
+                                  ? 'bg-royal-900 text-amber-300 shadow-xs'
+                                  : 'text-slate-700 hover:text-royal-900 hover:bg-white/60'
+                              }`}
+                            >
+                              <div className="leading-tight capitalize">{pkgKey}</div>
+                              <div className={`text-[10px] font-extrabold ${isSelected ? 'text-white' : 'text-slate-900'}`}>{pkg.price}</div>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Selected Package Details Box */}
+                      {(() => {
+                        const currentPkgKey = activePackageTab[theatre.id] || 'standard';
+                        const currentPkg = roomPackagesInfo[theatre.id][currentPkgKey];
+                        return (
+                          <div className="p-3 rounded-xl bg-royal-50/80 border border-royal-200 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-black text-royal-950 flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                                <span>{currentPkg.name}</span>
+                              </span>
+                              <div className="flex items-baseline gap-1.5">
+                                <span className="text-xs font-black text-royal-900">{currentPkg.price}</span>
+                                {currentPkg.originalPrice && (
+                                  <span className="text-[10px] text-slate-400 line-through">{currentPkg.originalPrice}</span>
+                                )}
+                              </div>
+                            </div>
+                            <ul className="space-y-1">
+                              {currentPkg.features.map((feat: string, fIdx: number) => (
+                                <li key={fIdx} className="text-[11px] font-semibold text-slate-800 flex items-center gap-1.5 leading-snug">
+                                  <span>{feat}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  ) : (
+                    <div>
+                      <span className="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-royal-700 mb-1.5 sm:mb-2">
+                        Included Highlights
+                      </span>
+                      <ul className="space-y-1 sm:space-y-1.5">
+                        {theatre.amenities.slice(0, 3).map((item, idx) => (
+                          <li key={idx} className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-slate-700">
+                            <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-royal-600 shrink-0" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                   {/* Real-time Slots Grid */}
                   <div>
@@ -783,7 +982,7 @@ export default function TheatresSlotsSection() {
                       : 'border-white/30 opacity-60 hover:opacity-100'
                   }`}
                 >
-                  <img src={p.src} alt={p.title} className="w-full h-full object-cover" />
+                  <img src={p.src} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

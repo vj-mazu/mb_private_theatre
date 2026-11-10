@@ -12,12 +12,14 @@ A high-performance, modern web application and management platform for **Movie B
 ## 📑 Table of Contents
 
 - [Architectural Highlights](#-architectural-highlights)
+- [5-Step Interactive Booking & Package System](#-5-step-interactive-booking--package-system)
 - [Folder & Directory Structure](#-folder--directory-structure)
 - [Core Customer Features](#-core-customer-features)
 - [Admin Management Portal](#-admin-management-portal)
 - [Accurate Theatre & Slot Schedules](#-accurate-theatre--slot-schedules)
 - [Asset & Media Performance](#-asset--media-performance)
 - [Design System & Typography](#-design-system--typography)
+- [Deployment on Vercel & Render](#-deployment-on-vercel--render)
 - [Getting Started](#-getting-started)
 - [Environment Configuration](#-environment-configuration)
 - [Database Setup](#-database-setup)
@@ -27,11 +29,32 @@ A high-performance, modern web application and management platform for **Movie B
 
 ## 🏛 Architectural Highlights
 
-- **Zero-Friction Customer Booking**: No account creation or password wall required. Customers select their venue, date, slot, occasion, and add-ons, enter their phone number and name, and reserve directly.
-- **Direct WhatsApp Confirmation**: Upon booking submission, an order summary message is automatically formatted and triggered to the Movie Bash venue manager (`+91 99029 23656`), with a 1-click WhatsApp action on the confirmation screen.
-- **3D Arched Video Carousel**: Math-driven cylinder projection using native CSS `clip-path` and dynamic transforms with continuous smooth auto-scrolling, touch/drag physics, and gentle hover pause.
-- **Dual-Mode Persistence**: Seamlessly switches between **MySQL 8.0** connection pooling (`mysql2/promise`) and an automatic atomic JSON store (`data/store.json`) for zero-downtime local development and high availability.
+- **Zero-Friction Customer Booking**: No account creation or password wall required. Customers select their venue, date, slot, package (Standard, Premium, or Custom), occasion, and add-ons, and reserve directly with live WhatsApp confirmation.
+- **5-Step Booking Wizard**:
+  - **Step 1: Date & Showtime Slots**: Interactive calendar chips and real-time room capacity.
+  - **Step 2: Package Tier Selection**: Standard (All-inclusive party), Premium (VIP luxury setup with cold pyros and rose carpet), and Custom (Room only + build your own). Includes live cursor hover preview of inclusions.
+  - **Step 3: Cake Selection & Addons**: Free cake flavor selection (Chocolate Truffle, Red Velvet, Black Forest, Butterscotch, Pineapple) for packages, plus Photography, iPhone Reels, Teddy Mascot, and Fog pots.
+  - **Step 4: Celebration Details & Extra Guests**: Name on screen, occasion type, extra guests math (₹99 for Couple, ₹149 for Celebration/Family), and extra hours (₹400 for Couple, ₹750 for Celebration/Family).
+  - **Step 5: Review & Confirmation**: Itemized live breakdown with one-click WhatsApp reservation trigger.
+- **Direct WhatsApp Confirmation**: Upon booking submission, an order summary message is automatically formatted and triggered to the customer and the Movie Bash venue manager (`+91 99029 23656`), with a 1-click WhatsApp action on the confirmation screen.
+- **Zero Dummy Data Guarantee**: Clean fresh database state with 0 bookings and 0 test customer records ready for live commercial reservations.
+- **High-Performance GPU Rendering**: Converted hero animation to GPU `translate3d` transforms with viewport video culling and WebP image optimization for ultra-fast, smooth scrolling on mobile.
+- **Dual-Mode Persistence**: Seamlessly switches between **MySQL 8.0** connection pooling (`mysql2/promise`) and an automatic resilient JSON store (`data/store.json`) for zero-downtime local development and high availability.
 - **Strict High-Contrast Accessibility**: Clean, crisp typography eliminating low-contrast washed-out tones in favor of deep black (`#101410`), rich forest green (`#08482D`), and vibrant amber/gold accents.
+
+---
+
+## 🎁 5-Step Interactive Booking & Package System
+
+### 💑 Couple Room (Electronic City)
+- **Standard Package (₹1,499)**: 2 Hours, up to 2 guests. Includes 500g Cake, 1 Fog Entry (1 Pot), LED Number, Premium Balloon Decor, JBL 5.1 Dolby Sound & Projector, Private Screening, Name Board, Happy Birthday Neon, Recliner Sofas, AC.
+- **Premium Package (₹2,800)**: Everything in Standard, plus Extra Fog Entry (2 Pots Total), Cold Pyro Sparkle Entry, Rose Petals ("I ❤️ U") on Table with Candles, Personalized LED Name, and Bubbles.
+- **Custom Package (₹899 Room Only)**: Add what you need — Fog pots (1 Pot ₹399, 2 Pots ₹750, 3 Pots ₹1,000, 5 Pots ₹1,500), Cold Pyro ₹799, Rose petal decor ₹250, LED Name ₹250, Photography (30m ₹499 / 1h ₹999), iPhone Reel ₹500, Teddy Mascot Entry ₹500. Extra person: ₹99/person. Extra hour: ₹400/hr.
+
+### 🎊 Celebration & Family Rooms (Electronic City)
+- **Standard Package (₹2,200)**: 2 Hours, up to 6 guests. Includes 500g Pastry Cake, Fog Entry (1 Pot), LED Number, Premium Decor, Dolby JBL Sound & Big Screen, Private Screening, Name Board, Neon Light, Sofas, AC.
+- **Premium Package (₹3,500)**: Everything in Standard, plus Fog Entry (2 Pots), Cold Fire Pyros, 1-Foot LED Name Letters, Rose Petals / HBD on Table with Candles, and Bubbles.
+- **Custom Package (₹1,699 Room Only)**: Extra person: ₹149/person after 6 guests. Extra hour: ₹750/hr. Full à la carte add-on catalogue.
 
 ---
 
@@ -258,6 +281,17 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 npm run build
 npm start
 ```
+
+---
+
+## ☁️ Deployment on Vercel & Render
+
+For complete, step-by-step production instructions with zero hardcoded URLs, see [**DEPLOYMENT.md**](./DEPLOYMENT.md).
+
+- **Frontend & Serverless API Routes**: Hosted on **Vercel** with worldwide edge CDN, automatic HTTPS, and dynamic image optimization.
+- **Database Backend**: Hosted on **Render Free Tier** or any cloud MySQL 8.0 instance (e.g., TiDB Serverless, Aiven, Railway) using `DATABASE_URL` with SSL.
+- **Zero Dummy Records**: Starts completely fresh with `0 Bookings` and `0 Customers`. Real user reservations will populate the database live.
+- **Dynamic Port & Path Handling**: Runs using dynamic `process.env.PORT` and relative `/api/*` endpoints.
 
 ---
 

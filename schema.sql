@@ -106,7 +106,7 @@ CREATE TABLE `customers` (
 DROP TABLE IF EXISTS `bookings`;
 CREATE TABLE `bookings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `booking_ref` VARCHAR(40) NOT NULL UNIQUE,
+  `booking_ref` VARCHAR(50) NOT NULL UNIQUE,
   `customer_id` INT NULL,
   `branch_id` INT NOT NULL,
   `theatre_id` INT NOT NULL,
@@ -135,6 +135,16 @@ CREATE TABLE `bookings` (
   `deleted_by` VARCHAR(100) NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  -- Unique constraint to prevent double booking: one active booking per theatre/date/slot
+  -- Using a generated column to create a partial unique index workaround
+  `booking_lock_key` VARCHAR(100) GENERATED ALWAYS AS (
+    CASE 
+      WHEN `is_deleted` = 0 AND `status` NOT IN ('cancelled') 
+      THEN CONCAT(`theatre_id`, '_', `booking_date`, '_', `slot_id`)
+      ELSE NULL 
+    END
+  ) STORED,
+  UNIQUE INDEX `uk_theatre_date_slot_active` (`booking_lock_key`),
   INDEX `idx_bookings_branch_date` (`branch_id`, `booking_date`),
   INDEX `idx_bookings_status` (`status`),
   INDEX `idx_bookings_phone` (`customer_phone`),

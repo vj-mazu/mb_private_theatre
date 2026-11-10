@@ -2,7 +2,10 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'movie_bash_super_secure_jwt_secret_token_2026_xyz';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required. Please set it in your .env file.');
+}
 const TOKEN_NAME = 'mb_admin_token';
 const CUSTOMER_TOKEN_NAME = 'mb_customer_token';
 
@@ -31,24 +34,24 @@ export function comparePassword(password: string, hash: string): Promise<boolean
 }
 
 export function signAdminToken(payload: AdminPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign(payload, JWT_SECRET!, { expiresIn: '7d' });
 }
 
 export function verifyAdminToken(token: string): AdminPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as AdminPayload;
+    return jwt.verify(token, JWT_SECRET!) as AdminPayload;
   } catch (err) {
     return null;
   }
 }
 
 export function signCustomerToken(payload: CustomerPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '30d' });
+  return jwt.sign(payload, JWT_SECRET!, { expiresIn: '30d' });
 }
 
 export function verifyCustomerToken(token: string): CustomerPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as CustomerPayload;
+    return jwt.verify(token, JWT_SECRET!) as unknown as CustomerPayload;
   } catch (err) {
     return null;
   }

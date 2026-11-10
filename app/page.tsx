@@ -32,20 +32,20 @@ export default function HomePage() {
       {/* 4. Branch Marquee Strip */}
       <BranchMarquee />
 
-      {/* 5. Intro / About */}
+      {/* 5. Intro / About ("Host the Ultimate Celebration") */}
       <HomeIntro />
 
-      {/* 6. Animated Stats Row */}
-      <HomeStats />
-
-      {/* 7. Why Choose Us (01-05 cards) */}
-      <WhyChooseUs />
-
-      {/* 8. Our Venues (Electronic City & BTM) */}
+      {/* 6. Our Venues (Electronic City & BTM Stage 2) */}
       <VenuesSection />
 
-      {/* 9. Theatres & Time Slots (Per branch tabs & slots) */}
+      {/* 7. Theatres & Time Slots with Complete Packages (Standard, Premium, Custom) */}
       <TheatresSlotsSection />
+
+      {/* 8. Animated Stats Row */}
+      <HomeStats />
+
+      {/* 9. Why Choose Us (01-05 cards) */}
+      <WhyChooseUs />
 
       {/* 10. Celebrate Occasions Grid */}
       <OccasionsSection />

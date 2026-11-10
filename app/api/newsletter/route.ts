@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { mockStore } from '@/lib/db';
+import { newsletterRateLimiter } from '@/lib/rate-limiter';
 
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const rateLimitResponse = await newsletterRateLimiter(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const { contact } = await request.json();
     if (!contact) {

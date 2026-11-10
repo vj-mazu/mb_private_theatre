@@ -1,6 +1,7 @@
 import mysql from 'mysql2/promise';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { initialMockStore, MockStore } from './mock-data';
 
 let pool: mysql.Pool | null = null;
@@ -10,6 +11,23 @@ export function getPool(): mysql.Pool | null {
   if (pool) return pool;
 
   try {
+    // 1. If DATABASE_URL is provided (e.g. Render, Railway, PlanetScale, Aiven)
+    if (process.env.DATABASE_URL) {
+      pool = mysql.createPool({
+        uri: process.env.DATABASE_URL,
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0,
+        timezone: '+05:30',
+        dateStrings: true,
+        ssl: process.env.DB_SSL === 'true' || process.env.DATABASE_URL.includes('sslmode=') 
+          ? { rejectUnauthorized: false } 
+          : undefined
+      });
+      return pool;
+    }
+
+    // 2. Standard individual environment variables
     pool = mysql.createPool({
       host: process.env.DB_HOST || '127.0.0.1',
       port: Number(process.env.DB_PORT) || 3306,
@@ -21,6 +39,7 @@ export function getPool(): mysql.Pool | null {
       queueLimit: 0,
       timezone: '+05:30',
       dateStrings: true,
+      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined
     });
     return pool;
   } catch (err) {
@@ -49,7 +68,8 @@ function loadPersistentStore() {
   return { ...initialMockStore };
 }
 
-export const mockStore: MockStore = loadPersistentStore();
+const globalForStore = globalThis as unknown as { mockStore?: MockStore };
+export const mockStore: MockStore = globalForStore.mockStore || (globalForStore.mockStore = loadPersistentStore());
 
 export function saveStore() {
   try {
@@ -82,6 +102,178 @@ export async function checkMySQL(): Promise<boolean> {
   }
 }
 
+// Transaction support
+export interface TransactionConnection {
+  query: (sql: string, params?: any[]) => Promise<any>;
+  commit: () => Promise<void>;
+  rollback: () => Promise<void>;
+  release: () => void;
+}
+
+export async function beginTransaction(): Promise<TransactionConnection | null> {
+  const isAvailable = await checkMySQL();
+  if (!isAvailable || !pool) return null;
+  
+  const conn = await pool.getConnection();
+  await conn.beginTransaction();
+  
+  return {
+    query: async (sql: string, params: any[] = []) => {
+      const [rows] = await conn.query(sql, params);
+      return rows;
+    },
+    commit: async () => {
+      await conn.commit();
+    },
+    rollback: async () => {
+      await conn.rollback();
+    },
+    release: () => {
+      conn.release();
+    }
+  };
+}
+
+// Advisory lock for distributed double-booking prevention (MySQL advisory lock with in-memory mutex fallback)
+const inMemoryLocks = new Map<string, number>();
+
+export async function acquireBookingLock(
+  theatreId: number, 
+  bookingDate: string, 
+  slotId: number, 
+  timeoutSeconds: number = 10
+): Promise<boolean> {
+  const lockName = `booking_${theatreId}_${bookingDate}_${slotId}`;
+  const isAvailable = await checkMySQL();
+  
+  if (isAvailable && pool) {
+    try {
+      const [rows] = await pool.query('SELECT GET_LOCK(?, ?) as result', [lockName, timeoutSeconds]);
+      const result = (rows as any[])[0]?.result;
+      return result === 1;
+    } catch (err) {
+      console.error('Failed to acquire MySQL booking lock, falling back to in-memory lock:', err);
+    }
+  }
+
+  // Robust in-memory mutex lock
+  const now = Date.now();
+  const existingLock = inMemoryLocks.get(lockName);
+  if (existingLock && (now - existingLock) < (timeoutSeconds * 1000)) {
+    return false;
+  }
+  inMemoryLocks.set(lockName, now);
+  return true;
+}
+
+export async function releaseBookingLock(
+  theatreId: number, 
+  bookingDate: string, 
+  slotId: number
+): Promise<void> {
+  const lockName = `booking_${theatreId}_${bookingDate}_${slotId}`;
+  inMemoryLocks.delete(lockName);
+
+  const isAvailable = await checkMySQL();
+  if (isAvailable && pool) {
+    try {
+      await pool.query('SELECT RELEASE_LOCK(?)', [lockName]);
+    } catch (err) {
+      console.error('Failed to release MySQL booking lock:', err);
+    }
+  }
+}
+
+// Generate clean, short, human-readable booking reference by branch and financial year
+// Electronic City: MBEC202601, MBEC202602...
+// BTM 2nd Stage:   MBBTM202601, MBBTM202602...
+// Financial Year Rollover: Automatically rolls over every year after March 31 (e.g. April 1, 2027 becomes 2027).
+export async function generateBookingRef(branchId: number | string = 1, bookingDate?: string): Promise<string> {
+  const bId = String(branchId).toLowerCase();
+  const isBtm = bId === '2' || bId.includes('btm');
+  const prefix = isBtm ? 'MBBTM' : 'MBEC';
+
+  // Indian Financial Year: April 1 to March 31
+  // If month >= 4 (April-Dec), FY = calYear (e.g. Nov 2026 -> 2026).
+  // If month <= 3 (Jan-March 31), FY = calYear - 1 (e.g. Feb 2027 -> 2026).
+  // After March 31 (i.e. from April 1, 2027 onwards), FY rolls over to 2027!
+  const targetDate = bookingDate ? new Date(bookingDate) : new Date();
+  const calYear = isNaN(targetDate.getTime()) ? new Date().getFullYear() : targetDate.getFullYear();
+  const calMonth = isNaN(targetDate.getTime()) ? (new Date().getMonth() + 1) : (targetDate.getMonth() + 1);
+  const fyYear = calMonth >= 4 ? calYear : calYear - 1;
+
+  const prefixWithYear = `${prefix}${fyYear}`;
+  let maxSeq = 0;
+
+  // 1. Check MySQL if available
+  if (pool) {
+    try {
+      const [rows]: any = await pool.query(
+        'SELECT `booking_ref` FROM `bookings` WHERE `booking_ref` LIKE ?',
+        [`${prefixWithYear}%`]
+      );
+      if (Array.isArray(rows)) {
+        for (const row of rows) {
+          const ref = String(row.booking_ref || '');
+          const match = ref.match(new RegExp(`^${prefixWithYear}(\\d+)`, 'i'));
+          if (match && match[1]) {
+            const num = parseInt(match[1], 10);
+            if (!isNaN(num) && num > maxSeq) {
+              maxSeq = num;
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Could not query max booking reference from MySQL:', err);
+    }
+  }
+
+  // 2. Also check mockStore / local persistent store
+  if (Array.isArray(mockStore.bookings)) {
+    for (const b of mockStore.bookings) {
+      const ref = String(b.booking_ref || '');
+      const match = ref.match(new RegExp(`^${prefixWithYear}(\\d+)`, 'i'));
+      if (match && match[1]) {
+        const num = parseInt(match[1], 10);
+        if (!isNaN(num) && num > maxSeq) {
+          maxSeq = num;
+        }
+      }
+    }
+  }
+
+  const nextSeq = maxSeq + 1;
+  const paddedSeq = String(nextSeq).padStart(2, '0');
+  let candidate = `${prefixWithYear}${paddedSeq}`;
+
+  // Collision safety against active local store
+  let safetyCounter = nextSeq;
+  while (mockStore.bookings.some(b => b.booking_ref === candidate)) {
+    safetyCounter++;
+    candidate = `${prefixWithYear}${String(safetyCounter).padStart(2, '0')}`;
+  }
+
+  return candidate;
+}
+
+// Atomic coupon usage increment
+export async function incrementCouponUsage(couponId: number): Promise<boolean> {
+  const isAvailable = await checkMySQL();
+  if (!isAvailable || !pool) return false;
+  
+  try {
+    const [result] = await pool.query(
+      'UPDATE `coupons` SET `used_count` = `used_count` + 1 WHERE `id` = ? AND `used_count` < `usage_limit`',
+      [couponId]
+    );
+    return (result as any).affectedRows > 0;
+  } catch (err) {
+    console.error('Failed to increment coupon usage:', err);
+    return false;
+  }
+}
+
 export async function query<T = any>(sql: string, params: any[] = []): Promise<T> {
   const isAvailable = await checkMySQL();
   if (isAvailable && pool) {
@@ -97,7 +289,7 @@ export async function query<T = any>(sql: string, params: any[] = []): Promise<T
   return executeMockQuery(sql, params) as T;
 }
 
-function executeMockQuery(sql: string, params: any[] = []): any {
+export function executeMockQuery(sql: string, params: any[] = []): any {
   const lower = sql.toLowerCase().trim();
 
   // Handle Branches
@@ -153,7 +345,28 @@ function executeMockQuery(sql: string, params: any[] = []): any {
 
   // Handle Bookings SELECT
   if (lower.startsWith('select') && (lower.includes('from bookings') || lower.includes('from `bookings`'))) {
+    if (lower.includes('booking_ref = ?') && params.length > 0) {
+      return mockStore.bookings.filter(b => b.booking_ref === params[0] && b.is_deleted === 0);
+    }
     return mockStore.bookings.filter(b => b.is_deleted === 0);
+  }
+
+  // Handle INSERT for bookings (mock)
+  if (lower.startsWith('insert') && lower.includes('into bookings')) {
+    // This is handled in the API route directly for mock
+    return { insertId: mockStore.bookings.length + 1 };
+  }
+
+  // Handle UPDATE for coupons used_count
+  if (lower.startsWith('update') && lower.includes('coupons') && lower.includes('used_count')) {
+    const couponId = params[0];
+    const coupon = mockStore.coupons.find(c => c.id === couponId);
+    if (coupon && coupon.used_count < coupon.usage_limit) {
+      coupon.used_count += 1;
+      saveStore();
+      return { affectedRows: 1 };
+    }
+    return { affectedRows: 0 };
   }
 
   // Default empty result

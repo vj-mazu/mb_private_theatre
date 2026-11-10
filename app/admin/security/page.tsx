@@ -11,7 +11,10 @@ import {
   RefreshCw, 
   UserCheck, 
   MapPin, 
-  Building2 
+  Building2,
+  MessageSquare,
+  Send,
+  ExternalLink
 } from 'lucide-react';
 
 export default function AdminSecurityPage() {
@@ -33,6 +36,11 @@ export default function AdminSecurityPage() {
   const [staffModalSuccess, setStaffModalSuccess] = useState('');
   const [staffModalError, setStaffModalError] = useState('');
   const [updatingStaffPassword, setUpdatingStaffPassword] = useState(false);
+
+  // Twilio WhatsApp Test State
+  const [testPhone, setTestPhone] = useState('9902923656');
+  const [testingWhatsApp, setTestingWhatsApp] = useState(false);
+  const [testResult, setTestResult] = useState<{ success: boolean; messageId?: string; error?: string; skipped?: boolean } | null>(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -136,6 +144,26 @@ export default function AdminSecurityPage() {
     }
   };
 
+  const handleTestWhatsApp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTestingWhatsApp(true);
+    setTestResult(null);
+
+    try {
+      const res = await fetch('/api/admin/test-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: testPhone })
+      });
+      const data = await res.json();
+      setTestResult(data);
+    } catch (err: any) {
+      setTestResult({ success: false, error: err.message || 'Network error' });
+    } finally {
+      setTestingWhatsApp(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="py-16 text-center text-xs font-bold text-royal-900">
@@ -147,7 +175,7 @@ export default function AdminSecurityPage() {
   const isSuperAdmin = currentUser?.role === 'super_admin';
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="space-y-8 max-w-5xl mx-auto pb-12">
       
       {/* Header */}
       <div>
@@ -156,7 +184,7 @@ export default function AdminSecurityPage() {
           Security &amp; Staff Credentials
         </h1>
         <p className="text-xs text-slate-600 mt-1">
-          Manage secure login passwords for Super Admin and venue staff members across Electronic City and BTM 2nd Stage.
+          Manage secure login passwords for Super Admin, venue staff accounts, and WhatsApp API notifications.
         </p>
       </div>
 
@@ -327,6 +355,142 @@ export default function AdminSecurityPage() {
           </div>
         </div>
 
+      </div>
+
+      {/* Twilio WhatsApp Integration & Live Tester Panel */}
+      <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-emerald-300 shadow-soft space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-sand-200">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-emerald-100 text-emerald-800">
+              <MessageSquare className="w-5 h-5 text-emerald-700" />
+            </div>
+            <div>
+              <h3 className="font-bold text-base text-royal-950 flex items-center gap-2">
+                <span>Twilio WhatsApp Integration</span>
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                  Ready to Connect
+                </span>
+              </h3>
+              <p className="text-xs text-slate-500">
+                Automatically delivers instant booking vouchers &amp; manager notifications via official WhatsApp API.
+              </p>
+            </div>
+          </div>
+
+          <a
+            href="https://console.twilio.com/us1/develop/sms/try-sms/try-whatsapp"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-900 underline"
+          >
+            <span>Open Twilio Console</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left Column: 3 Required Environment Variables */}
+          <div className="lg:col-span-7 space-y-3">
+            <span className="block text-xs font-extrabold uppercase tracking-wider text-slate-700">
+              Required Environment Variables (in .env.local or Vercel / Render):
+            </span>
+            <div className="space-y-2 text-xs">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <code className="font-mono text-royal-900 font-bold">TWILIO_ACCOUNT_SID</code>
+                <span className="text-[11px] text-slate-500">From Twilio Console Dashboard (starts with AC...)</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <code className="font-mono text-royal-900 font-bold">TWILIO_AUTH_TOKEN</code>
+                <span className="text-[11px] text-slate-500">Your secret Twilio Auth Token</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <code className="font-mono text-royal-900 font-bold">TWILIO_WHATSAPP_NUMBER</code>
+                <span className="text-[11px] text-slate-500">e.g. whatsapp:+14155238886 (sandbox) or verified sender</span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
+              <strong>💡 How Testing with Twilio WhatsApp Sandbox Works:</strong>
+              <p className="text-[11px] text-amber-800 leading-relaxed">
+                1. Open WhatsApp on your phone.<br />
+                2. Send your sandbox join code (e.g. <code className="font-bold">join [two-words]</code>) to <code className="font-bold">+1 415 523 8886</code>.<br />
+                3. Once joined, use the live tester on the right to send yourself a test message!
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column: Live WhatsApp Test Form */}
+          <div className="lg:col-span-5 bg-sand-50/70 p-5 rounded-2xl border-2 border-sand-300 space-y-4">
+            <div>
+              <h4 className="font-bold text-xs uppercase tracking-wider text-royal-900">
+                Test Live WhatsApp Dispatch
+              </h4>
+              <p className="text-[11px] text-slate-600 mt-0.5">
+                Send a real test message to verify your API credentials.
+              </p>
+            </div>
+
+            {testResult && (
+              <div className={`p-3 rounded-xl text-xs font-bold flex items-start gap-2 ${
+                testResult.success 
+                  ? testResult.skipped 
+                    ? 'bg-amber-100 border border-amber-300 text-amber-900' 
+                    : 'bg-emerald-100 border border-emerald-300 text-emerald-900'
+                  : 'bg-rose-100 border border-rose-300 text-rose-900'
+              }`}>
+                {testResult.success ? (
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-700 mt-0.5" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-700 mt-0.5" />
+                )}
+                <div>
+                  {testResult.skipped ? (
+                    <div>
+                      <span>Twilio credentials are not set in .env yet.</span>
+                      <p className="text-[10px] font-normal mt-0.5 opacity-90">
+                        Add <code className="font-bold">TWILIO_ACCOUNT_SID</code> and <code className="font-bold">TWILIO_AUTH_TOKEN</code> to your .env.local file to enable live dispatch.
+                      </p>
+                    </div>
+                  ) : testResult.success ? (
+                    <div>
+                      <span>WhatsApp test sent successfully!</span>
+                      <p className="text-[10px] font-mono mt-0.5 opacity-80">Message SID: {testResult.messageId}</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <span>Failed: {testResult.error}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <form onSubmit={handleTestWhatsApp} className="space-y-3">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                  Recipient Mobile Number (with or without +91)
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={testPhone}
+                  onChange={(e) => setTestPhone(e.target.value)}
+                  placeholder="9902923656"
+                  className="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 text-xs text-slate-900 bg-white focus:outline-none focus:border-royal-700"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={testingWhatsApp}
+                className="w-full py-2.5 rounded-xl text-xs font-black text-white bg-emerald-600 hover:bg-emerald-700 shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>{testingWhatsApp ? 'Sending Test...' : 'Send Test WhatsApp Message'}</span>
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
 
       {/* Staff Password Change Modal */}

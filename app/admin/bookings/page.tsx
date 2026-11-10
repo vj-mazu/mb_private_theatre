@@ -33,6 +33,7 @@ export default function AdminBookingsPage() {
   const [search, setSearch] = useState('');
   const [branchFilter, setBranchFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('');
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState<any>({ totalPages: 1, total: 0 });
 
@@ -79,6 +80,7 @@ export default function AdminBookingsPage() {
       if (search) q.set('search', search);
       if (branchFilter !== 'all') q.set('branch', branchFilter);
       if (statusFilter !== 'all') q.set('status', statusFilter);
+      if (dateFilter) q.set('date', dateFilter);
       q.set('page', String(page));
       q.set('limit', '20');
 
@@ -97,7 +99,7 @@ export default function AdminBookingsPage() {
 
   useEffect(() => {
     fetchBookings();
-  }, [search, branchFilter, statusFilter, page]);
+  }, [search, branchFilter, statusFilter, dateFilter, page]);
 
   // Dynamic slots loading for manual modal
   useEffect(() => {
@@ -185,6 +187,8 @@ export default function AdminBookingsPage() {
       `🎟️ *Booking Ref:* ${b.booking_ref}\n` +
       `📍 *Venue:* Movie Bash (${branchName})\n` +
       `🎭 *Theatre:* ${b.theatre_name || 'Private Screen'}\n` +
+      (b.package_type ? `📦 *Package:* ${String(b.package_type).toUpperCase()} PACKAGE\n` : '') +
+      (b.cake_flavor ? `🎂 *Cake:* 500g ${b.cake_flavor}\n` : '') +
       `📅 *Date:* ${b.booking_date}\n` +
       `⏰ *Showtime Slot:* ${b.slot_time || 'Scheduled Slot'}\n` +
       `👥 *Guests:* ${b.guests}\n` +
@@ -263,7 +267,7 @@ export default function AdminBookingsPage() {
 
         <div className="flex items-center gap-3">
           <a
-            href="/api/admin/bookings/export"
+            href={`/api/admin/bookings/export?${dateFilter ? `date=${dateFilter}&` : ''}${branchFilter !== 'all' ? `branch=${branchFilter}&` : ''}`}
             download
             className="px-4 py-2.5 rounded-2xl text-xs font-bold text-royal-900 bg-sand-100 hover:bg-sand-200 border border-sand-300 transition-colors flex items-center gap-1.5"
           >
@@ -292,15 +296,46 @@ export default function AdminBookingsPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by customer name, phone, email, or booking ref..."
+            placeholder="Search by ref (e.g. MBEC202601), customer name, or phone..."
             className="w-full pl-9 pr-4 py-2.5 rounded-2xl bg-sand-50 border border-sand-200 text-xs text-royal-900 focus:outline-none focus:border-royal-700"
           />
         </div>
 
-        <div className="flex items-center gap-3 w-full md:w-auto">
+        <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+          {/* Date Picker Input */}
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-sand-50 border border-sand-200 text-xs font-bold text-royal-900 shadow-xs">
+            <Calendar className="w-3.5 h-3.5 text-royal-700 shrink-0" />
+            <input
+              type="date"
+              value={dateFilter}
+              onChange={(e) => {
+                setDateFilter(e.target.value);
+                setPage(1);
+              }}
+              className="bg-transparent text-xs font-extrabold text-royal-900 focus:outline-none cursor-pointer"
+              title="Select specific date to filter"
+            />
+            {dateFilter && (
+              <button
+                type="button"
+                onClick={() => {
+                  setDateFilter('');
+                  setPage(1);
+                }}
+                className="w-4 h-4 rounded-full bg-slate-200 hover:bg-rose-100 hover:text-rose-600 text-slate-700 flex items-center justify-center text-[10px] ml-1 cursor-pointer font-bold"
+                title="Clear date filter"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
           <select
             value={branchFilter}
-            onChange={(e) => setBranchFilter(e.target.value)}
+            onChange={(e) => {
+              setBranchFilter(e.target.value);
+              setPage(1);
+            }}
             className="flex-1 md:flex-initial px-3 py-2.5 rounded-2xl bg-sand-50 border border-sand-200 text-xs font-bold text-royal-900 focus:outline-none"
           >
             <option value="all">All Branches</option>
@@ -310,7 +345,10 @@ export default function AdminBookingsPage() {
 
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setPage(1);
+            }}
             className="flex-1 md:flex-initial px-3 py-2.5 rounded-2xl bg-sand-50 border border-sand-200 text-xs font-bold text-royal-900 focus:outline-none"
           >
             <option value="all">All Statuses</option>
@@ -321,26 +359,96 @@ export default function AdminBookingsPage() {
         </div>
       </div>
 
-      {/* Quick Status Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
-        {[
-          { label: 'All Bookings', value: 'all' },
-          { label: 'Confirmed', value: 'confirmed' },
-          { label: 'Completed', value: 'completed' },
-          { label: 'Cancelled', value: 'cancelled' },
-        ].map((tab) => (
+      {/* Quick Status Tabs & Date Quick Pills */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        {/* Status Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          {[
+            { label: 'All Bookings', value: 'all' },
+            { label: 'Confirmed', value: 'confirmed' },
+            { label: 'Completed', value: 'completed' },
+            { label: 'Cancelled', value: 'cancelled' },
+          ].map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => {
+                setStatusFilter(tab.value);
+                setPage(1);
+              }}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                statusFilter === tab.value
+                  ? 'bg-royal-800 text-white shadow-sm'
+                  : 'bg-white border border-sand-300 text-slate-700 hover:bg-slate-100'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Date Quick Filter Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+          <span className="text-[11px] font-black text-slate-500 uppercase tracking-wider mr-1">Date:</span>
           <button
-            key={tab.value}
-            onClick={() => setStatusFilter(tab.value)}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              statusFilter === tab.value
-                ? 'bg-royal-800 text-white shadow-sm'
+            type="button"
+            onClick={() => {
+              setDateFilter('');
+              setPage(1);
+            }}
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              !dateFilter
+                ? 'bg-emerald-700 text-white shadow-sm'
                 : 'bg-white border border-sand-300 text-slate-700 hover:bg-slate-100'
             }`}
           >
-            {tab.label}
+            All Dates
           </button>
-        ))}
+          <button
+            type="button"
+            onClick={() => {
+              setDateFilter(new Date().toISOString().split('T')[0]);
+              setPage(1);
+            }}
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              dateFilter === new Date().toISOString().split('T')[0]
+                ? 'bg-emerald-700 text-white shadow-sm'
+                : 'bg-white border border-sand-300 text-slate-700 hover:bg-slate-100'
+            }`}
+          >
+            Today
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+              setDateFilter(tomorrow);
+              setPage(1);
+            }}
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              dateFilter === new Date(Date.now() + 86400000).toISOString().split('T')[0]
+                ? 'bg-emerald-700 text-white shadow-sm'
+                : 'bg-white border border-sand-300 text-slate-700 hover:bg-slate-100'
+            }`}
+          >
+            Tomorrow
+          </button>
+          {dateFilter && dateFilter !== new Date().toISOString().split('T')[0] && dateFilter !== new Date(Date.now() + 86400000).toISOString().split('T')[0] && (
+            <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-300 text-xs font-extrabold flex items-center gap-1.5">
+              <span>📅 {dateFilter}</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setDateFilter('');
+                  setPage(1);
+                }}
+                className="w-3.5 h-3.5 rounded-full bg-emerald-200 hover:bg-rose-100 hover:text-rose-600 text-emerald-900 flex items-center justify-center text-[9px] font-black cursor-pointer"
+                title="Clear date"
+              >
+                ✕
+              </button>
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Bookings Table / Cards on mobile */}

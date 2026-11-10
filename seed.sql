@@ -169,25 +169,14 @@ ON DUPLICATE KEY UPDATE `value_content`=VALUES(`value_content`);
 
 -- 10. Coupons
 INSERT INTO `coupons` (`id`, `code`, `discount_type`, `discount_value`, `min_booking_amount`, `valid_from`, `valid_until`, `usage_limit`, `used_count`, `branch_id`, `is_active`) VALUES
-(1, 'MOVIEBASH200', 'flat', 200.00, 899.00, '2026-01-01', '2027-12-31', 500, 24, NULL, 1),
-(2, 'CELEBRATE10', 'percentage', 10.00, 1499.00, '2026-01-01', '2027-12-31', 200, 15, NULL, 1)
+(1, 'MOVIEBASH200', 'flat', 200.00, 899.00, '2026-01-01', '2027-12-31', 500, 0, NULL, 1),
+(2, 'CELEBRATE10', 'percentage', 10.00, 1499.00, '2026-01-01', '2027-12-31', 200, 0, NULL, 1)
 ON DUPLICATE KEY UPDATE `code`=VALUES(`code`);
 
--- 11. Sample Customers
-INSERT INTO `customers` (`id`, `name`, `phone`, `email`, `total_bookings`, `lifetime_spend`) VALUES
-(1, 'Rahul Sharma', '9876543210', 'rahul.sharma@gmail.com', 2, 2798.00),
-(2, 'Priya Nair', '9812345678', 'priya.nair@outlook.com', 1, 2398.00),
-(3, 'Arjun Reddy', '9988776655', 'arjun.reddy@gmail.com', 1, 1499.00)
-ON DUPLICATE KEY UPDATE `phone`=VALUES(`phone`);
+-- 11. Fresh Database: Customers & Bookings tables are intentionally empty for live operations.
+-- Real customer reservations will populate `customers`, `bookings`, and `booking_addons` automatically.
 
--- 12. Sample Bookings (Providing rich dashboard analytics)
-INSERT INTO `bookings` (`id`, `booking_ref`, `customer_id`, `branch_id`, `theatre_id`, `slot_id`, `booking_date`, `customer_name`, `customer_phone`, `customer_email`, `screen_name`, `guests`, `occasion_id`, `subtotal`, `addons_total`, `discount`, `total`, `advance_paid`, `balance`, `status`, `payment_status`, `source`, `notes`) VALUES
-(1, 'MB-20261104-0001', 1, 1, 1, 4, CURRENT_DATE, 'Rahul Sharma', '9876543210', 'rahul.sharma@gmail.com', 'Happy 1st Anniversary Rahul & Sneha', 2, 1, 899.00, 898.00, 200.00, 1597.00, 500.00, 1097.00, 'confirmed', 'advance_paid', 'web', 'Romantic red roses theme request'),
-(2, 'MB-20261104-0002', 2, 1, 2, 9, CURRENT_DATE, 'Priya Nair', '9812345678', 'priya.nair@outlook.com', 'Happy 25th Birthday Priya', 6, 2, 1499.00, 898.00, 0.00, 2397.00, 500.00, 1897.00, 'confirmed', 'advance_paid', 'web', 'Need cold pyro during cake cutting'),
-(3, 'MB-20261105-0003', 3, 2, 4, 20, DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY), 'Arjun Reddy', '9988776655', 'arjun.reddy@gmail.com', 'Movie Night with Ananya', 2, 3, 899.00, 499.00, 0.00, 1398.00, 1398.00, 0.00, 'confirmed', 'fully_paid', 'phone', 'Popcorn and beverages pre-arranged')
-ON DUPLICATE KEY UPDATE `booking_ref`=VALUES(`booking_ref`);
-
--- 13. Gallery Images (using real WebP optimized images)
+-- 12. Gallery Images (using real WebP optimized images)
 INSERT INTO `gallery_images` (`id`, `category`, `title`, `image_url`, `thumb_url`, `is_featured`, `sort_order`) VALUES
 (1, 'Couple', 'Romantic Couple Suite Decor', '/images/couple_1.webp', '/images/couple_1_thumb.webp', 1, 1),
 (2, 'Couple', 'Private Screening for Two', '/images/couple_2.webp', '/images/couple_2_thumb.webp', 1, 2),

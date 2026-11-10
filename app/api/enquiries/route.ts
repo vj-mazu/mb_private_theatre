@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query, mockStore } from '@/lib/db';
+import { enquiryRateLimiter } from '@/lib/rate-limiter';
 
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const rateLimitResponse = await enquiryRateLimiter(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const body = await request.json();
     const { name, phone, email, branch_name, preferred_date, guests, message } = body;

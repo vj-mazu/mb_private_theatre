@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
-import { mockStore, saveStore } from '@/lib/db';
+import { mockStore, saveStore, generateBookingRef } from '@/lib/db';
+import { sendWhatsAppMessage } from '@/lib/twilio';
 
 export async function GET(request: NextRequest) {
   const session = await getAdminSession();
@@ -13,6 +14,9 @@ export async function GET(request: NextRequest) {
   const branch = searchParams.get('branch');
   const theatre = searchParams.get('theatre');
   const status = searchParams.get('status');
+  const date = searchParams.get('date');
+  const startDate = searchParams.get('startDate');
+  const endDate = searchParams.get('endDate');
   const isDeleted = searchParams.get('deleted') === 'true';
   const page = Number(searchParams.get('page') || 1);
   const limit = Number(searchParams.get('limit') || 25);
@@ -39,6 +43,12 @@ export async function GET(request: NextRequest) {
 
   if (status && status !== 'all') {
     filtered = filtered.filter(b => b.status === status);
+  }
+
+  if (date && date !== 'all') {
+    filtered = filtered.filter(b => b.booking_date === date);
+  } else if (startDate && endDate) {
+    filtered = filtered.filter(b => b.booking_date >= startDate && b.booking_date <= endDate);
   }
 
   if (search) {
@@ -109,8 +119,7 @@ export async function POST(request: NextRequest) {
       source = 'phone'
     } = body;
 
-    const dateStr = booking_date.replace(/-/g, '');
-    const bookingRef = `MB-MAN-${dateStr}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const bookingRef = await generateBookingRef(branch_id, booking_date);
 
     const br = mockStore.branches.find(x => x.id === Number(branch_id));
     const th = mockStore.theatres.find(x => x.id === Number(theatre_id));
@@ -168,6 +177,28 @@ export async function POST(request: NextRequest) {
       occasion_name: oc?.name || 'Celebration',
       map_url: br?.map_url || 'https://maps.google.com/?q=Movie+Bash+Bengaluru'
     };
+
+    // Auto-dispatch WhatsApp confirmation directly to the customer's phone for phone bookings
+    const cleanCustomerPhone = String(customer_phone).replace(/\D/g, '');
+    const phoneBookingMessage = 
+      `🎬 *Movie Bash Private Theatre — Booking Confirmed* 🍿\n\n` +
+      `Dear *${customer_name}*,\n` +
+      `Your phone reservation has been confirmed by our staff!\n\n` +
+      `🎟️ *Booking Ref:* ${bookingRef}\n` +
+      `📍 *Venue:* ${enriched.branch_name}\n` +
+      `🎭 *Screen:* ${enriched.theatre_name} (${enriched.theatre_emoji})\n` +
+      `📅 *Date:* ${booking_date}\n` +
+      `⏰ *Showtime:* ${enriched.slot_time}\n` +
+      `👥 *Guests:* ${guests}\n` +
+      `💰 *Total Amount:* ₹${total}\n` +
+      `✅ *Advance Recorded:* ₹${advance_paid}\n` +
+      `💵 *Balance Due at Venue:* ₹${enriched.balance}\n` +
+      `🗺️ *Map Directions:* ${enriched.map_url}\n\n` +
+      `Please arrive 10 minutes prior to your screening. For queries, call us at *+91 99029 23656*. Have a wonderful celebration! 🎉`;
+
+    sendWhatsAppMessage(cleanCustomerPhone, phoneBookingMessage).catch(err => {
+      console.warn('[Twilio WhatsApp Manual Booking Dispatch Error]:', err);
+    });
 
     return NextResponse.json({ success: true, data: enriched });
   } catch (error: any) {
