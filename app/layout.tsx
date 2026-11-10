@@ -98,6 +98,7 @@ export const metadata: Metadata = {
     icon: '/icon.svg',
     shortcut: '/favicon.ico',
   },
+  manifest: '/manifest.json',
 };
 
 const jsonLdData = {

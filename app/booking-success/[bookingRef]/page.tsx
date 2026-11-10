@@ -24,8 +24,8 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
   const [bookingData, setBookingData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [countdown, setCountdown] = useState<number>(4);
-  const [isAutoRedirecting, setIsAutoRedirecting] = useState<boolean>(true);
+  const [countdown, setCountdown] = useState<number>(0);
+  const [isAutoRedirecting, setIsAutoRedirecting] = useState<boolean>(false);
 
   useEffect(() => {
     async function fetchBooking() {
@@ -49,15 +49,9 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
     if (bookingData?.whatsapp_confirmation?.url) {
       return bookingData.whatsapp_confirmation.url;
     }
-    let savedUrl = '';
-    try {
-      savedUrl = sessionStorage.getItem('mb_last_booking_wa') || '';
-    } catch (_) {}
-
-    if (savedUrl) return savedUrl;
 
     const fallbackText = 
-      `🎬 *MOVIE BASH RESERVATION CONFIRMATION* 🎬\n\n` +
+      `🎬 *MOVIE BASH RESERVATION CONFIRMATION* 🍿\n\n` +
       `*Booking Ref:* ${bookingRef}\n` +
       `Hi Movie Bash team, I just reserved a screen! Please confirm my celebration setup and share location details! 🎉`;
     return `https://wa.me/919902923656?text=${encodeURIComponent(fallbackText)}`;

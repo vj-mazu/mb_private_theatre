@@ -1,0 +1,16 @@
+{
+  "name": "Movie Bash Private Theatre",
+  "short_name": "Movie Bash",
+  "description": "Bengaluru's #1 Luxury Private Cinema & Celebration Destination",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FBF8F1",
+  "theme_color": "#0A1F5C",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
