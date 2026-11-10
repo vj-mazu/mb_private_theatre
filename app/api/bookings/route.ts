@@ -379,7 +379,7 @@ export async function POST(request: NextRequest) {
 
     // Dispatch automated WhatsApp & SMS confirmations
     // NOTE: On Vercel serverless, we MUST await external fetch calls so Vercel does not terminate the lambda before the network packet is sent!
-    const adminPhone = process.env.TWILIO_ADMIN_WHATSAPP || '9902923656';
+    const adminPhone = process.env.TWILIO_ADMIN_WHATSAPP || '9448986953';
     const adminNotification = 
       `🚨 *NEW BOOKING RECEIVED (${bookingRef})*\n` +
       `👤 *Guest:* ${customer_name} (${cleanPhone})\n` +
