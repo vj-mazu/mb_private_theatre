@@ -1,6 +1,14 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import { Inter, Inter_Tight, Playfair_Display, Poppins, Caveat } from 'next/font/google';
 import './globals.css';
+
+export const viewport: Viewport = {
+  themeColor: '#0A1F5C',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 const inter = Inter({
   subsets: ['latin'],
@@ -152,6 +160,24 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-sand-50 text-ink antialiased selection:bg-royal-100 selection:text-royal-900">
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
+                  page_path: window.location.pathname,
+                });
+              `}
+            </Script>
+          </>
+        )}
         {children}
       </body>
     </html>

@@ -20,6 +20,7 @@ export function getPool(): mysql.Pool | null {
         queueLimit: 0,
         timezone: '+05:30',
         dateStrings: true,
+        multipleStatements: true,
         ssl: process.env.DB_SSL === 'true' || process.env.DATABASE_URL.includes('sslmode=') 
           ? { rejectUnauthorized: false } 
           : undefined
@@ -39,6 +40,7 @@ export function getPool(): mysql.Pool | null {
       queueLimit: 0,
       timezone: '+05:30',
       dateStrings: true,
+      multipleStatements: true,
       ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined
     });
     return pool;
@@ -83,6 +85,66 @@ export function saveStore() {
 }
 
 // Check if MySQL is actually responding
+let hasAutoInitialized = false;
+
+async function ensureDatabaseSchemaAndSeed(p: mysql.Pool) {
+  if (hasAutoInitialized) return;
+  hasAutoInitialized = true;
+
+  try {
+    const conn = await p.getConnection();
+    try {
+      // 1. Check if the branches table exists
+      const [tables]: any = await conn.query("SHOW TABLES LIKE 'branches'");
+      const tableExists = Array.isArray(tables) && tables.length > 0;
+
+      if (!tableExists) {
+        console.log('[Movie Bash DB] ⚡ Fresh database detected. Auto-creating schema tables...');
+        
+        const schemaPath = path.join(process.cwd(), 'schema.sql');
+        const seedPath = path.join(process.cwd(), 'seed.sql');
+
+        if (fs.existsSync(schemaPath)) {
+          let schemaSql = fs.readFileSync(schemaPath, 'utf8')
+            .replace(/CREATE DATABASE[^\n;]+;/gi, '')
+            .replace(/USE\s+[`\w]+;/gi, '');
+          await conn.query(schemaSql);
+          console.log('[Movie Bash DB] ✅ Schema tables successfully created.');
+        }
+
+        if (fs.existsSync(seedPath)) {
+          let seedSql = fs.readFileSync(seedPath, 'utf8')
+            .replace(/CREATE DATABASE[^\n;]+;/gi, '')
+            .replace(/USE\s+[`\w]+;/gi, '');
+          await conn.query(seedSql);
+          console.log('[Movie Bash DB] ✅ Venue metadata, slots, occasions & add-ons seeded successfully.');
+        }
+
+        console.log('[Movie Bash DB] 🚀 Fresh database ready for live bookings (0 fake bookings, 0 dummy customers)!');
+      } else {
+        // Tables exist. Check if metadata exists (e.g. branches count > 0)
+        const [rows]: any = await conn.query('SELECT COUNT(*) as count FROM `branches`');
+        const count = rows[0]?.count || 0;
+        if (count === 0) {
+          console.log('[Movie Bash DB] ⚡ Empty tables detected. Seeding venue metadata...');
+          const seedPath = path.join(process.cwd(), 'seed.sql');
+          if (fs.existsSync(seedPath)) {
+            let seedSql = fs.readFileSync(seedPath, 'utf8')
+              .replace(/CREATE DATABASE[^\n;]+;/gi, '')
+              .replace(/USE\s+[`\w]+;/gi, '');
+            await conn.query(seedSql);
+            console.log('[Movie Bash DB] ✅ Seeded initial venues into existing schema.');
+          }
+        }
+      }
+    } finally {
+      conn.release();
+    }
+  } catch (initErr) {
+    console.warn('[Movie Bash DB] Auto-initialization notice:', initErr);
+  }
+}
+
 export async function checkMySQL(): Promise<boolean> {
   if (isMySQLAvailable !== null) return isMySQLAvailable;
   const p = getPool();
@@ -95,6 +157,12 @@ export async function checkMySQL(): Promise<boolean> {
     await conn.ping();
     conn.release();
     isMySQLAvailable = true;
+    
+    // Auto-initialize schema & venue metadata on fresh database boot
+    ensureDatabaseSchemaAndSeed(p).catch(err => {
+      console.warn('[Movie Bash DB] Background auto-init warning:', err);
+    });
+
     return true;
   } catch (err) {
     isMySQLAvailable = false;

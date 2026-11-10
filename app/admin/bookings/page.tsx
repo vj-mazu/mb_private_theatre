@@ -265,13 +265,23 @@ export default function AdminBookingsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <a
+            href="/api/admin/backup"
+            download
+            className="px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 bg-sand-100 hover:bg-sand-200 border border-sand-300 transition-colors flex items-center gap-1.5"
+            title="Download full database snapshot"
+          >
+            <Download className="w-3.5 h-3.5 text-royal-700" />
+            <span>Backup DB</span>
+          </a>
+
           <a
             href={`/api/admin/bookings/export?${dateFilter ? `date=${dateFilter}&` : ''}${branchFilter !== 'all' ? `branch=${branchFilter}&` : ''}`}
             download
-            className="px-4 py-2.5 rounded-2xl text-xs font-bold text-royal-900 bg-sand-100 hover:bg-sand-200 border border-sand-300 transition-colors flex items-center gap-1.5"
+            className="px-3.5 py-2.5 rounded-2xl text-xs font-bold text-royal-900 bg-sand-100 hover:bg-sand-200 border border-sand-300 transition-colors flex items-center gap-1.5"
           >
-            <Download className="w-4 h-4 text-royal-700" />
+            <Download className="w-3.5 h-3.5 text-royal-700" />
             <span>Export CSV</span>
           </a>
 
@@ -280,7 +290,7 @@ export default function AdminBookingsPage() {
               setManualForm(prev => ({ ...prev, source: 'phone' }));
               setShowManualModal(true);
             }}
-            className="px-5 py-2.5 rounded-2xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+            className="px-4 py-2.5 rounded-2xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
           >
             <PhoneCall className="w-4 h-4" />
             <span>+ Phone Call Booking</span>

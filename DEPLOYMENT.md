@@ -53,33 +53,35 @@ This guide explains how to deploy **Movie Bash** to production with **zero hardc
 
 ---
 
-## 📦 Part 1: Setting Up the Cloud Database
+## 📦 Part 1: Setting Up the Cloud Database (Zero Manual Steps Required!)
 
-You can host your MySQL database for free using any of these providers that support MySQL 8.0:
-- **TiDB Cloud Serverless** (Free forever 5GB, 100% MySQL compatible)
-- **Aiven Cloud** (Free MySQL instance)
-- **Render Web Service / Docker MySQL**
-- **Railway / Supabase / Clever Cloud**
+You can host your MySQL database for free using any provider that supports MySQL 8.0:
+- **TiDB Cloud Serverless** (Free forever 5GB, 100% MySQL compatible - **Recommended for Vercel/Render**)
+- **Aiven Cloud** (Free MySQL managed instance)
+- **Render MySQL / Docker Web Service**
+- **Railway / Clever Cloud**
 
 ### 1. Create your database
-In your provider console, create a database named `movie_bash`.
+Create a database (e.g. `movie_bash` or defaultdb) on your chosen provider.
 
-### 2. Run the Schema & Metadata Seeds
-Run the following SQL files in order in your database management console (or via MySQL CLI / phpMyAdmin / DBeaver):
-```bash
-# Step 1: Create fresh tables with constraints & indexes
-mysql -h <YOUR_HOST> -u <YOUR_USER> -p -D movie_bash < schema.sql
-
-# Step 2: Populate venues, rooms, time slots, occasions & add-ons
-mysql -h <YOUR_HOST> -u <YOUR_USER> -p -D movie_bash < seed.sql
-```
-
-> **Notice**: `seed.sql` intentionally does not insert any sample bookings or customer records. Your dashboard will start clean at **0 Bookings**.
-
-### 3. Copy your Connection URL
-Construct your standard secure MySQL URI:
+### 2. Copy your Connection URL
+Copy the MySQL connection string provided in your database dashboard:
 ```text
 mysql://username:password@hostname:3306/movie_bash?sslmode=require
+```
+
+### 3. ✨ Built-In Automatic Server Seeding (Zero CLI Commands!)
+**You do NOT need to run any manual MySQL commands or import files via DBeaver!**
+The server automatically handles this on boot:
+1. When the server connects via `DATABASE_URL`, it checks if the `branches` table exists.
+2. If tables do not exist (fresh database), it automatically creates all schema tables from `schema.sql` and inserts initial venues, screens, showtimes, and addons from `seed.sql`.
+3. It keeps `customers` and `bookings` completely fresh at **0 records** for live commercial use.
+4. On future server restarts or deployments, it recognizes that tables already exist and leaves everything untouched, ensuring zero data loss!
+
+*(Optional Manual Fallback)*: If you ever prefer running SQL scripts manually:
+```bash
+mysql -h <YOUR_HOST> -u <YOUR_USER> -p -D movie_bash < schema.sql
+mysql -h <YOUR_HOST> -u <YOUR_USER> -p -D movie_bash < seed.sql
 ```
 
 ---
