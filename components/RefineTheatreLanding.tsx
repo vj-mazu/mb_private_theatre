@@ -636,73 +636,175 @@ const heroPhotos = [
 const addonSlides = [
   {
     number: '01',
-    category: 'Cakes',
-    title: 'Fresh Pineapple & Belgian Chocolate Truffle Cakes',
-    price: 'From ₹499 (0.5 Kg) · ₹899 (1 Kg)',
-    desc: 'Pure Dutch dark chocolate ganache, luscious tropical pineapple layers, and ruby red velvet hearts freshly prepared for your screening.',
-    badge: 'Guest Favorite',
-    bg: 'from-[#FAF2DE] to-[#F5E6BF]',
-    cardBorder: 'border-amber-400/80',
-    tagColor: 'bg-amber-500/20 text-amber-950 border-amber-400',
+    category: 'Gourmet Cakes',
+    title: 'Artisan Pastry & Celebration Cakes',
+    price: '₹499 (0.5 Kg) · ₹899 (1 Kg)',
+    desc: 'Pure Dutch chocolate ganache, tropical pineapple cream, and ruby red velvet hearts freshly prepared for your screening.',
+    badge: 'Included in Packages (₹0)',
+    bg: 'from-[#FFFDF9] via-[#FFF8EF] to-[#FFEED9]',
+    cardBorder: 'border-[#ef4a23]/30 hover:border-[#ef4a23]',
+    tagColor: 'bg-[#ef4a23]/10 text-[#ef4a23] border-[#ef4a23]/30',
     accent: '#ef4a23',
-    image: '/images/celebration_6.webp',
-    perks: ['Eggless options available', 'Sparkling celebration candle', 'Custom name message plaque', 'Cut & serve ceremony setup']
+    items: [
+      {
+        iconKey: 'pineapple',
+        title: 'Fresh Pineapple Celebration Cake',
+        price: '₹499 / ₹899',
+        desc: 'Light fluffy sponge with tropical pineapple chunks & glazed cherries.'
+      },
+      {
+        iconKey: 'chocolate',
+        title: 'Belgian Chocolate Truffle Cake',
+        price: '₹499 / ₹899',
+        desc: 'Dutch dark chocolate ganache with velvety cocoa sponge & custom plaque.'
+      },
+      {
+        iconKey: 'red-velvet',
+        title: 'Red Velvet Heart Cake',
+        price: '₹499 / ₹899',
+        desc: 'Ruby cocoa sponge with authentic cream cheese frosting & rose petals.'
+      },
+      {
+        iconKey: 'black-forest',
+        title: 'Classic Black Forest Cake',
+        price: '₹499 / ₹899',
+        desc: 'Moist chocolate sponge with sweet-tart cherries & chocolate shavings.'
+      }
+    ]
   },
   {
     number: '02',
-    category: 'Special FX',
-    title: 'Magical Dry-Ice Ground Fog & Golden Pyro Entry',
+    category: 'Atmospheric Special FX',
+    title: 'Cinematic Visuals & Grand Walk-ins',
     price: 'From ₹199 to ₹799',
-    desc: 'Walk through enchanting dense cold mist billowing at your feet, paired with indoor smokeless 6-foot golden fountain sparklers.',
+    desc: 'Dense cold mist billowing at your feet, indoor smokeless golden fountain sparklers, and floating rainbow bubbles.',
     badge: 'Hero Entry FX',
-    bg: 'from-[#E1F1FB] to-[#C9E4F7]',
-    cardBorder: 'border-sky-400/80',
-    tagColor: 'bg-sky-500/20 text-sky-950 border-sky-400',
+    bg: 'from-[#FFFDF9] via-[#F2F8FD] to-[#E2F1FC]',
+    cardBorder: 'border-sky-300/80 hover:border-sky-500',
+    tagColor: 'bg-sky-500/10 text-sky-900 border-sky-300',
     accent: '#0284c7',
-    image: '/images/celebration_7.webp',
-    perks: ['100% smokeless & indoor safe', 'Photogenic dream entrance', 'Rainbow bubble machine', 'Synced with entry music']
+    items: [
+      {
+        iconKey: 'fog',
+        title: 'Magical Dry-Ice Ground Fog Entry',
+        price: 'From ₹399',
+        desc: 'Enchanting dense low-lying cold smoke effect for dramatic cinematic walk-in.'
+      },
+      {
+        iconKey: 'pyro',
+        title: 'Cold Fire Pyro Sparkler Entry (2 Pots)',
+        price: '₹799',
+        desc: '100% safe indoor smokeless golden fountain sparklers shooting 6-ft celebratory sparks.'
+      },
+      {
+        iconKey: 'bubbles',
+        title: 'Grand Bubble Machine Walk-in',
+        price: '₹199',
+        desc: 'Thousands of floating rainbow bubbles welcoming your loved ones through the door.'
+      }
+    ]
   },
   {
     number: '03',
     category: 'Romantic Décor',
-    title: 'Handcrafted Dutch Roses & Candlelight Runway',
-    price: 'From ₹399',
-    desc: 'Surprise your partner with 15 luxury Dutch red roses, glowing Will-You-Marry-Me LED neon, candlelit petal carpet & heart arch.',
+    title: 'Candlelight & Fresh Rose Setups',
+    price: 'From ₹250 to ₹899',
+    desc: 'Hand-tied Dutch red roses, glowing Will-You-Marry-Me LED neon, candlelit petal carpet & romantic heart arch.',
     badge: 'Couples & Proposals',
-    bg: 'from-[#FCE7F3] to-[#FBCFE8]',
-    cardBorder: 'border-pink-400/80',
-    tagColor: 'bg-pink-500/20 text-pink-950 border-pink-400',
+    bg: 'from-[#FFFDF9] via-[#FFF1F5] to-[#FFE2EB]',
+    cardBorder: 'border-rose-300/80 hover:border-rose-500',
+    tagColor: 'bg-rose-500/10 text-rose-900 border-rose-300',
     accent: '#db2777',
-    image: '/images/couple_5.webp',
-    perks: ['Handcrafted fresh red roses', 'Fairy light canopy', 'Illuminated Marquee love letters', 'Romantic private setting']
+    items: [
+      {
+        iconKey: 'roses',
+        title: 'Fresh Dutch Red Rose Bouquet',
+        price: '₹399',
+        desc: '15 hand-tied vibrant Dutch red roses in luxury wrapper with personalized card.'
+      },
+      {
+        iconKey: 'candles',
+        title: 'Candlelight & Rose Petal Pathway',
+        price: '₹499',
+        desc: 'Illuminated aisle with warm glowing lanterns, fairy candles & rose petals.'
+      },
+      {
+        iconKey: 'neon',
+        title: 'Will You Marry Me / Love LED Neon',
+        price: '₹499',
+        desc: 'Glowing illuminated marquee romantic neon centerpiece backdrop.'
+      },
+      {
+        iconKey: 'heart-arch',
+        title: 'Romantic Fairy Light Canopy Heart Arch',
+        price: '₹899',
+        desc: 'Handcrafted red roses & warm glowing heart arch frame for photos.'
+      }
+    ]
   },
   {
     number: '04',
-    category: 'Photography',
-    title: '4K Memory Screening & Professional Reel Shoot',
+    category: 'Photography & Media',
+    title: '4K Memory Screen & Professional Reels',
     price: 'From ₹599 to ₹1,499',
-    desc: 'Turn personal childhood photos and couple videos into a dramatic 4K cinema memory montage on the 150″ screen, filmed by our creator.',
+    desc: 'Turn personal childhood photos and couple videos into a dramatic 4K cinema memory montage on the 150″ screen.',
     badge: 'Insta Ready',
-    bg: 'from-[#EDE9FE] to-[#DDD6FE]',
-    cardBorder: 'border-purple-400/80',
-    tagColor: 'bg-purple-500/20 text-purple-950 border-purple-400',
+    bg: 'from-[#FFFDF9] via-[#F7F2FE] to-[#ECE2FD]',
+    cardBorder: 'border-purple-300/80 hover:border-purple-500',
+    tagColor: 'bg-purple-500/10 text-purple-900 border-purple-300',
     accent: '#7c3aed',
-    image: '/images/celebration_3.webp',
-    perks: ['4K Big screen video projection', 'Dedicated photographer', 'Edited 30s Instagram reel', 'High-res digital album']
+    items: [
+      {
+        iconKey: 'montage',
+        title: 'Personal 4K Screen Video Montage',
+        price: '₹599',
+        desc: 'Your photos and clips edited into a movie trailer projected on the 150″ screen.'
+      },
+      {
+        iconKey: 'photography',
+        title: 'Dedicated Photographer & 30s Reel Shoot',
+        price: '₹1,199',
+        desc: 'Professional portrait photos & cinematic 4K reel edited for Instagram.'
+      },
+      {
+        iconKey: 'teddy',
+        title: 'Dancing Teddy Mascot Surprise',
+        price: '₹500',
+        desc: '30-minute interactive live dancing giant Teddy mascot to cheer up guests.'
+      }
+    ]
   },
   {
     number: '05',
     category: 'Cinema Bites',
-    title: 'Unlimited Theatre Butter Popcorn & Snack Bar',
+    title: 'Theatre Butter Popcorn & Snack Bar',
     price: 'From ₹149 · Zero Corkage',
-    desc: 'Piping hot golden butter popcorn, loaded Mexican cheese nachos with jalapeños, chilled mocktails, and zero corkage for Swiggy/Zomato.',
+    desc: 'Piping hot golden butter popcorn, loaded Mexican cheese nachos with jalapeños, and chilled fruit mocktails.',
     badge: 'Party Binge',
-    bg: 'from-[#FEF3C7] to-[#FDE68A]',
-    cardBorder: 'border-yellow-400/80',
-    tagColor: 'bg-amber-500/20 text-amber-950 border-yellow-500',
+    bg: 'from-[#FFFDF9] via-[#FFF9EA] to-[#FFF1CD]',
+    cardBorder: 'border-amber-300/80 hover:border-amber-500',
+    tagColor: 'bg-amber-500/10 text-amber-900 border-amber-300',
     accent: '#d97706',
-    image: '/images/ambience_7.webp',
-    perks: ['Freshly popped movie corn', 'Crispy nachos with dips', 'Zero outside food restriction', 'Complimentary cutlery & plates']
+    items: [
+      {
+        iconKey: 'popcorn',
+        title: 'Jumbo Theatre Butter Popcorn Tub',
+        price: '₹199',
+        desc: 'Freshly popped warm golden corn tossed in rich movie theatre butter.'
+      },
+      {
+        iconKey: 'nachos',
+        title: 'Loaded Crispy Cheese Nachos',
+        price: '₹179',
+        desc: 'Crispy corn tortilla chips with warm melted cheese sauce and salsa.'
+      },
+      {
+        iconKey: 'drinks',
+        title: 'Sparkling Tropical Fruit Mocktails',
+        price: '₹149',
+        desc: 'Chilled bubbly fruit coolers (Virgin Mojito, Blue Curacao, Peach Sunrise).'
+      }
+    ]
   }
 ];
 
@@ -1096,29 +1198,20 @@ export default function RefineTheatreLanding() {
       <Navbar />
 
       <main>
-        {/* 3. KOLIBRIE-POWERED HERO SECTION */}
+        {/* 3. KOLIBRIE-INSPIRED HERO SECTION (WARM CREAM & SMOOTH ORANGE, NO VIDEO) */}
         <section 
           ref={heroRef}
-          className="relative min-h-[92vh] sm:min-h-screen flex flex-col justify-between items-center text-center overflow-hidden pt-28 pb-16 px-4 sm:px-6 bg-[#141110]" 
+          className="relative min-h-[92vh] sm:min-h-screen flex flex-col justify-between items-center text-center overflow-hidden pt-24 sm:pt-28 pb-14 px-4 sm:px-6 bg-[#FAF3E4]" 
           id="home"
         >
-          {/* Looping Cinema Video Background */}
-          <video 
-            autoPlay 
-            loop 
-            muted 
-            playsInline 
-            className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none opacity-45 sm:opacity-50"
-            src="/videos/video_1.mp4" 
-          />
-
-          {/* Luxury Warm Vignette Gradient */}
-          <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#141110]/80 via-[#141110]/40 to-[#141110]/90 pointer-events-none" />
+          {/* Subtle Warm Milk-Orange Radial Glow (Clean, No Video) */}
+          <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center_top,#FFE6D9_0%,#FAF3E4_65%)] pointer-events-none" />
+          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-b from-[#FF5B35]/15 to-transparent blur-3xl pointer-events-none rounded-full" />
 
           {/* Floating 16rem Photo Cursor Card Follower (Cycles Movie Bash photos on travel) */}
           <div 
             ref={cursorCardRef} 
-            className="absolute top-0 left-0 w-56 h-56 sm:w-64 sm:h-64 -translate-x-1/2 -translate-y-1/2 z-20 rounded-3xl overflow-hidden pointer-events-none shadow-[0_25px_60px_rgba(0,0,0,0.6)] border-2 border-white/40 hidden md:block"
+            className="absolute top-0 left-0 w-60 h-60 sm:w-72 sm:h-72 -translate-x-1/2 -translate-y-1/2 z-20 rounded-[32px] overflow-hidden pointer-events-none shadow-[0_30px_70px_rgba(20,17,16,0.18)] border-4 border-white hidden md:block"
             style={{ opacity: 0 }}
           >
             <div ref={cursorCardInnerRef} className="relative w-full h-full scale-110">
@@ -1129,9 +1222,9 @@ export default function RefineTheatreLanding() {
                 className="object-cover transition-opacity duration-300"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                <span className="text-[11px] font-black uppercase tracking-wider text-amber-300 bg-black/60 px-2.5 py-1 rounded-full backdrop-blur-xs">
-                  Movie Bash Magic
+              <div className="absolute inset-0 bg-gradient-to-t from-[#141110]/70 via-transparent to-transparent flex items-end p-4">
+                <span className="text-[11px] font-black uppercase tracking-wider text-[#ffd46e] bg-[#141110]/80 px-3 py-1 rounded-full backdrop-blur-xs">
+                  Movie Bash Celebration
                 </span>
               </div>
             </div>
@@ -1139,15 +1232,15 @@ export default function RefineTheatreLanding() {
 
           {/* Top Eyebrow */}
           <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-widest shadow-md mb-6">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ef4a23]/10 border border-[#ef4a23]/30 text-[#ef4a23] text-xs font-black uppercase tracking-widest shadow-2xs mb-5">
+              <span className="w-2 h-2 rounded-full bg-[#ef4a23] animate-pulse" />
               <span>Bengaluru&apos;s #1 Luxury Private Celebration Cinema</span>
             </div>
 
             {/* Interactive Dynamic Font-Weight Headline */}
             <h1 
               ref={heroHeadlineRef}
-              className="text-white font-['Archivo'] uppercase tracking-tight leading-[0.92] text-4xl sm:text-6xl md:text-7xl lg:text-8xl max-w-5xl cursor-default select-none my-2"
+              className="text-[#141110] font-['Archivo'] uppercase tracking-tight leading-[0.88] text-4xl sm:text-6xl md:text-7xl lg:text-8xl max-w-5xl cursor-default select-none my-2"
             >
               <div className="block">
                 {"YOUR MOMENT.".split('').map((c, i) => (
@@ -1156,7 +1249,7 @@ export default function RefineTheatreLanding() {
                   </span>
                 ))}
               </div>
-              <div className="block text-amber-400 font-['Playfair'] italic normal-case tracking-normal my-1 sm:my-2">
+              <div className="block text-[#ef4a23] font-['Playfair'] italic normal-case tracking-normal my-2 sm:my-3">
                 {"*Your Movie.*".split('').map((c, i) => (
                   <span key={`l2-${i}`} className="hero-headline-char font-normal" data-serif="true">
                     {c === ' ' ? '\u00A0' : c}
@@ -1173,18 +1266,18 @@ export default function RefineTheatreLanding() {
             </h1>
 
             {/* Hero Subtitle */}
-            <p className="mt-5 text-sm sm:text-base md:text-lg text-slate-200/90 font-medium max-w-2xl leading-relaxed">
+            <p className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg text-slate-700 font-medium max-w-2xl leading-relaxed">
               Fully private 4K laser cinema screening, custom celebrations, fog entry, and handcrafted cakes for couples, birthdays, and groups.
             </p>
 
             {/* Hand-Drawn SVG Underline & Slide-Down Arrow CTA */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-5 sm:gap-8">
+            <div className="mt-7 sm:mt-8 flex flex-wrap items-center justify-center gap-5 sm:gap-8">
               <a 
                 href="#slots" 
-                className="group relative inline-flex items-center gap-3 text-lg sm:text-xl font-['Playfair'] font-medium text-white hover:text-amber-300 transition-colors py-1 cursor-pointer"
+                className="group relative inline-flex items-center gap-3 text-lg sm:text-xl font-['Playfair'] font-bold text-[#141110] hover:text-[#ef4a23] transition-colors py-1 cursor-pointer"
               >
                 <span>Plan Your Celebration</span>
-                {/* Arrow Square Slider Button */}
+                {/* Arrow Square Slider Button in Smooth Tomato Orange */}
                 <span className="w-8 h-8 rounded-lg bg-[#ef4a23] group-hover:bg-[#ff5d38] flex items-center justify-center overflow-hidden transition-colors shadow-md">
                   <span className="flex flex-col items-center transition-transform duration-300 group-hover:-translate-y-1/2">
                     <span className="text-white text-sm font-bold my-1">↓</span>
@@ -1192,7 +1285,7 @@ export default function RefineTheatreLanding() {
                   </span>
                 </span>
 
-                {/* Hand-drawn SVG wavy underline */}
+                {/* Hand-drawn SVG wavy underline in Smooth Orange */}
                 <svg 
                   className="absolute left-0 -bottom-2 w-full h-3 text-[#ef4a23]" 
                   viewBox="0 0 200 12" 
@@ -1210,44 +1303,44 @@ export default function RefineTheatreLanding() {
 
               <a 
                 href="#theatres" 
-                className="px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/20 backdrop-blur-md transition-all hover:scale-105 flex items-center gap-2"
+                className="px-6 py-3 rounded-full bg-white hover:bg-orange-50 text-[#141110] font-bold text-xs sm:text-sm border-2 border-[#ef4a23]/30 shadow-md transition-all hover:scale-105 flex items-center gap-2"
               >
                 <Icon name="play" size={16} />
                 <span>Explore Theatres</span>
               </a>
             </div>
 
-            {/* Quick Slot Booking Bar */}
-            <div className="mt-8 sm:mt-10 w-full max-w-2xl bg-white/15 backdrop-blur-xl border border-white/25 rounded-2xl sm:rounded-full p-2.5 sm:p-2 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
+            {/* Quick Slot Booking Bar (Clean White & Smooth Orange) */}
+            <div className="mt-8 sm:mt-10 w-full max-w-2xl bg-white/95 rounded-2xl sm:rounded-full p-2.5 sm:p-2 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-[0_15px_40px_rgba(239,74,35,0.08)] border-2 border-[#ef4a23]/25">
               <div className="flex items-center gap-2 px-3 w-full sm:w-auto">
-                <span className="text-amber-400"><Icon name="location" size={18} /></span>
+                <span className="text-[#ef4a23]"><Icon name="location" size={18} /></span>
                 <select 
                   value={branch} 
                   onChange={(e) => setBranch(e.target.value)}
-                  className="bg-transparent text-white font-bold text-xs sm:text-sm focus:outline-none cursor-pointer w-full [&>option]:text-ink"
+                  className="bg-transparent text-[#141110] font-bold text-xs sm:text-sm focus:outline-none cursor-pointer w-full"
                 >
                   <option value="Electronic City">Electronic City Branch</option>
                   <option value="BTM 2nd Stage">BTM 2nd Stage Branch</option>
                 </select>
               </div>
 
-              <div className="w-full sm:w-px h-px sm:h-8 bg-white/20" />
+              <div className="w-full sm:w-px h-px sm:h-8 bg-slate-200" />
 
               <div className="flex items-center gap-2 px-3 w-full sm:w-auto">
-                <span className="text-amber-400"><Icon name="calendar" size={18} /></span>
+                <span className="text-[#ef4a23]"><Icon name="calendar" size={18} /></span>
                 <input 
                   type="date" 
                   value={date} 
                   onChange={(e) => setDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
-                  className="bg-transparent text-white font-bold text-xs sm:text-sm focus:outline-none cursor-pointer w-full [color-scheme:dark]"
+                  className="bg-transparent text-[#141110] font-bold text-xs sm:text-sm focus:outline-none cursor-pointer w-full"
                 />
               </div>
 
               <button 
                 type="button" 
                 onClick={checkAvailability}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-black text-xs sm:text-sm shadow-lg shadow-orange-600/30 hover:scale-105 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-black text-xs sm:text-sm shadow-md shadow-orange-600/30 hover:scale-105 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
               >
                 <span>Check Slots</span>
                 <Icon name="arrow" size={16} />
@@ -1255,14 +1348,14 @@ export default function RefineTheatreLanding() {
             </div>
 
             {/* Trust Reviews Pill */}
-            <div className="mt-6 flex items-center gap-3 text-slate-300 text-xs font-semibold">
+            <div className="mt-6 flex items-center gap-3 text-slate-700 text-xs font-semibold">
               <div className="flex -space-x-1.5">
                 <span className="w-6 h-6 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] flex items-center justify-center border border-white">RS</span>
-                <span className="w-6 h-6 rounded-full bg-sky-400 text-slate-950 font-black text-[10px] flex items-center justify-center border border-white">AK</span>
-                <span className="w-6 h-6 rounded-full bg-emerald-400 text-slate-950 font-black text-[10px] flex items-center justify-center border border-white">NM</span>
+                <span className="w-6 h-6 rounded-full bg-orange-400 text-white font-black text-[10px] flex items-center justify-center border border-white">AK</span>
+                <span className="w-6 h-6 rounded-full bg-rose-400 text-white font-black text-[10px] flex items-center justify-center border border-white">NM</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-amber-400 font-bold">★★★★★</span>
+                <span className="text-[#ef4a23] font-bold">★★★★★</span>
                 <span>Loved by 12,500+ guests in Bengaluru</span>
               </div>
             </div>
@@ -1271,23 +1364,23 @@ export default function RefineTheatreLanding() {
           {/* Reversible Client / Feature Marquee at Bottom */}
           <div 
             ref={heroMarqueeRef}
-            className="w-full overflow-hidden flex relative z-10 pt-10 border-t border-white/10 mt-8"
+            className="w-full overflow-hidden flex relative z-10 pt-8 border-t border-[#ef4a23]/20 mt-8"
           >
-            <div className="hero-marquee-track flex items-center gap-8 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wider text-white/80">
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">⭐ 4.9★ RATED (12,500+ GUESTS)</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">🎬 4K LASER SCREENING</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">🔊 DOLBY ATMOS 7.1.2 SURROUND</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">🔒 100% PRIVATE & SOUNDPROOF</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">✨ DRAMATIC FOG & PYRO ENTRY</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">🎂 HANDCRAFTED GOURMET CAKES</span>
+            <div className="hero-marquee-track flex items-center gap-8 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wider text-[#ef4a23]">
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">⭐ 4.9★ RATED (12,500+ GUESTS)</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🎬 4K LASER SCREENING</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🔊 DOLBY ATMOS 7.1.2 SURROUND</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🔒 100% PRIVATE & SOUNDPROOF</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">✨ DRAMATIC FOG & PYRO ENTRY</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🎂 HANDCRAFTED GOURMET CAKES</span>
             </div>
-            <div className="hero-marquee-track flex items-center gap-8 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wider text-white/80">
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">⭐ 4.9★ RATED (12,500+ GUESTS)</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">🎬 4K LASER SCREENING</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">🔊 DOLBY ATMOS 7.1.2 SURROUND</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">🔒 100% PRIVATE & SOUNDPROOF</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">✨ DRAMATIC FOG & PYRO ENTRY</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">🎂 HANDCRAFTED GOURMET CAKES</span>
+            <div className="hero-marquee-track flex items-center gap-8 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wider text-[#ef4a23]">
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">⭐ 4.9★ RATED (12,500+ GUESTS)</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🎬 4K LASER SCREENING</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🔊 DOLBY ATMOS 7.1.2 SURROUND</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🔒 100% PRIVATE & SOUNDPROOF</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">✨ DRAMATIC FOG & PYRO ENTRY</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🎂 HANDCRAFTED GOURMET CAKES</span>
             </div>
           </div>
         </section>
@@ -1628,7 +1721,7 @@ export default function RefineTheatreLanding() {
             </div>
 
             {/* Right Column: 3D Perspective Card Stack */}
-            <div className="lg:col-span-7 relative h-[580px] perspective-1400 flex items-center justify-center">
+            <div className="lg:col-span-7 relative h-[620px] perspective-1400 flex items-center justify-center">
               <div 
                 ref={addonsStackRootRef} 
                 className="relative w-full h-full transform-style-3d flex items-center justify-center"
@@ -1636,59 +1729,58 @@ export default function RefineTheatreLanding() {
                 {addonSlides.map((slide, idx) => (
                   <div
                     key={slide.number}
-                    className={`drops-slide absolute w-[460px] xl:w-[490px] rounded-[32px] p-7 bg-gradient-to-br ${slide.bg} border-2 ${slide.cardBorder} shadow-[0_30px_70px_rgba(20,17,16,0.18)] flex flex-col justify-between cursor-pointer select-none`}
+                    className={`drops-slide absolute w-[470px] xl:w-[500px] rounded-[32px] p-6 bg-gradient-to-br ${slide.bg} border-2 ${slide.cardBorder} shadow-[0_30px_70px_rgba(20,17,16,0.18)] flex flex-col justify-between cursor-pointer select-none`}
                   >
                     <div>
                       {/* Top Bar: Number & Category Badge */}
-                      <div className="flex items-center justify-between pb-4 border-b border-black/10 mb-4">
-                        <div className="flex items-center gap-3">
-                          <span className="w-10 h-10 rounded-2xl bg-[#141110] text-[#ffd46e] flex items-center justify-center font-['Archivo'] font-black text-sm shadow">
+                      <div className="flex items-center justify-between pb-3.5 border-b border-black/10 mb-3.5">
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-9 h-9 rounded-xl bg-[#141110] text-[#ffd46e] flex items-center justify-center font-['Archivo'] font-black text-xs shadow">
                             {slide.number}
                           </span>
                           <span className="text-xs font-black uppercase tracking-wider text-[#141110]">
                             {slide.category}
                           </span>
                         </div>
-                        <span className={`text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full border shadow-2xs ${slide.tagColor}`}>
+                        <span className={`text-[10px] font-black uppercase tracking-wider px-3 py-0.5 rounded-full border shadow-2xs ${slide.tagColor}`}>
                           {slide.badge}
                         </span>
                       </div>
 
-                      {/* Photo Banner */}
-                      <div className="relative w-full h-44 rounded-2xl overflow-hidden mb-4 shadow-inner border border-black/10">
-                        <Image
-                          src={slide.image}
-                          alt={slide.title}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 1200px) 460px, 490px"
-                        />
-                        <div className="absolute top-2 right-2 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold">
-                          {slide.price}
-                        </div>
-                      </div>
-
-                      {/* Title & Desc */}
+                      {/* Header Title & Tagline */}
                       <h3 className="font-['Playfair'] text-xl font-bold text-[#141110] leading-snug">
                         {slide.title}
                       </h3>
-                      <p className="text-xs text-slate-700 font-medium leading-relaxed mt-2 line-clamp-2">
+                      <p className="text-xs text-slate-700 font-medium leading-relaxed mt-1 line-clamp-2">
                         {slide.desc}
                       </p>
 
-                      {/* Perks Grid */}
-                      <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-black/10">
-                        {slide.perks.map((perk) => (
-                          <div key={perk} className="flex items-center gap-1.5 text-[11px] font-bold text-[#141110]">
-                            <span className="w-4 h-4 rounded-full bg-[#ef4a23]/20 text-[#ef4a23] flex items-center justify-center text-[10px] font-black shrink-0">✓</span>
-                            <span className="truncate">{perk}</span>
+                      {/* Add-ons List with Illustrated Grand Icons */}
+                      <div className="space-y-2 mt-4 pt-3 border-t border-black/10">
+                        {slide.items.map((item) => (
+                          <div 
+                            key={item.title} 
+                            className="flex items-center gap-3 p-2.5 rounded-2xl bg-white/95 border border-orange-200/80 shadow-2xs hover:border-[#ef4a23] transition-colors"
+                          >
+                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#FFF1E8] to-[#FFE2D4] flex items-center justify-center p-1.5 shrink-0 border border-orange-200/90 shadow-xs">
+                              <GrandAddonIcon name={item.iconKey} className="w-7 h-7 drop-shadow-xs" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2">
+                                <h4 className="text-xs font-bold text-[#141110] truncate">{item.title}</h4>
+                                <span className="text-[10px] font-black text-[#ef4a23] shrink-0 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200/60">
+                                  {item.price}
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-slate-500 font-medium truncate mt-0.5">{item.desc}</p>
+                            </div>
                           </div>
                         ))}
                       </div>
                     </div>
 
                     {/* Bottom CTA Row */}
-                    <div className="mt-5 pt-3.5 border-t border-black/10 flex items-center justify-between">
+                    <div className="mt-4 pt-3 border-t border-black/10 flex items-center justify-between">
                       <span className="text-xs font-black text-[#141110]">
                         {slide.price}
                       </span>
@@ -1717,7 +1809,7 @@ export default function RefineTheatreLanding() {
                 Every detail, <span className="font-['Playfair'] italic font-normal text-[#ef4a23] normal-case">made to delight.</span>
               </h2>
               <p className="text-xs text-slate-700 font-medium">
-                Swipe through our celebration extras: freshly baked cakes, dramatic dry-ice fog entries, and romantic candlelight setups.
+                Swipe through our celebration extras with custom cakes, special FX entries, romantic candlelight, and cinema bites.
               </p>
             </div>
 
@@ -1726,7 +1818,7 @@ export default function RefineTheatreLanding() {
               {addonSlides.map((slide) => (
                 <div
                   key={slide.number}
-                  className={`w-[85vw] max-w-sm shrink-0 snap-center rounded-3xl p-6 bg-gradient-to-br ${slide.bg} border-2 ${slide.cardBorder} shadow-lg flex flex-col justify-between`}
+                  className={`w-[88vw] max-w-sm shrink-0 snap-center rounded-3xl p-5 bg-gradient-to-br ${slide.bg} border-2 ${slide.cardBorder} shadow-lg flex flex-col justify-between`}
                 >
                   <div>
                     <div className="flex items-center justify-between pb-3 border-b border-black/10 mb-3">
@@ -1738,27 +1830,25 @@ export default function RefineTheatreLanding() {
                       </span>
                     </div>
 
-                    <div className="relative w-full h-40 rounded-xl overflow-hidden mb-3">
-                      <Image
-                        src={slide.image}
-                        alt={slide.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-
                     <h3 className="font-['Playfair'] text-lg font-bold text-[#141110]">
                       {slide.title}
                     </h3>
-                    <p className="text-xs text-slate-700 font-medium mt-1.5 leading-relaxed">
+                    <p className="text-xs text-slate-700 font-medium mt-1 leading-relaxed">
                       {slide.desc}
                     </p>
 
-                    <div className="space-y-1.5 mt-3 pt-3 border-t border-black/10">
-                      {slide.perks.slice(0, 3).map((perk) => (
-                        <div key={perk} className="flex items-center gap-1.5 text-[11px] font-bold text-[#141110]">
-                          <span className="text-[#ef4a23] font-black">✓</span>
-                          <span>{perk}</span>
+                    <div className="space-y-2 mt-3 pt-3 border-t border-black/10">
+                      {slide.items.map((item) => (
+                        <div key={item.title} className="flex items-center gap-2.5 p-2 rounded-xl bg-white/95 border border-orange-200">
+                          <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center p-1 shrink-0">
+                            <GrandAddonIcon name={item.iconKey} className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1 min-w-0 text-left">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-[#141110] truncate">{item.title}</span>
+                              <span className="text-[10px] font-black text-[#ef4a23] shrink-0">{item.price}</span>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
