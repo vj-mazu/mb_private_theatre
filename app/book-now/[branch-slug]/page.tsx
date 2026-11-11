@@ -8,7 +8,7 @@ import AnnouncementBar from '@/components/AnnouncementBar';
 export default function BranchBookNowPage({ params }: { params: { 'branch-slug': string } }) {
   const slug = params['branch-slug'];
   return (
-    <main className="min-h-screen flex flex-col bg-sand-50">
+    <main className="min-h-screen flex flex-col bg-cream text-ink">
       <AnnouncementBar />
       <Navbar />
       

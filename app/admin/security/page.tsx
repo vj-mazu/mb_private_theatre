@@ -166,7 +166,7 @@ export default function AdminSecurityPage() {
 
   if (loading) {
     return (
-      <div className="py-16 text-center text-xs font-bold text-royal-900">
+      <div className="py-16 text-center text-xs font-bold text-ink">
         Loading security credentials &amp; team access...
       </div>
     );
@@ -179,8 +179,8 @@ export default function AdminSecurityPage() {
       
       {/* Header */}
       <div>
-        <span className="text-xs font-bold uppercase tracking-wider text-royal-700">Account &amp; Access Control</span>
-        <h1 className="font-playfair text-2xl sm:text-3xl font-black text-royal-900 mt-1">
+        <span className="text-xs font-bold uppercase tracking-wider text-[#237eea]">Account &amp; Access Control</span>
+        <h1 className="font-playfair text-2xl sm:text-3xl font-black text-ink mt-1">
           Security &amp; Staff Credentials
         </h1>
         <p className="text-xs text-slate-600 mt-1">
@@ -191,13 +191,13 @@ export default function AdminSecurityPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Column: Change Own Password (5 cols) */}
-        <div className="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-7 border-2 border-sand-300 shadow-soft space-y-5">
-          <div className="flex items-center gap-2.5 pb-4 border-b border-sand-200">
-            <div className="p-2 rounded-xl bg-royal-100 text-royal-800">
+        <div className="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-7 border-2 border-sky-200 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-5">
+          <div className="flex items-center gap-2.5 pb-4 border-b border-sky-100">
+            <div className="p-2 rounded-xl bg-royal-100 text-[#155fbd]">
               <Key className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-royal-900">Change My Password</h3>
+              <h3 className="font-bold text-sm text-ink">Change My Password</h3>
               <span className="text-[11px] text-slate-500">Logged in as {currentUser?.name}</span>
             </div>
           </div>
@@ -262,7 +262,7 @@ export default function AdminSecurityPage() {
             <button
               type="submit"
               disabled={changingPassword}
-              className="w-full py-3 rounded-2xl text-xs font-black text-white bg-royal-700 hover:bg-royal-800 shadow-md transition-all disabled:opacity-50 cursor-pointer"
+              className="w-full py-3 rounded-2xl text-xs font-black text-white bg-[#237eea] hover:bg-[#155fbd] shadow-md transition-all disabled:opacity-50 cursor-pointer"
             >
               {changingPassword ? 'Updating Password...' : 'Save New Password'}
             </button>
@@ -270,14 +270,14 @@ export default function AdminSecurityPage() {
         </div>
 
         {/* Right Column: Staff Accounts Roster (7 cols) */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-7 border-2 border-sand-300 shadow-soft space-y-5">
-          <div className="flex items-center justify-between pb-4 border-b border-sand-200">
+        <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-7 border-2 border-sky-200 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-5">
+          <div className="flex items-center justify-between pb-4 border-b border-sky-100">
             <div className="flex items-center gap-2.5">
               <div className="p-2 rounded-xl bg-amber-100 text-amber-900">
                 <Users className="w-5 h-5 text-amber-600" />
               </div>
               <div>
-                <h3 className="font-bold text-sm text-royal-900">Team Staff Logins</h3>
+                <h3 className="font-bold text-sm text-ink">Team Staff Logins</h3>
                 <span className="text-[11px] text-slate-500">2 Venue Staff Accounts for Bookings &amp; Verification</span>
               </div>
             </div>
@@ -285,7 +285,7 @@ export default function AdminSecurityPage() {
             <button
               type="button"
               onClick={loadData}
-              className="p-2 rounded-xl text-slate-500 hover:text-royal-800 hover:bg-sand-100 transition-colors"
+              className="p-2 rounded-xl text-slate-500 hover:text-[#155fbd] hover:bg-[#f0f7ff] transition-colors"
               title="Refresh staff roster"
             >
               <RefreshCw className="w-4 h-4" />
@@ -300,20 +300,20 @@ export default function AdminSecurityPage() {
               return (
                 <div
                   key={user.id}
-                  className="p-4 rounded-2xl border-2 border-slate-200 hover:border-royal-400 bg-sand-50/60 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className="p-4 rounded-2xl border-2 border-sky-100 hover:border-royal-400 bg-[#fffdf9]/60 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="font-extrabold text-sm text-royal-950">{user.name}</span>
                       <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
-                        user.role === 'super_admin' ? 'bg-amber-400 text-royal-950' : 'bg-royal-100 text-royal-800'
+                        user.role === 'super_admin' ? 'bg-amber-400 text-royal-950' : 'bg-royal-100 text-[#155fbd]'
                       }`}>
                         {user.role === 'super_admin' ? 'Super Admin' : 'Staff'}
                       </span>
                     </div>
 
                     <div className="text-xs text-slate-600 flex flex-wrap items-center gap-3">
-                      <span>Login: <code className="font-mono text-royal-800 font-bold">{user.email}</code></span>
+                      <span>Login: <code className="font-mono text-[#155fbd] font-bold">{user.email}</code></span>
                       <span className="flex items-center gap-1 text-[11px] font-semibold text-slate-700">
                         <MapPin className="w-3 h-3 text-royal-600" />
                         <span>{branchLabel}</span>
@@ -330,7 +330,7 @@ export default function AdminSecurityPage() {
                         setStaffModalError('');
                         setStaffModalSuccess('');
                       }}
-                      className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-royal-800 bg-white border-2 border-royal-700 hover:bg-royal-800 hover:text-white transition-all shadow-xs shrink-0 self-start sm:self-auto cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#155fbd] bg-white border-2 border-royal-700 hover:bg-[#155fbd] hover:text-white transition-all shadow-xs shrink-0 self-start sm:self-auto cursor-pointer"
                     >
                       Change Password
                     </button>
@@ -341,9 +341,9 @@ export default function AdminSecurityPage() {
           </div>
 
           {/* Role Permissions Explanation Card */}
-          <div className="p-4 rounded-2xl bg-royal-50/80 border border-royal-200 text-xs text-royal-900 space-y-1.5">
+          <div className="p-4 rounded-2xl bg-royal-50/80 border border-royal-200 text-xs text-ink space-y-1.5">
             <span className="font-extrabold text-xs block text-royal-950 flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-royal-700" />
+              <ShieldCheck className="w-4 h-4 text-[#237eea]" />
               <span>Role Permissions Matrix</span>
             </span>
             <p className="text-[11px] text-slate-700 leading-relaxed">
@@ -358,8 +358,8 @@ export default function AdminSecurityPage() {
       </div>
 
       {/* Twilio WhatsApp Integration & Live Tester Panel */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-emerald-300 shadow-soft space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-sand-200">
+      <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-emerald-300 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-sky-100">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-2xl bg-emerald-100 text-emerald-800">
               <MessageSquare className="w-5 h-5 text-emerald-700" />
@@ -395,16 +395,16 @@ export default function AdminSecurityPage() {
               Required Environment Variables (in .env.local or Vercel / Render):
             </span>
             <div className="space-y-2 text-xs">
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                <code className="font-mono text-royal-900 font-bold">TWILIO_ACCOUNT_SID</code>
+              <div className="p-3 rounded-xl bg-slate-50 border border-sky-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <code className="font-mono text-ink font-bold">TWILIO_ACCOUNT_SID</code>
                 <span className="text-[11px] text-slate-500">From Twilio Console Dashboard (starts with AC...)</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                <code className="font-mono text-royal-900 font-bold">TWILIO_AUTH_TOKEN</code>
+              <div className="p-3 rounded-xl bg-slate-50 border border-sky-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <code className="font-mono text-ink font-bold">TWILIO_AUTH_TOKEN</code>
                 <span className="text-[11px] text-slate-500">Your secret Twilio Auth Token</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                <code className="font-mono text-royal-900 font-bold">TWILIO_WHATSAPP_NUMBER</code>
+              <div className="p-3 rounded-xl bg-slate-50 border border-sky-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <code className="font-mono text-ink font-bold">TWILIO_WHATSAPP_NUMBER</code>
                 <span className="text-[11px] text-slate-500">e.g. whatsapp:+14155238886 (sandbox) or verified sender</span>
               </div>
             </div>
@@ -420,9 +420,9 @@ export default function AdminSecurityPage() {
           </div>
 
           {/* Right Column: Live WhatsApp Test Form */}
-          <div className="lg:col-span-5 bg-sand-50/70 p-5 rounded-2xl border-2 border-sand-300 space-y-4">
+          <div className="lg:col-span-5 bg-[#fffdf9]/70 p-5 rounded-2xl border-2 border-sky-200 space-y-4">
             <div>
-              <h4 className="font-bold text-xs uppercase tracking-wider text-royal-900">
+              <h4 className="font-bold text-xs uppercase tracking-wider text-ink">
                 Test Live WhatsApp Dispatch
               </h4>
               <p className="text-[11px] text-slate-600 mt-0.5">
@@ -497,9 +497,9 @@ export default function AdminSecurityPage() {
       {targetStaff && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs">
           <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full border-2 border-slate-300 shadow-elevated space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-sand-200">
+            <div className="flex items-center justify-between pb-3 border-b border-sky-100">
               <div className="flex items-center gap-2">
-                <Lock className="w-5 h-5 text-royal-700" />
+                <Lock className="w-5 h-5 text-[#237eea]" />
                 <h3 className="font-bold text-sm text-royal-950">
                   Update Password: {targetStaff.name}
                 </h3>
@@ -553,7 +553,7 @@ export default function AdminSecurityPage() {
                 <button
                   type="submit"
                   disabled={updatingStaffPassword}
-                  className="px-5 py-2 rounded-xl text-xs font-black text-white bg-royal-700 hover:bg-royal-800 transition-all disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl text-xs font-black text-white bg-[#237eea] hover:bg-[#155fbd] transition-all disabled:opacity-50"
                 >
                   {updatingStaffPassword ? 'Saving...' : 'Update Password'}
                 </button>

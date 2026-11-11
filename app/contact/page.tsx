@@ -50,33 +50,37 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-sand-50">
+    <main className="min-h-screen flex flex-col bg-cream text-ink">
       <AnnouncementBar />
       <Navbar />
 
-      <section className="py-16 sm:py-20 bg-gradient-to-b from-royal-950 to-royal-900 text-white text-center">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-amber-300">Get in Touch</span>
-          <h1 className="font-playfair text-4xl sm:text-5xl font-black tracking-tight">
+      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#f0f7ff] via-cream to-cream text-ink text-center relative overflow-hidden border-b border-sky-100">
+        <div className="hero-orb orb-one" />
+        <div className="hero-orb orb-two" />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-4 relative z-10">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#fff0df] text-[#f39a4b] border border-[#f39a4b]/30 text-xs font-bold shadow-xs">
+            Get in Touch
+          </span>
+          <h1 className="font-playfair text-4xl sm:text-5xl font-black tracking-tight text-ink">
             Contact Movie Bash
           </h1>
-          <p className="text-sm sm:text-base text-slate-200 max-w-xl mx-auto font-normal">
+          <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto font-medium">
             Have questions about group bookings, custom decoration themes, or booking a special slot? We&apos;re here to assist.
           </p>
         </div>
       </section>
 
-      <section className="py-16 sm:py-20">
+      <section className="py-16 sm:py-20 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
             {/* Left: Contact Form (7 cols) */}
-            <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-sand-200 shadow-soft">
-              <h2 className="font-playfair text-2xl font-bold text-royal-900 mb-2">
+            <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)]">
+              <h2 className="font-playfair text-2xl font-bold text-ink mb-2">
                 Send Us a Message
               </h2>
-              <p className="text-xs text-ink/70 mb-6">
+              <p className="text-xs text-slate-600 mb-6 font-medium">
                 Fill out the form below and our celebration manager will call you within 30 minutes.
               </p>
 
@@ -98,7 +102,7 @@ export default function ContactPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-royal-900 uppercase tracking-wider mb-1">
+                      <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">
                         Your Name *
                       </label>
                       <input
@@ -106,13 +110,13 @@ export default function ContactPage() {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="e.g. Aditi Rao"
-                        className="w-full px-4 py-2.5 rounded-xl bg-sand-50 border border-sand-300 text-xs font-medium text-royal-900 focus:outline-none focus:border-royal-700"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea]"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-royal-900 uppercase tracking-wider mb-1">
+                      <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">
                         Phone Number *
                       </label>
                       <input
@@ -120,7 +124,7 @@ export default function ContactPage() {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="10-digit mobile"
-                        className="w-full px-4 py-2.5 rounded-xl bg-sand-50 border border-sand-300 text-xs font-medium text-royal-900 focus:outline-none focus:border-royal-700"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea]"
                         required
                       />
                     </div>
@@ -128,7 +132,7 @@ export default function ContactPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-royal-900 uppercase tracking-wider mb-1">
+                      <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">
                         Email Address
                       </label>
                       <input
@@ -136,18 +140,18 @@ export default function ContactPage() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="aditi@example.com"
-                        className="w-full px-4 py-2.5 rounded-xl bg-sand-50 border border-sand-300 text-xs font-medium text-royal-900 focus:outline-none focus:border-royal-700"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-royal-900 uppercase tracking-wider mb-1">
+                      <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">
                         Preferred Branch
                       </label>
                       <select
                         value={formData.branch_name}
                         onChange={(e) => setFormData({ ...formData, branch_name: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-sand-50 border border-sand-300 text-xs font-medium text-royal-900 focus:outline-none focus:border-royal-700"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea]"
                       >
                         <option value="Electronic City">Electronic City Branch</option>
                         <option value="BTM 2nd Stage">BTM 2nd Stage Branch</option>
@@ -157,19 +161,19 @@ export default function ContactPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-royal-900 uppercase tracking-wider mb-1">
+                      <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">
                         Tentative Date
                       </label>
                       <input
                         type="date"
                         value={formData.preferred_date}
                         onChange={(e) => setFormData({ ...formData, preferred_date: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-sand-50 border border-sand-300 text-xs font-medium text-royal-900 focus:outline-none focus:border-royal-700 cursor-pointer"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea] cursor-pointer"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-royal-900 uppercase tracking-wider mb-1">
+                      <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">
                         Estimated Guests
                       </label>
                       <input
@@ -179,13 +183,13 @@ export default function ContactPage() {
                         value={formData.guests}
                         onChange={(e) => setFormData({ ...formData, guests: e.target.value })}
                         placeholder="e.g. 6"
-                        className="w-full px-4 py-2.5 rounded-xl bg-sand-50 border border-sand-300 text-xs font-medium text-royal-900 focus:outline-none focus:border-royal-700"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-royal-900 uppercase tracking-wider mb-1">
+                    <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">
                       Your Message / Enquiry *
                     </label>
                     <textarea
@@ -193,7 +197,7 @@ export default function ContactPage() {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder="Tell us what you're planning: birthday, anniversary, special themes, or specific timing requirements..."
-                      className="w-full px-4 py-2.5 rounded-xl bg-sand-50 border border-sand-300 text-xs font-medium text-royal-900 focus:outline-none focus:border-royal-700"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea]"
                       required
                     />
                   </div>
@@ -201,7 +205,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3.5 rounded-full font-bold text-xs sm:text-sm text-white bg-royal-700 hover:bg-royal-600 shadow-royal-glow transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3.5 rounded-full font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-[#f39a4b] to-[#e6832e] hover:shadow-[0_8px_25px_rgba(243,154,75,0.35)] shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                   >
                     <Send className="w-4 h-4" />
                     <span>{isSubmitting ? 'Sending Enquiry...' : 'Submit Enquiry'}</span>
@@ -214,8 +218,8 @@ export default function ContactPage() {
             <div className="lg:col-span-5 space-y-6">
               
               {/* Branch 1 */}
-              <div className="p-6 rounded-3xl bg-white border border-sand-200 shadow-soft space-y-4">
-                <span className="px-3 py-1 rounded-full bg-royal-100 text-royal-700 text-[10px] font-black uppercase">
+              <div className="p-6 rounded-3xl bg-white border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-4">
+                <span className="px-3 py-1 rounded-full bg-[#d9ebff] text-[#155fbd] text-[10px] font-black uppercase">
                   Flagship Branch
                 </span>
                 <h3 className="font-playfair text-xl font-bold text-royal-900">

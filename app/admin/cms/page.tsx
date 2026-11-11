@@ -261,8 +261,8 @@ export default function AdminCmsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-royal-700">Content Management System</span>
-          <h1 className="font-playfair text-2xl sm:text-3xl font-black text-royal-900">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#237eea]">Content Management System</span>
+          <h1 className="font-playfair text-2xl sm:text-3xl font-black text-ink">
             Coupons, Pricing &amp; Site Settings
           </h1>
           <p className="text-xs text-ink/70 mt-0.5">
@@ -279,7 +279,7 @@ export default function AdminCmsPage() {
       </div>
 
       {/* Tabs Bar */}
-      <div className="flex gap-2 border-b border-sand-300 overflow-x-auto pb-1 no-scrollbar">
+      <div className="flex gap-2 border-b border-sky-200 overflow-x-auto pb-1 no-scrollbar">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -289,8 +289,8 @@ export default function AdminCmsPage() {
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-t-2xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
                 isActive
-                  ? 'bg-white border-t-2 border-x border-sand-300 text-royal-800 shadow-sm'
-                  : 'text-ink/60 hover:text-royal-900 hover:bg-sand-100'
+                  ? 'bg-white border-t-2 border-x border-sky-200 text-[#155fbd] shadow-sm'
+                  : 'text-ink/60 hover:text-ink hover:bg-[#f0f7ff]'
               }`}
             >
               <Icon className="w-3.5 h-3.5 text-royal-600" />
@@ -302,10 +302,10 @@ export default function AdminCmsPage() {
 
       {/* TAB 1: COUPONS (FULL CRUD: ADD, EDIT, DELETE, TOGGLE) */}
       {activeTab === 'coupons' && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sand-200 shadow-soft space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sand-200 pb-4">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sky-100 pb-4">
             <div>
-              <h3 className="font-playfair text-xl font-bold text-royal-900">
+              <h3 className="font-playfair text-xl font-bold text-ink">
                 Promotional Discount Coupons ({coupons.length})
               </h3>
               <span className="text-xs text-ink/60">
@@ -316,7 +316,7 @@ export default function AdminCmsPage() {
             <button
               type="button"
               onClick={openNewCouponModal}
-              className="px-5 py-2.5 rounded-2xl text-xs font-black text-white bg-royal-700 hover:bg-royal-600 shadow-md flex items-center gap-1.5 shrink-0 transition-transform active:scale-95 cursor-pointer"
+              className="px-5 py-2.5 rounded-2xl text-xs font-black text-white bg-[#237eea] hover:bg-royal-600 shadow-md flex items-center gap-1.5 shrink-0 transition-transform active:scale-95 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>+ Create New Coupon</span>
@@ -331,14 +331,14 @@ export default function AdminCmsPage() {
                   key={c.id} 
                   className={`p-5 rounded-2xl border-2 transition-all flex flex-col justify-between space-y-4 ${
                     isActive 
-                      ? 'bg-sand-50 border-sand-300 hover:border-royal-500 shadow-xs' 
+                      ? 'bg-[#fffdf9] border-sky-200 hover:border-royal-500 shadow-xs' 
                       : 'bg-slate-50 border-dashed border-slate-300 opacity-60'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-lg font-black text-royal-900 tracking-wider">
+                        <span className="font-mono text-lg font-black text-ink tracking-wider">
                           {c.code}
                         </span>
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${
@@ -357,7 +357,7 @@ export default function AdminCmsPage() {
                       type="button"
                       onClick={() => handleToggleCoupon(c)}
                       title={isActive ? 'Click to deactivate coupon' : 'Click to activate coupon'}
-                      className="p-1 rounded-xl text-royal-700 hover:bg-sand-200 transition-colors"
+                      className="p-1 rounded-xl text-[#237eea] hover:bg-[#d9ebff]/50 transition-colors"
                     >
                       {isActive ? (
                         <ToggleRight className="w-7 h-7 text-emerald-600" />
@@ -367,19 +367,19 @@ export default function AdminCmsPage() {
                     </button>
                   </div>
 
-                  <div className="text-xs text-ink/75 pt-2 border-t border-sand-200 flex items-center justify-between">
+                  <div className="text-xs text-ink/75 pt-2 border-t border-sky-100 flex items-center justify-between">
                     <span>Min Booking Amount: <strong>₹{c.min_booking_amount || 0}</strong></span>
                     <span className="text-[11px] text-ink/60">ID #{c.id}</span>
                   </div>
 
                   {/* EDIT & DELETE ACTION BUTTONS */}
-                  <div className="pt-2 flex items-center justify-end gap-2 border-t border-sand-200">
+                  <div className="pt-2 flex items-center justify-end gap-2 border-t border-sky-100">
                     <button
                       type="button"
                       onClick={() => openEditCouponModal(c)}
-                      className="px-3 py-1.5 rounded-xl bg-white border border-sand-300 hover:border-royal-700 text-royal-800 font-bold text-xs flex items-center gap-1 shadow-xs transition-colors cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-white border border-sky-200 hover:border-royal-700 text-[#155fbd] font-bold text-xs flex items-center gap-1 shadow-xs transition-colors cursor-pointer"
                     >
-                      <Edit className="w-3.5 h-3.5 text-royal-700" />
+                      <Edit className="w-3.5 h-3.5 text-[#237eea]" />
                       <span>Edit</span>
                     </button>
 
@@ -401,15 +401,15 @@ export default function AdminCmsPage() {
 
       {/* TAB 2: SITE SETTINGS */}
       {activeTab === 'settings' && (
-        <form onSubmit={handleSaveSettings} className="bg-white p-6 sm:p-8 rounded-3xl border border-sand-200 shadow-soft space-y-6 max-w-3xl">
-          <div className="flex items-center justify-between border-b border-sand-200 pb-3">
+        <form onSubmit={handleSaveSettings} className="bg-white p-6 sm:p-8 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-6 max-w-3xl">
+          <div className="flex items-center justify-between border-b border-sky-100 pb-3">
             <div>
-              <h3 className="font-playfair text-xl font-bold text-royal-900">Global Website Configuration</h3>
+              <h3 className="font-playfair text-xl font-bold text-ink">Global Website Configuration</h3>
               <span className="text-xs text-ink/60">Updates announcement banners, contact details, and advance deposit policies.</span>
             </div>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-2xl text-xs font-black bg-royal-700 text-white hover:bg-royal-600 transition-colors shadow-md active:scale-95 cursor-pointer"
+              className="px-6 py-2.5 rounded-2xl text-xs font-black bg-[#237eea] text-white hover:bg-royal-600 transition-colors shadow-md active:scale-95 cursor-pointer"
             >
               Save Settings
             </button>
@@ -423,7 +423,7 @@ export default function AdminCmsPage() {
                 type="text"
                 value={siteSettings.announcement_text || ''}
                 onChange={(e) => setSiteSettings({ ...siteSettings, announcement_text: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-sand-50 border border-sand-300 font-medium text-slate-900"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 font-medium text-slate-900"
               />
               <span className="text-[11px] text-ink/60 mt-1 block">Displayed on the top-most bar across all pages.</span>
             </div>
@@ -436,7 +436,7 @@ export default function AdminCmsPage() {
                   type="text"
                   value={siteSettings.business_phone || ''}
                   onChange={(e) => setSiteSettings({ ...siteSettings, business_phone: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-semibold text-slate-900"
+                  className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-semibold text-slate-900"
                 />
               </div>
 
@@ -446,7 +446,7 @@ export default function AdminCmsPage() {
                   type="email"
                   value={siteSettings.business_email || ''}
                   onChange={(e) => setSiteSettings({ ...siteSettings, business_email: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-semibold text-slate-900"
+                  className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-semibold text-slate-900"
                 />
               </div>
             </div>
@@ -459,7 +459,7 @@ export default function AdminCmsPage() {
                   type="number"
                   value={siteSettings.advance_amount_flat || 500}
                   onChange={(e) => setSiteSettings({ ...siteSettings, advance_amount_flat: Number(e.target.value) })}
-                  className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-bold text-emerald-800"
+                  className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-bold text-emerald-800"
                 />
               </div>
 
@@ -469,7 +469,7 @@ export default function AdminCmsPage() {
                   type="number"
                   value={siteSettings.cancellation_window_hours || 72}
                   onChange={(e) => setSiteSettings({ ...siteSettings, cancellation_window_hours: Number(e.target.value) })}
-                  className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-bold text-royal-900"
+                  className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-bold text-ink"
                 />
               </div>
             </div>
@@ -478,7 +478,7 @@ export default function AdminCmsPage() {
           <div className="pt-2 flex justify-end">
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-2xl text-xs font-black bg-royal-700 text-white hover:bg-royal-600 transition-colors shadow-md active:scale-95 cursor-pointer"
+              className="px-6 py-2.5 rounded-2xl text-xs font-black bg-[#237eea] text-white hover:bg-royal-600 transition-colors shadow-md active:scale-95 cursor-pointer"
             >
               Save All Changes
             </button>
@@ -488,36 +488,36 @@ export default function AdminCmsPage() {
 
       {/* TAB 3: THEATRES & PRICING */}
       {activeTab === 'theatres' && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sand-200 shadow-soft space-y-6">
-          <div className="flex justify-between items-center border-b border-sand-200 pb-3">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-6">
+          <div className="flex justify-between items-center border-b border-sky-100 pb-3">
             <div>
-              <h3 className="font-playfair text-xl font-bold text-royal-900">Private Theatres &amp; Rates ({theatres.length})</h3>
+              <h3 className="font-playfair text-xl font-bold text-ink">Private Theatres &amp; Rates ({theatres.length})</h3>
               <span className="text-xs text-ink/60">Manage base screening prices and extra guest fees across branches.</span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {theatres.map((t) => (
-              <div key={t.id} className="p-5 rounded-2xl bg-sand-50 border border-sand-200 space-y-3">
+              <div key={t.id} className="p-5 rounded-2xl bg-[#fffdf9] border border-sky-100 space-y-3">
                 <div className="flex justify-between items-center">
-                  <h4 className="font-bold text-sm text-royal-900 flex items-center gap-1.5">
+                  <h4 className="font-bold text-sm text-ink flex items-center gap-1.5">
                     <span>{t.emoji}</span>
                     <span>{t.name}</span>
                   </h4>
-                  <span className="text-base font-black text-royal-700">₹{t.base_price}</span>
+                  <span className="text-base font-black text-[#237eea]">₹{t.base_price}</span>
                 </div>
                 <div className="space-y-1 text-xs text-ink/75">
                   <p>Branch: <strong>{t.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage'}</strong></p>
                   <p>Capacity: {t.capacity} Guests &bull; Extra Person: ₹{t.extra_person_price}</p>
                   <p className="text-[11px] text-ink/60 italic truncate">{t.amenities}</p>
                 </div>
-                <div className="pt-2 border-t border-sand-200 flex justify-end">
+                <div className="pt-2 border-t border-sky-100 flex justify-end">
                   <button
                     type="button"
                     onClick={() => handleEditTheatre(t.id, t.base_price, t.extra_person_price)}
-                    className="px-3 py-1.5 rounded-xl bg-white border border-sand-300 hover:border-royal-700 text-royal-800 font-bold text-xs flex items-center gap-1"
+                    className="px-3 py-1.5 rounded-xl bg-white border border-sky-200 hover:border-royal-700 text-[#155fbd] font-bold text-xs flex items-center gap-1"
                   >
-                    <Edit className="w-3.5 h-3.5 text-royal-700" />
+                    <Edit className="w-3.5 h-3.5 text-[#237eea]" />
                     <span>Edit Price</span>
                   </button>
                 </div>
@@ -529,28 +529,28 @@ export default function AdminCmsPage() {
 
       {/* TAB 4: ADDONS */}
       {activeTab === 'addons' && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sand-200 shadow-soft space-y-6">
-          <div className="flex justify-between items-center border-b border-sand-200 pb-3">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-6">
+          <div className="flex justify-between items-center border-b border-sky-100 pb-3">
             <div>
-              <h3 className="font-playfair text-xl font-bold text-royal-900">Add-ons &amp; Celebration Specials ({addons.length})</h3>
+              <h3 className="font-playfair text-xl font-bold text-ink">Add-ons &amp; Celebration Specials ({addons.length})</h3>
               <span className="text-xs text-ink/60">Cakes, Fog entries, Cold pyrotechnics, Decor items</span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
             {addons.map((a) => (
-              <div key={a.id} className="p-4 rounded-2xl bg-sand-50 border border-sand-200 flex justify-between items-center">
+              <div key={a.id} className="p-4 rounded-2xl bg-[#fffdf9] border border-sky-100 flex justify-between items-center">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-royal-700 block">{a.category}</span>
-                  <strong className="text-royal-900 block leading-tight">{a.name}</strong>
+                  <span className="text-[10px] uppercase font-bold text-[#237eea] block">{a.category}</span>
+                  <strong className="text-ink block leading-tight">{a.name}</strong>
                   <span className="text-ink/60 text-[11px] line-clamp-1">{a.description}</span>
                 </div>
                 <div className="text-right shrink-0 ml-3">
-                  <span className="font-playfair text-base font-bold text-royal-700 block">₹{a.price}</span>
+                  <span className="font-playfair text-base font-bold text-[#237eea] block">₹{a.price}</span>
                   <button
                     type="button"
                     onClick={() => handleEditAddon(a.id, a.price)}
-                    className="text-[10px] font-bold text-royal-700 hover:underline mt-1"
+                    className="text-[10px] font-bold text-[#237eea] hover:underline mt-1"
                   >
                     Edit Price
                   </button>
@@ -563,15 +563,15 @@ export default function AdminCmsPage() {
 
       {/* TAB 5: BRANCHES */}
       {activeTab === 'branches' && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sand-200 shadow-soft space-y-6">
-          <div className="flex justify-between items-center border-b border-sand-200 pb-3">
-            <h3 className="font-playfair text-xl font-bold text-royal-900">Bengaluru Locations</h3>
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-6">
+          <div className="flex justify-between items-center border-b border-sky-100 pb-3">
+            <h3 className="font-playfair text-xl font-bold text-ink">Bengaluru Locations</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {branches.map((b) => (
-              <div key={b.id} className="p-6 rounded-2xl bg-sand-50 border border-sand-200 space-y-3">
+              <div key={b.id} className="p-6 rounded-2xl bg-[#fffdf9] border border-sky-100 space-y-3">
                 <div className="flex justify-between items-start">
-                  <h4 className="font-bold text-sm text-royal-900">{b.name}</h4>
+                  <h4 className="font-bold text-sm text-ink">{b.name}</h4>
                   <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">Active</span>
                 </div>
                 <div className="space-y-1 text-xs">
@@ -587,12 +587,12 @@ export default function AdminCmsPage() {
 
       {/* TAB 6: CUSTOMERS */}
       {activeTab === 'customers' && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sand-200 shadow-soft space-y-4">
-          <h3 className="font-playfair text-xl font-bold text-royal-900">Customer Roster</h3>
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-4">
+          <h3 className="font-playfair text-xl font-bold text-ink">Customer Roster</h3>
           <div className="overflow-x-auto text-xs">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-sand-200 text-ink/60">
+                <tr className="border-b border-sky-100 text-ink/60">
                   <th className="py-2">Name</th>
                   <th className="py-2">Phone</th>
                   <th className="py-2">Total Bookings</th>
@@ -602,10 +602,10 @@ export default function AdminCmsPage() {
               <tbody className="divide-y divide-sand-100">
                 {customers.map((c) => (
                   <tr key={c.id}>
-                    <td className="py-2.5 font-bold text-royal-900">{c.name}</td>
+                    <td className="py-2.5 font-bold text-ink">{c.name}</td>
                     <td className="py-2.5">+91 {c.phone}</td>
                     <td className="py-2.5">{c.total_bookings}</td>
-                    <td className="py-2.5 font-bold text-royal-700">₹{c.lifetime_spend}</td>
+                    <td className="py-2.5 font-bold text-[#237eea]">₹{c.lifetime_spend}</td>
                   </tr>
                 ))}
               </tbody>
@@ -616,16 +616,16 @@ export default function AdminCmsPage() {
 
       {/* TAB 7: ENQUIRIES */}
       {activeTab === 'enquiries' && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sand-200 shadow-soft space-y-4">
-          <h3 className="font-playfair text-xl font-bold text-royal-900">Website Enquiries &amp; Leads</h3>
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-4">
+          <h3 className="font-playfair text-xl font-bold text-ink">Website Enquiries &amp; Leads</h3>
           {enquiries.length === 0 ? (
             <p className="text-xs text-ink/60">No pending enquiries. Test submissions appear here in real-time.</p>
           ) : (
             <div className="space-y-3">
               {enquiries.map((e: any) => (
-                <div key={e.id} className="p-4 rounded-2xl bg-sand-50 border border-sand-200 text-xs space-y-1">
+                <div key={e.id} className="p-4 rounded-2xl bg-[#fffdf9] border border-sky-100 text-xs space-y-1">
                   <div className="flex justify-between">
-                    <strong className="text-royal-900">{e.name} (+91 {e.phone})</strong>
+                    <strong className="text-ink">{e.name} (+91 {e.phone})</strong>
                     <span className="text-[10px] text-ink/60">{e.created_at}</span>
                   </div>
                   <p className="text-ink/80">{e.message}</p>
@@ -638,12 +638,12 @@ export default function AdminCmsPage() {
 
       {/* TAB 8: AUDIT LOGS */}
       {activeTab === 'audit' && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sand-200 shadow-soft space-y-4">
-          <h3 className="font-playfair text-xl font-bold text-royal-900">Security &amp; Operations Audit Trail</h3>
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-4">
+          <h3 className="font-playfair text-xl font-bold text-ink">Security &amp; Operations Audit Trail</h3>
           <div className="overflow-x-auto text-xs">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-sand-200 text-ink/60">
+                <tr className="border-b border-sky-100 text-ink/60">
                   <th className="py-2">Time</th>
                   <th className="py-2">User</th>
                   <th className="py-2">Action</th>
@@ -654,8 +654,8 @@ export default function AdminCmsPage() {
                 {auditLogs.map((log) => (
                   <tr key={log.id}>
                     <td className="py-2 text-[11px] text-ink/60">{new Date(log.created_at).toLocaleTimeString()}</td>
-                    <td className="py-2 font-bold text-royal-900">{log.user_email}</td>
-                    <td className="py-2 font-mono text-royal-700">{log.action}</td>
+                    <td className="py-2 font-bold text-ink">{log.user_email}</td>
+                    <td className="py-2 font-mono text-[#237eea]">{log.action}</td>
                     <td className="py-2">{log.entity}</td>
                   </tr>
                 ))}
@@ -668,9 +668,9 @@ export default function AdminCmsPage() {
       {/* COUPON CREATE / EDIT MODAL */}
       {couponModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white max-w-md w-full rounded-3xl p-6 sm:p-8 space-y-4 shadow-elevated border-2 border-slate-200">
-            <div className="flex items-center justify-between border-b border-sand-200 pb-3">
-              <h3 className="font-playfair text-xl font-bold text-royal-900">
+          <div className="bg-white max-w-md w-full rounded-3xl p-6 sm:p-8 space-y-4 shadow-elevated border-2 border-sky-100">
+            <div className="flex items-center justify-between border-b border-sky-100 pb-3">
+              <h3 className="font-playfair text-xl font-bold text-ink">
                 {couponForm.id ? `Edit Coupon: ${couponForm.code}` : 'Create New Promotional Coupon'}
               </h3>
               <button onClick={() => setCouponModalOpen(false)}>
@@ -687,7 +687,7 @@ export default function AdminCmsPage() {
                   placeholder="e.g. MOVIEBASH200"
                   value={couponForm.code}
                   onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })}
-                  className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-mono font-bold text-slate-900 uppercase"
+                  className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-mono font-bold text-slate-900 uppercase"
                 />
               </div>
 
@@ -697,7 +697,7 @@ export default function AdminCmsPage() {
                   <select
                     value={couponForm.discount_type}
                     onChange={(e) => setCouponForm({ ...couponForm, discount_type: e.target.value as any })}
-                    className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-bold"
+                    className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-bold"
                   >
                     <option value="flat">Flat ₹ Amount</option>
                     <option value="percentage">Percentage %</option>
@@ -714,7 +714,7 @@ export default function AdminCmsPage() {
                     min={1}
                     value={couponForm.discount_value}
                     onChange={(e) => setCouponForm({ ...couponForm, discount_value: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-black text-emerald-700"
+                    className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-black text-emerald-700"
                   />
                 </div>
               </div>
@@ -727,7 +727,7 @@ export default function AdminCmsPage() {
                     min={0}
                     value={couponForm.min_booking_amount}
                     onChange={(e) => setCouponForm({ ...couponForm, min_booking_amount: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-bold"
+                    className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-bold"
                   />
                 </div>
 
@@ -736,7 +736,7 @@ export default function AdminCmsPage() {
                   <select
                     value={couponForm.is_active}
                     onChange={(e) => setCouponForm({ ...couponForm, is_active: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-bold"
+                    className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-bold"
                   >
                     <option value={1}>Active</option>
                     <option value={0}>Disabled</option>
@@ -748,13 +748,13 @@ export default function AdminCmsPage() {
                 <button
                   type="button"
                   onClick={() => setCouponModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-sand-200 font-bold text-slate-700 hover:bg-sand-300"
+                  className="px-4 py-2 rounded-xl bg-[#d9ebff]/50 font-bold text-slate-700 hover:bg-sand-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-xl bg-royal-700 hover:bg-royal-600 text-white font-black shadow-md cursor-pointer active:scale-95"
+                  className="px-6 py-2 rounded-xl bg-[#237eea] hover:bg-royal-600 text-white font-black shadow-md cursor-pointer active:scale-95"
                 >
                   {couponForm.id ? 'Save Changes' : 'Create Coupon'}
                 </button>

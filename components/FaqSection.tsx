@@ -54,18 +54,18 @@ export default function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="py-10 sm:py-24 bg-sand-50" id="faq">
+    <section className="py-16 sm:py-24 bg-cream" id="faq">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-royal-100 text-royal-700 text-xs font-bold mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#fff0df] text-[#f39a4b] border border-[#f39a4b]/30 text-xs font-bold mb-3 shadow-xs">
             <HelpCircle className="w-3.5 h-3.5" />
             <span>Got Questions?</span>
           </div>
-          <h2 className="font-playfair text-3xl sm:text-5xl font-black text-royal-900 tracking-tight">
+          <h2 className="font-playfair text-3xl sm:text-5xl font-black text-ink tracking-tight">
             Frequently Asked Questions
           </h2>
-          <p className="mt-4 text-base text-ink/75">
+          <p className="mt-4 text-base text-slate-600 font-medium">
             Everything you need to know about booking, policies, and special celebration setups at Movie Bash.
           </p>
         </div>
@@ -76,22 +76,22 @@ export default function FaqSection() {
             return (
               <div
                 key={idx}
-                className="rounded-2xl border border-sand-200 bg-white shadow-soft overflow-hidden transition-colors"
+                className="rounded-2xl border border-sky-100 bg-white shadow-[0_4px_16px_rgba(22,48,79,0.04)] overflow-hidden transition-all hover:border-sky-200"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : idx)}
-                  className="w-full py-5 px-6 text-left flex items-center justify-between gap-4 font-bold text-base sm:text-lg text-royal-900 hover:text-royal-600 transition-colors"
+                  className="w-full py-5 px-6 text-left flex items-center justify-between gap-4 font-bold text-base sm:text-lg text-ink hover:text-[#237eea] transition-colors cursor-pointer"
                 >
                   <span>{faq.q}</span>
                   <ChevronDown
-                    className={`w-5 h-5 text-royal-700 shrink-0 transition-transform duration-300 ${
+                    className={`w-5 h-5 text-[#237eea] shrink-0 transition-transform duration-300 ${
                       isOpen ? 'rotate-180' : ''
                     }`}
                   />
                 </button>
 
                 {isOpen && (
-                  <div className="px-6 pb-5 pt-1 text-sm sm:text-base text-ink/80 leading-relaxed border-t border-sand-100 animate-in fade-in">
+                  <div className="px-6 pb-5 pt-1 text-sm sm:text-base text-slate-700 leading-relaxed border-t border-sky-100/70 animate-in fade-in">
                     {faq.a}
                   </div>
                 )}

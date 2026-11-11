@@ -256,8 +256,8 @@ export default function AdminBookingsPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-royal-700">Reservation Desk</span>
-          <h1 className="font-playfair text-2xl sm:text-3xl font-black text-royal-900">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#237eea]">Reservation Desk</span>
+          <h1 className="font-playfair text-2xl sm:text-3xl font-black text-ink">
             All Bookings ({meta.total})
           </h1>
           <p className="text-xs text-ink/70 mt-0.5">
@@ -269,19 +269,19 @@ export default function AdminBookingsPage() {
           <a
             href="/api/admin/backup"
             download
-            className="px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 bg-sand-100 hover:bg-sand-200 border border-sand-300 transition-colors flex items-center gap-1.5"
+            className="px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 bg-[#f0f7ff] hover:bg-[#d9ebff]/50 border border-sky-200 transition-colors flex items-center gap-1.5"
             title="Download full database snapshot"
           >
-            <Download className="w-3.5 h-3.5 text-royal-700" />
+            <Download className="w-3.5 h-3.5 text-[#237eea]" />
             <span>Backup DB</span>
           </a>
 
           <a
             href={`/api/admin/bookings/export?${dateFilter ? `date=${dateFilter}&` : ''}${branchFilter !== 'all' ? `branch=${branchFilter}&` : ''}`}
             download
-            className="px-3.5 py-2.5 rounded-2xl text-xs font-bold text-royal-900 bg-sand-100 hover:bg-sand-200 border border-sand-300 transition-colors flex items-center gap-1.5"
+            className="px-3.5 py-2.5 rounded-2xl text-xs font-bold text-ink bg-[#f0f7ff] hover:bg-[#d9ebff]/50 border border-sky-200 transition-colors flex items-center gap-1.5"
           >
-            <Download className="w-3.5 h-3.5 text-royal-700" />
+            <Download className="w-3.5 h-3.5 text-[#237eea]" />
             <span>Export CSV</span>
           </a>
 
@@ -299,7 +299,7 @@ export default function AdminBookingsPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-3xl border border-sand-200 shadow-soft flex flex-col md:flex-row items-center gap-3">
+      <div className="bg-white p-4 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] flex flex-col md:flex-row items-center gap-3">
         <div className="relative flex-1 w-full">
           <Search className="w-4 h-4 text-ink/40 absolute left-3 top-3.5" />
           <input
@@ -307,14 +307,14 @@ export default function AdminBookingsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by ref (e.g. MBEC202601), customer name, or phone..."
-            className="w-full pl-9 pr-4 py-2.5 rounded-2xl bg-sand-50 border border-sand-200 text-xs text-royal-900 focus:outline-none focus:border-royal-700"
+            className="w-full pl-9 pr-4 py-2.5 rounded-2xl bg-[#fffdf9] border border-sky-100 text-xs text-ink focus:outline-none focus:border-royal-700"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
           {/* Date Picker Input */}
-          <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-sand-50 border border-sand-200 text-xs font-bold text-royal-900 shadow-xs">
-            <Calendar className="w-3.5 h-3.5 text-royal-700 shrink-0" />
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-[#fffdf9] border border-sky-100 text-xs font-bold text-ink shadow-xs">
+            <Calendar className="w-3.5 h-3.5 text-[#237eea] shrink-0" />
             <input
               type="date"
               value={dateFilter}
@@ -322,7 +322,7 @@ export default function AdminBookingsPage() {
                 setDateFilter(e.target.value);
                 setPage(1);
               }}
-              className="bg-transparent text-xs font-extrabold text-royal-900 focus:outline-none cursor-pointer"
+              className="bg-transparent text-xs font-extrabold text-ink focus:outline-none cursor-pointer"
               title="Select specific date to filter"
             />
             {dateFilter && (
@@ -346,7 +346,7 @@ export default function AdminBookingsPage() {
               setBranchFilter(e.target.value);
               setPage(1);
             }}
-            className="flex-1 md:flex-initial px-3 py-2.5 rounded-2xl bg-sand-50 border border-sand-200 text-xs font-bold text-royal-900 focus:outline-none"
+            className="flex-1 md:flex-initial px-3 py-2.5 rounded-2xl bg-[#fffdf9] border border-sky-100 text-xs font-bold text-ink focus:outline-none"
           >
             <option value="all">All Branches</option>
             <option value="1">Electronic City</option>
@@ -359,7 +359,7 @@ export default function AdminBookingsPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="flex-1 md:flex-initial px-3 py-2.5 rounded-2xl bg-sand-50 border border-sand-200 text-xs font-bold text-royal-900 focus:outline-none"
+            className="flex-1 md:flex-initial px-3 py-2.5 rounded-2xl bg-[#fffdf9] border border-sky-100 text-xs font-bold text-ink focus:outline-none"
           >
             <option value="all">All Statuses</option>
             <option value="confirmed">Confirmed</option>
@@ -387,8 +387,8 @@ export default function AdminBookingsPage() {
               }}
               className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 statusFilter === tab.value
-                  ? 'bg-royal-800 text-white shadow-sm'
-                  : 'bg-white border border-sand-300 text-slate-700 hover:bg-slate-100'
+                  ? 'bg-[#155fbd] text-white shadow-sm'
+                  : 'bg-white border border-sky-200 text-slate-700 hover:bg-slate-100'
               }`}
             >
               {tab.label}
@@ -408,7 +408,7 @@ export default function AdminBookingsPage() {
             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
               !dateFilter
                 ? 'bg-emerald-700 text-white shadow-sm'
-                : 'bg-white border border-sand-300 text-slate-700 hover:bg-slate-100'
+                : 'bg-white border border-sky-200 text-slate-700 hover:bg-slate-100'
             }`}
           >
             All Dates
@@ -422,7 +422,7 @@ export default function AdminBookingsPage() {
             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
               dateFilter === new Date().toISOString().split('T')[0]
                 ? 'bg-emerald-700 text-white shadow-sm'
-                : 'bg-white border border-sand-300 text-slate-700 hover:bg-slate-100'
+                : 'bg-white border border-sky-200 text-slate-700 hover:bg-slate-100'
             }`}
           >
             Today
@@ -437,7 +437,7 @@ export default function AdminBookingsPage() {
             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
               dateFilter === new Date(Date.now() + 86400000).toISOString().split('T')[0]
                 ? 'bg-emerald-700 text-white shadow-sm'
-                : 'bg-white border border-sand-300 text-slate-700 hover:bg-slate-100'
+                : 'bg-white border border-sky-200 text-slate-700 hover:bg-slate-100'
             }`}
           >
             Tomorrow
@@ -462,16 +462,16 @@ export default function AdminBookingsPage() {
       </div>
 
       {/* Bookings Table / Cards on mobile */}
-      <div className="bg-white rounded-3xl border border-sand-200 shadow-soft overflow-hidden">
+      <div className="bg-white rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] overflow-hidden">
         {loading ? (
-          <div className="py-12 text-center text-xs font-bold text-royal-900">Loading bookings...</div>
+          <div className="py-12 text-center text-xs font-bold text-ink">Loading bookings...</div>
         ) : bookings.length === 0 ? (
           <div className="py-12 text-center text-xs text-ink/60">No bookings found for the selected criteria.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-sand-200 bg-sand-50/50 text-[11px] font-bold text-ink/60 uppercase tracking-wider">
+                <tr className="border-b border-sky-100 bg-[#fffdf9]/50 text-[11px] font-bold text-ink/60 uppercase tracking-wider">
                   <th className="py-3 px-4">Ref &amp; Customer</th>
                   <th className="py-3 px-4">Venue &amp; Theatre</th>
                   <th className="py-3 px-4">Date &amp; Slot</th>
@@ -483,16 +483,16 @@ export default function AdminBookingsPage() {
               </thead>
               <tbody className="divide-y divide-sand-100">
                 {bookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-sand-50/60 transition-colors">
+                  <tr key={b.id} className="hover:bg-[#fffdf9]/60 transition-colors">
                     
                     {/* Ref & Customer */}
                     <td className="py-3 px-4">
-                      <strong className="block text-royal-900 font-bold">{b.customer_name}</strong>
+                      <strong className="block text-ink font-bold">{b.customer_name}</strong>
                       <div className="flex items-center gap-1.5 text-[11px] text-ink/60">
-                        <span className="font-mono text-royal-700 font-semibold">{b.booking_ref}</span>
+                        <span className="font-mono text-[#237eea] font-semibold">{b.booking_ref}</span>
                         <span>&bull;</span>
                         <a href={`tel:${b.customer_phone}`} className="hover:underline flex items-center gap-0.5">
-                          <Phone className="w-3 h-3 text-royal-700" />
+                          <Phone className="w-3 h-3 text-[#237eea]" />
                           <span>{b.customer_phone}</span>
                         </a>
                       </div>
@@ -500,7 +500,7 @@ export default function AdminBookingsPage() {
 
                     {/* Venue & Theatre */}
                     <td className="py-3 px-4">
-                      <div className="font-bold text-royal-900 flex items-center gap-1">
+                      <div className="font-bold text-ink flex items-center gap-1">
                         <span>{b.theatre_emoji || '🎬'}</span>
                         <span>{b.theatre_name || 'Screen'}</span>
                       </div>
@@ -509,13 +509,13 @@ export default function AdminBookingsPage() {
 
                     {/* Date & Slot */}
                     <td className="py-3 px-4">
-                      <strong className="block text-royal-900">{b.booking_date}</strong>
-                      <span className="text-[11px] text-royal-700 font-semibold">{b.slot_time}</span>
+                      <strong className="block text-ink">{b.booking_date}</strong>
+                      <span className="text-[11px] text-[#237eea] font-semibold">{b.slot_time}</span>
                     </td>
 
                     {/* Pricing */}
                     <td className="py-3 px-4">
-                      <strong className="block text-royal-900 font-black">₹{b.total}</strong>
+                      <strong className="block text-ink font-black">₹{b.total}</strong>
                       <div className="text-[10px] space-x-1">
                         <span className="text-emerald-700 font-bold">Adv: ₹{b.advance_paid || 0}</span>
                         {b.balance > 0 ? (
@@ -543,7 +543,7 @@ export default function AdminBookingsPage() {
                     <td className="py-3 px-4">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${
                         b.status === 'confirmed' ? 'bg-emerald-100 text-emerald-800' :
-                        b.status === 'completed' ? 'bg-royal-100 text-royal-800' :
+                        b.status === 'completed' ? 'bg-royal-100 text-[#155fbd]' :
                         b.status === 'cancelled' ? 'bg-rose-100 text-rose-800' :
                         'bg-amber-100 text-amber-800'
                       }`}>
@@ -568,7 +568,7 @@ export default function AdminBookingsPage() {
                         {/* View / Manage Details */}
                         <button
                           onClick={() => setSelectedBooking(b)}
-                          className="p-1.5 rounded-xl bg-sand-100 hover:bg-sand-200 text-royal-700"
+                          className="p-1.5 rounded-xl bg-[#f0f7ff] hover:bg-[#d9ebff]/50 text-[#237eea]"
                           title="View Details"
                         >
                           <Eye className="w-4 h-4" />
@@ -581,7 +581,7 @@ export default function AdminBookingsPage() {
                               handleAction(b.id, 'soft_delete');
                             }
                           }}
-                          className="p-1.5 rounded-xl bg-sand-100 hover:bg-rose-100 text-rose-600"
+                          className="p-1.5 rounded-xl bg-[#f0f7ff] hover:bg-rose-100 text-rose-600"
                           title="Delete Booking"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -600,11 +600,11 @@ export default function AdminBookingsPage() {
       {/* BOOKING DETAIL MODAL */}
       {selectedBooking && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white max-w-lg w-full rounded-3xl p-6 sm:p-8 space-y-4 shadow-elevated border border-sand-200 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-sand-200 pb-3">
+          <div className="bg-white max-w-lg w-full rounded-3xl p-6 sm:p-8 space-y-4 shadow-elevated border border-sky-100 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-sky-100 pb-3">
               <div>
-                <span className="text-[10px] uppercase font-bold text-royal-700 block">Reservation Details</span>
-                <h3 className="font-playfair text-xl font-bold text-royal-900">
+                <span className="text-[10px] uppercase font-bold text-[#237eea] block">Reservation Details</span>
+                <h3 className="font-playfair text-xl font-bold text-ink">
                   {selectedBooking.customer_name} ({selectedBooking.booking_ref})
                 </h3>
               </div>
@@ -612,10 +612,10 @@ export default function AdminBookingsPage() {
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-sand-50 border border-sand-200">
+              <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-[#fffdf9] border border-sky-100">
                 <div>
                   <span className="text-slate-500 block">Phone</span>
-                  <a href={`tel:${selectedBooking.customer_phone}`} className="font-bold text-royal-700 hover:underline">
+                  <a href={`tel:${selectedBooking.customer_phone}`} className="font-bold text-[#237eea] hover:underline">
                     +91 {selectedBooking.customer_phone}
                   </a>
                 </div>
@@ -625,11 +625,11 @@ export default function AdminBookingsPage() {
                 </div>
                 <div>
                   <span className="text-slate-500 block">Theatre &amp; Branch</span>
-                  <span className="font-bold text-royal-900">{selectedBooking.theatre_name} &bull; {selectedBooking.branch_name}</span>
+                  <span className="font-bold text-ink">{selectedBooking.theatre_name} &bull; {selectedBooking.branch_name}</span>
                 </div>
                 <div>
                   <span className="text-slate-500 block">Date &amp; Slot</span>
-                  <span className="font-bold text-royal-900">{selectedBooking.booking_date} ({selectedBooking.slot_time})</span>
+                  <span className="font-bold text-ink">{selectedBooking.booking_date} ({selectedBooking.slot_time})</span>
                 </div>
                 <div>
                   <span className="text-slate-500 block">Total Amount</span>
@@ -652,7 +652,7 @@ export default function AdminBookingsPage() {
               </button>
 
               {/* Status Action Buttons */}
-              <div className="p-3 rounded-2xl bg-sand-50 border border-sand-200 space-y-2">
+              <div className="p-3 rounded-2xl bg-[#fffdf9] border border-sky-100 space-y-2">
                 <span className="text-[10px] uppercase font-bold text-slate-600 block">Change Status:</span>
                 <div className="flex items-center gap-2">
                   <button
@@ -665,7 +665,7 @@ export default function AdminBookingsPage() {
                   <button
                     type="button"
                     onClick={() => handleAction(selectedBooking.id, 'update_status', { status: 'completed' })}
-                    className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-royal-100 text-royal-800 hover:bg-royal-200 transition-colors"
+                    className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-royal-100 text-[#155fbd] hover:bg-royal-200 transition-colors"
                   >
                     ★ Complete
                   </button>
@@ -684,16 +684,16 @@ export default function AdminBookingsPage() {
               </div>
 
               {selectedBooking.screen_name && (
-                <div className="p-3 rounded-xl bg-sand-100">
+                <div className="p-3 rounded-xl bg-[#f0f7ff]">
                   <span className="text-[10px] text-ink/60 uppercase font-bold block">Screen Title Display</span>
-                  <span className="font-semibold text-royal-900">&ldquo;{selectedBooking.screen_name}&rdquo;</span>
+                  <span className="font-semibold text-ink">&ldquo;{selectedBooking.screen_name}&rdquo;</span>
                 </div>
               )}
 
               {/* Add Payment Field */}
               {selectedBooking.balance > 0 && (
-                <div className="pt-3 border-t border-sand-200">
-                  <label className="block text-[11px] font-bold text-royal-900 mb-1">
+                <div className="pt-3 border-t border-sky-100">
+                  <label className="block text-[11px] font-bold text-ink mb-1">
                     Collect Payment (Remaining Balance: ₹{selectedBooking.balance})
                   </label>
                   <div className="flex gap-2">
@@ -702,7 +702,7 @@ export default function AdminBookingsPage() {
                       value={paymentAddAmount}
                       onChange={(e) => setPaymentAddAmount(e.target.value)}
                       placeholder={`e.g. ${selectedBooking.balance}`}
-                      className="px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 text-xs font-bold"
+                      className="px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-bold"
                     />
                     <button
                       onClick={() => {
@@ -720,7 +720,7 @@ export default function AdminBookingsPage() {
               )}
             </div>
 
-            <div className="flex justify-between items-center pt-4 border-t border-sand-200">
+            <div className="flex justify-between items-center pt-4 border-t border-sky-100">
               <button
                 onClick={() => {
                   const reason = prompt('Enter cancellation reason:') || 'Client cancelled';
@@ -733,7 +733,7 @@ export default function AdminBookingsPage() {
               </button>
               <button
                 onClick={() => setSelectedBooking(null)}
-                className="px-5 py-2.5 rounded-full text-xs font-bold bg-royal-700 text-white"
+                className="px-5 py-2.5 rounded-full text-xs font-bold bg-[#237eea] text-white"
               >
                 Done
               </button>
@@ -745,15 +745,15 @@ export default function AdminBookingsPage() {
       {/* PHONE CALL / MANUAL BOOKING MODAL */}
       {showManualModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white max-w-xl w-full rounded-3xl p-6 sm:p-8 space-y-4 shadow-elevated border-2 border-slate-200 max-h-[92vh] overflow-y-auto">
+          <div className="bg-white max-w-xl w-full rounded-3xl p-6 sm:p-8 space-y-4 shadow-elevated border-2 border-sky-100 max-h-[92vh] overflow-y-auto">
             
-            <div className="flex items-center justify-between border-b border-sand-200 pb-3">
+            <div className="flex items-center justify-between border-b border-sky-100 pb-3">
               <div className="flex items-center gap-2">
                 <span className="p-2 rounded-xl bg-emerald-100 text-emerald-800">
                   <PhoneCall className="w-5 h-5" />
                 </span>
                 <div>
-                  <h3 className="font-playfair text-xl font-bold text-royal-900">
+                  <h3 className="font-playfair text-xl font-bold text-ink">
                     New Phone Call / Direct Booking
                   </h3>
                   <span className="text-[11px] text-slate-500">
@@ -776,14 +776,14 @@ export default function AdminBookingsPage() {
                     placeholder="e.g. Ramesh Babu"
                     value={manualForm.customer_name}
                     onChange={(e) => setManualForm({ ...manualForm, customer_name: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-semibold"
+                    className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-semibold"
                   />
                 </div>
 
                 <div>
                   <label className="block font-bold text-slate-900 mb-1">Phone Number (10 digits) *</label>
                   <div className="flex">
-                    <span className="px-3 py-2 rounded-l-xl bg-slate-200 border border-r-0 border-sand-300 font-bold text-slate-700">
+                    <span className="px-3 py-2 rounded-l-xl bg-slate-200 border border-r-0 border-sky-200 font-bold text-slate-700">
                       +91
                     </span>
                     <input
@@ -792,7 +792,7 @@ export default function AdminBookingsPage() {
                       placeholder="9876543210"
                       value={manualForm.customer_phone}
                       onChange={(e) => setManualForm({ ...manualForm, customer_phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
-                      className="w-full px-3 py-2 rounded-r-xl bg-sand-50 border border-sand-300 font-bold text-slate-900"
+                      className="w-full px-3 py-2 rounded-r-xl bg-[#fffdf9] border border-sky-200 font-bold text-slate-900"
                     />
                   </div>
                 </div>
@@ -806,7 +806,7 @@ export default function AdminBookingsPage() {
                   placeholder="e.g. Happy 25th Birthday Sneha ❤️"
                   value={manualForm.screen_name}
                   onChange={(e) => setManualForm({ ...manualForm, screen_name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-medium"
+                  className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-medium"
                 />
               </div>
 
@@ -822,7 +822,7 @@ export default function AdminBookingsPage() {
                       setManualForm(prev => ({ ...prev, branch_id: newBranch, theatre_id: defaultTheatre }));
                       handleTheatreChange(defaultTheatre);
                     }}
-                    className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-bold"
+                    className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-bold"
                   >
                     <option value={1}>Electronic City (3 Screens)</option>
                     <option value={2}>BTM 2nd Stage (4 Screens)</option>
@@ -834,7 +834,7 @@ export default function AdminBookingsPage() {
                   <select
                     value={manualForm.theatre_id}
                     onChange={(e) => handleTheatreChange(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300 font-bold"
+                    className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-bold"
                   >
                     {manualForm.branch_id === 1 ? (
                       <>
@@ -863,7 +863,7 @@ export default function AdminBookingsPage() {
                     required
                     value={manualForm.booking_date}
                     onChange={(e) => setManualForm({ ...manualForm, booking_date: e.target.value })}
-                    className="px-3 py-1.5 rounded-xl bg-sand-50 border border-sand-300 font-bold"
+                    className="px-3 py-1.5 rounded-xl bg-[#fffdf9] border border-sky-200 font-bold"
                   />
                 </div>
 
@@ -885,9 +885,9 @@ export default function AdminBookingsPage() {
                           onClick={() => setManualForm(prev => ({ ...prev, slot_id: s.id }))}
                           className={`p-2 rounded-xl text-center border-2 transition-all cursor-pointer ${
                             isSelected
-                              ? 'border-royal-800 bg-royal-800 text-white font-black shadow-sm'
+                              ? 'border-royal-800 bg-[#155fbd] text-white font-black shadow-sm'
                               : isBooked
-                              ? 'border-slate-200 bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed line-through'
+                              ? 'border-sky-100 bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed line-through'
                               : 'border-slate-300 bg-white hover:border-royal-600 text-slate-800 font-bold'
                           }`}
                         >
@@ -903,7 +903,7 @@ export default function AdminBookingsPage() {
               </div>
 
               {/* Pricing, Advance Paid & Balance */}
-              <div className="p-3.5 rounded-2xl bg-sand-100 border border-sand-300 space-y-3">
+              <div className="p-3.5 rounded-2xl bg-[#f0f7ff] border border-sky-200 space-y-3">
                 <div className="grid grid-cols-3 gap-2">
                   <div>
                     <label className="block text-[11px] font-bold text-slate-700 mb-1">Total (₹)</label>
@@ -912,7 +912,7 @@ export default function AdminBookingsPage() {
                       required
                       value={manualForm.total}
                       onChange={(e) => setManualForm({ ...manualForm, total: Number(e.target.value) })}
-                      className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-sand-300 font-black text-slate-900"
+                      className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-sky-200 font-black text-slate-900"
                     />
                   </div>
                   <div>
@@ -922,12 +922,12 @@ export default function AdminBookingsPage() {
                       required
                       value={manualForm.advance_paid}
                       onChange={(e) => setManualForm({ ...manualForm, advance_paid: Number(e.target.value) })}
-                      className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-sand-300 font-black text-emerald-700"
+                      className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-sky-200 font-black text-emerald-700"
                     />
                   </div>
                   <div>
                     <label className="block text-[11px] font-bold text-slate-700 mb-1">Balance Due</label>
-                    <div className="px-2.5 py-1.5 rounded-xl bg-white border border-sand-300 font-black text-amber-700">
+                    <div className="px-2.5 py-1.5 rounded-xl bg-white border border-sky-200 font-black text-amber-700">
                       ₹{Math.max(0, manualForm.total - manualForm.advance_paid)}
                     </div>
                   </div>
@@ -967,7 +967,7 @@ export default function AdminBookingsPage() {
                   placeholder="e.g. Asked for red balloon decor, bringing own cake"
                   value={manualForm.notes}
                   onChange={(e) => setManualForm({ ...manualForm, notes: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-sand-50 border border-sand-300"
+                  className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200"
                 />
               </div>
 
@@ -976,7 +976,7 @@ export default function AdminBookingsPage() {
                 <button
                   type="button"
                   onClick={() => setShowManualModal(false)}
-                  className="px-4 py-2.5 rounded-xl bg-sand-200 font-bold text-slate-700 hover:bg-sand-300"
+                  className="px-4 py-2.5 rounded-xl bg-[#d9ebff]/50 font-bold text-slate-700 hover:bg-sand-300"
                 >
                   Cancel
                 </button>
@@ -1058,7 +1058,7 @@ export default function AdminBookingsPage() {
               <button
                 type="button"
                 onClick={() => copyConfirmationText(bookingSuccessData)}
-                className="w-full py-2.5 rounded-2xl bg-sand-100 hover:bg-sand-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full py-2.5 rounded-2xl bg-[#f0f7ff] hover:bg-[#d9ebff]/50 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Copy className="w-4 h-4" />
                 <span>{copiedText ? '✓ Copied to Clipboard!' : 'Copy Confirmation Message'}</span>

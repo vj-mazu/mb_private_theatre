@@ -36,66 +36,70 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-royal-950 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-royal-900 border border-royal-800 rounded-3xl p-8 sm:p-10 text-white shadow-elevated space-y-6">
+    <div className="min-h-screen bg-cream text-ink flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative Orbs */}
+      <div className="hero-orb orb-one" />
+      <div className="hero-orb orb-two" />
+
+      <div className="max-w-md w-full bg-white border border-sky-100 rounded-3xl p-8 sm:p-10 text-ink shadow-[0_20px_60px_rgba(35,126,234,0.1)] space-y-6 relative z-10">
         
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-royal-700 text-amber-400 flex items-center justify-center mx-auto shadow-royal-glow">
-            <Film className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-2xl bg-[#237eea] text-white flex items-center justify-center mx-auto shadow-md shadow-[#237eea]/25">
+            <Film className="w-6 h-6 text-sky-200" />
           </div>
-          <h1 className="font-playfair text-2xl sm:text-3xl font-black">
-            Movie Bash Admin Portal
+          <h1 className="font-playfair text-2xl sm:text-3xl font-black text-ink">
+            Movie<span className="text-[#f39a4b]">Bash</span> Admin
           </h1>
-          <p className="text-xs text-slate-300">
+          <p className="text-xs text-slate-500 font-medium">
             Internal console for venue managers &amp; operations
           </p>
         </div>
 
         {errorMsg && (
-          <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
-            <ShieldAlert className="w-4 h-4 shrink-0 text-rose-400" />
+          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 shrink-0 text-rose-500" />
             <span>{errorMsg}</span>
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">
               Admin Email or Staff Username
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-royal-400 absolute left-3 top-3.5" />
+              <Mail className="w-4 h-4 text-[#237eea] absolute left-3 top-3.5" />
               <input
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@moviebash.in or staff_ec"
-                className="w-full pl-9 pr-4 py-3 rounded-2xl bg-royal-950 border border-royal-800 text-xs text-white focus:outline-none focus:border-amber-400"
+                className="w-full pl-9 pr-4 py-3 rounded-2xl bg-[#fffdf9] border border-sky-200 text-xs font-semibold text-ink focus:outline-none focus:border-[#237eea]"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">
               Password / Security PIN
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-royal-400 absolute left-3 top-3.5" />
+              <Lock className="w-4 h-4 text-[#237eea] absolute left-3 top-3.5" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password or PIN"
-                className="w-full pl-9 pr-4 py-3 rounded-2xl bg-royal-950 border border-royal-800 text-xs text-white focus:outline-none focus:border-amber-400"
+                className="w-full pl-9 pr-4 py-3 rounded-2xl bg-[#fffdf9] border border-sky-200 text-xs font-semibold text-ink focus:outline-none focus:border-[#237eea]"
                 required
               />
             </div>
           </div>
 
           {/* Quick Credential Switchers */}
-          <div className="p-3.5 rounded-2xl bg-royal-950/70 border border-royal-800/80 text-[11px] text-slate-300 space-y-2">
-            <span className="font-bold text-amber-400 block text-[10px] uppercase tracking-wider">
+          <div className="p-3.5 rounded-2xl bg-[#f0f7ff] border border-sky-100 text-[11px] text-slate-600 space-y-2">
+            <span className="font-bold text-[#237eea] block text-[10px] uppercase tracking-wider">
               One-Click Test Accounts:
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -105,7 +109,7 @@ export default function AdminLoginPage() {
                   setEmail('admin@moviebash.in');
                   setPassword('Admin@MovieBash2026!');
                 }}
-                className="px-2.5 py-1 rounded-lg bg-royal-800 hover:bg-amber-400 hover:text-royal-950 text-[10px] font-bold text-white transition-colors"
+                className="px-2.5 py-1 rounded-lg bg-white border border-sky-200 hover:bg-[#237eea] hover:text-white text-[10px] font-bold text-[#155fbd] transition-colors cursor-pointer shadow-xs"
               >
                 Super Admin
               </button>
@@ -115,7 +119,7 @@ export default function AdminLoginPage() {
                   setEmail('staff_ec@moviebash.in');
                   setPassword('Staff@EC2026!');
                 }}
-                className="px-2.5 py-1 rounded-lg bg-royal-800 hover:bg-amber-400 hover:text-royal-950 text-[10px] font-bold text-white transition-colors"
+                className="px-2.5 py-1 rounded-lg bg-white border border-sky-200 hover:bg-[#237eea] hover:text-white text-[10px] font-bold text-[#155fbd] transition-colors cursor-pointer shadow-xs"
               >
                 Staff (Electronic City)
               </button>
@@ -125,7 +129,7 @@ export default function AdminLoginPage() {
                   setEmail('staff_btm@moviebash.in');
                   setPassword('Staff@BTM2026!');
                 }}
-                className="px-2.5 py-1 rounded-lg bg-royal-800 hover:bg-amber-400 hover:text-royal-950 text-[10px] font-bold text-white transition-colors"
+                className="px-2.5 py-1 rounded-lg bg-white border border-sky-200 hover:bg-[#237eea] hover:text-white text-[10px] font-bold text-[#155fbd] transition-colors cursor-pointer shadow-xs"
               >
                 Staff (BTM 2nd Stage)
               </button>
@@ -135,7 +139,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-full font-extrabold text-xs sm:text-sm text-slate-950 bg-amber-400 hover:bg-amber-300 transition-all shadow-royal-glow flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-full font-extrabold text-xs sm:text-sm text-white bg-gradient-to-r from-[#f39a4b] to-[#e6832e] hover:shadow-[0_8px_25px_rgba(243,154,75,0.35)] shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
           >
             <span>{loading ? 'Authenticating...' : 'Sign In to Dashboard'}</span>
             <ArrowRight className="w-4 h-4" />

@@ -58,7 +58,7 @@
       "base_price": 1699,
       "extra_person_price": 150,
       "amenities": "Giant 150-inch Screen, Multi-tier Luxury Seating, Karaoke Microphones, Cake Podium",
-      "image_url": "/images/ambience_2.webp",
+      "image_url": "/images/ambience_5.webp",
       "is_active": 1
     },
     {
@@ -893,5 +893,19 @@
       "created_at": "2026-01-01"
     }
   ],
-  "auditLogs": []
+  "auditLogs": [
+    {
+      "id": 1794387628071,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-11T09:00:28.071Z"
+    }
+  ]
 }

@@ -12,7 +12,7 @@ export const metadata = {
 
 export default function BookNowPage() {
   return (
-    <main className="min-h-screen flex flex-col bg-sand-50">
+    <main className="min-h-screen flex flex-col bg-cream text-ink">
       <AnnouncementBar />
       <Navbar />
       

@@ -27,7 +27,7 @@ export default function FloatingContact() {
         {/* Call Button */}
         <a
           href="tel:+919902923656"
-          className="w-13 h-13 p-3.5 rounded-full bg-royal-700 hover:bg-royal-600 text-white shadow-elevated transition-transform hover:scale-110 flex items-center justify-center group"
+          className="w-13 h-13 p-3.5 rounded-full bg-[#237eea] hover:bg-[#155fbd] text-white shadow-lg transition-transform hover:scale-110 flex items-center justify-center group"
           title="Call Movie Bash"
           aria-label="Call Movie Bash"
         >
@@ -39,7 +39,7 @@ export default function FloatingContact() {
       </div>
 
       {/* Mobile Sticky Bottom Bar with 1-Tap WhatsApp, Call & Booking */}
-      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-sand-200 px-3 py-2 flex items-center gap-2 shadow-elevated">
+      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-sky-100 px-3 py-2 flex items-center gap-2 shadow-lg">
         <a
           href="https://wa.me/919902923656?text=Hi%20Movie%20Bash!%20I%20would%20like%20to%20inquire%20about%20booking%20a%20private%20theatre%20slot."
           target="_blank"
@@ -53,19 +53,19 @@ export default function FloatingContact() {
 
         <a
           href="tel:+919902923656"
-          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full text-xs font-bold text-royal-900 bg-sand-100 border border-sand-200 active:scale-95 transition-transform"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full text-xs font-bold text-[#155fbd] bg-[#d9ebff]/70 border border-sky-200 active:scale-95 transition-transform"
         >
-          <Phone className="w-3.5 h-3.5 text-royal-700" />
+          <Phone className="w-3.5 h-3.5 text-[#237eea]" />
           <span>Call Us</span>
         </a>
 
         <Link
           href="/book-now"
           prefetch={true}
-          className="flex-[1.5] flex items-center justify-center gap-1.5 py-2.5 rounded-full text-xs font-bold text-white bg-royal-700 shadow-royal-glow active:scale-95 transition-transform"
+          className="flex-[1.5] flex items-center justify-center gap-1.5 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#f39a4b] to-[#e6832e] shadow-md active:scale-95 transition-transform"
         >
-          <CalendarDays className="w-3.5 h-3.5 text-amber-300" />
-          <span>Book Now (From ₹899)</span>
+          <CalendarDays className="w-3.5 h-3.5 text-white" />
+          <span>Book Now (₹899)</span>
         </Link>
       </div>
     </>

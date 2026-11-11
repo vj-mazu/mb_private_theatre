@@ -38,41 +38,41 @@ export default function WhyChooseUs() {
   ];
 
   return (
-    <section className="py-10 sm:py-24 bg-sand-100/70 border-b border-sand-200">
+    <section className="py-16 sm:py-24 bg-cream border-b border-sky-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-xs font-bold uppercase tracking-widest text-royal-700">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#fff0df] text-[#f39a4b] border border-[#f39a4b]/30 text-xs font-bold shadow-xs">
             Why Bengaluru Chooses Movie Bash
           </span>
-          <h2 className="font-playfair text-3xl sm:text-5xl font-black text-royal-900 mt-2 tracking-tight">
+          <h2 className="font-playfair text-3xl sm:text-5xl font-black text-ink mt-3 tracking-tight">
             Designed for Pure Privacy &amp; Grand Celebrations
           </h2>
-          <p className="mt-4 text-base text-ink/75">
+          <p className="mt-4 text-base text-slate-600 font-medium">
             Every screen is tailored to give you the comfort of your living room with the luxury of a private multiplex.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {points.slice(0, 3).map((item) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.num}
-                className="p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-white border border-sand-200 shadow-soft hover:shadow-elevated transition-all hover:-translate-y-1 group"
+                className="p-6 sm:p-7 rounded-3xl bg-white border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] hover:shadow-[0_16px_50px_rgba(22,48,79,0.1)] hover:border-sky-300 transition-all hover:-translate-y-1 group"
               >
-                <div className="flex items-center justify-between mb-3 sm:mb-6">
-                  <span className="font-playfair text-2xl sm:text-3xl font-black text-royal-900 group-hover:text-royal-600 transition-colors">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <span className="font-playfair text-2xl sm:text-3xl font-black text-[#237eea]">
                     {item.num}
                   </span>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-royal-100 text-royal-700 flex items-center justify-center group-hover:bg-royal-700 group-hover:text-white transition-colors">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#d9ebff] text-[#155fbd] flex items-center justify-center group-hover:bg-[#237eea] group-hover:text-white transition-colors">
                     <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                 </div>
-                <h3 className="text-base sm:text-xl font-bold text-royal-900 mb-1 sm:mb-2">
+                <h3 className="text-base sm:text-xl font-bold text-ink mb-2">
                   {item.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-ink/70 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
                   {item.desc}
                 </p>
               </div>
@@ -84,20 +84,20 @@ export default function WhyChooseUs() {
             return (
               <div
                 key={item.num}
-                className="p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-white border border-sand-200 shadow-soft hover:shadow-elevated transition-all hover:-translate-y-1 group md:col-span-1 lg:col-span-1"
+                className="p-6 sm:p-7 rounded-3xl bg-white border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] hover:shadow-[0_16px_50px_rgba(22,48,79,0.1)] hover:border-sky-300 transition-all hover:-translate-y-1 group"
               >
-                <div className="flex items-center justify-between mb-3 sm:mb-6">
-                  <span className="font-playfair text-2xl sm:text-3xl font-black text-royal-900 group-hover:text-royal-600 transition-colors">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <span className="font-playfair text-2xl sm:text-3xl font-black text-[#237eea]">
                     {item.num}
                   </span>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-royal-100 text-royal-700 flex items-center justify-center group-hover:bg-royal-700 group-hover:text-white transition-colors">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#d9ebff] text-[#155fbd] flex items-center justify-center group-hover:bg-[#237eea] group-hover:text-white transition-colors">
                     <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                 </div>
-                <h3 className="text-base sm:text-xl font-bold text-royal-900 mb-1 sm:mb-2">
+                <h3 className="text-base sm:text-xl font-bold text-ink mb-2">
                   {item.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-ink/70 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
                   {item.desc}
                 </p>
               </div>
@@ -105,24 +105,27 @@ export default function WhyChooseUs() {
           })}
 
           {/* Bonus 6th highlight card */}
-          <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl royal-gradient text-white shadow-elevated flex flex-col justify-between">
+          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#155fbd] to-[#237eea] text-white shadow-[0_16px_50px_rgba(22,48,79,0.15)] flex flex-col justify-between border border-sky-300/30">
             <div>
-              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-amber-300">Special Offer</span>
-              <h3 className="font-playfair text-xl sm:text-2xl font-bold mt-1.5 sm:mt-2 text-white">
-                Planning a Weekend Surprise?
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-sky-200">Opening Special</span>
+              <h3 className="font-playfair text-2xl sm:text-3xl font-bold mt-2">
+                Flat ₹200 Off First Booking
               </h3>
-              <p className="text-xs sm:text-sm text-slate-200 mt-1.5 sm:mt-2 leading-relaxed">
-                Slots fill up 48 hours in advance. Lock your favorite branch &amp; slot with just ₹500 advance today.
+              <p className="text-xs sm:text-sm text-white/90 mt-3 leading-relaxed">
+                Use promo code <strong className="text-white font-mono bg-white/20 px-2 py-0.5 rounded">MOVIEBASH200</strong> on checkout. Includes free celebration cake &amp; personal name board!
               </p>
             </div>
-            <a
-              href="tel:+919902923656"
-              className="mt-4 sm:mt-6 inline-flex items-center justify-center gap-2 py-2.5 px-4 sm:py-3 sm:px-5 rounded-full bg-amber-400 text-royal-950 font-bold text-xs sm:text-sm hover:bg-amber-300 transition-colors"
-            >
-              <PhoneCall className="w-4 h-4" />
-              <span>Call +91 99029 23656</span>
-            </a>
+
+            <div className="mt-6 pt-4 border-t border-white/20">
+              <a
+                href="/book-now"
+                className="w-full py-3 rounded-full text-center text-xs sm:text-sm font-bold text-[#16304f] bg-white hover:bg-sky-50 shadow-md block transition-all hover:scale-105"
+              >
+                Claim ₹200 Voucher &rarr;
+              </a>
+            </div>
           </div>
+
         </div>
 
       </div>

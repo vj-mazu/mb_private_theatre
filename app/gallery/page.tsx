@@ -78,16 +78,18 @@ function GalleryContent() {
   return (
     <>
       {/* Header */}
-      <section className="py-16 sm:py-20 bg-gradient-to-b from-royal-950 to-royal-900 text-white text-center">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-royal-800 text-amber-300 text-xs font-bold border border-royal-700">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#f0f7ff] via-cream to-cream text-ink text-center relative overflow-hidden border-b border-sky-100">
+        <div className="hero-orb orb-one" />
+        <div className="hero-orb orb-two" />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-4 relative z-10">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#fff0df] text-[#f39a4b] border border-[#f39a4b]/30 text-xs font-bold shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#f39a4b]" />
             <span>Captured Celebrations</span>
           </div>
-          <h1 className="font-playfair text-4xl sm:text-5xl font-black tracking-tight">
+          <h1 className="font-playfair text-4xl sm:text-5xl font-black tracking-tight text-ink">
             Celebration &amp; Room Gallery
           </h1>
-          <p className="text-sm sm:text-base text-slate-200 max-w-xl mx-auto font-normal">
+          <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto font-medium">
             Real, unedited photos of our Couple Suites, Celebration Theatres, and Family Cinemas in Bengaluru.
           </p>
 
@@ -100,13 +102,13 @@ function GalleryContent() {
                 <button
                   key={cat.value}
                   onClick={() => setActiveCategory(cat.value)}
-                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                     isSelected
-                      ? 'bg-amber-400 text-slate-950 font-black shadow-lg scale-105 ring-2 ring-amber-300'
-                      : 'bg-royal-800/80 text-slate-200 hover:text-white hover:bg-royal-700 border border-royal-700'
+                      ? 'bg-[#237eea] text-white font-black shadow-md scale-105 ring-2 ring-sky-300'
+                      : 'bg-white text-ink hover:text-[#237eea] hover:bg-sky-50 border border-sky-100'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-slate-950' : 'text-amber-300'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-[#237eea]'}`} />
                   <span>{cat.label}</span>
                 </button>
               );
@@ -116,17 +118,17 @@ function GalleryContent() {
       </section>
 
       {/* Gallery Grid */}
-      <section className="py-12 sm:py-20 bg-sand-50">
+      <section className="py-12 sm:py-20 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="mb-6 flex items-center justify-between">
-            <div className="text-xs sm:text-sm font-bold text-slate-800">
-              Showing <span className="text-emerald-700 font-black">{filteredItems.length} photos</span> in {activeCategory === 'All' ? 'All Galleries' : `${activeCategory} Category`}
+            <div className="text-xs sm:text-sm font-bold text-slate-700">
+              Showing <span className="text-[#237eea] font-black">{filteredItems.length} photos</span> in {activeCategory === 'All' ? 'All Galleries' : `${activeCategory} Category`}
             </div>
             {activeCategory !== 'All' && (
               <button
                 onClick={() => setActiveCategory('All')}
-                className="text-xs font-bold text-royal-700 hover:underline"
+                className="text-xs font-bold text-[#237eea] hover:underline cursor-pointer"
               >
                 Show All Photos &rarr;
               </button>
@@ -138,7 +140,7 @@ function GalleryContent() {
               <div
                 key={item.id}
                 onClick={() => setLightboxImage(item)}
-                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden aspect-[4/5] bg-sand-200 shadow-soft cursor-pointer hover:shadow-elevated transition-all hover:-translate-y-1 border border-sand-200"
+                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden aspect-[4/5] bg-sky-50 shadow-soft cursor-pointer hover:shadow-[0_16px_50px_rgba(22,48,79,0.12)] transition-all hover:-translate-y-1 border border-sky-100"
               >
                 <Image
                   src={item.src}
@@ -226,7 +228,7 @@ function GalleryContent() {
 
 export default function GalleryPage() {
   return (
-    <main className="min-h-screen flex flex-col bg-sand-50">
+    <main className="min-h-screen flex flex-col bg-cream text-ink">
       <AnnouncementBar />
       <Navbar />
       <Suspense fallback={<div className="p-12 text-center text-sm font-bold text-royal-900">Loading Celebration Gallery...</div>}>

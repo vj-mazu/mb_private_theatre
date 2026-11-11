@@ -36,7 +36,7 @@ export default function AdminReportsPage() {
 
   if (loading || !stats) {
     return (
-      <div className="py-16 text-center text-xs font-bold text-royal-900 animate-pulse">
+      <div className="py-16 text-center text-xs font-bold text-ink animate-pulse">
         Generating real-time financial statements &amp; audit reports...
       </div>
     );
@@ -58,8 +58,8 @@ export default function AdminReportsPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-royal-700">Financial Intelligence</span>
-          <h1 className="font-playfair text-2xl sm:text-3xl font-black text-royal-900">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#237eea]">Financial Intelligence</span>
+          <h1 className="font-playfair text-2xl sm:text-3xl font-black text-ink">
             Revenue &amp; Analytics Dashboard
           </h1>
           <p className="text-xs text-ink/70 mt-1">
@@ -68,28 +68,28 @@ export default function AdminReportsPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="p-1 rounded-2xl bg-sand-200 border border-sand-300 flex text-xs font-bold">
+          <div className="p-1 rounded-2xl bg-[#d9ebff]/50 border border-sky-200 flex text-xs font-bold">
             <button
               onClick={() => setTimeframe('all')}
-              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'all' ? 'bg-royal-700 text-white shadow-sm' : 'text-royal-900'}`}
+              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'all' ? 'bg-[#237eea] text-white shadow-sm' : 'text-ink'}`}
             >
               Overview
             </button>
             <button
               onClick={() => setTimeframe('daily')}
-              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'daily' ? 'bg-royal-700 text-white shadow-sm' : 'text-royal-900'}`}
+              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'daily' ? 'bg-[#237eea] text-white shadow-sm' : 'text-ink'}`}
             >
               Daily
             </button>
             <button
               onClick={() => setTimeframe('monthly')}
-              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'monthly' ? 'bg-royal-700 text-white shadow-sm' : 'text-royal-900'}`}
+              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'monthly' ? 'bg-[#237eea] text-white shadow-sm' : 'text-ink'}`}
             >
               Monthly
             </button>
             <button
               onClick={() => setTimeframe('cancelled')}
-              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'cancelled' ? 'bg-royal-700 text-white shadow-sm' : 'text-royal-900'}`}
+              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'cancelled' ? 'bg-[#237eea] text-white shadow-sm' : 'text-ink'}`}
             >
               Cancellations
             </button>
@@ -98,9 +98,9 @@ export default function AdminReportsPage() {
           <a
             href="/api/admin/bookings/export"
             download
-            className="px-4 py-2 rounded-2xl text-xs font-bold text-royal-900 bg-sand-100 hover:bg-sand-200 border border-sand-300 transition-colors flex items-center gap-1.5 shrink-0"
+            className="px-4 py-2 rounded-2xl text-xs font-bold text-ink bg-[#f0f7ff] hover:bg-[#d9ebff]/50 border border-sky-200 transition-colors flex items-center gap-1.5 shrink-0"
           >
-            <Download className="w-4 h-4 text-royal-700" />
+            <Download className="w-4 h-4 text-[#237eea]" />
             <span>Export CSV</span>
           </a>
         </div>
@@ -110,7 +110,7 @@ export default function AdminReportsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
         {/* 1. TOTAL REVENUE */}
-        <div className="p-6 rounded-3xl bg-white border-2 border-slate-200 shadow-sm hover:border-royal-500 transition-all">
+        <div className="p-6 rounded-3xl bg-white border-2 border-sky-100 shadow-sm hover:border-royal-500 transition-all">
           <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
             <span>Total Gross Revenue</span>
             <span className="p-2 rounded-xl bg-emerald-50 text-emerald-700">
@@ -131,14 +131,14 @@ export default function AdminReportsPage() {
         </div>
 
         {/* 2. MONTHLY REVENUE */}
-        <div className="p-6 rounded-3xl bg-white border-2 border-slate-200 shadow-sm hover:border-royal-500 transition-all">
+        <div className="p-6 rounded-3xl bg-white border-2 border-sky-100 shadow-sm hover:border-royal-500 transition-all">
           <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
             <span>This Month Revenue</span>
-            <span className="p-2 rounded-xl bg-royal-50 text-royal-700">
+            <span className="p-2 rounded-xl bg-royal-50 text-[#237eea]">
               <Calendar className="w-4 h-4" />
             </span>
           </div>
-          <div className="font-playfair text-3xl font-black text-royal-900 mt-2">
+          <div className="font-playfair text-3xl font-black text-ink mt-2">
             ₹{metrics.this_month_revenue.toLocaleString()}
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
@@ -153,7 +153,7 @@ export default function AdminReportsPage() {
         </div>
 
         {/* 3. DAILY REVENUE */}
-        <div className="p-6 rounded-3xl bg-white border-2 border-slate-200 shadow-sm hover:border-royal-500 transition-all">
+        <div className="p-6 rounded-3xl bg-white border-2 border-sky-100 shadow-sm hover:border-royal-500 transition-all">
           <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
             <span>Today&apos;s Daily Revenue</span>
             <span className="p-2 rounded-xl bg-amber-50 text-amber-700">
@@ -198,11 +198,11 @@ export default function AdminReportsPage() {
 
       {/* DAILY TIMELINE SECTION */}
       {(timeframe === 'all' || timeframe === 'daily') && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-slate-200 shadow-sm space-y-5">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-sky-100 shadow-sm space-y-5">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-royal-700" />
-              <h2 className="font-playfair text-xl font-bold text-royal-900">
+              <Calendar className="w-5 h-5 text-[#237eea]" />
+              <h2 className="font-playfair text-xl font-bold text-ink">
                 14-Day Daily Revenue Activity
               </h2>
             </div>
@@ -214,7 +214,7 @@ export default function AdminReportsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-extrabold">
+                <tr className="border-b border-sky-100 text-slate-500 uppercase tracking-wider font-extrabold">
                   <th className="py-2.5 px-3">Date</th>
                   <th className="py-2.5 px-3">Screenings</th>
                   <th className="py-2.5 px-3">Gross Revenue</th>
@@ -229,7 +229,7 @@ export default function AdminReportsPage() {
                   const pct = Math.round((day.revenue / maxDayRev) * 100);
                   const isToday = day.date === new Date().toISOString().split('T')[0];
                   return (
-                    <tr key={day.date} className={`hover:bg-sand-50/50 ${isToday ? 'bg-amber-50/60 font-bold' : ''}`}>
+                    <tr key={day.date} className={`hover:bg-[#fffdf9]/50 ${isToday ? 'bg-amber-50/60 font-bold' : ''}`}>
                       <td className="py-3 px-3">
                         <span className="font-bold text-slate-900">{day.display_date}</span>
                         {isToday && (
@@ -271,11 +271,11 @@ export default function AdminReportsPage() {
 
       {/* MONTHLY TIMELINE SECTION */}
       {(timeframe === 'all' || timeframe === 'monthly') && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-slate-200 shadow-sm space-y-5">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-sky-100 shadow-sm space-y-5">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-royal-700" />
-              <h2 className="font-playfair text-xl font-bold text-royal-900">
+              <TrendingUp className="w-5 h-5 text-[#237eea]" />
+              <h2 className="font-playfair text-xl font-bold text-ink">
                 Monthly Financial History (Last 6 Months)
               </h2>
             </div>
@@ -286,10 +286,10 @@ export default function AdminReportsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {monthly_timeline.map((m: any) => (
-              <div key={m.month_key} className="p-5 rounded-2xl bg-sand-50 border border-sand-200 space-y-3">
+              <div key={m.month_key} className="p-5 rounded-2xl bg-[#fffdf9] border border-sky-100 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-playfair text-lg font-bold text-royal-900">{m.display_month}</span>
-                  <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-white text-royal-800 border border-sand-300">
+                  <span className="font-playfair text-lg font-bold text-ink">{m.display_month}</span>
+                  <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-white text-[#155fbd] border border-sky-200">
                     {m.count} Bookings
                   </span>
                 </div>
@@ -304,7 +304,7 @@ export default function AdminReportsPage() {
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-600">Avg Ticket Value:</span>
-                    <strong className="text-royal-700">
+                    <strong className="text-[#237eea]">
                       ₹{m.count > 0 ? Math.round(m.revenue / m.count).toLocaleString() : 0}
                     </strong>
                   </div>
@@ -321,7 +321,7 @@ export default function AdminReportsPage() {
           <div className="flex items-center justify-between border-b border-rose-100 pb-4">
             <div className="flex items-center gap-2">
               <XCircle className="w-5 h-5 text-rose-600" />
-              <h2 className="font-playfair text-xl font-bold text-royal-900">
+              <h2 className="font-playfair text-xl font-bold text-ink">
                 Cancelled Bookings &amp; Refund Ledger ({cancelled_list.length})
               </h2>
             </div>
@@ -338,7 +338,7 @@ export default function AdminReportsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-extrabold">
+                  <tr className="border-b border-sky-100 text-slate-500 uppercase tracking-wider font-extrabold">
                     <th className="py-2.5 px-3">Ref &amp; Customer</th>
                     <th className="py-2.5 px-3">Screen &amp; Date</th>
                     <th className="py-2.5 px-3">Original Total</th>
@@ -354,7 +354,7 @@ export default function AdminReportsPage() {
                         <span className="text-slate-500 font-mono text-[11px]">{c.ref} &bull; {c.customer_phone}</span>
                       </td>
                       <td className="py-3 px-3">
-                        <span className="block font-bold text-royal-900">{c.theatre_name}</span>
+                        <span className="block font-bold text-ink">{c.theatre_name}</span>
                         <span className="text-[11px] text-slate-500">{c.booking_date} &bull; {c.branch_name}</span>
                       </td>
                       <td className="py-3 px-3 font-bold text-slate-700">
@@ -383,9 +383,9 @@ export default function AdminReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Booking Channel Distribution (Phone Call vs Web vs Walk-in) */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-slate-200 shadow-sm space-y-4">
-          <h3 className="font-playfair text-xl font-bold text-royal-900 flex items-center gap-2">
-            <PhoneCall className="w-5 h-5 text-royal-700" />
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-sky-100 shadow-sm space-y-4">
+          <h3 className="font-playfair text-xl font-bold text-ink flex items-center gap-2">
+            <PhoneCall className="w-5 h-5 text-[#237eea]" />
             <span>Booking Source Breakdown</span>
           </h3>
           <p className="text-xs text-slate-500">
@@ -394,9 +394,9 @@ export default function AdminReportsPage() {
 
           <div className="space-y-3 pt-2">
             {channel_distribution.map((ch: any) => (
-              <div key={ch.source_key} className="p-4 rounded-2xl bg-sand-50 border border-sand-200 flex items-center justify-between">
+              <div key={ch.source_key} className="p-4 rounded-2xl bg-[#fffdf9] border border-sky-100 flex items-center justify-between">
                 <div>
-                  <strong className="block text-sm text-royal-900">{ch.name}</strong>
+                  <strong className="block text-sm text-ink">{ch.name}</strong>
                   <span className="text-xs text-slate-500">{ch.count} Bookings ({ch.pct}% of revenue)</span>
                 </div>
                 <span className="font-playfair text-xl font-black text-emerald-700">
@@ -408,9 +408,9 @@ export default function AdminReportsPage() {
         </div>
 
         {/* Branch Revenue Breakdown */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-slate-200 shadow-sm space-y-4">
-          <h3 className="font-playfair text-xl font-bold text-royal-900 flex items-center gap-2">
-            <Building className="w-5 h-5 text-royal-700" />
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-sky-100 shadow-sm space-y-4">
+          <h3 className="font-playfair text-xl font-bold text-ink flex items-center gap-2">
+            <Building className="w-5 h-5 text-[#237eea]" />
             <span>Branch Performance Comparison</span>
           </h3>
           <p className="text-xs text-slate-500">
@@ -419,14 +419,14 @@ export default function AdminReportsPage() {
 
           <div className="space-y-3 pt-2">
             {branch_distribution.map((b: any) => (
-              <div key={b.id} className="p-4 rounded-2xl bg-sand-50 border border-sand-200 space-y-2">
+              <div key={b.id} className="p-4 rounded-2xl bg-[#fffdf9] border border-sky-100 space-y-2">
                 <div className="flex items-center justify-between">
-                  <strong className="text-base text-royal-900">{b.name}</strong>
+                  <strong className="text-base text-ink">{b.name}</strong>
                   <span className="font-playfair text-xl font-black text-emerald-700">
                     ₹{b.revenue.toLocaleString()}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-xs text-slate-600 pt-1 border-t border-sand-200">
+                <div className="flex items-center justify-between text-xs text-slate-600 pt-1 border-t border-sky-100">
                   <span>{b.count} Total Bookings</span>
                   <span className="font-bold text-amber-700">
                     Today: {b.today_count} shows (₹{b.today_revenue.toLocaleString()})

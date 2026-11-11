@@ -160,7 +160,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-sand-50 text-ink antialiased selection:bg-royal-100 selection:text-royal-900">
+      <body className="min-h-screen flex flex-col bg-cream text-ink antialiased selection:bg-sky-100 selection:text-[#155fbd]">
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
             <Script

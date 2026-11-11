@@ -44,33 +44,35 @@ export default function BTMPage() {
   ];
 
   return (
-    <main className="min-h-screen flex flex-col bg-sand-50">
+    <main className="min-h-screen flex flex-col bg-cream text-ink">
       <AnnouncementBar />
       <Navbar />
 
-      <section className="py-16 sm:py-20 bg-gradient-to-b from-royal-950 to-royal-900 text-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-4">
-          <span className="px-3 py-1 rounded-full bg-amber-400 text-royal-950 text-xs font-black uppercase">
+      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#f0f7ff] via-cream to-cream text-ink relative overflow-hidden border-b border-sky-100">
+        <div className="hero-orb orb-one" />
+        <div className="hero-orb orb-two" />
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-4 relative z-10">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#fff0df] text-[#f39a4b] border border-[#f39a4b]/30 text-xs font-bold shadow-xs">
             Newly Launched &bull; BTM 2nd Stage
           </span>
-          <h1 className="font-playfair text-3xl sm:text-5xl font-black">
+          <h1 className="font-playfair text-3xl sm:text-5xl font-black text-ink">
             Movie Bash – BTM 2nd Stage
           </h1>
-          <p className="text-sm sm:text-base text-slate-200 max-w-2xl mx-auto font-normal">
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto font-medium">
             Located near Udupi Garden Signal, 16th Main Road, BTM 2nd Stage, Bengaluru 560076.
           </p>
           <div className="pt-4 flex flex-wrap justify-center gap-3">
             <Link
               href="/book-now?branch=btm-stage-2"
-              className="px-6 py-3 rounded-full text-xs sm:text-sm font-bold text-white bg-royal-700 hover:bg-royal-600 shadow-royal-glow"
+              className="px-6 py-3 rounded-full text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#f39a4b] to-[#e6832e] hover:shadow-[0_8px_25px_rgba(243,154,75,0.35)] shadow-md transition-all hover:scale-105"
             >
-              Book BTM 2nd Stage Slot
+              Book BTM 2nd Stage Slot &rarr;
             </Link>
             <a
               href="https://maps.google.com/?q=BTM+2nd+Stage+Bengaluru"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 rounded-full text-xs sm:text-sm font-bold text-royal-900 bg-sand-100 hover:bg-sand-200"
+              className="px-6 py-3 rounded-full text-xs sm:text-sm font-bold text-[#155fbd] bg-[#d9ebff]/70 border border-sky-200 hover:bg-[#d9ebff] transition-all"
             >
               Get Directions &rarr;
             </a>
@@ -82,31 +84,31 @@ export default function BTMPage() {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="font-playfair text-3xl font-black text-royal-900">
+            <h2 className="font-playfair text-3xl font-black text-ink">
               Theatres at BTM 2nd Stage
             </h2>
-            <p className="text-xs sm:text-sm text-ink/70 mt-2">
+            <p className="text-xs sm:text-sm text-slate-600 mt-2">
               Four brand new private celebration suites with Dolby acoustics.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {screens.map((s, idx) => (
-              <div key={idx} className="rounded-3xl bg-white border border-sand-200 overflow-hidden shadow-soft flex flex-col justify-between">
+              <div key={idx} className="rounded-3xl bg-white border border-sky-100 overflow-hidden shadow-[0_12px_40px_rgba(22,48,79,0.06)] flex flex-col justify-between hover:border-sky-300 transition-all">
                 <div className="relative h-48 w-full">
                   <Image src={s.image} alt={s.name} fill sizes="(max-width: 768px) 100vw, 350px" className="object-cover" />
                 </div>
                 <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex justify-between items-baseline mb-2">
-                      <h3 className="font-bold text-lg text-royal-900">{s.name}</h3>
-                      <span className="font-playfair font-black text-royal-700">{s.price}</span>
+                      <h3 className="font-bold text-lg text-ink">{s.name}</h3>
+                      <span className="font-playfair font-black text-[#237eea] text-lg">{s.price}</span>
                     </div>
-                    <span className="text-xs text-ink/60 block mb-3">{s.capacity}</span>
-                    <ul className="space-y-1.5 text-xs text-ink/80">
+                    <span className="text-xs text-slate-500 block mb-3 font-medium">{s.capacity}</span>
+                    <ul className="space-y-1.5 text-xs text-slate-600">
                       {s.amenities.map((a, i) => (
                         <li key={i} className="flex items-center gap-1.5">
-                          <Check className="w-3.5 h-3.5 text-royal-600" />
+                          <Check className="w-3.5 h-3.5 text-[#237eea]" />
                           <span>{a}</span>
                         </li>
                       ))}
@@ -115,9 +117,9 @@ export default function BTMPage() {
 
                   <Link
                     href={`/book-now?branch=btm-stage-2`}
-                    className="w-full py-2.5 rounded-full text-center text-xs font-bold text-white bg-royal-700 hover:bg-royal-600 transition-colors shadow-sm block mt-4"
+                    className="w-full py-3 rounded-full text-center text-xs font-bold text-white bg-gradient-to-r from-[#237eea] to-[#155fbd] hover:opacity-95 shadow-md block mt-4 transition-all"
                   >
-                    Select &amp; Book
+                    Select &amp; Book &rarr;
                   </Link>
                 </div>
               </div>

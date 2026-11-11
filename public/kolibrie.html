@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kolibrie Studio | Movie Bash Private Cinema</title>
+  <meta name="description" content="Kolibrie: a small studio for scroll-stopping reels, films and motion. Private cinema and bespoke celebrations in Bengaluru.">
+
+  <!-- Self-hosted / Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Playfair:opsz,wdth,wght@5..1200,87.5..112.5,300..900&family=Titan+One&family=Yellowtail&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream: #faf3e4;
+      --ink: #141110;
+      --tomato: #ef4a23;
+      --butter: #ffd46e;
+      --sky: #8fc6e8;
+      --pink: #f6a9c2;
+      --sage: #b9c48a;
+      --white: #ffffff;
+      --night: #141110;
+      --page: var(--cream);
+    }
+
+    /* 3. Scaling & Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: calc(100vw / 90);
+      background-color: var(--page);
+    }
+
+    @media (max-width: 991px) {
+      html { font-size: calc(100vw / 60); }
+    }
+
+    @media (max-width: 600px) {
+      html { font-size: calc(100vw / 24.375); }
+    }
+
+    body {
+      background-color: var(--page);
+      color: var(--ink);
+      font-family: 'Archivo', sans-serif;
+      font-weight: 400;
+      overflow-x: clip;
+      transition: background-color .7s cubic-bezier(.65, .05, 0, 1);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html[data-theme="dark"] body {
+      --page: var(--night);
+      background-color: var(--night);
+      color: var(--cream);
+    }
+
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img, video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Ready state hides main until reveal */
+    main {
+      visibility: hidden;
+    }
+    html[data-page-ready] main {
+      visibility: visible;
+    }
+
+    /* SplitText line mask fix */
+    .line {
+      padding-bottom: 0.06em;
+      margin-bottom: -0.06em;
+      overflow: hidden;
+    }
+
+    /* Typography Classes */
+    .hero-h1 {
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: "wght" 700, "wdth" 72;
+      font-size: 9rem;
+      line-height: 0.8em;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    @media (max-width: 991px) { .hero-h1 { font-size: 6.4rem; } }
+    @media (max-width: 600px) { .hero-h1 { font-size: 4rem; } }
+
+    .section-h2 {
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: "wght" 700, "wdth" 72;
+      font-size: 8rem;
+      line-height: 0.8em;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+    @media (max-width: 991px) { .section-h2 { font-size: 6rem; } }
+    @media (max-width: 600px) { .section-h2 { font-size: 4.2rem; } }
+
+    .alt-word {
+      font-family: 'Playfair', serif;
+      font-variation-settings: "wght" 300, "wdth" 87.5, "opsz" 120;
+      letter-spacing: -0.035em;
+      text-transform: none;
+      display: inline-block;
+    }
+
+    .eyebrow-m {
+      font-family: 'Playfair', serif;
+      font-variation-settings: "wght" 500, "wdth" 87.5, "opsz" 40;
+      font-size: 2.5rem;
+      line-height: 1em;
+      letter-spacing: -0.03em;
+    }
+    @media (max-width: 600px) { .eyebrow-m { font-size: 1.75rem; } }
+
+    .eyebrow-s {
+      font-family: 'Playfair', serif;
+      font-variation-settings: "wght" 500, "wdth" 87.5, "opsz" 40;
+      font-size: 2rem;
+      line-height: 1em;
+      letter-spacing: -0.03em;
+    }
+    @media (max-width: 600px) { .eyebrow-s { font-size: 1.5rem; } }
+
+    .para-playfair {
+      font-family: 'Playfair', serif;
+      font-variation-settings: "wght" 400, "wdth" 100, "opsz" 20;
+      font-size: 1.25rem;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+    }
+
+    /* 5.1 Load Wipe Overlay */
+    #load-wipe {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      pointer-events: none;
+      overflow: clip;
+      width: 100vw;
+      height: 100vh;
+    }
+    #load-wipe[data-transition-ready] {
+      display: none !important;
+    }
+    #load-wipe svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 5.2 Cursor Label ("View case ->") */
+    #cursor-label-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-label-card {
+      background: var(--butter);
+      color: var(--ink);
+      width: 9.5rem;
+      height: 2.4rem;
+      overflow: hidden;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      transform: scale(0);
+      transition: transform .4s cubic-bezier(.65, .05, 0, 1);
+      box-shadow: 0 10px 25px rgba(20, 17, 16, 0.15);
+    }
+    #cursor-label-wrap[data-cursor-marquee-status="active"] .cursor-label-card {
+      transform: scale(1);
+    }
+    .cursor-marquee-track {
+      position: absolute;
+      white-space: nowrap;
+      display: flex;
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: "wght" 700, "wdth" 72;
+      font-size: 1.15rem;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+    }
+    .cursor-marquee-track span {
+      padding: 0.375em 0.35em;
+    }
+    @keyframes marqueeScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .cursor-marquee-track.running {
+      animation: marqueeScroll 3s linear infinite;
+    }
+
+    /* 5.3 Fixed Nav */
+    .site-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+    .site-nav > * {
+      pointer-events: auto;
+    }
+    .nav-logo {
+      font-family: 'Yellowtail', cursive;
+      font-size: 3.6rem;
+      line-height: 1;
+      color: var(--tomato);
+      transform: rotate(-8deg);
+      transform-origin: left center;
+      margin-top: 0.2rem;
+      display: inline-block;
+      transition: transform .3s ease;
+    }
+    .nav-logo:hover {
+      transform: rotate(-4deg) scale(1.05);
+    }
+    .nav-center-pill {
+      position: absolute;
+      left: 50%;
+      top: 1.25rem;
+      transform: translateX(-50%);
+      height: 3rem;
+      padding: 0 1.25rem;
+      gap: 1.5rem;
+      background: var(--white);
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(20, 17, 16, 0.06);
+    }
+    @media (max-width: 991px) {
+      .nav-center-pill { display: none; }
+    }
+    .nav-link-item {
+      position: relative;
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: "wght" 700, "wdth" 72;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .draw-underline-box {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      height: 0.5em;
+      color: var(--tomato);
+      pointer-events: none;
+    }
+    .draw-underline-box svg {
+      width: 100%;
+      height: 100%;
+    }
+    .nav-cta-btn {
+      height: 3rem;
+      padding: 0 1.25rem;
+      gap: 0.5rem;
+      background: var(--white);
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(20, 17, 16, 0.06);
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: "wght" 700, "wdth" 72;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .tomato-dot {
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
+      background: var(--tomato);
+    }
+    @media (max-width: 600px) {
+      .site-nav { padding: 1rem; }
+      .nav-logo { font-size: 2.6rem; }
+      .nav-cta-btn { height: 2.5rem; padding: 0 0.9rem; font-size: 0.95rem; }
+    }
+
+    /* 5.4 Hero Section */
+    .hero-section {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-video-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 50%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    @media (max-width: 600px) {
+      .hero-video-bg { object-position: 6% 50%; }
+    }
+
+    /* Hero Cursor Card */
+    .hero-cursor-card {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 16rem;
+      height: 16rem;
+      translate: -50% -50%;
+      overflow: hidden;
+      z-index: 1;
+      border-radius: 1.2rem;
+      box-shadow: 0 20px 45px rgba(20, 17, 16, 0.2);
+      pointer-events: none;
+      opacity: 0;
+    }
+    .hero-cursor-card-inner {
+      width: 100%;
+      height: 100%;
+      transform: scale(1.2);
+      position: relative;
+    }
+    .hero-cursor-photo {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+    .hero-cursor-photo.on {
+      opacity: 1;
+    }
+    @media (max-width: 600px) {
+      .hero-cursor-card {
+        top: 13% !important;
+        left: 50% !important;
+        width: 7.5rem !important;
+        height: 7.5rem !important;
+        opacity: 1 !important;
+        transform: rotate(-5deg) !important;
+        translate: -50% 0 !important;
+      }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      margin-top: -3rem;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .hero-content {
+        gap: 1.4rem;
+        margin-top: 5rem;
+        padding: 0 1rem;
+      }
+    }
+
+    /* Reel Action Link */
+    .see-reel-link {
+      font-family: 'Playfair', serif;
+      font-variation-settings: "wght" 500, "wdth" 87.5, "opsz" 40;
+      font-size: 2.1rem;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375em;
+      position: relative;
+      color: var(--ink);
+    }
+    @media (max-width: 600px) { .see-reel-link { font-size: 1.6rem; } }
+
+    .reel-arrow-square {
+      width: 1em;
+      height: 1em;
+      background: var(--tomato);
+      border-radius: 0.2em;
+      overflow: hidden;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .reel-arrow-slider {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform .525s cubic-bezier(.175, .885, .32, 1.275);
+    }
+    .see-reel-link:hover .reel-arrow-slider {
+      transform: translateY(-50%);
+    }
+    .reel-arrow-svg {
+      width: 0.65em;
+      height: 0.65em;
+      fill: var(--white);
+      flex-shrink: 0;
+      margin: 0.175em 0;
+    }
+
+    /* 5.4 Client Marquee */
+    .hero-marquee-wrap {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 0;
+      width: 120%;
+      margin-left: -10%;
+      z-index: 2;
+      overflow: hidden;
+      display: flex;
+    }
+    .hero-marquee-track {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .marquee-mark-box {
+      width: 9rem;
+      height: 7rem;
+      margin: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--tomato);
+    }
+    @media (max-width: 600px) {
+      .marquee-mark-box {
+        width: 5.5rem;
+        height: 5rem;
+        margin: 0 1rem;
+      }
+    }
+    .marquee-mark-box svg {
+      width: 60%;
+      height: 60%;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    /* 5.5 Latest Drops (3D Card Stack) */
+    .drops-section {
+      position: relative;
+      background: var(--page);
+    }
+    .drops-pin-container {
+      height: 100vh;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 38fr 62fr;
+      gap: 2rem;
+      padding: 0 3rem 0 5rem;
+      align-items: center;
+    }
+    @media (max-width: 991px) {
+      .drops-pin-container {
+        height: auto;
+        grid-template-columns: 1fr;
+        padding: 6rem 1.5rem 4rem;
+        gap: 3rem;
+      }
+    }
+
+    .drops-left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+    .drops-left-col .eyebrow-s {
+      max-width: 26rem;
+    }
+
+    .drops-stage {
+      position: relative;
+      height: 100%;
+      perspective: 1400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @media (max-width: 991px) {
+      .drops-stage {
+        perspective: none;
+        height: auto;
+      }
+    }
+
+    .drops-stack-root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+    }
+    @media (max-width: 991px) {
+      .drops-stack-root {
+        transform-style: flat;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        height: auto;
+      }
+    }
+
+    .drops-slide {
+      position: absolute;
+      aspect-ratio: 1.75;
+      width: min(80vh, 52vw);
+      left: 50%;
+      top: calc(50% - 5vh);
+      translate: -50% -50%;
+      cursor: pointer;
+    }
+    @media (max-width: 991px) {
+      .drops-slide {
+        position: relative;
+        left: auto;
+        top: auto;
+        translate: none;
+        width: 100%;
+        aspect-ratio: 1.75;
+      }
+    }
+
+    .drops-card-frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 1.6rem;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(20, 17, 16, 0.16);
+    }
+    .drops-crop-box {
+      position: absolute;
+      inset: 1.75vh;
+      border-radius: 1.2rem;
+      overflow: hidden;
+    }
+    @media (max-width: 991px) {
+      .drops-crop-box { inset: 1rem; }
+    }
+    .drops-card-gradient {
+      position: absolute;
+      inset: 1.75vh;
+      border-radius: 1.2rem;
+      background: linear-gradient(rgba(0,0,0,0) 55%, rgba(0,0,0,0.6));
+      pointer-events: none;
+    }
+    @media (max-width: 991px) {
+      .drops-card-gradient { inset: 1rem; }
+    }
+    .drops-card-title {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 2.4em;
+      text-align: center;
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: "wght" 800, "wdth" 72;
+      font-size: 7.5vh;
+      line-height: 0.8;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: var(--cream);
+      text-shadow: 0 .05em .3em rgba(0,0,0,.25);
+      pointer-events: none;
+    }
+    @media (max-width: 991px) {
+      .drops-card-title { font-size: 3.4rem; bottom: 1.6em; }
+    }
+    @media (max-width: 600px) {
+      .drops-card-title { font-size: 2rem; }
+    }
+
+    /* Spinning Sun Badge */
+    .drops-badge {
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      width: 9rem;
+      height: 9rem;
+      z-index: 5;
+      pointer-events: none;
+    }
+    @media (max-width: 991px) {
+      .drops-badge { display: none; }
+    }
+
+    /* 5.6 Meet the Flock (Tall, Sticky Title, Dark Theme) */
+    .flock-section {
+      position: relative;
+      height: 340vh;
+      background: var(--page);
+      color: var(--cream);
+      transition: color .7s cubic-bezier(.65, .05, 0, 1);
+    }
+    @media (max-width: 991px) {
+      .flock-section { height: 260vh; }
+    }
+
+    .flock-sticky-title {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.4rem;
+      text-align: center;
+      z-index: 1;
+      padding: 0 1.5rem;
+    }
+
+    /* Ellipse Stamp Sticker */
+    .flock-stamp {
+      position: absolute;
+      width: 10rem;
+      left: -3rem;
+      top: -8rem;
+      transform: rotate(-10deg);
+      cursor: grab;
+      z-index: 3;
+    }
+    @media (max-width: 600px) {
+      .flock-stamp { width: 6rem; left: 0; top: -5rem; }
+    }
+
+    .flock-headline {
+      font-size: 7rem !important;
+    }
+    @media (max-width: 600px) {
+      .flock-headline { font-size: 4.2rem !important; }
+    }
+
+    /* Photo Layer */
+    .flock-photo-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .flock-card {
+      position: absolute;
+      aspect-ratio: 4 / 5;
+      background: #e9dcc6;
+      border-radius: 1.2rem;
+      overflow: visible;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    .flock-card-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 1.2rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Titan One Name Sticker */
+    .flock-name-sticker {
+      position: absolute;
+      bottom: -0.9rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Titan One', cursive;
+      font-size: 3.4rem;
+      line-height: 1;
+      color: var(--tomato);
+      -webkit-text-stroke: 0.32rem var(--cream);
+      paint-order: stroke fill;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 4;
+    }
+    @media (max-width: 600px) {
+      .flock-name-sticker {
+        font-size: 1.9rem;
+        -webkit-text-stroke: 0.22rem var(--cream);
+      }
+    }
+
+    /* BTS Caption Tag */
+    .flock-caption-tag {
+      position: absolute;
+      bottom: 0.7rem;
+      left: 0.7rem;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: "wght" 700, "wdth" 72;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.3rem;
+      z-index: 4;
+      pointer-events: none;
+    }
+    @media (max-width: 600px) {
+      .flock-caption-tag { display: none; }
+    }
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      #load-wipe { display: none !important; }
+      main { visibility: visible !important; }
+      .flock-section { height: auto !important; }
+      .flock-sticky-title { position: static !important; height: auto !important; padding: 8rem 2rem 4rem !important; }
+      .flock-photo-layer { position: static !important; display: grid !important; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)) !important; gap: 2rem !important; padding: 2rem !important; }
+      .flock-card { position: static !important; width: 100% !important; transform: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 5.1 Load Wipe Overlay -->
+  <div id="load-wipe">
+    <svg viewBox="0 0 1000 1000" preserveAspectRatio="none">
+      <path id="wipe-path"
+        d="M43 259C296 11.5688 994 -3 922.994 498.259C851.988 999.517 281.229 1004.28 123 767C-35.2287 529.721 179 259 472 259C765 259 792 498.259 659 654C526 809.741 319 755 285 669.001C251 583.001 299 452 496 452C693 452 876.073 639.171 935 937.001"
+        fill="none"
+        stroke="#ef4a23"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="0"
+      />
+    </svg>
+  </div>
+
+  <!-- 5.2 Cursor Label ("View case ->") -->
+  <div id="cursor-label-wrap">
+    <div class="cursor-label-card">
+      <div class="cursor-marquee-track">
+        <span class="label-text-1">View case &rarr;</span>
+        <span class="label-text-2">View case &rarr;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5.3 Fixed Nav -->
+  <header class="site-nav">
+    <a href="#hero" class="nav-logo">Kolibrie</a>
+
+    <nav class="nav-center-pill">
+      <div class="nav-link-item" data-draw-line>
+        <a href="#flock">About</a>
+        <div class="draw-underline-box"></div>
+      </div>
+      <div class="nav-link-item" data-draw-line>
+        <a href="#drops">Work</a>
+        <div class="draw-underline-box"></div>
+      </div>
+      <div class="nav-link-item" data-draw-line>
+        <a href="#drops">Services</a>
+        <div class="draw-underline-box"></div>
+      </div>
+    </nav>
+
+    <a href="#flock" class="nav-cta-btn">
+      <span class="tomato-dot"></span>
+      <span>Contact</span>
+    </a>
+  </header>
+
+  <main>
+    <!-- 5.4 Hero Section -->
+    <section class="hero-section" id="hero" data-cursor-cards>
+      <!-- Background Video -->
+      <video class="hero-video-bg" muted loop playsinline preload="auto" poster="/images/celebration_1.webp" aria-hidden>
+        <source src="/videos/video_1.mp4" type="video/mp4">
+      </video>
+
+      <!-- Cursor Follower Card -->
+      <div class="hero-cursor-card" id="hero-cursor-card">
+        <div class="hero-cursor-card-inner" id="hero-cursor-card-inner">
+          <div class="hero-cursor-photo on"><img src="/images/couple_1.webp" alt="Couple Romantic Suite"></div>
+          <div class="hero-cursor-photo"><img src="/images/celebration_1.webp" alt="Birthday Fog Entry"></div>
+          <div class="hero-cursor-photo"><img src="/images/ambience_5.webp" alt="Family Lounge Theatre"></div>
+          <div class="hero-cursor-photo"><img src="/images/couple_3.webp" alt="Romantic Candlelight Proposal"></div>
+          <div class="hero-cursor-photo"><img src="/images/celebration_2.webp" alt="Celebration Pastry & Lights"></div>
+          <div class="hero-cursor-photo"><img src="/images/ambience_4.webp" alt="4K Cinema Auditorium"></div>
+          <div class="hero-cursor-photo"><img src="/images/celebration_5.webp" alt="Bride to be Party"></div>
+          <div class="hero-cursor-photo"><img src="/images/couple_7.webp" alt="Luxury Recliners"></div>
+        </div>
+      </div>
+
+      <!-- Hero Content -->
+      <div class="hero-content">
+        <h1 class="hero-h1" data-text-reveal="chars" data-font-weight-hover data-rest="700" data-near="200" data-radius="400">
+          <div>STORIES THAT</div>
+          <div>GET <span class="alt-word" data-font-weight-hover data-rest="300" data-near="800" data-radius="400">shared</span></div>
+        </h1>
+
+        <a href="#drops" class="see-reel-link" data-draw-line="always">
+          <span>See the reel</span>
+          <span class="draw-underline-box" style="top: 118%; height: 0.6em;"></span>
+          <div class="reel-arrow-square">
+            <div class="reel-arrow-slider">
+              <svg class="reel-arrow-svg" viewBox="0 0 14 14">
+                <path d="M12.94 5.7 9.95 8 6.9 10.37l.84 1.86V0h-2.55v12.23l.85-1.86L3 8 0 5.7V9.05l6.47 4.95 6.47-4.95z"/>
+              </svg>
+              <svg class="reel-arrow-svg" viewBox="0 0 14 14">
+                <path d="M12.94 5.7 9.95 8 6.9 10.37l.84 1.86V0h-2.55v12.23l.85-1.86L3 8 0 5.7V9.05l6.47 4.95 6.47-4.95z"/>
+              </svg>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Client Marquee -->
+      <div class="hero-marquee-wrap" id="hero-marquee">
+        <div class="hero-marquee-track" id="marquee-track">
+          <!-- 8 Abstract Tomato SVG Marks -->
+          <div class="marquee-mark-box">
+            <!-- 1. Asterisk -->
+            <svg viewBox="0 0 100 100"><path stroke-width="12" stroke-linecap="round" d="M50 15v70M20 32l60 36M20 68l60-36"/></svg>
+          </div>
+          <div class="marquee-mark-box">
+            <!-- 2. Two Capsule D shapes -->
+            <svg viewBox="0 0 100 100"><path stroke-width="10" stroke-linecap="round" d="M25 20h20a30 30 0 0 1 0 60H25zM55 20h20a30 30 0 0 1 0 60H55z"/></svg>
+          </div>
+          <div class="marquee-mark-box">
+            <!-- 3. Three Wavy Lines -->
+            <svg viewBox="0 0 100 100"><path stroke-width="9" stroke-linecap="round" d="M15 30c15-15 25 15 40 0s20 15 30 0M15 50c15-15 25 15 40 0s20 15 30 0M15 70c15-15 25 15 40 0s20 15 30 0"/></svg>
+          </div>
+          <div class="marquee-mark-box">
+            <!-- 4. Four Diamonds in Diamond Pattern -->
+            <svg viewBox="0 0 100 100"><polygon stroke-width="7" points="50,15 62,30 50,45 38,30"/><polygon stroke-width="7" points="50,55 62,70 50,85 38,70"/><polygon stroke-width="7" points="25,35 37,50 25,65 13,50"/><polygon stroke-width="7" points="75,35 87,50 75,65 63,50"/></svg>
+          </div>
+          <div class="marquee-mark-box">
+            <!-- 5. Half Sun over Three Bars -->
+            <svg viewBox="0 0 100 100"><path stroke-width="8" stroke-linecap="round" d="M25 50a25 25 0 0 1 50 0zM20 65h60M25 76h50M35 87h30"/></svg>
+          </div>
+          <div class="marquee-mark-box">
+            <!-- 6. Two Arches -->
+            <svg viewBox="0 0 100 100"><path stroke-width="10" stroke-linecap="round" d="M20 80V50a30 30 0 0 1 60 0v30M38 80V55a12 12 0 0 1 24 0v25"/></svg>
+          </div>
+          <div class="marquee-mark-box">
+            <!-- 7. Four-point Sparkle Star -->
+            <svg viewBox="0 0 100 100"><path stroke-width="8" stroke-linejoin="round" d="M50 15 Q50 50 85 50 Q50 50 50 85 Q50 50 15 50 Q50 50 50 15 Z"/></svg>
+          </div>
+          <div class="marquee-mark-box">
+            <!-- 8. Circle with Cross Inside -->
+            <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" stroke-width="8"/><path stroke-width="8" stroke-linecap="round" d="M50 25v50M25 50h50"/></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.5 Latest Drops (3D Card Stack, Pinned) -->
+    <section class="drops-section" id="drops" data-featured-stack>
+      <div class="drops-pin-container" id="drops-pin">
+        <!-- Left Column -->
+        <div class="drops-left-col" data-scroll-reveal-group>
+          <p class="eyebrow-s" data-scroll-reveal="lines">
+            Made to be watched twice. A handful of what left our edit desk lately.
+          </p>
+          <h2 class="section-h2" data-scroll-reveal="chars" data-font-weight-hover data-rest="700" data-near="200" data-radius="400">
+            <div>LATEST</div>
+            <div><span class="alt-word" data-font-weight-hover data-rest="300" data-near="800" data-radius="400">drops</span></div>
+          </h2>
+        </div>
+
+        <!-- Right Column (3D Stage) -->
+        <div class="drops-stage" id="drops-stage">
+          <div class="drops-stack-root" id="drops-stack-root">
+            
+            <!-- Slide 1: Squeeze the Sun (Tomato) -->
+            <div class="drops-slide" data-cursor-marquee-text="View case &rarr;">
+              <div class="drops-card-frame" style="background: var(--tomato);">
+                <div class="drops-crop-box">
+                  <img src="/images/couple_1.webp" alt="Squeeze the Sun" loading="lazy" decoding="async">
+                </div>
+                <div class="drops-card-gradient"></div>
+                <h3 class="drops-card-title">SQUEEZE THE SUN</h3>
+              </div>
+            </div>
+
+            <!-- Slide 2: Deep End Days (Sky) -->
+            <div class="drops-slide" data-cursor-marquee-text="View case &rarr;">
+              <div class="drops-card-frame" style="background: var(--sky);">
+                <div class="drops-crop-box">
+                  <img src="/images/celebration_1.webp" alt="Deep End Days" loading="lazy" decoding="async">
+                </div>
+                <div class="drops-card-gradient"></div>
+                <h3 class="drops-card-title">DEEP END DAYS</h3>
+              </div>
+            </div>
+
+            <!-- Slide 3: Flake & Bake (Butter) -->
+            <div class="drops-slide" data-cursor-marquee-text="View case &rarr;">
+              <div class="drops-card-frame" style="background: var(--butter);">
+                <div class="drops-crop-box">
+                  <img src="/images/ambience_5.webp" alt="Flake and Bake" loading="lazy" decoding="async">
+                </div>
+                <div class="drops-card-gradient"></div>
+                <h3 class="drops-card-title">FLAKE &amp; BAKE</h3>
+              </div>
+            </div>
+
+            <!-- Slide 4: Curb Appeal (Sage) -->
+            <div class="drops-slide" data-cursor-marquee-text="View case &rarr;">
+              <div class="drops-card-frame" style="background: var(--sage);">
+                <div class="drops-crop-box">
+                  <img src="/images/celebration_2.webp" alt="Curb Appeal" loading="lazy" decoding="async">
+                </div>
+                <div class="drops-card-gradient"></div>
+                <h3 class="drops-card-title">CURB APPEAL</h3>
+              </div>
+            </div>
+
+            <!-- Slide 5: Night Bites (Pink) -->
+            <div class="drops-slide" data-cursor-marquee-text="View case &rarr;">
+              <div class="drops-card-frame" style="background: var(--pink);">
+                <div class="drops-crop-box">
+                  <img src="/images/ambience_4.webp" alt="Night Bites" loading="lazy" decoding="async">
+                </div>
+                <div class="drops-card-gradient"></div>
+                <h3 class="drops-card-title">NIGHT BITES</h3>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Rotating Sun Badge -->
+          <div class="drops-badge" id="drops-badge">
+            <svg viewBox="0 0 200 200">
+              <defs>
+                <path id="badge-circle-path" d="M 100, 100 m -70, 0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0"/>
+              </defs>
+              <circle cx="100" cy="100" r="98" fill="#ef4a23"/>
+              <!-- Circular Text -->
+              <text font-family="'Archivo', sans-serif" font-weight="800" font-size="24" fill="#faf3e4" letter-spacing="1">
+                <textPath href="#badge-circle-path" textLength="436" lengthAdjust="spacing">
+                  SCROLL &middot; SAVE &middot; SHARE &middot; REPEAT &middot;
+                </textPath>
+              </text>
+              <!-- Sun in Middle -->
+              <circle cx="100" cy="100" r="17" fill="none" stroke="#faf3e4" stroke-width="5"/>
+              <g stroke="#faf3e4" stroke-width="5" stroke-linecap="round">
+                <line x1="100" y1="72" x2="100" y2="64"/>
+                <line x1="100" y1="128" x2="100" y2="136"/>
+                <line x1="72" y1="100" x2="64" y2="100"/>
+                <line x1="128" y1="100" x2="136" y2="100"/>
+                <line x1="80" y1="80" x2="74" y2="74"/>
+                <line x1="120" y1="120" x2="126" y2="126"/>
+                <line x1="80" y1="120" x2="74" y2="126"/>
+                <line x1="120" y1="80" x2="126" y2="74"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.6 Meet the Flock (Tall, Sticky Title, Dark Theme) -->
+    <section class="flock-section" id="flock" data-page-theme="dark">
+      <!-- Sticky Title -->
+      <div class="flock-sticky-title" data-scroll-reveal-group>
+        <div class="flock-stamp" id="flock-stamp" data-momentum-target>
+          <svg viewBox="0 0 240 140">
+            <ellipse cx="120" cy="70" rx="104" ry="58" fill="#faf3e4" stroke="#ef4a23" stroke-width="10"/>
+            <text x="120" y="82" font-family="'Yellowtail', cursive" font-size="54" fill="#ef4a23" text-anchor="middle" transform="rotate(-8 120 70)">Kolibrie</text>
+          </svg>
+        </div>
+
+        <p class="eyebrow-m" data-scroll-reveal="lines">The people behind the frames</p>
+        <h2 class="section-h2 flock-headline" data-scroll-reveal="chars" data-font-weight-hover data-rest="700" data-near="200" data-radius="400">
+          <div><span class="alt-word" data-font-weight-hover data-rest="300" data-near="800" data-radius="400">Meet</span> THE <span class="alt-word" data-font-weight-hover data-rest="300" data-near="800" data-radius="400">flock</span></div>
+        </h2>
+        <p class="para-playfair" style="max-width: 26rem;" data-scroll-reveal="element">
+          Twelve makers, one group chat. We shoot, cut and animate before the coffee goes cold.
+        </p>
+      </div>
+
+      <!-- 12 Photo Cards Layer with Parallax Speeds & Stickers -->
+      <div class="flock-photo-layer" id="flock-photos">
+        <!-- 1. Noor (left 2.5vw, 3%, 14rem, -4°, speed 1) -->
+        <div class="flock-card" style="left: 2.5vw; top: 3%; width: 14rem; rotate: -4deg;" data-parallax-speed="1" data-momentum-target>
+          <div class="flock-card-inner"><img src="/images/couple_3.webp" alt="Noor" loading="lazy" decoding="async"></div>
+          <span class="flock-name-sticker" style="rotate: -7deg;">Noor</span>
+        </div>
+
+        <!-- 2. ON SET (left 21vw, 19%, 11rem, 3°, speed 0.6) -->
+        <div class="flock-card" style="left: 21vw; top: 19%; width: 11rem; rotate: 3deg;" data-parallax-speed="0.6" data-momentum-target>
+          <div class="flock-card-inner"><img src="/images/ambience_1.webp" alt="On Set" loading="lazy" decoding="async"></div>
+          <span class="flock-caption-tag">ON SET</span>
+        </div>
+
+        <!-- 3. Sem (left 3vw, 33%, 13rem, 5°, speed 1.3) -->
+        <div class="flock-card" style="left: 3vw; top: 33%; width: 13rem; rotate: 5deg;" data-parallax-speed="1.3" data-momentum-target>
+          <div class="flock-card-inner"><img src="/images/couple_2.webp" alt="Sem" loading="lazy" decoding="async"></div>
+          <span class="flock-name-sticker" style="rotate: 4deg;">Sem</span>
+        </div>
+
+        <!-- 4. Mila (left 23vw, 49%, 13.5rem, -3°, speed 0.8) -->
+        <div class="flock-card" style="left: 23vw; top: 49%; width: 13.5rem; rotate: -3deg;" data-parallax-speed="0.8" data-momentum-target>
+          <div class="flock-card-inner"><img src="/images/celebration_3.webp" alt="Mila" loading="lazy" decoding="async"></div>
+          <span class="flock-name-sticker" style="rotate: -5deg;">Mila</span>
+        </div>
+
+        <!-- 5. DINNER IN 9:16 (left 2vw, 64%, 11.5rem, -6°, speed 1.15) -->
+        <div class="flock-card" style="left: 2vw; top: 64%; width: 11.5rem; rotate: -6deg;" data-parallax-speed="1.15" data-momentum-target>
+          <div class="flock-card-inner"><img src="/images/ambience_2.webp" alt="Dinner" loading="lazy" decoding="async"></div>
+          <span class="flock-caption-tag">DINNER, IN 9:16</span>
+        </div>
+
+        <!-- 6. Daan (left 20vw, 79%, 14rem, 4°, speed 0.7) -->
+        <div class="flock-card" style="left: 20vw; top: 79%; width: 14rem; rotate: 4deg;" data-parallax-speed="0.7" data-momentum-target>
+          <div class="flock-card-inner"><img src="/images/couple_4.webp" alt="Daan" loading="lazy" decoding="async"></div>
+          <span class="flock-name-sticker" style="rotate: 6deg;">Daan</span>
+        </div>
+
+        <!-- 7. Lotte (right 3vw, 2%, 13.5rem, 4°, speed 0.75) -->
+        <div class="flock-card" style="right: 3vw; top: 2%; width: 13.5rem; rotate: 4deg;" data-parallax-speed="0.75" data-momentum-target>
+          <div class="flock-card-inner"><img src="/images/celebration_4.webp" alt="Lotte" loading="lazy" decoding="async"></div>
+          <span class="flock-name-sticker" style="rotate: 5deg;">Lotte</span>
+        </div>
+
+        <!-- 8. TAKE ONE (right 22vw, 17%, 11rem, -5°, speed 1.25) -->
+        <div class="flock-card" style="right: 22vw; top: 17%; width: 11rem; rotate: -5deg;" data-parallax-speed="1.25" data-momentum-target>
+          <div class="flock-card-inner"><img src="/images/ambience_3.webp" alt="Take One" loading="lazy" decoding="async"></div>
+          <span class="flock-caption-tag">TAKE ONE</span>
+        </div>
+
+        <!-- 9. Jules (right 2.5vw, 32%, 14rem, -3°, speed 0.9) -->
+        <div class="flock-card" style="right: 2.5vw; top: 32%; width: 14rem; rotate: -3deg;" data-parallax-speed="0.9" data-momentum-target>
+          <div class="flock-card-inner"><img src="/images/couple_5.webp" alt="Jules" loading="lazy" decoding="async"></div>
+          <span class="flock-name-sticker" style="rotate: -6deg;">Jules</span>
+        </div>
+
+        <!-- 10. Yara (right 23vw, 48%, 13rem, 5°, speed 1.4) -->
+        <div class="flock-card" style="right: 23vw; top: 48%; width: 13rem; rotate: 5deg;" data-parallax-speed="1.4" data-momentum-target>
+          <div class="flock-card-inner"><img src="/images/celebration_6.webp" alt="Yara" loading="lazy" decoding="async"></div>
+          <span class="flock-name-sticker" style="rotate: 4deg;">Yara</span>
+        </div>
+
+        <!-- 11. GOLDEN HOUR (right 3vw, 63%, 11.5rem, 6°, speed 0.65) -->
+        <div class="flock-card" style="right: 3vw; top: 63%; width: 11.5rem; rotate: 6deg;" data-parallax-speed="0.65" data-momentum-target>
+          <div class="flock-card-inner"><img src="/images/ambience_6.webp" alt="Golden Hour" loading="lazy" decoding="async"></div>
+          <span class="flock-caption-tag">GOLDEN HOUR</span>
+        </div>
+
+        <!-- 12. Kenji (right 20vw, 78%, 14rem, -4°, speed 1.05) -->
+        <div class="flock-card" style="right: 20vw; top: 78%; width: 14rem; rotate: -4deg;" data-parallax-speed="1.05" data-momentum-target>
+          <div class="flock-card-inner"><img src="/images/couple_6.webp" alt="Kenji" loading="lazy" decoding="async"></div>
+          <span class="flock-name-sticker" style="rotate: -4deg;">Kenji</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 1. Libraries (in exact order) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/InertiaPlugin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.17/dist/lenis.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // 4-second Failsafe
+      const failsafeTimer = setTimeout(() => {
+        document.documentElement.setAttribute('data-page-ready', '');
+        const wipe = document.getElementById('load-wipe');
+        if (wipe) wipe.setAttribute('data-transition-ready', '');
+        const main = document.querySelector('main');
+        if (main) main.style.visibility = 'visible';
+      }, 4000);
+
+      // Check if GSAP loaded
+      if (typeof gsap === 'undefined') {
+        clearTimeout(failsafeTimer);
+        document.documentElement.setAttribute('data-page-ready', '');
+        const main = document.querySelector('main');
+        if (main) main.style.visibility = 'visible';
+        return;
+      }
+
+      // Register Plugins
+      if (typeof ScrollTrigger !== 'undefined') gsap.registerPlugin(ScrollTrigger);
+      if (typeof SplitText !== 'undefined') gsap.registerPlugin(SplitText);
+      if (typeof DrawSVGPlugin !== 'undefined') gsap.registerPlugin(DrawSVGPlugin);
+      if (typeof InertiaPlugin !== 'undefined') gsap.registerPlugin(InertiaPlugin);
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+      // 6.1 Smooth Scroll (Lenis)
+      let lenis = null;
+      if (!prefersReducedMotion && typeof Lenis !== 'undefined') {
+        lenis = new Lenis({
+          lerp: 0.165,
+          wheelMultiplier: 1.25,
+          smoothWheel: true,
+        });
+
+        lenis.on('scroll', ScrollTrigger ? ScrollTrigger.update : () => {});
+        gsap.ticker.add((time) => {
+          lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // Smooth scroll for internal '#' links
+        document.querySelectorAll('a[href^="#"]').forEach((link) => {
+          link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (href && href.length > 1) {
+              const target = document.querySelector(href);
+              if (target) {
+                e.preventDefault();
+                lenis.scrollTo(target, { duration: 1.4 });
+              }
+            }
+          });
+        });
+      }
+
+      // 6.5 Draw Underline Variants (6 hand-drawn SVG paths)
+      const underlinePaths = [
+        "M5 20.9999C26.7762 16.2245 49.5532 11.5572 71.7979 14.6666C84.9553 16.5057 97.0392 21.8432 109.987 24.3888C116.413 25.6523 123.012 25.5143 129.042 22.6388C135.981 19.3303 142.586 15.1422 150.092 13.3333C156.799 11.7168 161.702 14.6225 167.887 16.8333C181.562 21.7212 194.975 22.6234 209.252 21.3888C224.678 20.0548 239.912 17.991 255.42 18.3055C272.027 18.6422 288.409 18.867 305 17.9999",
+        "M5 24.2592C26.233 20.2879 47.7083 16.9968 69.135 13.8421C98.0469 9.5853 128.407 4.02322 158.059 5.14674C172.583 5.69708 187.686 8.66104 201.598 11.9696C207.232 13.3093 215.437 14.9471 220.137 18.3619C224.401 21.4596 220.737 25.6575 217.184 27.6168C208.309 32.5097 197.199 34.281 186.698 34.8486C183.159 35.0399 147.197 36.2657 155.105 26.5837C158.11 22.9053 162.993 20.6229 167.764 18.7924C178.386 14.7164 190.115 12.1115 201.624 10.3984C218.367 7.90626 235.528 7.06127 252.521 7.49276C258.455 7.64343 264.389 7.92791 270.295 8.41825C280.321 9.25056 296 10.8932 305 13.0242",
+        "M5 29.5014C9.61174 24.4515 12.9521 17.9873 20.9532 17.5292C23.7742 17.3676 27.0987 17.7897 29.6575 19.0014C33.2644 20.7093 35.6481 24.0004 39.4178 25.5014C48.3911 29.0744 55.7503 25.7731 63.3048 21.0292C67.9902 18.0869 73.7668 16.1366 79.3721 17.8903C85.1682 19.7036 88.2173 26.2464 94.4121 27.2514C102.584 28.5771 107.023 25.5064 113.276 20.6125C119.927 15.4067 128.83 12.3333 137.249 15.0014C141.418 16.3225 143.116 18.7528 146.581 21.0014C149.621 22.9736 152.78 23.6197 156.284 24.2514C165.142 25.8479 172.315 17.5185 179.144 13.5014C184.459 10.3746 191.785 8.74853 195.868 14.5292C199.252 19.3205 205.597 22.9057 211.621 22.5014C215.553 22.2374 220.183 17.8356 222.979 15.5569C225.4 13.5845 227.457 11.1105 230.742 10.5292C232.718 10.1794 234.784 12.9691 236.164 14.0014C238.543 15.7801 240.717 18.4775 243.356 19.8903C249.488 23.1729 255.706 21.2551 261.079 18.0014C266.571 14.6754 270.439 11.5202 277.146 13.6125C280.725 14.7289 283.221 17.209 286.393 19.0014C292.321 22.3517 298.255 22.5014 305 22.5014",
+        "M17.0039 32.6826C32.2307 32.8412 47.4552 32.8277 62.676 32.8118C67.3044 32.807 96.546 33.0555 104.728 32.0775C113.615 31.0152 104.516 28.3028 102.022 27.2826C89.9573 22.3465 77.3751 19.0254 65.0451 15.0552C57.8987 12.7542 37.2813 8.49399 44.2314 6.10216C50.9667 3.78422 64.2873 5.81914 70.4249 5.96641C105.866 6.81677 141.306 7.58809 176.75 8.59886C217.874 9.77162 258.906 11.0553 300 14.4892",
+        "M4.99805 20.9998C65.6267 17.4649 126.268 13.845 187.208 12.8887C226.483 12.2723 265.751 13.2796 304.998 13.9998",
+        "M5 29.8857C52.3147 26.9322 99.4329 21.6611 146.503 17.1765C151.753 16.6763 157.115 15.9505 162.415 15.6551C163.28 15.6069 165.074 15.4123 164.383 16.4275C161.704 20.3627 157.134 23.7551 153.95 27.4983C153.209 28.3702 148.194 33.4751 150.669 34.6605C153.638 36.0819 163.621 32.6063 165.039 32.2029C178.55 28.3608 191.49 23.5968 204.869 19.5404C231.903 11.3436 259.347 5.83254 288.793 5.12258C294.094 4.99476 299.722 4.82265 305 5.45025"
+      ];
+      let underlineIndex = Math.floor(Math.random() * underlinePaths.length);
+
+      function createUnderlineSvg(d) {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 310 40');
+        svg.setAttribute('preserveAspectRatio', 'none');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', 'currentColor');
+        path.setAttribute('stroke-width', '10');
+        path.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(path);
+        return { svg, path };
+      }
+
+      function initDrawLines() {
+        document.querySelectorAll('[data-draw-line]').forEach((box) => {
+          const isAlways = box.getAttribute('data-draw-line') === 'always';
+          const targetBox = box.querySelector('.draw-underline-box') || box;
+
+          if (isAlways) {
+            const pathData = underlinePaths[underlineIndex % underlinePaths.length];
+            const { svg, path } = createUnderlineSvg(pathData);
+            targetBox.appendChild(svg);
+            gsap.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', duration: 0.6, ease: 'power2.out', delay: 1.3 });
+          } else {
+            box.addEventListener('mouseenter', () => {
+              targetBox.innerHTML = '';
+              underlineIndex++;
+              const pathData = underlinePaths[underlineIndex % underlinePaths.length];
+              const { svg, path } = createUnderlineSvg(pathData);
+              targetBox.appendChild(svg);
+              gsap.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', duration: 0.5, ease: 'power2.inOut' });
+            });
+            box.addEventListener('mouseleave', () => {
+              const path = targetBox.querySelector('path');
+              if (path) {
+                gsap.to(path, {
+                  drawSVG: '100% 100%',
+                  duration: 0.5,
+                  ease: 'power2.inOut',
+                  onComplete: () => { targetBox.innerHTML = ''; }
+                });
+              }
+            });
+          }
+        });
+      }
+
+      // 6.6 Font weight follows cursor
+      function initFontWeightHover() {
+        if (!hasFinePointer || prefersReducedMotion) return;
+
+        const targets = document.querySelectorAll('[data-font-weight-hover]');
+        const charElements = [];
+
+        targets.forEach((target) => {
+          const rest = parseFloat(target.getAttribute('data-rest') || '700');
+          const near = parseFloat(target.getAttribute('data-near') || '200');
+          const radius = parseFloat(target.getAttribute('data-radius') || '400');
+
+          const chars = target.querySelectorAll('.char');
+          chars.forEach((ch) => {
+            ch.style.setProperty('--wght', rest);
+            const comp = window.getComputedStyle(ch).fontVariationSettings || '';
+            const stripped = comp.replace(/'wght'\s*[\d.]+/g, '').replace(/,\s*,/g, ',').trim();
+            ch.style.fontVariationSettings = `'wght' var(--wght)${stripped ? ', ' + stripped : ''}`;
+            charElements.push({
+              el: ch,
+              rest,
+              near,
+              radius,
+              quick: gsap.quickTo(ch, '--wght', { duration: 0.4, ease: 'power2.out' }),
+              x: 0,
+              y: 0,
+              lastTarget: rest
+            });
+          });
+        });
+
+        function measureCharPositions() {
+          const scrollY = window.scrollY || window.pageYOffset;
+          const scrollX = window.scrollX || window.pageXOffset;
+          charElements.forEach((item) => {
+            const rect = item.el.getBoundingClientRect();
+            item.x = rect.left + rect.width / 2 + scrollX;
+            item.y = rect.top + rect.height / 2 + scrollY;
+          });
+        }
+
+        measureCharPositions();
+        window.addEventListener('resize', measureCharPositions);
+        window.addEventListener('scroll', measureCharPositions, { passive: true });
+
+        let pointerPageX = -9999;
+        let pointerPageY = -9999;
+
+        window.addEventListener('pointermove', (e) => {
+          const scrollY = window.scrollY || window.pageYOffset;
+          const scrollX = window.scrollX || window.pageXOffset;
+          pointerPageX = e.clientX + scrollX;
+          pointerPageY = e.clientY + scrollY;
+        });
+
+        gsap.ticker.add(() => {
+          for (let i = 0; i < charElements.length; i++) {
+            const item = charElements[i];
+            const dx = pointerPageX - item.x;
+            const dy = pointerPageY - item.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const factor = dist >= item.radius ? 0 : 1 - dist / item.radius;
+            let targetWeight = item.rest + (item.near - item.rest) * factor;
+
+            const minW = Math.min(item.rest, item.near);
+            const maxW = Math.max(item.rest, item.near);
+            targetWeight = Math.max(minW, Math.min(maxW, targetWeight));
+
+            if (Math.abs(targetWeight - item.lastTarget) >= 1) {
+              item.lastTarget = targetWeight;
+              item.quick(targetWeight);
+            }
+          }
+        });
+      }
+
+      // 6.7 Hero Cursor Card (Trailing, Tilting, Cycling Photos)
+      function initHeroCursorCard() {
+        if (!hasFinePointer || prefersReducedMotion || window.innerWidth < 992) return;
+
+        const hero = document.getElementById('hero');
+        const card = document.getElementById('hero-cursor-card');
+        const inner = document.getElementById('hero-cursor-card-inner');
+        if (!hero || !card || !inner) return;
+
+        const photos = card.querySelectorAll('.hero-cursor-photo');
+        let currentPhotoIdx = 0;
+        let travelDist = 0;
+        let isFirstMove = true;
+        let lastX = 0, lastY = 0;
+        let resetTimer = null;
+
+        const quickX = gsap.quickTo(card, 'x', { duration: 1, ease: 'power4' });
+        const quickY = gsap.quickTo(card, 'y', { duration: 1, ease: 'power4' });
+        const quickRot = gsap.quickTo(card, 'rotation', { duration: 1, ease: 'power4' });
+        const quickMediaX = gsap.quickTo(inner, 'xPercent', { duration: 0.6, ease: 'power2' });
+        const quickMediaY = gsap.quickTo(inner, 'yPercent', { duration: 0.7, ease: 'power2' });
+
+        hero.addEventListener('mousemove', (e) => {
+          const rect = hero.getBoundingClientRect();
+          const targetX = e.clientX - window.innerWidth / 2;
+          const targetY = e.clientY - rect.height / 2;
+
+          // Check if hovering link or button
+          const isOverInteractive = e.target.closest('a, button');
+          if (isOverInteractive) {
+            gsap.to(card, { autoAlpha: 0, duration: 0.25, ease: 'power2.out' });
+            return;
+          }
+
+          if (isFirstMove) {
+            isFirstMove = false;
+            gsap.set(card, { x: targetX, y: targetY });
+            gsap.to(card, { autoAlpha: 1, duration: 0.3, ease: 'power2.out' });
+            lastX = targetX;
+            lastY = targetY;
+            return;
+          }
+
+          gsap.to(card, { autoAlpha: 1, duration: 0.3, ease: 'power2.out' });
+
+          const dx = (targetX - lastX) / 2;
+          const dy = (targetY - lastY) / 2;
+          const rot = (targetX - lastX) / 4;
+
+          quickX(targetX);
+          quickY(targetY);
+          quickRot(rot);
+
+          const clampDx = Math.max(-8, Math.min(8, dx));
+          const clampDy = Math.max(-8, Math.min(8, dy));
+          quickMediaX(-clampDx);
+          quickMediaY(-clampDy);
+
+          travelDist += Math.abs(dx) + Math.abs(dy);
+          if (travelDist > 300) {
+            travelDist = 0;
+            photos[currentPhotoIdx].classList.remove('on');
+            currentPhotoIdx = (currentPhotoIdx + 1) % photos.length;
+            photos[currentPhotoIdx].classList.add('on');
+          }
+
+          lastX = targetX;
+          lastY = targetY;
+
+          clearTimeout(resetTimer);
+          resetTimer = setTimeout(() => {
+            quickRot(0);
+            quickMediaX(0);
+            quickMediaY(0);
+          }, 66);
+        });
+
+        hero.addEventListener('mouseleave', () => {
+          gsap.to(card, { autoAlpha: 0, duration: 0.3, ease: 'power2.out' });
+          quickRot(0);
+          quickMediaX(0);
+          quickMediaY(0);
+          isFirstMove = true;
+        });
+      }
+
+      // 6.8 Client Marquee (Direction Flip on Scroll)
+      function initClientMarquee() {
+        const marquee = document.getElementById('hero-marquee');
+        const track = document.getElementById('marquee-track');
+        if (!marquee || !track) return;
+
+        // Clone twice
+        const clone1 = track.cloneNode(true);
+        const clone2 = track.cloneNode(true);
+        marquee.appendChild(clone1);
+        marquee.appendChild(clone2);
+
+        const allTracks = marquee.querySelectorAll('.hero-marquee-track');
+
+        const tween = gsap.to(allTracks, {
+          xPercent: -100,
+          repeat: -1,
+          duration: 30,
+          ease: 'none',
+          paused: prefersReducedMotion,
+        });
+
+        if (prefersReducedMotion) return;
+
+        ScrollTrigger.create({
+          trigger: marquee,
+          start: 'top bottom',
+          end: 'bottom top',
+          onUpdate: (self) => {
+            const dir = self.direction; // 1 = down, -1 = up
+            gsap.to(tween, { timeScale: -dir, duration: 0.3, overwrite: 'auto' });
+          }
+        });
+
+        // Scrub wrapper from +10vw to -10vw
+        gsap.fromTo(marquee, 
+          { x: '10vw' },
+          {
+            x: '-10vw',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: marquee,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 0,
+            }
+          }
+        );
+      }
+
+      // 6.9 Latest Drops (3D Card Stack ScrollTrigger)
+      function initLatestDropsStack() {
+        if (window.innerWidth < 992) return;
+
+        const section = document.getElementById('drops');
+        const pin = document.getElementById('drops-pin');
+        const stackRoot = document.getElementById('drops-stack-root');
+        const badge = document.getElementById('drops-badge');
+        const slides = section.querySelectorAll('.drops-slide');
+        const count = slides.length;
+
+        if (!section || !pin || !stackRoot || count === 0) return;
+
+        // Constants: depth 120, offset 40, duration 1
+        slides.forEach((slide, b) => {
+          gsap.set(slide, {
+            z: -b * 120,
+            y: -b * 40,
+            zIndex: count - b,
+            autoAlpha: 1,
+          });
+        });
+
+        const tl = gsap.timeline({ paused: true });
+
+        // For each slide except the last: drop away and advance behind slides forward
+        for (let b = 0; b < count - 1; b++) {
+          const currentSlide = slides[b];
+          tl.to(currentSlide, {
+            y: `+=${window.innerHeight * 0.9}`,
+            ease: 'power2.in',
+            duration: 1,
+          }, b);
+
+          tl.to(currentSlide, {
+            autoAlpha: 0,
+            duration: 0.25,
+            ease: 'none',
+          }, b + 0.7);
+
+          // Advance remaining slides behind it forward one step
+          for (let k = b + 1; k < count; k++) {
+            const nextIdx = k - (b + 1);
+            tl.to(slides[k], {
+              z: -nextIdx * 120,
+              y: -nextIdx * 40,
+              duration: 1,
+              ease: 'none',
+            }, b);
+          }
+        }
+
+        // Badge rotates 180deg linearly across the whole timeline
+        if (badge) {
+          tl.to(badge, { rotation: 180, duration: count - 1, ease: 'none' }, 0);
+        }
+
+        ScrollTrigger.create({
+          trigger: section,
+          start: 'top top',
+          end: () => `+=${window.innerHeight * 1.2 * (count - 1)}`,
+          pin: pin,
+          pinSpacing: true,
+          scrub: 0.3,
+          refreshPriority: 1,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            tl.progress(self.progress);
+          }
+        });
+
+        // Mouse tilt on the 3D stack
+        if (hasFinePointer && !prefersReducedMotion) {
+          const quickTiltX = gsap.quickTo(stackRoot, 'rotationX', { duration: 0.6, ease: 'power3' });
+          const quickTiltY = gsap.quickTo(stackRoot, 'rotationY', { duration: 0.6, ease: 'power3' });
+
+          pin.addEventListener('mousemove', (e) => {
+            const rect = pin.getBoundingClientRect();
+            const rotX = -((e.clientY - rect.top) / rect.height - 0.5) * 6;
+            const rotY = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+            quickTiltX(rotX);
+            quickTiltY(rotY);
+          });
+
+          pin.addEventListener('mouseleave', () => {
+            quickTiltX(0);
+            quickTiltY(0);
+          });
+        }
+      }
+
+      // 6.10 "View case ->" Cursor Label
+      function initCursorLabel() {
+        if (!hasFinePointer) return;
+
+        const wrap = document.getElementById('cursor-label-wrap');
+        const track = wrap.querySelector('.cursor-marquee-track');
+        const span1 = wrap.querySelector('.label-text-1');
+        const span2 = wrap.querySelector('.label-text-2');
+        if (!wrap || !track) return;
+
+        const quickX = gsap.quickTo(wrap, 'x', { duration: 0.4, ease: 'power3' });
+        const quickY = gsap.quickTo(wrap, 'y', { duration: 0.4, ease: 'power3' });
+
+        let isFirstMove = true;
+        let isMarqueeActive = false;
+        let pauseTimer = null;
+
+        function updateLabel(clientX, clientY) {
+          if (isFirstMove) {
+            isFirstMove = false;
+            gsap.set(wrap, { x: clientX, y: clientY });
+          } else {
+            quickX(clientX);
+            quickY(clientY);
+          }
+
+          const target = document.elementFromPoint(clientX, clientY);
+          const caseEl = target ? target.closest('[data-cursor-marquee-text]') : null;
+
+          if (caseEl) {
+            const text = caseEl.getAttribute('data-cursor-marquee-text') || 'View case \u2192';
+            span1.textContent = text;
+            span2.textContent = text;
+
+            const duration = Math.max(2, text.length / 5);
+            track.style.animationDuration = `${duration}s`;
+            track.classList.add('running');
+
+            wrap.setAttribute('data-cursor-marquee-status', 'active');
+            isMarqueeActive = true;
+            clearTimeout(pauseTimer);
+          } else if (isMarqueeActive) {
+            wrap.removeAttribute('data-cursor-marquee-status');
+            isMarqueeActive = false;
+            pauseTimer = setTimeout(() => {
+              track.classList.remove('running');
+            }, 400);
+          }
+        }
+
+        window.addEventListener('pointermove', (e) => {
+          updateLabel(e.clientX, e.clientY);
+        });
+      }
+
+      // 6.11 Team Photo Parallax
+      function initTeamParallax() {
+        if (prefersReducedMotion) return;
+
+        const flockSection = document.getElementById('flock');
+        const cards = flockSection.querySelectorAll('.flock-card');
+        if (!flockSection || cards.length === 0) return;
+
+        const mm = gsap.matchMedia();
+
+        mm.add({
+          isDesktop: '(min-width: 992px)',
+          isTablet: '(min-width: 480px) and (max-width: 991px)',
+          isMobile: '(max-width: 479px)',
+        }, (context) => {
+          const { isDesktop, isTablet } = context.conditions;
+          const k = isDesktop ? 1 : isTablet ? 0.5 : 0.3;
+          const baseDistance = 320 * k;
+
+          cards.forEach((card) => {
+            const speed = parseFloat(card.getAttribute('data-parallax-speed') || '1');
+            const dist = baseDistance * speed;
+
+            gsap.fromTo(card,
+              { y: dist },
+              {
+                y: -dist,
+                ease: 'none',
+                scrollTrigger: {
+                  trigger: flockSection,
+                  start: 'clamp(top bottom)',
+                  end: 'clamp(bottom top)',
+                  scrub: true,
+                  invalidateOnRefresh: true,
+                  refreshPriority: -1,
+                }
+              }
+            );
+          });
+        });
+      }
+
+      // 6.12 Momentum Hover (InertiaPlugin)
+      function initMomentumHover() {
+        if (!hasFinePointer || prefersReducedMotion || typeof InertiaPlugin === 'undefined') return;
+
+        const flockSection = document.getElementById('flock');
+        if (!flockSection) return;
+
+        let lastPointerX = 0, lastPointerY = 0;
+        let vx = 0, vy = 0;
+
+        window.addEventListener('pointermove', (e) => {
+          vx = e.clientX - lastPointerX;
+          vy = e.clientY - lastPointerY;
+          lastPointerX = e.clientX;
+          lastPointerY = e.clientY;
+        });
+
+        const targets = flockSection.querySelectorAll('[data-momentum-target]');
+        targets.forEach((el) => {
+          el.addEventListener('mouseenter', (e) => {
+            const rect = el.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const F = e.clientX - cx;
+            const R = e.clientY - cy;
+            const dist = Math.hypot(F, R) || 1;
+            const torque = (F * vy - R * vx) / dist;
+
+            const clamp = (val, max) => Math.max(-max, Math.min(max, val));
+
+            gsap.to(el, {
+              inertia: {
+                x: { velocity: clamp(vx * 30, 1080), end: 0 },
+                y: { velocity: clamp(vy * 30, 1080), end: 0 },
+                rotation: { velocity: clamp(torque * 20, 60), end: 0 },
+                resistance: 200,
+              }
+            });
+          });
+        });
+      }
+
+      // 6.13 Dark Theme Switch on Scroll
+      function initThemeSwitch() {
+        const darkSection = document.querySelector('[data-page-theme="dark"]');
+        if (!darkSection) return;
+
+        ScrollTrigger.create({
+          trigger: darkSection,
+          start: 'top 55%',
+          end: 'bottom 45%',
+          refreshPriority: -1,
+          onEnter: () => document.documentElement.setAttribute('data-theme', 'dark'),
+          onEnterBack: () => document.documentElement.setAttribute('data-theme', 'dark'),
+          onLeave: () => document.documentElement.removeAttribute('data-theme'),
+          onLeaveBack: () => document.documentElement.removeAttribute('data-theme'),
+        });
+      }
+
+      // 6.3 & 6.4 Text Reveal & Init
+      function runPageInit() {
+        clearTimeout(failsafeTimer);
+        document.documentElement.setAttribute('data-page-ready', '');
+
+        // Text reveal on load
+        if (typeof SplitText !== 'undefined' && !prefersReducedMotion) {
+          const loadReveals = document.querySelectorAll('[data-text-reveal]');
+          loadReveals.forEach((el) => {
+            const split = new SplitText(el, {
+              type: 'chars,words,lines',
+              linesClass: 'line',
+              charsClass: 'char',
+              mask: 'lines',
+              autoSplit: false,
+            });
+
+            gsap.fromTo(split.chars, 
+              { yPercent: 135 },
+              {
+                yPercent: 0,
+                duration: 1,
+                ease: 'expo.out',
+                stagger: 0.0175,
+                delay: 0.6,
+                onComplete: () => {
+                  el.dispatchEvent(new CustomEvent('reveal:done', { bubbles: true }));
+                }
+              }
+            );
+          });
+
+          // Scroll reveals
+          document.querySelectorAll('[data-scroll-reveal-group]').forEach((group) => {
+            const tl = gsap.timeline({
+              scrollTrigger: {
+                trigger: group,
+                start: 'top 85%',
+                once: true,
+              }
+            });
+
+            const items = group.querySelectorAll('[data-scroll-reveal]');
+            items.forEach((item, idx) => {
+              const mode = item.getAttribute('data-scroll-reveal');
+              if (mode === 'chars') {
+                const split = new SplitText(item, {
+                  type: 'chars,words,lines',
+                  linesClass: 'line',
+                  charsClass: 'char',
+                  mask: 'lines',
+                  autoSplit: false,
+                });
+                tl.fromTo(split.chars, 
+                  { yPercent: 135 },
+                  { yPercent: 0, duration: 1, ease: 'expo.out', stagger: 0.0175 },
+                  idx * 0.12
+                );
+              } else if (mode === 'lines') {
+                const split = new SplitText(item, {
+                  type: 'lines,words',
+                  linesClass: 'line',
+                  mask: 'lines',
+                  autoSplit: false,
+                });
+                tl.fromTo(split.lines,
+                  { yPercent: 135 },
+                  { yPercent: 0, duration: 1, ease: 'expo.out', stagger: 0.07 },
+                  idx * 0.12
+                );
+              } else {
+                tl.fromTo(item,
+                  { y: 24, autoAlpha: 0 },
+                  { y: 0, autoAlpha: 1, duration: 0.8, ease: 'expo.out' },
+                  idx * 0.12
+                );
+              }
+            });
+          });
+        }
+
+        initDrawLines();
+        initFontWeightHover();
+        initHeroCursorCard();
+        initClientMarquee();
+        initLatestDropsStack();
+        initCursorLabel();
+        initTeamParallax();
+        initMomentumHover();
+        initThemeSwitch();
+      }
+
+      // 6.2 Load Sequence & Scribble Wipe
+      function startLoadSequence() {
+        const wipe = document.getElementById('load-wipe');
+        const path = document.getElementById('wipe-path');
+
+        if (prefersReducedMotion || !path || typeof DrawSVGPlugin === 'undefined') {
+          if (wipe) wipe.setAttribute('data-transition-ready', '');
+          runPageInit();
+          return;
+        }
+
+        const tl = gsap.timeline();
+
+        // 0s: set thick scribble covering screen
+        tl.set(path, { drawSVG: '0% 100%', strokeWidth: '30%' });
+
+        // 0.4s: reveal label
+        tl.addLabel('reveal', 0.4);
+        tl.call(runPageInit, null, 'reveal');
+
+        // Scribble unwinds off the screen over 1.25s power1.inOut
+        tl.to(path, {
+          drawSVG: '100% 100%',
+          strokeWidth: '5%',
+          duration: 1.25,
+          ease: 'power1.inOut',
+          onComplete: () => {
+            if (wipe) wipe.setAttribute('data-transition-ready', '');
+          }
+        }, 'reveal');
+      }
+
+      // Wait for fonts or 1.5s max
+      if (document.fonts && document.fonts.ready) {
+        Promise.race([
+          document.fonts.ready,
+          new Promise((resolve) => setTimeout(resolve, 1500))
+        ]).then(startLoadSequence);
+      } else {
+        setTimeout(startLoadSequence, 500);
+      }
+
+    })();
+  </script>
+</body>
+</html>

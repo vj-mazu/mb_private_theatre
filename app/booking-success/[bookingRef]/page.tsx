@@ -91,12 +91,12 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
 
   if (loading) {
     return (
-      <main className="min-h-screen flex flex-col bg-sand-50">
+      <main className="min-h-screen flex flex-col bg-cream text-ink">
         <Navbar />
         <div className="flex-1 py-10 sm:py-16 px-4 sm:px-6">
-          <div className="max-w-2xl mx-auto bg-white p-7 sm:p-12 rounded-3xl border border-sand-200 shadow-elevated text-center">
-            <div className="w-16 h-16 rounded-full bg-royal-100 text-royal-600 mx-auto flex items-center justify-center animate-pulse">
-              <div className="w-8 h-8 border-4 border-royal-600 border-t-transparent rounded-full animate-spin" />
+          <div className="max-w-2xl mx-auto bg-white p-7 sm:p-12 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] text-center">
+            <div className="w-16 h-16 rounded-full bg-[#d9ebff] text-[#155fbd] mx-auto flex items-center justify-center animate-pulse">
+              <div className="w-8 h-8 border-4 border-[#237eea] border-t-transparent rounded-full animate-spin" />
             </div>
             <p className="text-sm font-bold text-slate-700 mt-4">Loading your booking details...</p>
           </div>
@@ -109,11 +109,11 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
   const b = bookingData;
 
   return (
-    <main className="min-h-screen flex flex-col bg-sand-50">
+    <main className="min-h-screen flex flex-col bg-cream text-ink">
       <Navbar />
 
       <div className="flex-1 py-8 sm:py-14 px-3 sm:px-6">
-        <div className="max-w-2xl mx-auto bg-white p-6 sm:p-10 rounded-3xl border-2 border-emerald-500/30 shadow-2xl space-y-6">
+        <div className="max-w-2xl mx-auto bg-white p-6 sm:p-10 rounded-3xl border border-sky-100 shadow-[0_16px_50px_rgba(22,48,79,0.08)] space-y-6">
           
           {/* Header celebration badge */}
           <div className="text-center space-y-2">

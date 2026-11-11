@@ -63,7 +63,7 @@ export default function AdminDeletedBookingsPage() {
     <div className="space-y-6 max-w-7xl mx-auto">
       <div>
         <span className="text-xs font-bold uppercase tracking-wider text-rose-600">Audit &amp; Recovery</span>
-        <h1 className="font-playfair text-2xl sm:text-3xl font-black text-royal-900">
+        <h1 className="font-playfair text-2xl sm:text-3xl font-black text-ink">
           Soft Deleted &amp; Cancelled Bookings
         </h1>
         <p className="text-xs text-ink/70 mt-1">
@@ -71,9 +71,9 @@ export default function AdminDeletedBookingsPage() {
         </p>
       </div>
 
-      <div className="bg-white rounded-3xl border border-sand-200 shadow-soft overflow-hidden">
+      <div className="bg-white rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] overflow-hidden">
         {loading ? (
-          <div className="py-12 text-center text-xs font-bold text-royal-900">Loading ledger...</div>
+          <div className="py-12 text-center text-xs font-bold text-ink">Loading ledger...</div>
         ) : bookings.length === 0 ? (
           <div className="py-12 text-center text-xs text-ink/60">
             No soft-deleted or cancelled bookings found. All records active.
@@ -82,7 +82,7 @@ export default function AdminDeletedBookingsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-sand-200 bg-sand-50 text-[11px] font-bold uppercase tracking-wider text-royal-900">
+                <tr className="border-b border-sky-100 bg-[#fffdf9] text-[11px] font-bold uppercase tracking-wider text-ink">
                   <th className="py-3.5 px-4">Ref</th>
                   <th className="py-3.5 px-4">Customer</th>
                   <th className="py-3.5 px-4">Branch &amp; Date</th>
@@ -94,12 +94,12 @@ export default function AdminDeletedBookingsPage() {
               </thead>
               <tbody className="divide-y divide-sand-100">
                 {bookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-sand-50/80 transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-royal-700 whitespace-nowrap">
+                  <tr key={b.id} className="hover:bg-[#fffdf9]/80 transition-colors">
+                    <td className="py-3.5 px-4 font-mono font-bold text-[#237eea] whitespace-nowrap">
                       {b.booking_ref}
                     </td>
                     <td className="py-3.5 px-4">
-                      <strong className="block text-royal-900">{b.customer_name}</strong>
+                      <strong className="block text-ink">{b.customer_name}</strong>
                       <span className="text-[11px] text-ink/60">{b.customer_phone}</span>
                     </td>
                     <td className="py-3.5 px-4 whitespace-nowrap">
@@ -109,7 +109,7 @@ export default function AdminDeletedBookingsPage() {
                     <td className="py-3.5 px-4 max-w-xs text-ink/80 truncate">
                       {b.cancelled_reason || b.notes || 'User/Admin requested removal'}
                     </td>
-                    <td className="py-3.5 px-4 whitespace-nowrap font-bold text-royal-900">
+                    <td className="py-3.5 px-4 whitespace-nowrap font-bold text-ink">
                       ₹{b.refund_amount || 0}
                     </td>
                     <td className="py-3.5 px-4 text-ink/60 whitespace-nowrap">

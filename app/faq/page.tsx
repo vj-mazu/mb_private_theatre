@@ -12,23 +12,29 @@ export const metadata = {
 
 export default function FaqPage() {
   return (
-    <main className="min-h-screen flex flex-col bg-sand-50">
+    <main className="min-h-screen flex flex-col bg-cream text-ink">
       <AnnouncementBar />
       <Navbar />
 
-      <section className="py-16 sm:py-20 bg-gradient-to-b from-royal-950 to-royal-900 text-white text-center">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-amber-300">Help Center</span>
-          <h1 className="font-playfair text-4xl sm:text-5xl font-black tracking-tight">
+      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#f0f7ff] via-cream to-cream text-ink text-center relative overflow-hidden border-b border-sky-100">
+        <div className="hero-orb orb-one" />
+        <div className="hero-orb orb-two" />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-4 relative z-10">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#fff0df] text-[#f39a4b] border border-[#f39a4b]/30 text-xs font-bold shadow-xs">
+            Help Center
+          </span>
+          <h1 className="font-playfair text-4xl sm:text-5xl font-black tracking-tight text-ink">
             Frequently Asked Questions
           </h1>
-          <p className="text-sm sm:text-base text-slate-200 max-w-xl mx-auto font-normal">
+          <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto font-medium">
             Got queries regarding your private screening or surprise celebration? We&apos;ve got you covered.
           </p>
         </div>
       </section>
 
-      <FaqSection />
+      <div className="bg-cream py-10">
+        <FaqSection />
+      </div>
 
       <FinalCtaBanner />
       <Footer />
