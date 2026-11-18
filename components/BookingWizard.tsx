@@ -1006,403 +1006,137 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                   </span>
                 </div>
 
-                {/* 1 on Top + 3 Below for BTM (4 theatres), or 3-Column Grid for Electronic City (3 theatres) */}
-                {currentBranchTheatres.length === 4 ? (
-                  <div className="space-y-5 pt-1">
-                    {/* Top 1 Theatre: Shadow Suit (Spacious horizontal layout, NO VIP text) */}
-                    {(() => {
-                      const topTh = currentBranchTheatres.find(t => t.id === 7) || currentBranchTheatres[3];
-                      const isSelected = theatreId === topTh.id;
-                      const currentMedia = theatreMediaMap[topTh.id] || 'photo1';
-                      const branchLocationLabel = 'BTM 2nd Stage, Bengaluru';
+                {/* Clean 3-Column Theatre Cards Grid (Clean 3 in Row 1, and 4th card centered in Next Row) */}
+                <div className="grid grid-cols-1 md:grid-cols-3 items-stretch gap-5 sm:gap-6 pt-1">
+                  {currentBranchTheatres.map((th, idx) => {
+                    const isSelected = theatreId === th.id;
+                    const currentMedia = theatreMediaMap[th.id] || 'photo1';
+                    const branchLocationLabel = branchId === 2 ? 'BTM 2nd Stage, Bengaluru' : 'Electronic City, Bengaluru';
+                    const isFourthCard = currentBranchTheatres.length === 4 && idx === 3;
 
-                      return (
-                        <div
-                          key={topTh.id}
-                          onClick={() => setTheatreId(topTh.id)}
-                          className={`rounded-3xl border-2 transition-all duration-300 bg-white overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-0.5 cursor-pointer group ${
-                            isSelected
-                              ? 'border-[#ef4a23] ring-4 ring-[#ef4a23]/15 shadow-xl'
-                              : 'border-slate-200/90 hover:border-[#ef4a23]/60'
-                          }`}
-                        >
-                          <div className="flex flex-col md:flex-row items-stretch">
-                            {/* Media Left */}
-                            <div className="relative w-full md:w-5/12 aspect-[4/3] md:aspect-auto bg-slate-900 overflow-hidden shrink-0 min-h-[220px] md:min-h-[260px]">
-                              {currentMedia === 'video' ? (
-                                <video
-                                  key={topTh.video}
-                                  src={topTh.video}
-                                  poster={topTh.images?.[0]}
-                                  autoPlay
-                                  loop
-                                  muted
-                                  playsInline
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <Image
-                                  src={currentMedia === 'photo2' ? topTh.images[1] : topTh.images[0]}
-                                  alt={topTh.name}
-                                  fill
-                                  className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                                  sizes="(max-width: 768px) 100vw, 40vw"
-                                />
-                              )}
+                    return (
+                      <div
+                        key={th.id}
+                        onClick={() => setTheatreId(th.id)}
+                        className={`h-full rounded-3xl border-2 transition-all duration-300 bg-white overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 flex flex-col cursor-pointer group ${
+                          isFourthCard ? 'md:col-start-2' : ''
+                        } ${
+                          isSelected 
+                            ? 'border-[#ef4a23] ring-4 ring-[#ef4a23]/15 shadow-xl' 
+                            : 'border-slate-200/90 hover:border-[#ef4a23]/60'
+                        }`}
+                      >
+                        <div className="relative w-full aspect-[4/3] bg-slate-900 overflow-hidden">
+                          {currentMedia === 'video' ? (
+                            <video
+                              key={th.video}
+                              src={th.video}
+                              poster={th.images?.[0]}
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Image
+                              src={currentMedia === 'photo2' ? th.images[1] : th.images[0]}
+                              alt={th.name}
+                              fill
+                              className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                            />
+                          )}
 
-                              {/* Capacity Tag at Top-Left */}
-                              <div className="absolute top-2.5 left-2.5 z-10">
-                                <span className="px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-wider shadow-sm border border-white/20 whitespace-nowrap">
-                                  {topTh.capacity}
-                                </span>
-                              </div>
-
-                              {/* Compact Media Switcher */}
-                              <div
-                                className="absolute bottom-2.5 left-2.5 z-10 flex items-center gap-1 rounded-full bg-black/55 backdrop-blur-md p-1 pointer-events-auto"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <button
-                                  type="button"
-                                  aria-label={`Show photo 1 of ${topTh.name}`}
-                                  title="Photo 1"
-                                  onClick={() => setTheatreMediaMap(prev => ({ ...prev, [topTh.id]: 'photo1' }))}
-                                  className={`w-6 h-6 rounded-full grid place-items-center text-[10px] font-black transition-all cursor-pointer ${
-                                    currentMedia === 'photo1' ? 'bg-[#ef4a23] text-white' : 'text-white/85 hover:bg-white/15'
-                                  }`}
-                                >
-                                  1
-                                </button>
-                                <button
-                                  type="button"
-                                  aria-label={`Show photo 2 of ${topTh.name}`}
-                                  title="Photo 2"
-                                  onClick={() => setTheatreMediaMap(prev => ({ ...prev, [topTh.id]: 'photo2' }))}
-                                  className={`w-6 h-6 rounded-full grid place-items-center text-[10px] font-black transition-all cursor-pointer ${
-                                    currentMedia === 'photo2' ? 'bg-[#ef4a23] text-white' : 'text-white/85 hover:bg-white/15'
-                                  }`}
-                                >
-                                  2
-                                </button>
-                                <button
-                                  type="button"
-                                  aria-label={`Play walkthrough video of ${topTh.name}`}
-                                  title="Walkthrough video"
-                                  onClick={() => setTheatreMediaMap(prev => ({ ...prev, [topTh.id]: 'video' }))}
-                                  className={`w-6 h-6 rounded-full grid place-items-center text-[9px] transition-all cursor-pointer ${
-                                    currentMedia === 'video' ? 'bg-[#ef4a23] text-white' : 'text-white/85 hover:bg-white/15'
-                                  }`}
-                                >
-                                  <span aria-hidden="true">▶</span>
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Details Right */}
-                            <div className="p-5 md:p-6 flex-1 flex flex-col justify-between space-y-3">
-                              <div className="space-y-1.5">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">
-                                    <MapPin className="w-3.5 h-3.5 text-[#ef4a23] shrink-0" />
-                                    <span>{branchLocationLabel}</span>
-                                  </span>
-                                </div>
-                                <h3 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
-                                  {topTh.name}
-                                </h3>
-                                <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                                  {topTh.description}
-                                </p>
-                              </div>
-
-                              <div className="flex flex-wrap items-center gap-2">
-                                <div className="bg-[#e51e25] text-white font-black text-xs sm:text-sm py-1.5 px-4 rounded-full shadow-sm uppercase tracking-wide inline-flex items-center justify-center">
-                                  Starts @ {topTh.startPrice.replace('₹', '')}/-
-                                </div>
-                                <div className="text-[10px] sm:text-[11px] font-bold text-slate-700 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200/60 leading-snug">
-                                  {topTh.spec}
-                                </div>
-                              </div>
-
-                              <div className="pt-2">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setTheatreId(topTh.id);
-                                  }}
-                                  className={`w-full min-h-[44px] py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                                    isSelected
-                                      ? 'bg-[#ef4a23] text-white shadow-md ring-2 ring-[#ef4a23]/30 scale-[1.01]'
-                                      : 'bg-[#ef4a23] hover:bg-[#d63b15] text-white'
-                                  }`}
-                                >
-                                  <span>{isSelected ? '✓ Selected' : 'Book Now →'}</span>
-                                </button>
-                              </div>
-                            </div>
+                          <div className="absolute top-2.5 left-2.5 z-10">
+                            <span className="px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[9.5px] font-black uppercase tracking-wider shadow-sm border border-white/20 whitespace-nowrap">
+                              {th.capacity}
+                            </span>
                           </div>
-                        </div>
-                      );
-                    })()}
 
-                    {/* Below 3 Theatres in Spacious 3-Column Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 items-stretch gap-5 sm:gap-6">
-                      {currentBranchTheatres.filter(t => t.id !== 7).slice(0, 3).map((th) => {
-                        const isSelected = theatreId === th.id;
-                        const currentMedia = theatreMediaMap[th.id] || 'photo1';
-                        const branchLocationLabel = 'BTM 2nd Stage, Bengaluru';
-
-                        return (
                           <div
-                            key={th.id}
-                            onClick={() => setTheatreId(th.id)}
-                            className={`h-full rounded-3xl border-2 transition-all duration-300 bg-white overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 flex flex-col cursor-pointer group ${
-                              isSelected 
-                                ? 'border-[#ef4a23] ring-4 ring-[#ef4a23]/15 shadow-xl' 
-                                : 'border-slate-200/90 hover:border-[#ef4a23]/60'
-                            }`}
+                            className="absolute bottom-2.5 left-2.5 z-10 flex items-center gap-1 rounded-full bg-black/55 backdrop-blur-md p-1 pointer-events-auto"
+                            onClick={(e) => e.stopPropagation()}
                           >
-                            <div className="relative w-full aspect-[4/3] bg-slate-900 overflow-hidden">
-                              {currentMedia === 'video' ? (
-                                <video
-                                  key={th.video}
-                                  src={th.video}
-                                  poster={th.images?.[0]}
-                                  autoPlay
-                                  loop
-                                  muted
-                                  playsInline
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <Image
-                                  src={currentMedia === 'photo2' ? th.images[1] : th.images[0]}
-                                  alt={th.name}
-                                  fill
-                                  className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                                  sizes="(max-width: 768px) 100vw, 33vw"
-                                />
-                              )}
-
-                              <div className="absolute top-2.5 left-2.5 z-10">
-                                <span className="px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-white text-[9px] font-black uppercase tracking-wider shadow-sm border border-white/20 whitespace-nowrap">
-                                  {th.capacity}
-                                </span>
-                              </div>
-
-                              <div
-                                className="absolute bottom-2.5 left-2.5 z-10 flex items-center gap-1 rounded-full bg-black/55 backdrop-blur-md p-1 pointer-events-auto"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <button
-                                  type="button"
-                                  aria-label={`Show photo 1 of ${th.name}`}
-                                  title="Photo 1"
-                                  onClick={() => setTheatreMediaMap(prev => ({ ...prev, [th.id]: 'photo1' }))}
-                                  className={`w-6 h-6 rounded-full grid place-items-center text-[10px] font-black transition-all cursor-pointer ${
-                                    currentMedia === 'photo1' ? 'bg-[#ef4a23] text-white' : 'text-white/85 hover:bg-white/15'
-                                  }`}
-                                >
-                                  1
-                                </button>
-                                <button
-                                  type="button"
-                                  aria-label={`Show photo 2 of ${th.name}`}
-                                  title="Photo 2"
-                                  onClick={() => setTheatreMediaMap(prev => ({ ...prev, [th.id]: 'photo2' }))}
-                                  className={`w-6 h-6 rounded-full grid place-items-center text-[10px] font-black transition-all cursor-pointer ${
-                                    currentMedia === 'photo2' ? 'bg-[#ef4a23] text-white' : 'text-white/85 hover:bg-white/15'
-                                  }`}
-                                >
-                                  2
-                                </button>
-                                <button
-                                  type="button"
-                                  aria-label={`Play walkthrough video of ${th.name}`}
-                                  title="Walkthrough video"
-                                  onClick={() => setTheatreMediaMap(prev => ({ ...prev, [th.id]: 'video' }))}
-                                  className={`w-6 h-6 rounded-full grid place-items-center text-[9px] transition-all cursor-pointer ${
-                                    currentMedia === 'video' ? 'bg-[#ef4a23] text-white' : 'text-white/85 hover:bg-white/15'
-                                  }`}
-                                >
-                                  <span aria-hidden="true">▶</span>
-                                </button>
-                              </div>
-                            </div>
-
-                            <div className="p-5 text-center flex flex-col items-center justify-between flex-1 space-y-2.5">
-                              <div className="min-h-[74px] flex flex-col justify-center">
-                                <h3 className="text-xl font-black text-slate-900 tracking-tight leading-snug">
-                                  {th.name}
-                                </h3>
-                                <div className="text-xs font-semibold text-slate-600 flex items-center justify-center gap-1 mt-1">
-                                  <MapPin className="w-3.5 h-3.5 text-[#ef4a23] shrink-0" />
-                                  <span>{branchLocationLabel}</span>
-                                </div>
-                              </div>
-
-                              <div className="my-2 w-full flex justify-center items-center">
-                                <div className="bg-[#e51e25] text-white font-black text-[12px] sm:text-[13px] py-1.5 px-5 rounded-full shadow-sm uppercase tracking-wide inline-flex items-center justify-center whitespace-nowrap min-h-[36px]">
-                                  Starts @ {th.startPrice.replace('₹', '')}/-
-                                </div>
-                              </div>
-
-                              <div className="text-[10px] sm:text-[11px] font-bold text-slate-600 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200/60 leading-snug text-center min-h-[46px] flex items-center justify-center">
-                                {th.spec}
-                              </div>
-
-                              <div className="w-full pt-2 mt-auto">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setTheatreId(th.id);
-                                  }}
-                                  className={`w-full min-h-[44px] py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                                    isSelected
-                                      ? 'bg-[#ef4a23] text-white shadow-md ring-2 ring-[#ef4a23]/30 scale-[1.01]'
-                                      : 'bg-[#ef4a23] hover:bg-[#d63b15] text-white'
-                                  }`}
-                                >
-                                  <span>{isSelected ? '✓ Selected' : 'Book Now →'}</span>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ) : (
-                  /* 3-Column Grid for Electronic City (3 theatres) */
-                  <div className="grid grid-cols-1 md:grid-cols-3 items-stretch gap-5 sm:gap-6 pt-1">
-                    {currentBranchTheatres.map((th) => {
-                      const isSelected = theatreId === th.id;
-                      const currentMedia = theatreMediaMap[th.id] || 'photo1';
-                      const branchLocationLabel = 'Electronic City, Bengaluru';
-
-                      return (
-                        <div
-                          key={th.id}
-                          onClick={() => setTheatreId(th.id)}
-                          className={`h-full rounded-3xl border-2 transition-all duration-300 bg-white overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 flex flex-col cursor-pointer group ${
-                            isSelected 
-                              ? 'border-[#ef4a23] ring-4 ring-[#ef4a23]/15 shadow-xl' 
-                              : 'border-slate-200/90 hover:border-[#ef4a23]/60'
-                          }`}
-                        >
-                          <div className="relative w-full aspect-[4/3] bg-slate-900 overflow-hidden">
-                            {currentMedia === 'video' ? (
-                              <video
-                                key={th.video}
-                                src={th.video}
-                                poster={th.images?.[0]}
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <Image
-                                src={currentMedia === 'photo2' ? th.images[1] : th.images[0]}
-                                alt={th.name}
-                                fill
-                                className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                                sizes="(max-width: 768px) 100vw, 33vw"
-                              />
-                            )}
-
-                            <div className="absolute top-2.5 left-2.5 z-10">
-                              <span className="px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-white text-[9px] font-black uppercase tracking-wider shadow-sm border border-white/20 whitespace-nowrap">
-                                {th.capacity}
-                              </span>
-                            </div>
-
-                            <div
-                              className="absolute bottom-2.5 left-2.5 z-10 flex items-center gap-1 rounded-full bg-black/55 backdrop-blur-md p-1 pointer-events-auto"
-                              onClick={(e) => e.stopPropagation()}
+                            <button
+                              type="button"
+                              aria-label={`Show photo 1 of ${th.name}`}
+                              title="Photo 1"
+                              onClick={() => setTheatreMediaMap(prev => ({ ...prev, [th.id]: 'photo1' }))}
+                              className={`w-6 h-6 rounded-full grid place-items-center text-[10px] font-black transition-all cursor-pointer ${
+                                currentMedia === 'photo1' ? 'bg-[#ef4a23] text-white' : 'text-white/85 hover:bg-white/15'
+                              }`}
                             >
-                              <button
-                                type="button"
-                                aria-label={`Show photo 1 of ${th.name}`}
-                                title="Photo 1"
-                                onClick={() => setTheatreMediaMap(prev => ({ ...prev, [th.id]: 'photo1' }))}
-                                className={`w-6 h-6 rounded-full grid place-items-center text-[10px] font-black transition-all cursor-pointer ${
-                                  currentMedia === 'photo1' ? 'bg-[#ef4a23] text-white' : 'text-white/85 hover:bg-white/15'
-                                }`}
-                              >
-                                1
-                              </button>
-                              <button
-                                type="button"
-                                aria-label={`Show photo 2 of ${th.name}`}
-                                title="Photo 2"
-                                onClick={() => setTheatreMediaMap(prev => ({ ...prev, [th.id]: 'photo2' }))}
-                                className={`w-6 h-6 rounded-full grid place-items-center text-[10px] font-black transition-all cursor-pointer ${
-                                  currentMedia === 'photo2' ? 'bg-[#ef4a23] text-white' : 'text-white/85 hover:bg-white/15'
-                                }`}
-                              >
-                                2
-                              </button>
-                              <button
-                                type="button"
-                                aria-label={`Play walkthrough video of ${th.name}`}
-                                title="Walkthrough video"
-                                onClick={() => setTheatreMediaMap(prev => ({ ...prev, [th.id]: 'video' }))}
-                                className={`w-6 h-6 rounded-full grid place-items-center text-[9px] transition-all cursor-pointer ${
-                                  currentMedia === 'video' ? 'bg-[#ef4a23] text-white' : 'text-white/85 hover:bg-white/15'
-                                }`}
-                              >
-                                <span aria-hidden="true">▶</span>
-                              </button>
-                            </div>
-                          </div>
-
-                          <div className="p-5 text-center flex flex-col items-center justify-between flex-1 space-y-2.5">
-                            <div className="min-h-[74px] flex flex-col justify-center">
-                              <h3 className="text-xl font-black text-slate-900 tracking-tight leading-snug">
-                                {th.name}
-                              </h3>
-                              <div className="text-xs font-semibold text-slate-600 flex items-center justify-center gap-1 mt-1">
-                                <MapPin className="w-3.5 h-3.5 text-[#ef4a23] shrink-0" />
-                                <span>{branchLocationLabel}</span>
-                              </div>
-                            </div>
-
-                            <div className="my-2 w-full flex justify-center items-center">
-                              <div className="bg-[#e51e25] text-white font-black text-[12px] sm:text-[13px] py-1.5 px-5 rounded-full shadow-sm uppercase tracking-wide inline-flex items-center justify-center whitespace-nowrap min-h-[36px]">
-                                Starts @ {th.startPrice.replace('₹', '')}/-
-                              </div>
-                            </div>
-
-                            <div className="text-[10px] sm:text-[11px] font-bold text-slate-600 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200/60 leading-snug text-center min-h-[46px] flex items-center justify-center">
-                              {th.spec}
-                            </div>
-
-                            <div className="w-full pt-2 mt-auto">
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setTheatreId(th.id);
-                                }}
-                                className={`w-full min-h-[44px] py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                                  isSelected
-                                    ? 'bg-[#ef4a23] text-white shadow-md ring-2 ring-[#ef4a23]/30 scale-[1.01]'
-                                    : 'bg-[#ef4a23] hover:bg-[#d63b15] text-white'
-                                }`}
-                              >
-                                <span>{isSelected ? '✓ Selected' : 'Book Now →'}</span>
-                              </button>
-                            </div>
+                              1
+                            </button>
+                            <button
+                              type="button"
+                              aria-label={`Show photo 2 of ${th.name}`}
+                              title="Photo 2"
+                              onClick={() => setTheatreMediaMap(prev => ({ ...prev, [th.id]: 'photo2' }))}
+                              className={`w-6 h-6 rounded-full grid place-items-center text-[10px] font-black transition-all cursor-pointer ${
+                                currentMedia === 'photo2' ? 'bg-[#ef4a23] text-white' : 'text-white/85 hover:bg-white/15'
+                              }`}
+                            >
+                              2
+                            </button>
+                            <button
+                              type="button"
+                              aria-label={`Play walkthrough video of ${th.name}`}
+                              title="Walkthrough video"
+                              onClick={() => setTheatreMediaMap(prev => ({ ...prev, [th.id]: 'video' }))}
+                              className={`w-6 h-6 rounded-full grid place-items-center text-[9px] transition-all cursor-pointer ${
+                                currentMedia === 'video' ? 'bg-[#ef4a23] text-white' : 'text-white/85 hover:bg-white/15'
+                              }`}
+                            >
+                              <span aria-hidden="true">▶</span>
+                            </button>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
+
+                        <div className="p-4 sm:p-5 text-center flex flex-col items-center justify-between flex-1 space-y-2.5">
+                          <div className="min-h-[68px] flex flex-col justify-center">
+                            <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+                              {th.name}
+                            </h3>
+                            <div className="text-xs font-semibold text-slate-600 flex items-center justify-center gap-1 mt-1">
+                              <MapPin className="w-3.5 h-3.5 text-[#ef4a23] shrink-0" />
+                              <span>{branchLocationLabel}</span>
+                            </div>
+                          </div>
+
+                          <div className="my-1.5 w-full flex justify-center items-center">
+                            <div className="bg-[#e51e25] text-white font-black text-[12px] sm:text-[13px] py-1.5 px-4 sm:px-5 rounded-full shadow-sm uppercase tracking-wide inline-flex items-center justify-center whitespace-nowrap min-h-[36px]">
+                              Starts @ {th.startPrice.replace('₹', '')}/-
+                            </div>
+                          </div>
+
+                          <div className="text-[10px] sm:text-[11px] font-bold text-slate-600 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200/60 leading-snug text-center min-h-[46px] flex items-center justify-center w-full">
+                            {th.spec}
+                          </div>
+
+                          <div className="w-full pt-2 mt-auto">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setTheatreId(th.id);
+                              }}
+                              className={`w-full min-h-[44px] py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                                isSelected
+                                  ? 'bg-[#ef4a23] text-white shadow-md ring-2 ring-[#ef4a23]/30 scale-[1.01]'
+                                  : 'bg-[#ef4a23] hover:bg-[#d63b15] text-white'
+                              }`}
+                            >
+                              <span>{isSelected ? '✓ Selected' : 'Book Now →'}</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
                 {/* Interactive Showtime Slots for Currently Selected Theatre */}
                 {(() => {
                   const selectedTheatre = currentBranchTheatres.find(t => t.id === theatreId) || currentBranchTheatres[0];

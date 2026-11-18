@@ -547,7 +547,7 @@ h1 em, h2 em { color: var(--orange); font-weight: 500; }
   .locations { grid-template-columns: 1fr; gap: 60px; }
   .location-image { height: 470px; margin-right: 25px; }
   .experience-note { right: -25px; }
-  .gallery-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 190px; }
+  .gallery-grid { display: none !important; }
   .testimonial { padding: 65px 25px; margin: 0 20px 50px; }
   .quote-mark { display: none; }
   .faq-section { grid-template-columns: 1fr; gap: 35px; }
@@ -570,7 +570,7 @@ h1 em, h2 em { color: var(--orange); font-weight: 500; }
   .package-copy h2 { font-size: 44px; }
   .package-includes { padding: 20px; }
   .location-image { height: 390px; }
-  .gallery-grid { grid-template-columns: 1fr; grid-auto-rows: 240px; }
+  .gallery-grid { display: none !important; }
   .gallery-grid figure.wide { grid-column: span 1; }
 }
 

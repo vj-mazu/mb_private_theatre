@@ -508,17 +508,23 @@ const heroBgPhotos = [
 ];
 
 const defaultTheatres = [
+  // Electronic City (Branch 1)
   {
+    branch: 'Electronic City',
+    branchId: 1,
     name: 'Couple Room',
-    meta: '2 guests · Private Cinema',
+    meta: 'Up to 2 guests · Private Cinema',
     price: '₹1,499',
     dealPrice: '₹899',
     image: '/images/couple_1.webp',
     description: 'An intimate private screen designed for quiet dates, proposals and anniversaries.',
     branchSlug: 'electronic-city',
-    theatreId: 1
+    theatreId: 1,
+    location: 'Electronic City, Bengaluru'
   },
   {
+    branch: 'Electronic City',
+    branchId: 1,
     name: 'Celebration Room',
     meta: 'Up to 6 guests · Private Cinema',
     price: '₹2,200',
@@ -526,17 +532,74 @@ const defaultTheatres = [
     image: '/images/celebration_2.webp',
     description: 'Your own celebration lounge with personalised décor, cinematic sound and space to party.',
     branchSlug: 'electronic-city',
-    theatreId: 2
+    theatreId: 2,
+    location: 'Electronic City, Bengaluru'
   },
   {
+    branch: 'Electronic City',
+    branchId: 1,
     name: 'Family Theatre',
-    meta: 'Up to 20 guests · Private Cinema',
+    meta: 'Up to 12 guests · Private Cinema',
     price: '₹2,200',
     dealPrice: '₹1,699',
     image: '/images/celebration_1.webp',
     description: 'A big-screen experience for families and groups with Dolby sound and comfortable seating.',
     branchSlug: 'electronic-city',
-    theatreId: 3
+    theatreId: 3,
+    location: 'Electronic City, Bengaluru'
+  },
+  // BTM 2nd Stage (Branch 2)
+  {
+    branch: 'BTM 2nd Stage',
+    branchId: 2,
+    name: 'Butterfly Blush',
+    meta: 'Up to 2 guests · Private Cinema',
+    price: '₹1,499',
+    dealPrice: '₹899',
+    image: '/images/rooms/btm-butterfly-blush.webp',
+    description: 'Signature Blush Glow, 4K Laser Projection, Dolby Atmos Surround, Luxury Recliner Loungers.',
+    branchSlug: 'btm-stage-2',
+    theatreId: 4,
+    location: 'BTM 2nd Stage, Bengaluru'
+  },
+  {
+    branch: 'BTM 2nd Stage',
+    branchId: 2,
+    name: 'Lavender Mist',
+    meta: 'Up to 6 guests · Private Cinema',
+    price: '₹2,200',
+    dealPrice: '₹1,499',
+    image: '/images/rooms/btm-lavender-mist.webp',
+    description: 'Aesthetic Lavender Hues, 135-inch Cinema Display, High-Fidelity Audio, Fog Entry Compatible.',
+    branchSlug: 'btm-stage-2',
+    theatreId: 5,
+    location: 'BTM 2nd Stage, Bengaluru'
+  },
+  {
+    branch: 'BTM 2nd Stage',
+    branchId: 2,
+    name: 'Scarlet Red',
+    meta: 'Up to 12 guests · Private Cinema',
+    price: '₹2,400',
+    dealPrice: '₹1,699',
+    image: '/images/rooms/btm-scarlet-red.webp',
+    description: 'Passionate Scarlet Theme, 150-inch 4K Cinema Screen, Recliners + Loungers, Private Dining Table.',
+    branchSlug: 'btm-stage-2',
+    theatreId: 6,
+    location: 'BTM 2nd Stage, Bengaluru'
+  },
+  {
+    branch: 'BTM 2nd Stage',
+    branchId: 2,
+    name: 'Shadow Suit',
+    meta: 'Up to 8 guests · Private Cinema',
+    price: '₹2,400',
+    dealPrice: '₹1,599',
+    image: '/images/rooms/btm-shadow-suit.webp',
+    description: 'Stealth Cinema Suite, Deep Contrast Acoustic Walls, 140-inch Laser 4K Screen, Recliner Suite, Dolby Audio.',
+    branchSlug: 'btm-stage-2',
+    theatreId: 7,
+    location: 'BTM 2nd Stage, Bengaluru'
   },
 ];
 
@@ -1034,6 +1097,42 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
 
   const [activeOccasion, setActiveOccasion] = useState(0);
   const [isOccasionPaused, setIsOccasionPaused] = useState(false);
+  const [activeMomentIdx, setActiveMomentIdx] = useState(0);
+  const [isMomentPaused, setIsMomentPaused] = useState(false);
+  const momentTouchStartX = useRef<number | null>(null);
+  const momentTouchEndX = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (isMomentPaused) return;
+    const timer = setInterval(() => {
+      setActiveMomentIdx(prev => (prev + 1) % gallery.length);
+    }, 3800);
+    return () => clearInterval(timer);
+  }, [isMomentPaused]);
+
+  const nextMoment = () => setActiveMomentIdx(prev => (prev + 1) % gallery.length);
+  const prevMoment = () => setActiveMomentIdx(prev => (prev - 1 + gallery.length) % gallery.length);
+
+  const handleMomentTouchStart = (e: React.TouchEvent) => {
+    setIsMomentPaused(true);
+    momentTouchStartX.current = e.touches[0].clientX;
+    momentTouchEndX.current = null;
+  };
+
+  const handleMomentTouchMove = (e: React.TouchEvent) => {
+    momentTouchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleMomentTouchEnd = () => {
+    if (momentTouchStartX.current !== null && momentTouchEndX.current !== null) {
+      const diff = momentTouchStartX.current - momentTouchEndX.current;
+      if (diff > 35) nextMoment();
+      else if (diff < -35) prevMoment();
+    }
+    momentTouchStartX.current = null;
+    momentTouchEndX.current = null;
+    setTimeout(() => setIsMomentPaused(false), 2200);
+  };
   const [openFaq, setOpenFaq] = useState(0);
   const [branch, setBranch] = useState('Electronic City');
   const [date, setDate] = useState(getTodayIST());
@@ -2482,7 +2581,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
 
         {/* 9. PICK YOUR PRIVATE THEATRE */}
         <section className="section theatres" id="theatres">
-          <div className="section-heading heading-row">
+          <div className="section-heading heading-row mb-6 sm:mb-8">
             <div>
               <div className="eyebrow"><span /> Your space, your way</div>
               <h2>Pick your <em>private theatre</em></h2>
@@ -2490,48 +2589,116 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             <p>From an intimate date for two to a full family celebration, there’s a room waiting for your story.</p>
           </div>
 
-          <div className="theatre-grid">
-            {theatres.map((theatre, i) => (
-              <article className="theatre-card flex flex-col justify-between" key={theatre.name}>
-                <div className="theatre-image relative">
-                  <Image 
-                    src={theatre.image} 
-                    alt={`${theatre.name} private cinema`} 
-                    fill 
-                    loading="lazy"
-                    className="object-cover object-center" 
-                    sizes="(max-width: 800px) 100vw, 33vw"
-                  />
-                  {i === 1 && <span className="popular">Most loved</span>}
-                </div>
-
-                <div className="p-5 text-center flex flex-col items-center justify-between flex-1 space-y-3">
-                  <div>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight">{theatre.name}</h3>
-                    <p className="text-xs text-slate-500 font-bold mt-1">📍 Electronic City, Bengaluru</p>
-                  </div>
-
-                  {/* Red Ribbon Banner */}
-                  <div className="relative my-1 w-full flex justify-center items-center">
-                    <div className="relative z-10 bg-[#e51e25] text-white font-black text-sm py-1 px-8 rounded-xs shadow-md uppercase tracking-wider inline-block">
-                      Starts @ {theatre.dealPrice.replace('₹', '')}/-
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-slate-600 font-medium line-clamp-2 px-1">{theatre.description}</p>
-                  
-                  <div className="w-full pt-1">
-                    <Link 
-                      href={`/book-now/${theatre.branchSlug}?theatre=${theatre.theatreId}`} 
-                      className="w-full py-2.5 px-6 rounded-xl bg-[#ef4a23] hover:bg-[#d63b15] text-white font-black text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      <span>Book Now →</span>
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            ))}
+          {/* Interactive Branch Switcher Tabs */}
+          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-8">
+            <button
+              type="button"
+              onClick={() => {
+                setBranch('Electronic City');
+                if (showHeroSlots) setSlotBranch('Electronic City');
+              }}
+              className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5 shadow-xs ${
+                branch === 'Electronic City'
+                  ? 'bg-[#ef4a23] text-white shadow-md shadow-orange-500/25 ring-2 ring-[#ef4a23]/30 scale-[1.02]'
+                  : 'bg-white hover:bg-orange-50 text-stone-700 border border-stone-200'
+              }`}
+            >
+              <span>📍 Electronic City (3 Theatres)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setBranch('BTM 2nd Stage');
+                if (showHeroSlots) setSlotBranch('BTM 2nd Stage');
+              }}
+              className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5 shadow-xs ${
+                branch === 'BTM 2nd Stage'
+                  ? 'bg-[#ef4a23] text-white shadow-md shadow-orange-500/25 ring-2 ring-[#ef4a23]/30 scale-[1.02]'
+                  : 'bg-white hover:bg-orange-50 text-stone-700 border border-stone-200'
+              }`}
+            >
+              <span>📍 BTM 2nd Stage (4 Theatres)</span>
+            </button>
           </div>
+
+          {/* Dynamic 3-Column Theatre Cards Grid (Clean 3 on Top + 4th Centered on Next Row for BTM) */}
+          {(() => {
+            const currentTheatres = theatres.filter(t => 
+              branch === 'BTM 2nd Stage' 
+                ? (t.branch === 'BTM 2nd Stage' || t.branchSlug === 'btm-stage-2' || t.theatreId >= 4)
+                : (t.branch === 'Electronic City' || t.branchSlug === 'electronic-city' || t.theatreId <= 3)
+            );
+
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-3 items-stretch gap-6">
+                {currentTheatres.map((theatre, i) => {
+                  const isFourthCard = currentTheatres.length === 4 && i === 3;
+                  return (
+                    <article 
+                      className={`theatre-card flex flex-col justify-between bg-white rounded-3xl overflow-hidden border border-stone-200/90 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all ${
+                        isFourthCard ? 'md:col-start-2' : ''
+                      }`} 
+                      key={theatre.name}
+                    >
+                      <div className="theatre-image relative w-full aspect-[4/3] bg-stone-900 overflow-hidden">
+                        <Image 
+                          src={theatre.image} 
+                          alt={`${theatre.name} private cinema`} 
+                          fill 
+                          loading="lazy"
+                          className="object-cover object-center group-hover:scale-105 transition-transform duration-500" 
+                          sizes="(max-width: 800px) 100vw, 33vw"
+                        />
+                        {theatre.meta && (
+                          <div className="absolute top-2.5 left-2.5 z-10">
+                            <span className="px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[9.5px] font-black uppercase tracking-wider shadow-sm border border-white/20 whitespace-nowrap">
+                              {theatre.meta}
+                            </span>
+                          </div>
+                        )}
+                        {i === 1 && (
+                          <div className="absolute top-2.5 right-2.5 z-10">
+                            <span className="px-2.5 py-1 rounded-full bg-[#ef4a23] text-white text-[9.5px] font-black uppercase tracking-wider shadow-sm">
+                              Most Loved
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="p-5 text-center flex flex-col items-center justify-between flex-1 space-y-3">
+                        <div>
+                          <h3 className="text-xl font-black text-slate-900 tracking-tight">{theatre.name}</h3>
+                          <p className="text-xs text-slate-500 font-bold mt-1">
+                            📍 {theatre.location || (theatre.branchSlug === 'btm-stage-2' ? 'BTM 2nd Stage, Bengaluru' : 'Electronic City, Bengaluru')}
+                          </p>
+                        </div>
+
+                        {/* Red Ribbon Banner */}
+                        <div className="relative my-1 w-full flex justify-center items-center">
+                          <div className="relative z-10 bg-[#e51e25] text-white font-black text-sm py-1.5 px-6 rounded-full shadow-sm uppercase tracking-wider inline-block">
+                            Starts @ {theatre.dealPrice.replace('₹', '')}/-
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-slate-600 font-medium line-clamp-2 px-1 leading-relaxed">
+                          {theatre.description}
+                        </p>
+                        
+                        <div className="w-full pt-1 mt-auto">
+                          <Link 
+                            href={`/book-now/${theatre.branchSlug}?theatre=${theatre.theatreId}`} 
+                            className="w-full py-2.5 px-6 rounded-xl bg-[#ef4a23] hover:bg-[#d63b15] text-white font-black text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                          >
+                            <span>Book Now →</span>
+                          </Link>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            );
+          })()}
         </section>
 
         {/* 10. LOCATIONS */}
@@ -2624,50 +2791,135 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               ))}
             </div>
 
-            {/* Mobile View: Dynamic Continuous Animated Ribbon with Seamless Flow */}
-            <div className="block md:hidden -mx-4 overflow-hidden relative">
-              {/* Subtle Edge Gradients for Seamless Infinite Carousel Feel */}
-              <div className="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-[#FAF3E4] to-transparent z-10 pointer-events-none" />
-              <div className="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-[#FAF3E4] to-transparent z-10 pointer-events-none" />
+            {/* Mobile View: Exclusive 3D Kinetic Card Stage (Zero Duplicate Images, Zero Vertical Stacking) */}
+            <div 
+              className="block md:hidden relative pt-2 pb-4 select-none"
+              onTouchStart={handleMomentTouchStart}
+              onTouchMove={handleMomentTouchMove}
+              onTouchEnd={handleMomentTouchEnd}
+            >
+              {/* Stage Container: Shows 1 Centered Active Hero Card with Peeking Adjacent Cards */}
+              <div className="relative w-full h-[230px] flex items-center justify-center overflow-hidden">
+                {gallery.map(([image, label], index) => {
+                  const total = gallery.length;
+                  // Compute circular offset (-1 = prev, 0 = active, 1 = next, others hidden)
+                  let offset = (index - activeMomentIdx + total) % total;
+                  if (offset > total / 2) offset -= total;
 
-              {/* Animated Continuous Looped Reel */}
-              <div className="flex gap-3 w-max animate-marquee hover:[animation-play-state:paused] active:[animation-play-state:paused] py-2 px-4 select-none">
-                {[...gallery, ...gallery].map(([image, label], index) => (
-                  <div 
-                    key={`${image}-${index}`}
-                    className="relative w-[240px] h-[175px] shrink-0 rounded-2xl overflow-hidden shadow-md border border-stone-200/90 bg-stone-900 group"
-                  >
-                    <Image 
-                      src={image} 
-                      alt={label} 
-                      fill 
-                      className="object-cover object-center group-hover:scale-105 transition-transform duration-500" 
-                      sizes="240px"
+                  const isActive = offset === 0;
+                  const isPrev = offset === -1;
+                  const isNext = offset === 1;
+                  const isVisible = isActive || isPrev || isNext;
+
+                  if (!isVisible) return null;
+
+                  let transformStyle = '';
+                  let zIndex = 10;
+                  let opacity = 'opacity-100';
+
+                  if (isActive) {
+                    transformStyle = 'translateX(0%) scale(1)';
+                    zIndex = 20;
+                  } else if (isPrev) {
+                    transformStyle = 'translateX(-78%) scale(0.85) rotate(-3deg)';
+                    zIndex = 10;
+                    opacity = 'opacity-40';
+                  } else if (isNext) {
+                    transformStyle = 'translateX(78%) scale(0.85) rotate(3deg)';
+                    zIndex = 10;
+                    opacity = 'opacity-40';
+                  }
+
+                  return (
+                    <div
+                      key={image}
+                      onClick={() => {
+                        if (isPrev) prevMoment();
+                        if (isNext) nextMoment();
+                      }}
+                      style={{ transform: transformStyle }}
+                      className={`absolute w-[82vw] max-w-[320px] h-[220px] rounded-3xl overflow-hidden transition-all duration-500 ease-out cursor-pointer ${
+                        isActive
+                          ? 'ring-2 ring-[#ef4a23] shadow-[0_20px_45px_rgba(239,74,35,0.22)]'
+                          : 'border border-stone-200/80 shadow-md'
+                      } ${opacity}`}
+                    >
+                      <Image
+                        src={image}
+                        alt={label}
+                        fill
+                        priority={isActive}
+                        className={`object-cover object-center transition-transform duration-700 ${
+                          isActive ? 'scale-105' : 'scale-100'
+                        }`}
+                        sizes="320px"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10" />
+
+                      {/* Top Badge: Counter + Live Celebration Label */}
+                      <div className="absolute top-3 inset-x-3 z-10 flex items-center justify-between pointer-events-none">
+                        <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[#ffd46e] text-[9.5px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#ef4a23] animate-pulse" />
+                          <span>Real Celebration</span>
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[10px] font-black tracking-widest">
+                          0{index + 1} / 0{total}
+                        </span>
+                      </div>
+
+                      {/* Bottom Caption */}
+                      <div className="absolute inset-x-0 bottom-0 p-4 z-10 text-left">
+                        <h4 className="text-white font-['Playfair_Display'] text-base font-bold capitalize leading-snug drop-shadow-md">
+                          {label}
+                        </h4>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Bottom Interactive Bar: Prev/Next Controls + 6 Active Indicator Pills */}
+              <div className="flex items-center justify-between px-3 mt-4 max-w-xs mx-auto">
+                <button
+                  type="button"
+                  onClick={prevMoment}
+                  aria-label="Previous moment"
+                  className="w-8 h-8 rounded-full bg-white hover:bg-[#ef4a23] text-stone-700 hover:text-white border border-stone-200 shadow-sm flex items-center justify-center transition-all cursor-pointer font-bold active:scale-90 text-sm"
+                >
+                  ←
+                </button>
+
+                {/* 6 Clickable Dynamic Progress Pills (Exactly 6 Unique Items) */}
+                <div className="flex items-center gap-1.5">
+                  {gallery.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setActiveMomentIdx(i)}
+                      aria-label={`Go to moment ${i + 1}`}
+                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                        i === activeMomentIdx
+                          ? 'w-7 bg-[#ef4a23] shadow-xs'
+                          : 'w-2 bg-stone-300 hover:bg-stone-400'
+                      }`}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-                    
-                    {/* Badge */}
-                    <div className="absolute top-2.5 left-2.5 z-10">
-                      <span className="px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[#ffd46e] text-[9px] font-bold uppercase tracking-wider">
-                        ★ Real Moment
-                      </span>
-                    </div>
+                  ))}
+                </div>
 
-                    {/* Title */}
-                    <div className="absolute inset-x-0 bottom-0 p-3 z-10 text-left">
-                      <h4 className="text-white font-['Playfair_Display'] text-sm font-bold capitalize leading-snug drop-shadow-sm">
-                        {label}
-                      </h4>
-                    </div>
-                  </div>
-                ))}
+                <button
+                  type="button"
+                  onClick={nextMoment}
+                  aria-label="Next moment"
+                  className="w-8 h-8 rounded-full bg-white hover:bg-[#ef4a23] text-stone-700 hover:text-white border border-stone-200 shadow-sm flex items-center justify-center transition-all cursor-pointer font-bold active:scale-90 text-sm"
+                >
+                  →
+                </button>
               </div>
 
-              {/* Mobile Interaction Hint */}
-              <div className="flex items-center justify-center gap-1.5 text-[11px] font-semibold text-stone-500 mt-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#ef4a23] animate-pulse" />
-                <span>Continuous celebration stream &bull; Tap or hold to pause</span>
-              </div>
+              {/* Gesture Hint */}
+              <p className="text-center text-[10px] text-stone-500 font-medium mt-2">
+                Swipe left or right to explore setups &bull; Auto-plays smoothly
+              </p>
             </div>
           </div>
         </section>
