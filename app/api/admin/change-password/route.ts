@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { getAdminSession, hashPassword } from '@/lib/auth';
-import { mockStore, saveStore } from '@/lib/db';
+import { mockStore, saveStore, getDb } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
@@ -56,8 +56,24 @@ export async function POST(request: NextRequest) {
     }
 
     // Set new password (hash only — never persist plaintext)
-    (user as any).password_hash = await hashPassword(String(new_password));
+    const newHash = await hashPassword(String(new_password));
+    (user as any).password_hash = newHash;
+    (user as any).custom_password = true;
+    (user as any).password_updated_at = new Date().toISOString();
     delete (user as any).password_plain;
+
+    // Persist to SQLite admin_users table if available
+    try {
+      const db = getDb();
+      if (db) {
+        db.prepare("UPDATE admin_users SET password_hash = ?, updated_at = datetime('now', 'localtime') WHERE id = ?").run(
+          newHash,
+          user.id
+        );
+      }
+    } catch (dbErr) {
+      console.warn('SQLite admin_users password update error:', dbErr);
+    }
 
     // Audit log
     mockStore.auditLogs.unshift({

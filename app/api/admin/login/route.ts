@@ -133,8 +133,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Resilient fallback for established management credentials
-    if (!isMatch) {
+    // Resilient fallback for initial management credentials (only if user hasn't set custom password)
+    if (!isMatch && !(user as any).custom_password) {
       if ((user.role === 'super_admin' || user.email === 'admin@moviebash.in' || user.username === 'admin') &&
           (inputPassword === 'admin123' || inputPassword === 'Admin@MovieBash2026!')) {
         isMatch = true;
