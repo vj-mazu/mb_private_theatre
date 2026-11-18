@@ -335,9 +335,32 @@ export const initialMockStore: MockStore = {
       id: 1,
       name: 'Super Admin',
       email: 'admin@moviebash.in',
-      password_hash: '$2a$12$L7R2Qo4mQYV8QZtY8uWfPeU38e3m0q1Q8V0V3x9i7Y6t3fX2U5vW2', // Admin@MovieBash2026!
+      username: 'admin',
+      password_hash: '$2a$10$GYZljbgznUx5ALAjvUEDru5KZdPWAnztUm1QgNCWmivkzSC6hr/h.', // admin123
       role: 'super_admin' as const,
       branch_id: null,
+      is_active: 1,
+      created_at: '2026-01-01'
+    },
+    {
+      id: 2,
+      name: 'Staff – Electronic City',
+      email: 'staff_ec@moviebash.in',
+      username: 'manju',
+      password_hash: '$2a$10$6ADg6QnVFKOQEJMBDysWoua2.JcF27OmQgCMy7f991x8Hg6XYropS', // staff123
+      role: 'staff' as const,
+      branch_id: 1,
+      is_active: 1,
+      created_at: '2026-01-01'
+    },
+    {
+      id: 3,
+      name: 'Staff – BTM 2nd Stage',
+      email: 'staff_btm@moviebash.in',
+      username: 'nitish',
+      password_hash: '$2a$10$GYZljbgznUx5ALAjvUEDru5KZdPWAnztUm1QgNCWmivkzSC6hr/h.', // admin123
+      role: 'staff' as const,
+      branch_id: 2,
       is_active: 1,
       created_at: '2026-01-01'
     }

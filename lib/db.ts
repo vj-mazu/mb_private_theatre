@@ -114,6 +114,7 @@ export function getDb(): Database.Database {
 // Persistent Store Mechanism for in-memory / JSON persistence & sync
 function loadPersistentStore(): MockStore {
   try {
+    ensureDataFilesSeeded();
     if (fs.existsSync(STORE_FILE)) {
       const content = fs.readFileSync(STORE_FILE, 'utf-8');
       const parsed = JSON.parse(content);
