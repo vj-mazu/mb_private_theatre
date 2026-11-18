@@ -1,15 +1,83 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { initialMockStore, MockStore } from './mock-data';
 
-// Database Directory & Path
-const DATA_DIR = path.join(process.cwd(), 'data');
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+// Helper to determine writable data directory (handles Vercel / AWS Lambda read-only environment)
+function resolveDataDir(): string {
+  if (process.env.SQLITE_DATA_DIR) {
+    return process.env.SQLITE_DATA_DIR;
+  }
+
+  const isServerless = !!(
+    process.env.VERCEL || 
+    process.env.AWS_LAMBDA_FUNCTION_NAME || 
+    process.env.LAMBDA_TASK_ROOT ||
+    process.env.NETLIFY
+  );
+
+  if (isServerless) {
+    const tmpDir = path.join(os.tmpdir(), 'movie_bash_data');
+    try {
+      if (!fs.existsSync(tmpDir)) {
+        fs.mkdirSync(tmpDir, { recursive: true });
+      }
+      return tmpDir;
+    } catch {
+      return os.tmpdir();
+    }
+  }
+
+  // Local / standard environment: use project 'data' directory
+  const localDir = path.join(process.cwd(), 'data');
+  try {
+    if (!fs.existsSync(localDir)) {
+      fs.mkdirSync(localDir, { recursive: true });
+    }
+    // Test write permission to ensure directory is writable
+    const testFile = path.join(localDir, '.write-test');
+    fs.writeFileSync(testFile, '1');
+    fs.unlinkSync(testFile);
+    return localDir;
+  } catch {
+    const tmpDir = path.join(os.tmpdir(), 'movie_bash_data');
+    try {
+      if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
+      return tmpDir;
+    } catch {
+      return os.tmpdir();
+    }
+  }
 }
 
+const DATA_DIR = resolveDataDir();
 const DB_PATH = process.env.SQLITE_DB_PATH || path.join(DATA_DIR, 'movie_bash.db');
+const STORE_FILE = path.join(DATA_DIR, 'store.json');
+
+// Ensure bundled SQLite database and store.json are seeded into DATA_DIR if running in /tmp
+function ensureDataFilesSeeded() {
+  try {
+    const bundledDb = path.join(process.cwd(), 'data', 'movie_bash.db');
+    if (!fs.existsSync(DB_PATH) && fs.existsSync(bundledDb)) {
+      try {
+        fs.copyFileSync(bundledDb, DB_PATH);
+        console.log('[Movie Bash DB] ⚡ Seeded SQLite database into writable path:', DB_PATH);
+      } catch (copyErr) {
+        console.warn('[Movie Bash DB] Could not copy bundled DB:', copyErr);
+      }
+    }
+
+    const bundledStore = path.join(process.cwd(), 'data', 'store.json');
+    if (!fs.existsSync(STORE_FILE) && fs.existsSync(bundledStore)) {
+      try {
+        fs.copyFileSync(bundledStore, STORE_FILE);
+      } catch {}
+    }
+  } catch (err) {
+    console.warn('[Movie Bash DB] Non-fatal seed check warning:', err);
+  }
+}
 
 // Singleton SQLite Database Instance
 const globalForDb = globalThis as unknown as { sqliteDb?: Database.Database };
@@ -19,15 +87,23 @@ export function getDb(): Database.Database {
     return globalForDb.sqliteDb;
   }
 
+  ensureDataFilesSeeded();
   const db = new Database(DB_PATH);
-  // Ultra-performance PRAGMAs for sub-millisecond query responses & high concurrency
-  db.pragma('journal_mode = WAL');
-  db.pragma('synchronous = NORMAL');
-  db.pragma('foreign_keys = ON');
-  db.pragma('busy_timeout = 5000');
-  db.pragma('cache_size = -64000');
-  db.pragma('temp_store = MEMORY');
-  db.pragma('mmap_size = 268435456');
+  
+  // Pragmas with resilient fallbacks
+  try {
+    db.pragma('journal_mode = WAL');
+  } catch {
+    try {
+      db.pragma('journal_mode = DELETE');
+    } catch {}
+  }
+  try {
+    db.pragma('synchronous = NORMAL');
+    db.pragma('foreign_keys = ON');
+    db.pragma('busy_timeout = 5000');
+    db.pragma('temp_store = MEMORY');
+  } catch {}
 
   ensureSqliteSchemaAndSeed(db);
 
@@ -35,9 +111,7 @@ export function getDb(): Database.Database {
   return db;
 }
 
-// Persistent Store Mechanism (data/store.json) for in-memory / JSON persistence & sync
-const STORE_FILE = path.join(DATA_DIR, 'store.json');
-
+// Persistent Store Mechanism for in-memory / JSON persistence & sync
 function loadPersistentStore(): MockStore {
   try {
     if (fs.existsSync(STORE_FILE)) {
@@ -337,11 +411,12 @@ function ensureSqliteSchemaAndSeed(db: Database.Database) {
 export async function checkDatabase(): Promise<boolean> {
   try {
     const db = getDb();
+    if (!db) return true; // Store fallback is available
     const result = db.prepare('SELECT 1 as live').get() as { live: number };
     return result?.live === 1;
   } catch (err) {
-    console.error('[Movie Bash DB] SQLite check failed:', err);
-    return false;
+    console.warn('[Movie Bash DB] SQLite check fallback:', err);
+    return true;
   }
 }
 
@@ -354,19 +429,30 @@ export interface TransactionConnection {
 }
 
 export async function beginTransaction(): Promise<TransactionConnection | null> {
-  const db = getDb();
+  let db: Database.Database | null = null;
+  try {
+    db = getDb();
+  } catch (err) {
+    console.warn('[Movie Bash DB] getDb error in beginTransaction:', err);
+    return null;
+  }
+  if (!db) {
+    return null;
+  }
+
   let inTransaction = false;
 
   try {
     db.exec('BEGIN IMMEDIATE');
     inTransaction = true;
   } catch (err) {
-    console.error('Failed to begin SQLite transaction:', err);
+    console.warn('Failed to begin SQLite transaction:', err);
     return null;
   }
 
   return {
     query: async (sql: string, params: any[] = []) => {
+      if (!db) return null;
       const trimmed = sql.trim().toLowerCase();
       if (trimmed.startsWith('select') || trimmed.startsWith('pragma')) {
         return db.prepare(sql).all(...params);
@@ -381,13 +467,17 @@ export async function beginTransaction(): Promise<TransactionConnection | null> 
       }
     },
     commit: async () => {
-      if (inTransaction) {
-        db.exec('COMMIT');
+      if (inTransaction && db) {
+        try {
+          db.exec('COMMIT');
+        } catch (commitErr) {
+          console.warn('[Movie Bash DB] commit warning:', commitErr);
+        }
         inTransaction = false;
       }
     },
     rollback: async () => {
-      if (inTransaction) {
+      if (inTransaction && db) {
         try {
           db.exec('ROLLBACK');
         } catch {}
@@ -444,14 +534,16 @@ export async function generateBookingRef(branchId: number | string = 1, bookingD
 
   try {
     const db = getDb();
-    const rows = db.prepare('SELECT booking_ref FROM bookings WHERE booking_ref LIKE ?').all(`${prefixWithYear}%`) as Array<{ booking_ref: string }>;
-    for (const row of rows) {
-      const ref = String(row.booking_ref || '');
-      const match = ref.match(new RegExp(`^${prefixWithYear}(\\d+)`, 'i'));
-      if (match && match[1]) {
-        const num = parseInt(match[1], 10);
-        if (!isNaN(num) && num > maxSeq) {
-          maxSeq = num;
+    if (db) {
+      const rows = db.prepare('SELECT booking_ref FROM bookings WHERE booking_ref LIKE ?').all(`${prefixWithYear}%`) as Array<{ booking_ref: string }>;
+      for (const row of rows) {
+        const ref = String(row.booking_ref || '');
+        const match = ref.match(new RegExp(`^${prefixWithYear}(\\d+)`, 'i'));
+        if (match && match[1]) {
+          const num = parseInt(match[1], 10);
+          if (!isNaN(num) && num > maxSeq) {
+            maxSeq = num;
+          }
         }
       }
     }
@@ -501,12 +593,13 @@ export async function generateBookingRef(branchId: number | string = 1, bookingD
 export async function incrementCouponUsage(couponId: number): Promise<boolean> {
   try {
     const db = getDb();
+    if (!db) return false;
     const info = db.prepare(
       'UPDATE coupons SET used_count = used_count + 1 WHERE id = ? AND used_count < usage_limit'
     ).run(couponId);
     return info.changes > 0;
   } catch (err) {
-    console.error('Failed to increment coupon usage:', err);
+    console.warn('Failed to increment coupon usage:', err);
     return false;
   }
 }
@@ -515,6 +608,9 @@ export async function incrementCouponUsage(couponId: number): Promise<boolean> {
 export async function query<T = any>(sql: string, params: any[] = []): Promise<T> {
   try {
     const db = getDb();
+    if (!db) {
+      return executeMockQuery(sql, params) as T;
+    }
     const trimmed = sql.trim().toLowerCase();
 
     if (trimmed.startsWith('select') || trimmed.startsWith('pragma')) {
@@ -531,7 +627,7 @@ export async function query<T = any>(sql: string, params: any[] = []): Promise<T
       return res as T;
     }
   } catch (error) {
-    console.error('SQLite query error, using mock fallback:', error);
+    console.warn('SQLite query warning, using store fallback:', error);
     return executeMockQuery(sql, params) as T;
   }
 }

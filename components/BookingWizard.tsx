@@ -1270,7 +1270,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                           muted
                           playsInline
                           controls
-                          preload="auto"
+                          preload="metadata"
                           className="w-full h-full object-cover"
                         >
                           <source src={thVideo} type="video/mp4" />

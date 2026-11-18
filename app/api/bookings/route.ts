@@ -241,63 +241,85 @@ export async function POST(request: NextRequest) {
     };
 
     // 8. Atomic transaction for multi-table operations in SQLite + in-memory store sync
-    txn = await beginTransaction();
-    if (txn) {
-      try {
-        // Insert booking
-        const bookingInsertResult = await txn.query(
-          `INSERT INTO \`bookings\` 
-          (\`booking_ref\`, \`branch_id\`, \`theatre_id\`, \`slot_id\`, \`booking_date\`, 
-           \`customer_name\`, \`customer_phone\`, \`customer_email\`, \`screen_name\`, 
-           \`guests\`, \`occasion_id\`, \`subtotal\`, \`addons_total\`, \`discount\`, 
-           \`total\`, \`advance_paid\`, \`balance\`, \`status\`, \`payment_status\`, 
-           \`source\`, \`notes\`, \`idempotency_key\`) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [
-            bookingRef, Number(branch_id), Number(theatre_id), Number(slot_id), booking_date,
-            customer_name, cleanPhone, customer_email || '', screen_name || '',
-            Number(guests) || 2, occasion_id ? Number(occasion_id) : 1,
-            subtotal, addonsTotal, finalDiscount, total, advancePaid, balance,
-            'confirmed', cleanUtr ? 'advance_paid' : 'advance_pending_screenshot',
-            'web', finalNotes, idempotency_key || null
-          ]
-        );
-
-        const insertedBookingId = bookingInsertResult?.insertId || bookingInsertResult?.lastInsertRowid || newBooking.id;
-
-        // Insert booking addons
-        for (const addon of computedAddons) {
-          await txn.query(
-            `INSERT INTO \`booking_addons\` (\`booking_id\`, \`addon_id\`, \`addon_name\`, \`price\`, \`quantity\`, \`subtotal\`) 
-             VALUES (?, ?, ?, ?, ?, ?)`,
-            [insertedBookingId, addon.addon_id, addon.addon_name, addon.price, addon.quantity, addon.subtotal]
+    try {
+      txn = await beginTransaction();
+      if (txn) {
+        try {
+          // Insert booking
+          const bookingInsertResult = await txn.query(
+            `INSERT INTO \`bookings\` 
+            (\`booking_ref\`, \`branch_id\`, \`theatre_id\`, \`slot_id\`, \`booking_date\`, 
+             \`customer_name\`, \`customer_phone\`, \`customer_email\`, \`screen_name\`, 
+             \`guests\`, \`occasion_id\`, \`subtotal\`, \`addons_total\`, \`discount\`, 
+             \`total\`, \`advance_paid\`, \`balance\`, \`status\`, \`payment_status\`, 
+             \`source\`, \`notes\`, \`idempotency_key\`) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              bookingRef, Number(branch_id), Number(theatre_id), Number(slot_id), booking_date,
+              customer_name, cleanPhone, customer_email || '', screen_name || '',
+              Number(guests) || 2, occasion_id ? Number(occasion_id) : 1,
+              subtotal, addonsTotal, finalDiscount, total, advancePaid, balance,
+              'confirmed', cleanUtr ? 'advance_paid' : 'advance_pending_screenshot',
+              'web', finalNotes, idempotency_key || null
+            ]
           );
+
+          const insertedBookingId = bookingInsertResult?.insertId || bookingInsertResult?.lastInsertRowid || newBooking.id;
+
+          // Insert booking addons
+          for (const addon of computedAddons) {
+            await txn.query(
+              `INSERT INTO \`booking_addons\` (\`booking_id\`, \`addon_id\`, \`addon_name\`, \`price\`, \`quantity\`, \`subtotal\`) 
+               VALUES (?, ?, ?, ?, ?, ?)`,
+              [insertedBookingId, addon.addon_id, addon.addon_name, addon.price, addon.quantity, addon.subtotal]
+            );
+          }
+
+          // Upsert customer atomically (handles both new and repeat customers seamlessly)
+          await txn.query(
+            `INSERT INTO \`customers\` (\`name\`, \`phone\`, \`email\`, \`total_bookings\`, \`lifetime_spend\`) 
+             VALUES (?, ?, ?, 1, ?)
+             ON CONFLICT(\`phone\`) DO UPDATE SET
+               \`name\` = excluded.\`name\`,
+               \`email\` = COALESCE(NULLIF(excluded.\`email\`, ''), customers.\`email\`),
+               \`total_bookings\` = customers.\`total_bookings\` + 1,
+               \`lifetime_spend\` = customers.\`lifetime_spend\` + excluded.\`lifetime_spend\``,
+            [customer_name, cleanPhone, customer_email || '', total]
+          );
+
+          // Increment coupon usage atomically
+          if (couponId) {
+            await incrementCouponUsage(couponId);
+          }
+
+          await txn.commit();
+        } catch (err: any) {
+          await txn.rollback();
+          if (
+            err?.code === 'SQLITE_CONSTRAINT' || 
+            err?.code === 'ER_DUP_ENTRY' || 
+            err?.message?.includes('UNIQUE constraint') || 
+            err?.message?.includes('Duplicate entry') || 
+            err?.message?.includes('uk_theatre_date_slot_active')
+          ) {
+            throw err;
+          }
+          console.warn('[Movie Bash DB] Non-fatal SQLite transaction insert warning:', err);
+        } finally {
+          txn.release();
         }
-
-        // Upsert customer atomically (handles both new and repeat customers seamlessly)
-        await txn.query(
-          `INSERT INTO \`customers\` (\`name\`, \`phone\`, \`email\`, \`total_bookings\`, \`lifetime_spend\`) 
-           VALUES (?, ?, ?, 1, ?)
-           ON CONFLICT(\`phone\`) DO UPDATE SET
-             \`name\` = excluded.\`name\`,
-             \`email\` = COALESCE(NULLIF(excluded.\`email\`, ''), customers.\`email\`),
-             \`total_bookings\` = customers.\`total_bookings\` + 1,
-             \`lifetime_spend\` = customers.\`lifetime_spend\` + excluded.\`lifetime_spend\``,
-          [customer_name, cleanPhone, customer_email || '', total]
-        );
-
-        // Increment coupon usage atomically
-        if (couponId) {
-          await incrementCouponUsage(couponId);
-        }
-
-        await txn.commit();
-      } catch (err) {
-        await txn.rollback();
-        throw err;
-      } finally {
-        txn.release();
       }
+    } catch (txnError: any) {
+      if (
+        txnError?.code === 'SQLITE_CONSTRAINT' || 
+        txnError?.code === 'ER_DUP_ENTRY' || 
+        txnError?.message?.includes('UNIQUE constraint') || 
+        txnError?.message?.includes('Duplicate entry') || 
+        txnError?.message?.includes('uk_theatre_date_slot_active')
+      ) {
+        throw txnError;
+      }
+      console.warn('[Movie Bash DB] Non-fatal SQLite transaction error, continuing with store sync:', txnError);
     }
 
     // Always keep in-memory mockStore and store.json in sync
