@@ -8,7 +8,9 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import OpeningWebsiteIntro from '@/components/OpeningWebsiteIntro';
 import { GrandOccasionIcon, GrandAddonIcon } from '@/components/GrandIcons';
+import { getTodayIST, getDaysAgoIST } from '@/lib/time';
 
 const WHATSAPP_BASE = 'https://wa.me/919902923656?text=Hi%20Movie%20Bash%2C%20I%20would%20like%20to%20book%20a%20private%20theatre.';
 
@@ -67,6 +69,7 @@ const occasionsList = [
     tagline: 'Grand balloons, personalized cake table & HBD neon lighting',
     badge: 'Most Popular',
     type: 'birthday-party',
+    image: '/images/celebration_2.webp',
     borderColor: 'border-amber-300 hover:border-amber-500',
     bgGradient: 'bg-gradient-to-br from-amber-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-amber-100 to-amber-200/90 border border-amber-300/80',
@@ -80,6 +83,7 @@ const occasionsList = [
     tagline: 'Will You Marry Me neon, candle aisle, rose carpet & cold sparklers',
     badge: 'Dream Setup',
     type: 'date-and-proposal',
+    image: '/images/couple_3.webp',
     borderColor: 'border-rose-300 hover:border-rose-500',
     bgGradient: 'bg-gradient-to-br from-rose-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-rose-100 to-rose-200/90 border border-rose-300/80',
@@ -93,6 +97,7 @@ const occasionsList = [
     tagline: 'Fairy lights, handcrafted red roses & romantic heart arch',
     badge: 'Romantic Pick',
     type: 'anniversary',
+    image: '/images/couple_1.webp',
     borderColor: 'border-pink-300 hover:border-pink-500',
     bgGradient: 'bg-gradient-to-br from-pink-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-pink-100 to-pink-200/90 border border-pink-300/80',
@@ -106,6 +111,7 @@ const occasionsList = [
     tagline: 'Ultra-private cinema lounge, cozy recliner sofa & movie streaming',
     badge: 'Cozy Retreat',
     type: 'couple-date',
+    image: '/images/ambience_1.webp',
     borderColor: 'border-indigo-300 hover:border-indigo-500',
     bgGradient: 'bg-gradient-to-br from-indigo-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-indigo-100 to-indigo-200/90 border border-indigo-300/80',
@@ -119,6 +125,7 @@ const occasionsList = [
     tagline: 'Tiara, celebration sash, champagne balloons & hilarious party props',
     badge: 'Girls Night',
     type: 'bachelorette-party',
+    image: '/images/celebration_5.webp',
     borderColor: 'border-fuchsia-300 hover:border-fuchsia-500',
     bgGradient: 'bg-gradient-to-br from-fuchsia-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-fuchsia-100 to-fuchsia-200/90 border border-fuchsia-300/80',
@@ -132,6 +139,7 @@ const occasionsList = [
     tagline: 'Colorful cartoon themes, superhero balloons & family cake party',
     badge: 'Fun & Safe',
     type: 'kids-birthday',
+    image: '/images/ambience_5.webp',
     borderColor: 'border-cyan-300 hover:border-cyan-500',
     bgGradient: 'bg-gradient-to-br from-cyan-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-cyan-100 to-cyan-200/90 border border-cyan-300/80',
@@ -145,6 +153,7 @@ const occasionsList = [
     tagline: 'Pastel balloons, fairy buggy walk-in & sweet memories',
     badge: 'Sweet Milestone',
     type: 'baby-shower',
+    image: '/images/celebration_6.webp',
     borderColor: 'border-emerald-300 hover:border-emerald-500',
     bgGradient: 'bg-gradient-to-br from-emerald-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-emerald-100 to-emerald-200/90 border border-emerald-300/80',
@@ -158,12 +167,13 @@ const occasionsList = [
     tagline: 'Live sports match, karaoke microphones & group snacks',
     badge: 'Party Vibe',
     type: 'friends-party',
-    borderColor: 'border-blue-300 hover:border-blue-500',
-    bgGradient: 'bg-gradient-to-br from-blue-50/70 via-white to-white',
-    iconBg: 'bg-gradient-to-br from-blue-100 to-blue-200/90 border border-blue-300/80',
-    shadow: 'shadow-[0_4px_20px_rgba(37,99,235,0.08)] hover:shadow-[0_12px_32px_rgba(37,99,235,0.22)]',
-    badgeColor: 'bg-blue-100/90 text-blue-800 border-blue-200',
-    arrowColor: 'text-blue-600',
+    image: '/images/ambience_5.webp',
+    borderColor: 'border-amber-300 hover:border-amber-500',
+    bgGradient: 'bg-gradient-to-br from-amber-50/70 via-white to-white',
+    iconBg: 'bg-gradient-to-br from-amber-100 to-amber-200/90 border border-amber-300/80',
+    shadow: 'shadow-[0_4px_20px_rgba(245,158,11,0.08)] hover:shadow-[0_12px_32px_rgba(245,158,11,0.22)]',
+    badgeColor: 'bg-amber-100/90 text-amber-900 border-amber-200',
+    arrowColor: 'text-amber-600',
   },
   {
     slug: 'farewell',
@@ -171,6 +181,7 @@ const occasionsList = [
     tagline: 'Emotional memory montage on giant 4K cinema screen',
     badge: 'Nostalgic',
     type: 'farewell',
+    image: '/images/celebration_4.webp',
     borderColor: 'border-orange-300 hover:border-orange-500',
     bgGradient: 'bg-gradient-to-br from-orange-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-orange-100 to-orange-200/90 border border-orange-300/80',
@@ -253,11 +264,11 @@ const celebrationAddonsList = [
     desc: 'Enchanting dense ground smoke effect billowing at your feet for a dramatic cinematic walk-in.',
     iconKey: 'fog',
     badge: 'Hero Entry',
-    cardBorder: 'border-sky-300 hover:border-sky-500',
-    bgGradient: 'bg-gradient-to-br from-sky-50/60 via-white to-white',
-    iconBoxBg: 'bg-gradient-to-br from-sky-100 to-sky-200/80 border border-sky-300/80',
-    shadow: 'shadow-[0_4px_16px_rgba(14,165,233,0.08)] hover:shadow-[0_12px_28px_rgba(14,165,233,0.2)]',
-    badgeColor: 'bg-sky-100 text-sky-800 border-sky-200'
+    cardBorder: 'border-orange-300 hover:border-orange-500',
+    bgGradient: 'bg-gradient-to-br from-orange-50/60 via-white to-white',
+    iconBoxBg: 'bg-gradient-to-br from-orange-100 to-orange-200/80 border border-orange-300/80',
+    shadow: 'shadow-[0_4px_16px_rgba(239,74,35,0.08)] hover:shadow-[0_12px_28px_rgba(239,74,35,0.2)]',
+    badgeColor: 'bg-orange-100 text-orange-900 border-orange-200'
   },
   {
     category: 'Special FX',
@@ -279,11 +290,11 @@ const celebrationAddonsList = [
     desc: 'Thousands of floating rainbow bubbles welcoming your loved ones through the theatre door.',
     iconKey: 'bubbles',
     badge: 'Magical Entry',
-    cardBorder: 'border-sky-300 hover:border-sky-500',
-    bgGradient: 'bg-gradient-to-br from-sky-50/60 via-white to-white',
-    iconBoxBg: 'bg-gradient-to-br from-sky-100 to-sky-200/80 border border-sky-300/80',
-    shadow: 'shadow-[0_4px_16px_rgba(14,165,233,0.08)] hover:shadow-[0_12px_28px_rgba(14,165,233,0.2)]',
-    badgeColor: 'bg-sky-100 text-sky-800 border-sky-200'
+    cardBorder: 'border-purple-300 hover:border-purple-500',
+    bgGradient: 'bg-gradient-to-br from-purple-50/60 via-white to-white',
+    iconBoxBg: 'bg-gradient-to-br from-purple-100 to-purple-200/80 border border-purple-300/80',
+    shadow: 'shadow-[0_4px_16px_rgba(168,85,247,0.08)] hover:shadow-[0_12px_28px_rgba(168,85,247,0.2)]',
+    badgeColor: 'bg-purple-100 text-purple-900 border-purple-200'
   },
   {
     category: 'Romantic Décor',
@@ -389,11 +400,11 @@ const addonDecks = [
     title: 'Atmospheric Special FX & Walk-ins',
     tagline: 'Cinematic Visuals & Stage Ambience for Grand Unforgettable Entries',
     badge: 'Crowd Favorite',
-    badgeColor: 'bg-sky-100 text-sky-900 border-sky-300',
-    cardBorder: 'border-sky-300',
+    badgeColor: 'bg-orange-100 text-orange-950 border-orange-300',
+    cardBorder: 'border-[#ef4a23]/30',
     topOffset: 'top-24 sm:top-28',
-    bgGradient: 'bg-gradient-to-br from-sky-50/40 via-white to-white',
-    shadow: 'shadow-[0_20px_50px_rgba(14,165,233,0.12)]',
+    bgGradient: 'bg-gradient-to-br from-[#FFFDF9] via-[#FFF5EE] to-[#FFE8DA]',
+    shadow: 'shadow-[0_20px_50px_rgba(239,74,35,0.12)]',
     items: celebrationAddonsList.filter(item => item.category === 'Special FX')
   },
   {
@@ -428,10 +439,78 @@ const addonDecks = [
   }
 ];
 
-const theatres = [
+const heroBgPhotos = [
+  {
+    src: '/images/couple_1.webp',
+    title: 'Couple Cinema',
+    tabTitle: 'Couple Room',
+    shortLabel: 'Couple',
+    badge: 'Romantic Date',
+    icon: '🎬',
+    subtitle: 'Cozy private 4K cinema with intimate mood lighting & couple recliners',
+    specs: ['4K Laser', 'JBL 5.1 Sound', 'Up to 2 Guests'],
+    price: 'From ₹1,499',
+    ctaText: 'View Couple Slots',
+    theatreId: 1
+  },
+  {
+    src: '/images/celebration_2.webp',
+    title: 'Celebration VIP',
+    tabTitle: 'Celebration',
+    shortLabel: 'Celebration',
+    badge: 'Party Lounge',
+    icon: '✨',
+    subtitle: 'Golden balloon arch backdrop, fairy lights & party seating for birthdays and anniversaries',
+    specs: ['4K Laser', 'JBL Pro Sound', 'Up to 6 Guests'],
+    price: 'From ₹2,200',
+    ctaText: 'View Celebration Slots',
+    theatreId: 2
+  },
+  {
+    src: '/images/celebration_1.webp',
+    title: 'Family 150″ Theatre',
+    tabTitle: 'Family 150″',
+    shortLabel: 'Family',
+    badge: '150″ 4K Laser',
+    icon: '🔊',
+    subtitle: 'Massive 150″ wide screen with stadium recliners and Dolby Atmos surround acoustics',
+    specs: ['150″ Laser', 'Dolby Atmos', 'Up to 12 Guests'],
+    price: 'From ₹2,200',
+    ctaText: 'View Family Slots',
+    theatreId: 3
+  },
+  {
+    src: '/images/celebration_6.webp',
+    title: 'Fog & Pyro Entry',
+    tabTitle: 'Fog & Pyro',
+    shortLabel: 'Fog & Pyro',
+    badge: 'Hero Entry FX',
+    icon: '💨',
+    subtitle: 'Enchanting dense ground fog billowing at your feet with cold non-heating stage sparklers',
+    specs: ['Stage Ambience', 'Cold Sparklers', '100% Safe'],
+    price: 'Add-on ₹499',
+    ctaText: 'Explore Special FX',
+    theatreId: 1
+  },
+  {
+    src: '/images/couple_3.webp',
+    title: 'Surprise Décor',
+    tabTitle: 'Surprise Décor',
+    shortLabel: 'Surprise',
+    badge: 'Signature Décor',
+    icon: '🎂',
+    subtitle: 'Heart balloon arch pathway, customized LED neon board, candles & celebration cake',
+    specs: ['Gourmet Cake', 'Neon Board', 'Rose Petals'],
+    price: 'Free in Package',
+    ctaText: 'Explore Décor Packages',
+    theatreId: 1
+  }
+];
+
+const defaultTheatres = [
   {
     name: 'Couple Room',
-    meta: '2 guests · 2 hours',
+    meta: '2 guests · Private Cinema',
     price: '₹1,499',
     dealPrice: '₹899',
     image: '/images/couple_1.webp',
@@ -441,7 +520,7 @@ const theatres = [
   },
   {
     name: 'Celebration Room',
-    meta: 'Up to 6 guests · 2 hours',
+    meta: 'Up to 6 guests · Private Cinema',
     price: '₹2,200',
     dealPrice: '₹1,499',
     image: '/images/celebration_2.webp',
@@ -451,17 +530,17 @@ const theatres = [
   },
   {
     name: 'Family Theatre',
-    meta: 'Up to 20 guests · 2 hours',
+    meta: 'Up to 20 guests · Private Cinema',
     price: '₹2,200',
     dealPrice: '₹1,699',
-    image: '/images/ambience_5.webp',
+    image: '/images/celebration_1.webp',
     description: 'A big-screen experience for families and groups with Dolby sound and comfortable seating.',
     branchSlug: 'electronic-city',
     theatreId: 3
   },
 ];
 
-const slotRooms = [
+const defaultSlotRooms = [
   {
     branch: 'Electronic City',
     branchSlug: 'electronic-city',
@@ -472,7 +551,15 @@ const slotRooms = [
     price: '₹1,499',
     custom: '₹899',
     image: '/images/couple_1.webp',
-    slots: ['10:00 AM', '12:15 PM', '02:30 PM', '05:00 PM', '06:30 PM', '08:45 PM', '11:00 PM'],
+    slots: [
+      '10:00 AM – 12:00 PM',
+      '12:15 PM – 02:15 PM',
+      '02:30 PM – 04:30 PM',
+      '05:00 PM – 06:00 PM',
+      '06:30 PM – 08:30 PM',
+      '08:45 PM – 10:45 PM',
+      '11:00 PM – 01:00 AM'
+    ],
   },
   {
     branch: 'Electronic City',
@@ -484,7 +571,15 @@ const slotRooms = [
     price: '₹2,200',
     custom: '₹1,499',
     image: '/images/celebration_2.webp',
-    slots: ['09:30 AM', '12:00 PM', '02:30 PM', '04:45 PM', '07:00 PM', '09:15 PM', '11:30 PM'],
+    slots: [
+      '09:30 AM – 11:30 AM',
+      '12:00 PM – 02:00 PM',
+      '02:30 PM – 04:30 PM',
+      '04:45 PM – 06:45 PM',
+      '07:00 PM – 09:00 PM',
+      '09:15 PM – 11:15 PM',
+      '11:30 PM – 01:00 AM'
+    ],
   },
   {
     branch: 'Electronic City',
@@ -495,56 +590,91 @@ const slotRooms = [
     spec: '150″ Screen · Dolby 7.1.2',
     price: '₹2,200',
     custom: '₹1,699',
-    image: '/images/ambience_5.webp',
-    slots: ['10:00 AM', '12:30 PM', '03:00 PM', '06:00 PM', '08:30 PM', '10:45 PM'],
+    image: '/images/celebration_1.webp',
+    slots: [
+      '10:00 AM – 12:00 PM',
+      '12:30 PM – 02:30 PM',
+      '03:00 PM – 05:00 PM',
+      '06:00 PM – 08:00 PM',
+      '08:30 PM – 10:30 PM',
+      '10:45 PM – 12:45 AM'
+    ],
   },
   {
     branch: 'BTM 2nd Stage',
     branchSlug: 'btm-stage-2',
     theatreId: 4,
-    name: 'Couple Theatre',
+    name: 'Butterfly Blush',
     capacity: 'Up to 2 guests',
-    spec: '4K Cinema · Dolby Sound',
+    spec: 'Signature Blush Glow · 4K Laser',
     price: '₹1,499',
     custom: '₹899',
-    image: '/images/couple_3.webp',
-    slots: ['10:00 AM', '12:15 PM', '02:30 PM', '05:00 PM', '07:15 PM', '09:30 PM'],
+    image: '/images/rooms/btm-butterfly-blush.webp',
+    slots: [
+      '10:00 AM – 12:00 PM',
+      '12:30 PM – 02:30 PM',
+      '03:00 PM – 05:00 PM',
+      '05:30 PM – 07:30 PM',
+      '08:00 PM – 10:00 PM',
+      '11:00 PM – 01:00 AM'
+    ],
   },
   {
     branch: 'BTM 2nd Stage',
     branchSlug: 'btm-stage-2',
     theatreId: 5,
-    name: 'Celebration Theatre',
+    name: 'Lavender Mist',
     capacity: 'Up to 6 guests',
-    spec: '4K Cinema · Premium Audio',
+    spec: 'Lavender Hues · 135" Cinema Screen',
     price: '₹2,200',
     custom: '₹1,499',
-    image: '/images/celebration_1.webp',
-    slots: ['09:30 AM', '12:00 PM', '02:30 PM', '05:00 PM', '07:30 PM', '10:00 PM'],
-  },
-  {
-    branch: 'BTM 2nd Stage',
-    branchSlug: 'btm-stage-2',
-    theatreId: 7,
-    name: 'VIP Celebration Suite',
-    capacity: 'Up to 8 guests',
-    spec: 'Ambient Wall · Karaoke',
-    price: '₹2,800',
-    custom: '₹1,599',
-    image: '/images/ambience_8.webp',
-    slots: ['10:00 AM', '12:30 PM', '03:00 PM', '05:30 PM', '08:00 PM', '10:30 PM'],
+    image: '/images/rooms/btm-lavender-mist.webp',
+    slots: [
+      '10:30 AM – 12:30 PM',
+      '01:00 PM – 03:00 PM',
+      '03:30 PM – 05:30 PM',
+      '06:00 PM – 08:00 PM',
+      '08:30 PM – 10:30 PM',
+      '11:00 PM – 01:00 AM'
+    ],
   },
   {
     branch: 'BTM 2nd Stage',
     branchSlug: 'btm-stage-2',
     theatreId: 6,
-    name: 'Family Theatre',
+    name: 'Scarlet Red',
     capacity: '12–20 guests',
-    spec: 'Giant Screen · Dolby Audio',
-    price: '₹3,500',
+    spec: 'Scarlet Glow · 150" 4K Screen',
+    price: '₹2,600',
     custom: '₹1,699',
-    image: '/images/ambience_3.webp',
-    slots: ['10:00 AM', '01:00 PM', '04:00 PM', '07:00 PM', '10:00 PM'],
+    image: '/images/rooms/btm-scarlet-red.webp',
+    slots: [
+      '10:30 AM – 12:30 PM',
+      '01:00 PM – 03:00 PM',
+      '03:30 PM – 05:30 PM',
+      '06:00 PM – 08:00 PM',
+      '08:30 PM – 10:30 PM',
+      '11:00 PM – 01:00 AM'
+    ],
+  },
+  {
+    branch: 'BTM 2nd Stage',
+    branchSlug: 'btm-stage-2',
+    theatreId: 7,
+    name: 'Shadow Suit',
+    capacity: 'Up to 8 guests',
+    spec: 'Stealth Cinema · 140" Laser Screen',
+    price: '₹2,400',
+    custom: '₹1,599',
+    image: '/images/rooms/btm-shadow-suit.webp',
+    slots: [
+      '10:00 AM – 12:00 PM',
+      '12:30 PM – 02:30 PM',
+      '03:00 PM – 05:00 PM',
+      '05:30 PM – 07:30 PM',
+      '08:00 PM – 10:00 PM',
+      '11:00 PM – 01:00 AM'
+    ],
   },
 ];
 
@@ -575,7 +705,7 @@ const gallery = [
   ['/images/couple_3.webp', 'Dream date and proposal'],
   ['/images/celebration_5.webp', 'Bride-to-be celebration'],
   ['/images/celebration_6.webp', 'Pastel baby shower'],
-  ['/images/ambience_5.webp', 'Private group celebration'],
+  ['/images/ambience_10.webp', '150″ Dolby Atmos cinema experience'],
   ['/images/couple_5.webp', 'Floral romantic arrangement'],
 ];
 
@@ -588,43 +718,47 @@ const faqs = [
 
 const guestReviews = [
   {
-    quote: "The room looked even better than the pictures. The fog entry, decoration and every little detail made our anniversary feel truly personal.",
-    author: "Riya & Arjun",
-    occasion: "Celebrated 3rd Anniversary at Electronic City",
+    quote: "Had the absolute best time celebrating our baby's birthday here! The team provided outstanding service and genuine cooperation throughout the event. The photos and videos turned out stunning—crisp, well-lit, and beautiful memory-keepers. The cake was a huge hit too! The design was exactly what we asked for, and it tasted amazing. Thank you for making our baby's day so memorable!",
+    author: "Neha Sultana",
+    occasion: "Baby's Birthday Celebration • Electronic City",
     stars: "★★★★★",
-    tag: "Romantic Suite"
+    tag: "Verified Google Review"
   },
   {
-    quote: "Surprised my best friend for her 25th birthday here! The private 4K screen with our childhood memory video, the fog walk-in, and the chocolate truffle cake were beyond magical.",
-    author: "Pooja Hegde & Friends",
-    occasion: "Celebrated 25th Birthday at BTM 2nd Stage",
+    quote: "We celebrated our son's 2nd birthday at Bash Movie yesterday, and it was an unforgettable experience! From the moment we arrived, everything was well organized and beautifully arranged. The decorations, lighting, and overall ambiance created a perfect setting for the celebration. The staff was extremely friendly, polite, and attentive. They took care of every little detail and made sure our event went smoothly without any stress. Our guests enjoyed the venue, and the kids had an amazing time. The service was excellent, and the entire team went above and beyond to make our special day memorable. Seeing the smiles on our son's face made it all the more special. Thank you to the entire Bash Movie team for making our little prince's 2nd birthday such a beautiful and cherished memory. We truly appreciate your effort and hospitality. We highly recommend this place for birthday parties and family celebrations, and we look forward to celebrating many more special occasions here! ❤️ 🎉 🎂",
+    author: "Pavani Pandu",
+    occasion: "Son's 2nd Birthday Party • Electronic City",
     stars: "★★★★★",
-    tag: "Celebration Hall"
+    tag: "Verified Google Review"
   },
   {
-    quote: "She said YES! The candlelight rose pathway, glowing LED marquee letters, and cold pyro sparklers created the most breathtaking proposal moment. Thank you Movie Bash team!",
-    author: "Karthik & Divya",
-    occasion: "Romantic Proposal at Electronic City",
+    quote: "Yesterday night we have celebrated birthday... 🎉 Really superb.. service's and I love your hospitality and prosperity.. 🤗 coming to the party hall and decor and snacks all such things are Really fabulous and our children had enjoyed and created thair own memories 🤩 🤩 You mad Hanish's day some more special 💖 ✨ He loved and got surprised 🥰 We were so happy about that 🫠 Thank you... Movie Bash for what you mad for us. 🤝",
+    author: "Rajesh raju",
+    occasion: "Birthday Celebration & Party • Electronic City",
     stars: "★★★★★",
-    tag: "Proposal Special"
+    tag: "Verified Google Review"
   },
   {
-    quote: "Our kids and their cousins had the best time of their lives! Watching their favorite cartoon movie with hot popcorn and friendly hosts was effortless and safe.",
-    author: "Vikram & Ananya Sharma",
-    occasion: "Kids 7th Birthday Party at BTM 2nd Stage",
+    quote: "Had a really nice experience at Movie Bash, Bangalore! 😊 We celebrated a birthday here, and it was a lovely experience. The staff were very patient, friendly, and supportive throughout, and they made sure we felt comfortable. ❤️ The private theatre setup made the celebration feel extra special and gave us some wonderful memories. 🎂 🎬 It’s a great place to plan a birthday surprise or celebrate a special occasion with friends and family. Really appreciate the staff for their patience and support. Overall, we had a great time and would definitely recommend this place! ❤️ ✨",
+    author: "Naveen Sudarshan",
+    occasion: "Birthday Party Experience • Electronic City",
     stars: "★★★★★",
-    tag: "Family Party"
+    tag: "Verified Google Review"
   },
   {
-    quote: "Booked the family suite for our parents' 30th wedding anniversary. The comfort of private recliners and home-like privacy was worth every single rupee.",
-    author: "Siddharth & Family",
-    occasion: "Pearl Anniversary at Electronic City",
-    stars: "★★★★★",
-    tag: "Family Cinema"
+    quote: "This venue is good for small events, especially if food is not required. It has ample parking, which is a big advantage. They have two celebration rooms with nice decorations and screens, making them suitable for birthday parties and other small gatherings. However, it is not ideal for events that require food, as there is no dedicated dining area.",
+    author: "Nandu's Quest",
+    occasion: "Small Gathering & Celebration • Electronic City",
+    stars: "★★★★☆",
+    tag: "Google Local Guide (165 Reviews)"
   },
 ];
 
 const heroPhotos = [
+  '/images/rooms/btm-butterfly-blush.webp',
+  '/images/rooms/btm-scarlet-red.webp',
+  '/images/rooms/btm-lavender-mist.webp',
+  '/images/rooms/btm-shadow-suit.webp',
   '/images/celebration_1.webp',
   '/images/couple_1.webp',
   '/images/celebration_2.webp',
@@ -679,10 +813,10 @@ const addonSlides = [
     price: 'From ₹199 to ₹799',
     desc: 'Dense cold mist billowing at your feet, indoor smokeless golden fountain sparklers, and floating rainbow bubbles.',
     badge: 'Hero Entry FX',
-    bg: 'from-[#FFFDF9] via-[#F2F8FD] to-[#E2F1FC]',
-    cardBorder: 'border-sky-300/80 hover:border-sky-500',
-    tagColor: 'bg-sky-500/10 text-sky-900 border-sky-300',
-    accent: '#0284c7',
+    bg: 'from-[#FFFDF9] via-[#FFF5EE] to-[#FFE8DA]',
+    cardBorder: 'border-[#ef4a23]/30 hover:border-[#ef4a23]',
+    tagColor: 'bg-[#ef4a23]/10 text-[#ef4a23] border-[#ef4a23]/30',
+    accent: '#ef4a23',
     items: [
       {
         iconKey: 'fog',
@@ -808,163 +942,314 @@ const addonSlides = [
   }
 ];
 
-export default function RefineTheatreLanding() {
+export default function RefineTheatreLanding({ initialLiveTheatres }: { initialLiveTheatres?: any[] } = {}) {
   const router = useRouter();
   const heroRef = useRef<HTMLDivElement>(null);
-  const cursorCardRef = useRef<HTMLDivElement>(null);
-  const cursorCardInnerRef = useRef<HTMLDivElement>(null);
+  const slotBarRef = useRef<HTMLDivElement>(null);
+  const heroSlotsModalRef = useRef<HTMLDivElement>(null);
   const heroHeadlineRef = useRef<HTMLHeadingElement>(null);
   const heroMarqueeRef = useRef<HTMLDivElement>(null);
-  const addonsSectionRef = useRef<HTMLDivElement>(null);
-  const addonsPinRef = useRef<HTMLDivElement>(null);
-  const addonsStackRootRef = useRef<HTMLDivElement>(null);
-  const sunBadgeRef = useRef<SVGSVGElement>(null);
-  const cursorPillRef = useRef<HTMLDivElement>(null);
 
-  const [heroPhotoIndex, setHeroPhotoIndex] = useState(0);
-  const [activeStackSlide, setActiveStackSlide] = useState(0);
+  const [showHeroSlots, setShowHeroSlots] = useState(false);
+  const [heroBgIndex, setHeroBgIndex] = useState(0);
+  const [isHeroCarouselPaused, setIsHeroCarouselPaused] = useState(false);
+  const heroTouchStartX = useRef<number | null>(null);
+  const heroTouchEndX = useRef<number | null>(null);
+  const heroPillTrackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const track = heroPillTrackRef.current;
+    if (track && track.children[heroBgIndex]) {
+      const activeEl = track.children[heroBgIndex] as HTMLElement;
+      const targetScroll = activeEl.offsetLeft - (track.clientWidth / 2) + (activeEl.clientWidth / 2);
+      track.scrollTo({ left: targetScroll, behavior: 'smooth' });
+    }
+  }, [heroBgIndex]);
+
+  const nextHeroSlide = () => {
+    setHeroBgIndex((prev) => (prev + 1) % heroBgPhotos.length);
+  };
+
+  const prevHeroSlide = () => {
+    setHeroBgIndex((prev) => (prev - 1 + heroBgPhotos.length) % heroBgPhotos.length);
+  };
+
+  const handleHeroTouchStart = (e: React.TouchEvent) => {
+    heroTouchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleHeroTouchMove = (e: React.TouchEvent) => {
+    heroTouchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleHeroTouchEnd = () => {
+    if (heroTouchStartX.current === null || heroTouchEndX.current === null) return;
+    const diff = heroTouchStartX.current - heroTouchEndX.current;
+    if (diff > 40) {
+      nextHeroSlide();
+    } else if (diff < -40) {
+      prevHeroSlide();
+    }
+    heroTouchStartX.current = null;
+    heroTouchEndX.current = null;
+  };
+
+  const theatreSectionRef = useRef<HTMLElement>(null);
+  const wheelTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const handleTheatreScreenWheel = (e: React.WheelEvent) => {
+    if (wheelTimeout.current) return;
+    if (Math.abs(e.deltaY) > 20 || Math.abs(e.deltaX) > 20) {
+      if (e.deltaY > 0 || e.deltaX > 0) {
+        setActiveOccasion((prev) => (prev + 1) % occasionsList.length);
+      } else {
+        setActiveOccasion((prev) => (prev - 1 + occasionsList.length) % occasionsList.length);
+      }
+      wheelTimeout.current = setTimeout(() => {
+        wheelTimeout.current = null;
+      }, 350);
+    }
+  };
+
+  const occTouchStartX = useRef<number | null>(null);
+  const occTouchEndX = useRef<number | null>(null);
+
+  const handleOccTouchStart = (e: React.TouchEvent) => {
+    occTouchStartX.current = e.touches[0].clientX;
+  };
+  const handleOccTouchMove = (e: React.TouchEvent) => {
+    occTouchEndX.current = e.touches[0].clientX;
+  };
+  const handleOccTouchEnd = () => {
+    if (occTouchStartX.current === null || occTouchEndX.current === null) return;
+    const diff = occTouchStartX.current - occTouchEndX.current;
+    if (diff > 40) {
+      setActiveOccasion((prev) => (prev + 1) % occasionsList.length);
+    } else if (diff < -40) {
+      setActiveOccasion((prev) => (prev - 1 + occasionsList.length) % occasionsList.length);
+    }
+    occTouchStartX.current = null;
+    occTouchEndX.current = null;
+  };
+
+  const [activeOccasion, setActiveOccasion] = useState(0);
+  const [isOccasionPaused, setIsOccasionPaused] = useState(false);
   const [openFaq, setOpenFaq] = useState(0);
   const [branch, setBranch] = useState('Electronic City');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(getTodayIST());
   const [slotBranch, setSlotBranch] = useState('Electronic City');
   const [activeDay, setActiveDay] = useState(0);
   const [addonCategory, setAddonCategory] = useState<string>('All');
-  const [addonViewMode, setAddonViewMode] = useState<'stacked' | 'grid'>('stacked');
   const [reviewIndex, setReviewIndex] = useState(0);
   const [ctaBranch, setCtaBranch] = useState('electronic-city');
-  const [ctaDate, setCtaDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [ctaDate, setCtaDate] = useState(() => getTodayIST());
+  const [slotFlashMessage, setSlotFlashMessage] = useState<string | null>(null);
+  const [liveAvailability, setLiveAvailability] = useState<Record<number, any[]>>({});
+  const [activeCoupon, setActiveCoupon] = useState<{ code: string; discount_value: number }>({
+    code: 'MOVIEBASH300',
+    discount_value: 300,
+  });
+
+  const [theatres, setTheatres] = useState(() => {
+    if (!initialLiveTheatres || !initialLiveTheatres.length) return defaultTheatres;
+    return defaultTheatres.map(th => {
+      const match = initialLiveTheatres.find((t: any) => t.id === th.theatreId);
+      if (match) {
+        return {
+          ...th,
+          image: match.image_url || th.image,
+          price: match.standard_price ? `₹${Number(match.standard_price).toLocaleString('en-IN')}` : th.price,
+          dealPrice: match.custom_price ? `₹${Number(match.custom_price).toLocaleString('en-IN')}` : th.dealPrice
+        };
+      }
+      return th;
+    });
+  });
+
+  const [slotRooms, setSlotRooms] = useState(() => {
+    if (!initialLiveTheatres || !initialLiveTheatres.length) return defaultSlotRooms;
+    return defaultSlotRooms.map(sr => {
+      const match = initialLiveTheatres.find((t: any) => t.id === sr.theatreId);
+      if (match) {
+        return {
+          ...sr,
+          image: match.image_url || sr.image,
+          price: match.standard_price ? `₹${Number(match.standard_price).toLocaleString('en-IN')}` : sr.price,
+          custom: match.custom_price ? `₹${Number(match.custom_price).toLocaleString('en-IN')}` : sr.custom
+        };
+      }
+      return sr;
+    });
+  });
+
+  useEffect(() => {
+    fetch('/api/theatres')
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.success && Array.isArray(json.data)) {
+          const apiTheatres = json.data;
+
+          setSlotRooms((prev) =>
+            prev.map((sr) => {
+              const matched = apiTheatres.find((t: any) => t.id === sr.theatreId);
+              if (matched) {
+                return {
+                  ...sr,
+                  image: matched.image_url || sr.image,
+                  price: matched.standard_price ? `₹${Number(matched.standard_price).toLocaleString('en-IN')}` : sr.price,
+                  custom: matched.custom_price ? `₹${Number(matched.custom_price).toLocaleString('en-IN')}` : sr.custom
+                };
+              }
+              return sr;
+            })
+          );
+
+          setTheatres((prev) =>
+            prev.map((th) => {
+              const matched = apiTheatres.find((t: any) => t.id === th.theatreId);
+              if (matched) {
+                return {
+                  ...th,
+                  image: matched.image_url || th.image,
+                  price: matched.standard_price ? `₹${Number(matched.standard_price).toLocaleString('en-IN')}` : th.price,
+                  dealPrice: matched.custom_price ? `₹${Number(matched.custom_price).toLocaleString('en-IN')}` : th.dealPrice
+                };
+              }
+              return th;
+            })
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/coupons/featured')
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.success && j.data?.code) {
+          setActiveCoupon({
+            code: j.data.code,
+            discount_value: Number(j.data.discount_value) || 300,
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const days = Array.from({ length: 6 }, (_, index) => {
+    const isoDate = getDaysAgoIST(-index);
+    const day = new Date(`${isoDate}T12:00:00+05:30`);
+    return {
+      label: index === 0 ? 'Today' : index === 1 ? 'Tomorrow' : day.toLocaleDateString('en-IN', { weekday: 'short' }),
+      day: day.getDate(),
+      month: day.toLocaleDateString('en-IN', { month: 'short' }),
+      full: day.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+      iso: isoDate
+    };
+  });
 
   const handleCtaSubmit = () => {
-    router.push(`/book-now/${ctaBranch}?date=${ctaDate}`);
+    const targetBranch = ctaBranch.includes('btm') ? 'BTM 2nd Stage' : 'Electronic City';
+    setSlotBranch(targetBranch);
+    setBranch(targetBranch);
+    const dayIdx = days.findIndex((d) => d.iso === ctaDate);
+    if (dayIdx !== -1) {
+      setActiveDay(dayIdx);
+    } else {
+      setActiveDay(0);
+    }
+    setSlotFlashMessage(`Showing live slots for ${targetBranch}`);
+    setTimeout(() => setSlotFlashMessage(null), 4000);
+    const slotsEl = document.getElementById('slots');
+    if (slotsEl) {
+      slotsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
-  // Auto-advance reviews every 4.5 seconds
+  const checkAvailability = () => {
+    const targetBranch = branch.includes('BTM') ? 'BTM 2nd Stage' : 'Electronic City';
+    setSlotBranch(targetBranch);
+    const dayIdx = days.findIndex((d) => d.iso === date);
+    if (dayIdx !== -1) {
+      setActiveDay(dayIdx);
+    } else {
+      setActiveDay(0);
+    }
+    setSlotFlashMessage(`Showing live slots for ${targetBranch}`);
+    setTimeout(() => setSlotFlashMessage(null), 4000);
+    // Directly reveal the slots right there in the hero!
+    setShowHeroSlots(true);
+  };
+
+  // Auto-advance reviews, hero background & celebrations
   useEffect(() => {
     const timer = setInterval(() => {
       setReviewIndex((prev) => (prev + 1) % guestReviews.length);
     }, 4500);
-    return () => clearInterval(timer);
-  }, []);
+    const bgTimer = setInterval(() => {
+      if (!isHeroCarouselPaused) {
+        setHeroBgIndex((prev) => (prev + 1) % heroBgPhotos.length);
+      }
+    }, 4500);
+    const occTimer = setInterval(() => {
+      if (!isOccasionPaused) {
+        setActiveOccasion((prev) => (prev + 1) % occasionsList.length);
+      }
+    }, 4200);
+    return () => {
+      clearInterval(timer);
+      clearInterval(bgTimer);
+      clearInterval(occTimer);
+    };
+  }, [isOccasionPaused]);
 
   // GSAP Animations: Hero Cursor, Font-Weight Tracking, Reversible Marquee, 3D Card Stack
   useEffect(() => {
     if (typeof window === 'undefined') return;
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Hero Cursor Card Follower
+    // 1. Dynamic Headline Font-Weight Hover Interaction
     const hero = heroRef.current;
-    const card = cursorCardRef.current;
-    const inner = cursorCardInnerRef.current;
-    let cardCleanup: (() => void) | undefined;
-
-    if (hero && card && inner) {
-      const quickX = gsap.quickTo(card, 'x', { duration: 0.8, ease: 'power4' });
-      const quickY = gsap.quickTo(card, 'y', { duration: 0.8, ease: 'power4' });
-      const quickRot = gsap.quickTo(card, 'rotation', { duration: 0.8, ease: 'power4' });
-      const quickMediaX = gsap.quickTo(inner, 'x', { duration: 0.8, ease: 'power2' });
-      const quickMediaY = gsap.quickTo(inner, 'y', { duration: 0.8, ease: 'power2' });
-
-      let lastX = 0;
-      let lastY = 0;
-      let travelDist = 0;
-      let isFirst = true;
-      let resetTimer: NodeJS.Timeout | null = null;
-
-      const handleMouseMove = (e: MouseEvent) => {
-        const rect = hero.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        if (isFirst) {
-          isFirst = false;
-          gsap.set(card, { x, y, autoAlpha: 1 });
-          lastX = x;
-          lastY = y;
-          return;
-        }
-
-        gsap.to(card, { autoAlpha: 1, duration: 0.25, overwrite: 'auto' });
-        quickX(x);
-        quickY(y);
-
-        const dx = x - lastX;
-        const dy = y - lastY;
-        const rot = Math.max(-12, Math.min(12, dx * 0.35));
-        quickRot(rot);
-
-        const clampDx = Math.max(-10, Math.min(10, dx * 0.5));
-        const clampDy = Math.max(-10, Math.min(10, dy * 0.5));
-        quickMediaX(-clampDx);
-        quickMediaY(-clampDy);
-
-        travelDist += Math.abs(dx) + Math.abs(dy);
-        if (travelDist > 280) {
-          travelDist = 0;
-          setHeroPhotoIndex((prev) => (prev + 1) % heroPhotos.length);
-        }
-
-        lastX = x;
-        lastY = y;
-
-        if (resetTimer) clearTimeout(resetTimer);
-        resetTimer = setTimeout(() => {
-          quickRot(0);
-          quickMediaX(0);
-          quickMediaY(0);
-        }, 80);
-      };
-
-      const handleMouseLeave = () => {
-        gsap.to(card, { autoAlpha: 0, duration: 0.3, ease: 'power2.out' });
-        quickRot(0);
-        quickMediaX(0);
-        quickMediaY(0);
-        isFirst = true;
-      };
-
-      hero.addEventListener('mousemove', handleMouseMove);
-      hero.addEventListener('mouseleave', handleMouseLeave);
-
-      cardCleanup = () => {
-        hero.removeEventListener('mousemove', handleMouseMove);
-        hero.removeEventListener('mouseleave', handleMouseLeave);
-        if (resetTimer) clearTimeout(resetTimer);
-      };
-    }
-
-    // 2. Dynamic Headline Font-Weight Hover Interaction
     const headline = heroHeadlineRef.current;
     let headlineCleanup: (() => void) | undefined;
     if (headline && hero) {
       const chars = headline.querySelectorAll<HTMLElement>('.hero-headline-char');
+      let mouseRafId: number | null = null;
       const handleMoveChars = (e: MouseEvent) => {
-        chars.forEach((char) => {
-          const rect = char.getBoundingClientRect();
-          const cx = rect.left + rect.width / 2;
-          const cy = rect.top + rect.height / 2;
-          const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
-          const isSerif = char.getAttribute('data-serif') === 'true';
+        if (mouseRafId) return;
+        mouseRafId = requestAnimationFrame(() => {
+          mouseRafId = null;
+          const mx = e.clientX;
+          const my = e.clientY;
+          chars.forEach((char) => {
+            const rect = char.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const dist = Math.hypot(mx - cx, my - cy);
+            const isSerif = char.getAttribute('data-serif') === 'true';
 
-          if (dist < 400) {
-            const factor = 1 - dist / 400;
-            if (isSerif) {
-              const w = Math.round(300 + factor * 550);
-              char.style.fontVariationSettings = `"wght" ${w}, "wdth" 87.5, "opsz" 120`;
-              char.style.fontWeight = `${w}`;
+            if (dist < 400) {
+              const factor = 1 - dist / 400;
+              if (isSerif) {
+                const w = Math.round(300 + factor * 550);
+                char.style.fontVariationSettings = `"wght" ${w}, "wdth" 87.5, "opsz" 120`;
+                char.style.fontWeight = `${w}`;
+              } else {
+                const w = Math.round(700 - factor * 480);
+                char.style.fontVariationSettings = `"wght" ${w}, "wdth" 72`;
+                char.style.fontWeight = `${w}`;
+              }
             } else {
-              const w = Math.round(700 - factor * 480);
-              char.style.fontVariationSettings = `"wght" ${w}, "wdth" 72`;
-              char.style.fontWeight = `${w}`;
+              if (isSerif) {
+                char.style.fontVariationSettings = `"wght" 300, "wdth" 87.5, "opsz" 120`;
+                char.style.fontWeight = '300';
+              } else {
+                char.style.fontVariationSettings = `"wght" 700, "wdth" 72`;
+                char.style.fontWeight = '700';
+              }
             }
-          } else {
-            if (isSerif) {
-              char.style.fontVariationSettings = `"wght" 300, "wdth" 87.5, "opsz" 120`;
-              char.style.fontWeight = '300';
-            } else {
-              char.style.fontVariationSettings = `"wght" 700, "wdth" 72`;
-              char.style.fontWeight = '700';
-            }
-          }
+          });
         });
       };
 
@@ -990,7 +1275,7 @@ export default function RefineTheatreLanding() {
       };
     }
 
-    // 3. Hero Marquee Reversal on Scroll Direction
+    // 2. Hero Marquee Reversal on Scroll Direction
     const marquee = heroMarqueeRef.current;
     let marqueeCleanup: (() => void) | undefined;
     if (marquee) {
@@ -1020,177 +1305,75 @@ export default function RefineTheatreLanding() {
       }
     }
 
-    // 4. 3D Card Stack with GSAP ScrollTrigger
-    const addonsSection = addonsSectionRef.current;
-    const addonsPin = addonsPinRef.current;
-    const stackRoot = addonsStackRootRef.current;
-    const badge = sunBadgeRef.current;
-    let stackCleanup: (() => void) | undefined;
-
-    if (addonsSection && addonsPin && stackRoot) {
-      const mm = gsap.matchMedia();
-
-      mm.add('(min-width: 992px)', () => {
-        const slides = gsap.utils.toArray<HTMLElement>('.drops-slide');
-        const count = slides.length;
-        if (count === 0) return;
-
-        slides.forEach((slide, b) => {
-          gsap.set(slide, {
-            z: -b * 120,
-            y: -b * 40,
-            zIndex: count - b,
-            autoAlpha: 1,
-            transformOrigin: '50% 50%',
-          });
-        });
-
-        const tl = gsap.timeline({ paused: true });
-
-        for (let b = 0; b < count - 1; b++) {
-          const currentSlide = slides[b];
-          tl.to(currentSlide, {
-            y: `+=${window.innerHeight * 0.9}`,
-            rotationX: 12,
-            ease: 'power2.in',
-            duration: 1,
-          }, b);
-
-          tl.to(currentSlide, {
-            autoAlpha: 0,
-            duration: 0.25,
-            ease: 'none',
-          }, b + 0.7);
-
-          for (let k = b + 1; k < count; k++) {
-            const nextIdx = k - (b + 1);
-            tl.to(slides[k], {
-              z: -nextIdx * 120,
-              y: -nextIdx * 40,
-              duration: 1,
-              ease: 'none',
-            }, b);
-          }
+    // 3. ScrollTrigger to dynamically switch cinema celebration screen as user scrolls
+    let theatreScrollCleanup: (() => void) | undefined;
+    if (theatreSectionRef.current) {
+      const st = ScrollTrigger.create({
+        trigger: theatreSectionRef.current,
+        start: 'top 70%',
+        end: 'bottom 25%',
+        onUpdate: (self) => {
+          const index = Math.min(
+            occasionsList.length - 1,
+            Math.max(0, Math.floor(self.progress * occasionsList.length))
+          );
+          setActiveOccasion(index);
         }
-
-        if (badge) {
-          tl.to(badge, { rotation: 180, duration: count - 1, ease: 'none' }, 0);
-        }
-
-        const st = ScrollTrigger.create({
-          trigger: addonsSection,
-          start: 'top top',
-          end: () => `+=${window.innerHeight * 1.15 * (count - 1)}`,
-          pin: addonsPin,
-          pinSpacing: true,
-          scrub: 0.3,
-          refreshPriority: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            tl.progress(self.progress);
-            const activeIdx = Math.min(count - 1, Math.floor(self.progress * count));
-            setActiveStackSlide(activeIdx);
-          }
-        });
-
-        // 3D Mouse Tilt on Stack Root
-        const quickTiltX = gsap.quickTo(stackRoot, 'rotationX', { duration: 0.6, ease: 'power3' });
-        const quickTiltY = gsap.quickTo(stackRoot, 'rotationY', { duration: 0.6, ease: 'power3' });
-
-        const handleMouseMoveTilt = (e: MouseEvent) => {
-          const rect = addonsPin.getBoundingClientRect();
-          const rotX = -((e.clientY - rect.top) / rect.height - 0.5) * 8;
-          const rotY = ((e.clientX - rect.left) / rect.width - 0.5) * 12;
-          quickTiltX(rotX);
-          quickTiltY(rotY);
-        };
-
-        const handleMouseLeaveTilt = () => {
-          quickTiltX(0);
-          quickTiltY(0);
-        };
-
-        addonsPin.addEventListener('mousemove', handleMouseMoveTilt);
-        addonsPin.addEventListener('mouseleave', handleMouseLeaveTilt);
-
-        return () => {
-          st.kill();
-          tl.kill();
-          addonsPin.removeEventListener('mousemove', handleMouseMoveTilt);
-          addonsPin.removeEventListener('mouseleave', handleMouseLeaveTilt);
-        };
       });
-
-      stackCleanup = () => {
-        mm.revert();
-      };
-    }
-
-    // 5. Cursor Pill Follower for Add-ons Stack
-    const pill = cursorPillRef.current;
-    if (pill && stackRoot) {
-      const quickPillX = gsap.quickTo(pill, 'x', { duration: 0.35, ease: 'power3' });
-      const quickPillY = gsap.quickTo(pill, 'y', { duration: 0.35, ease: 'power3' });
-
-      const movePill = (e: MouseEvent) => {
-        quickPillX(e.clientX);
-        quickPillY(e.clientY);
-      };
-
-      const enterPill = () => {
-        gsap.to(pill, { scale: 1, autoAlpha: 1, duration: 0.3, ease: 'power3.out' });
-      };
-
-      const leavePill = () => {
-        gsap.to(pill, { scale: 0, autoAlpha: 0, duration: 0.25, ease: 'power2.in' });
-      };
-
-      window.addEventListener('mousemove', movePill);
-      stackRoot.addEventListener('mouseenter', enterPill);
-      stackRoot.addEventListener('mouseleave', leavePill);
+      theatreScrollCleanup = () => st.kill();
     }
 
     return () => {
-      cardCleanup?.();
       headlineCleanup?.();
       marqueeCleanup?.();
-      stackCleanup?.();
+      theatreScrollCleanup?.();
     };
   }, []);
 
   const nextReview = () => setReviewIndex((prev) => (prev + 1) % guestReviews.length);
   const prevReview = () => setReviewIndex((prev) => (prev - 1 + guestReviews.length) % guestReviews.length);
 
-  const days = Array.from({ length: 6 }, (_, index) => {
-    const day = new Date();
-    day.setDate(day.getDate() + index);
-    return {
-      label: index === 0 ? 'Today' : index === 1 ? 'Tomorrow' : day.toLocaleDateString('en-IN', { weekday: 'short' }),
-      day: day.getDate(),
-      month: day.toLocaleDateString('en-IN', { month: 'short' }),
-      full: day.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
-      iso: day.toISOString().split('T')[0]
+  // Fetch dynamic availability whenever branch or selected day changes
+  useEffect(() => {
+    const branchSlug = slotBranch === 'BTM 2nd Stage' ? 'btm-stage-2' : 'electronic-city';
+    const targetDate = days[activeDay]?.iso || getTodayIST();
+
+    let isSubscribed = true;
+    fetch(`/api/availability?branch=${branchSlug}&date=${targetDate}`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (isSubscribed && json.success && Array.isArray(json.data)) {
+          const grouped: Record<number, any[]> = {};
+          json.data.forEach((slot: any) => {
+            if (!grouped[slot.theatre_id]) grouped[slot.theatre_id] = [];
+            grouped[slot.theatre_id].push(slot);
+          });
+          setLiveAvailability(grouped);
+        }
+      })
+      .catch((err) => console.error('Availability fetch error:', err));
+
+    return () => {
+      isSubscribed = false;
     };
-  });
+  }, [slotBranch, activeDay]);
 
-  const checkAvailability = () => {
-    const branchSlug = branch === 'BTM 2nd Stage' ? 'btm-stage-2' : 'electronic-city';
-    router.push(`/book-now/${branchSlug}?date=${date}`);
-  };
-
-  const handleSlotClick = (room: typeof slotRooms[0], time: string, isSold: boolean) => {
+  const handleSlotClick = (room: typeof slotRooms[0], time: string, isSold: boolean, slotId?: number) => {
     if (isSold) return;
     const selectedIsoDate = days[activeDay].iso;
-    router.push(`/book-now/${room.branchSlug}?date=${selectedIsoDate}&theatre=${room.theatreId}`);
+    const slotParam = slotId ? `&slot=${slotId}` : '';
+    router.push(`/book-now/${room.branchSlug}?date=${selectedIsoDate}&theatre=${room.theatreId}${slotParam}`);
   };
 
   return (
-    <div className="min-h-screen overflow-hidden bg-cream text-ink select-none">
+    <div className="min-h-screen overflow-x-clip bg-cream text-ink select-none">
+      {/* 0. AUTHENTIC CINEMA OPENING INTRO ANIMATION */}
+      <OpeningWebsiteIntro />
       
-      {/* 1. TOP OFFER BAR */}
+      {/* 1. TOP OFFER BAR (Dynamically reading active database promo) */}
       <div className="offer-bar">
         <span>Opening offer</span>
-        <p>Flat ₹200 off your first celebration with code <strong>MOVIEBASH200</strong></p>
+        <p>Flat ₹{activeCoupon.discount_value} off your first celebration with code <strong>{activeCoupon.code}</strong></p>
         <a href="#slots">Explore <Icon name="arrow" size={16} /></a>
       </div>
 
@@ -1198,173 +1381,483 @@ export default function RefineTheatreLanding() {
       <Navbar />
 
       <main>
-        {/* 3. KOLIBRIE-INSPIRED HERO SECTION (WARM CREAM & SMOOTH ORANGE, NO VIDEO) */}
+        {/* 3. SPLIT-LAYOUT HERO SECTION — TEXT LEFT, GALLERY RIGHT (swadesiruchulu.com STYLE) */}
         <section 
           ref={heroRef}
-          className="relative min-h-[92vh] sm:min-h-screen flex flex-col justify-between items-center text-center overflow-hidden pt-24 sm:pt-28 pb-14 px-4 sm:px-6 bg-[#FAF3E4]" 
+          className="relative overflow-x-clip bg-[#FAF3E4] w-full" 
           id="home"
         >
-          {/* Subtle Warm Milk-Orange Radial Glow (Clean, No Video) */}
-          <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center_top,#FFE6D9_0%,#FAF3E4_65%)] pointer-events-none" />
-          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-b from-[#FF5B35]/15 to-transparent blur-3xl pointer-events-none rounded-full" />
-
-          {/* Floating 16rem Photo Cursor Card Follower (Cycles Movie Bash photos on travel) */}
-          <div 
-            ref={cursorCardRef} 
-            className="absolute top-0 left-0 w-60 h-60 sm:w-72 sm:h-72 -translate-x-1/2 -translate-y-1/2 z-20 rounded-[32px] overflow-hidden pointer-events-none shadow-[0_30px_70px_rgba(20,17,16,0.18)] border-4 border-white hidden md:block"
-            style={{ opacity: 0 }}
-          >
-            <div ref={cursorCardInnerRef} className="relative w-full h-full scale-110">
-              <Image 
-                src={heroPhotos[heroPhotoIndex]} 
-                alt="Movie Bash Private Cinema Experience"
-                fill
-                className="object-cover transition-opacity duration-300"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#141110]/70 via-transparent to-transparent flex items-end p-4">
-                <span className="text-[11px] font-black uppercase tracking-wider text-[#ffd46e] bg-[#141110]/80 px-3 py-1 rounded-full backdrop-blur-xs">
-                  Movie Bash Celebration
-                </span>
-              </div>
-            </div>
+          {/* Warm Luxury Glow Backdrop */}
+          <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[750px] h-[350px] bg-gradient-to-b from-[#ef4a23]/12 to-transparent blur-3xl rounded-full" />
+            <div className="absolute top-1/4 left-0 w-[350px] h-[350px] bg-gradient-to-br from-amber-200/15 to-transparent blur-3xl rounded-full" />
+            <div className="absolute top-1/3 right-0 w-[350px] h-[350px] bg-gradient-to-bl from-orange-200/15 to-transparent blur-3xl rounded-full" />
           </div>
 
-          {/* Top Eyebrow */}
-          <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ef4a23]/10 border border-[#ef4a23]/30 text-[#ef4a23] text-xs font-black uppercase tracking-widest shadow-2xs mb-5">
-              <span className="w-2 h-2 rounded-full bg-[#ef4a23] animate-pulse" />
-              <span>Bengaluru&apos;s #1 Luxury Private Celebration Cinema</span>
-            </div>
-
-            {/* Interactive Dynamic Font-Weight Headline */}
-            <h1 
-              ref={heroHeadlineRef}
-              className="text-[#141110] font-['Archivo'] uppercase tracking-tight leading-[0.88] text-4xl sm:text-6xl md:text-7xl lg:text-8xl max-w-5xl cursor-default select-none my-2"
-            >
-              <div className="block">
-                {"YOUR MOMENT.".split('').map((c, i) => (
-                  <span key={`l1-${i}`} className="hero-headline-char font-bold" data-serif="false">
-                    {c === ' ' ? '\u00A0' : c}
-                  </span>
-                ))}
+          {/* ──── SPLIT GRID: LEFT TEXT + RIGHT GALLERY (RESPONSIVE STACK ON MOBILE, 2-COLS ON DESKTOP) ──── */}
+          <div className="relative z-10 max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 lg:gap-8 items-center min-h-[auto] lg:min-h-[80vh] px-3.5 sm:px-8 md:px-12 py-4 sm:py-8 lg:py-0">
+            
+            {/* ═══ LEFT COLUMN: Text, CTA, Slot Bar ═══ */}
+            <div className="flex flex-col justify-center space-y-3 sm:space-y-4 lg:space-y-5 order-1 max-w-xl lg:max-w-none mx-auto lg:mx-0 w-full">
+              
+              {/* Eyebrow Badge */}
+              <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[#ef4a23]/10 border border-[#ef4a23]/30 text-[#ef4a23] text-[9px] sm:text-xs font-black uppercase tracking-wider sm:tracking-widest shadow-2xs w-fit">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#ef4a23] animate-pulse" />
+                <span>Bengaluru&apos;s #1 Private Cinema</span>
               </div>
-              <div className="block text-[#ef4a23] font-['Playfair'] italic normal-case tracking-normal my-2 sm:my-3">
-                {"*Your Movie.*".split('').map((c, i) => (
-                  <span key={`l2-${i}`} className="hero-headline-char font-normal" data-serif="true">
-                    {c === ' ' ? '\u00A0' : c}
-                  </span>
-                ))}
-              </div>
-              <div className="block">
-                {"YOUR THEATRE.".split('').map((c, i) => (
-                  <span key={`l3-${i}`} className="hero-headline-char font-bold" data-serif="false">
-                    {c === ' ' ? '\u00A0' : c}
-                  </span>
-                ))}
-              </div>
-            </h1>
 
-            {/* Hero Subtitle */}
-            <p className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg text-slate-700 font-medium max-w-2xl leading-relaxed">
-              Fully private 4K laser cinema screening, custom celebrations, fog entry, and handcrafted cakes for couples, birthdays, and groups.
-            </p>
-
-            {/* Hand-Drawn SVG Underline & Slide-Down Arrow CTA */}
-            <div className="mt-7 sm:mt-8 flex flex-wrap items-center justify-center gap-5 sm:gap-8">
-              <a 
-                href="#slots" 
-                className="group relative inline-flex items-center gap-3 text-lg sm:text-xl font-['Playfair'] font-bold text-[#141110] hover:text-[#ef4a23] transition-colors py-1 cursor-pointer"
+              {/* Dynamic Font-Weight Headline */}
+              <h1 
+                ref={heroHeadlineRef}
+                className="text-[#141110] font-['Archivo'] uppercase tracking-tight leading-[1.05] text-xl sm:text-3xl md:text-5xl lg:text-[56px] cursor-default select-none"
               >
-                <span>Plan Your Celebration</span>
-                {/* Arrow Square Slider Button in Smooth Tomato Orange */}
-                <span className="w-8 h-8 rounded-lg bg-[#ef4a23] group-hover:bg-[#ff5d38] flex items-center justify-center overflow-hidden transition-colors shadow-md">
-                  <span className="flex flex-col items-center transition-transform duration-300 group-hover:-translate-y-1/2">
-                    <span className="text-white text-sm font-bold my-1">↓</span>
-                    <span className="text-white text-sm font-bold my-1">↓</span>
-                  </span>
-                </span>
+                <div className="block">
+                  {"YOUR MOMENT.".split('').map((c, i) => (
+                    <span key={`l1-${i}`} className="hero-headline-char font-bold" data-serif="false">
+                      {c === ' ' ? '\u00A0' : c}
+                    </span>
+                  ))}
+                </div>
+                <div className="block text-[#ef4a23] font-['Playfair'] italic normal-case tracking-normal my-0.5 sm:my-1.5 font-normal">
+                  {"*Your Movie.*".split('').map((c, i) => (
+                    <span key={`l2-${i}`} className="hero-headline-char" data-serif="true">
+                      {c === ' ' ? '\u00A0' : c}
+                    </span>
+                  ))}
+                </div>
+                <div className="block">
+                  {"YOUR THEATRE.".split('').map((c, i) => (
+                    <span key={`l3-${i}`} className="hero-headline-char font-bold" data-serif="false">
+                      {c === ' ' ? '\u00A0' : c}
+                    </span>
+                  ))}
+                </div>
+              </h1>
 
-                {/* Hand-drawn SVG wavy underline in Smooth Orange */}
-                <svg 
-                  className="absolute left-0 -bottom-2 w-full h-3 text-[#ef4a23]" 
-                  viewBox="0 0 200 12" 
-                  fill="none" 
-                  xmlns="http://www.w3.org/2000/svg"
+              {/* Subtitle */}
+              <p className="text-[11px] sm:text-sm md:text-base text-slate-700 font-medium max-w-lg leading-relaxed line-clamp-2 sm:line-clamp-none">
+                Fully private 4K laser cinema screening, custom celebrations, fog entry, and handcrafted cakes for couples &amp; groups.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-0.5 sm:pt-1">
+                <a 
+                  href="#slots" 
+                  className="inline-flex items-center gap-1.5 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-['Archivo'] font-black text-[11px] sm:text-xs md:text-sm uppercase tracking-wider shadow-md shadow-orange-600/25 hover:scale-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
                 >
-                  <path 
-                    d="M3 8.5C35 2.5 75 11 110 5.5C145 0 175 9.5 197 7" 
-                    stroke="currentColor" 
-                    strokeWidth="3.2" 
-                    strokeLinecap="round" 
+                  <span>Plan Celebration</span>
+                  <Icon name="arrow" size={14} />
+                </a>
+                <a 
+                  href="#theatres" 
+                  className="inline-flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-3 rounded-full bg-white hover:bg-orange-50 text-[#141110] font-bold text-[11px] sm:text-xs md:text-sm border border-[#ef4a23]/30 shadow-2xs transition-all whitespace-nowrap"
+                >
+                  <Icon name="play" size={12} />
+                  <span>Explore Theatres</span>
+                </a>
+              </div>
+
+              {/* Quick Slot Booking Bar */}
+              <div 
+                ref={slotBarRef}
+                className="w-full max-w-md bg-white/95 rounded-2xl sm:rounded-full p-1.5 sm:p-2 flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2 shadow-[0_12px_36px_rgba(239,74,35,0.09)] border border-[#ef4a23]/25 mt-1 sm:mt-2"
+              >
+                <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 w-full sm:w-auto">
+                  <span className="text-[#ef4a23]"><Icon name="location" size={14} /></span>
+                  <select 
+                    value={branch} 
+                    onChange={(e) => {
+                      setBranch(e.target.value);
+                      if (showHeroSlots) {
+                        const target = e.target.value.includes('BTM') ? 'BTM 2nd Stage' : 'Electronic City';
+                        setSlotBranch(target);
+                      }
+                    }}
+                    className="bg-transparent text-[#141110] font-bold text-[11px] sm:text-xs focus:outline-none cursor-pointer w-full"
+                  >
+                    <option value="Electronic City">Electronic City</option>
+                    <option value="BTM 2nd Stage">BTM 2nd Stage</option>
+                  </select>
+                </div>
+                <div className="hidden sm:block w-px h-6 bg-slate-200" />
+                <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 w-full sm:w-auto">
+                  <span className="text-[#ef4a23]"><Icon name="calendar" size={14} /></span>
+                  <input 
+                    type="date" 
+                    value={date} 
+                    onChange={(e) => setDate(e.target.value)}
+                    min={getTodayIST()}
+                    className="bg-transparent text-[#141110] font-bold text-[11px] sm:text-xs focus:outline-none cursor-pointer w-full"
                   />
-                </svg>
-              </a>
-
-              <a 
-                href="#theatres" 
-                className="px-6 py-3 rounded-full bg-white hover:bg-orange-50 text-[#141110] font-bold text-xs sm:text-sm border-2 border-[#ef4a23]/30 shadow-md transition-all hover:scale-105 flex items-center gap-2"
-              >
-                <Icon name="play" size={16} />
-                <span>Explore Theatres</span>
-              </a>
-            </div>
-
-            {/* Quick Slot Booking Bar (Clean White & Smooth Orange) */}
-            <div className="mt-8 sm:mt-10 w-full max-w-2xl bg-white/95 rounded-2xl sm:rounded-full p-2.5 sm:p-2 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-[0_15px_40px_rgba(239,74,35,0.08)] border-2 border-[#ef4a23]/25">
-              <div className="flex items-center gap-2 px-3 w-full sm:w-auto">
-                <span className="text-[#ef4a23]"><Icon name="location" size={18} /></span>
-                <select 
-                  value={branch} 
-                  onChange={(e) => setBranch(e.target.value)}
-                  className="bg-transparent text-[#141110] font-bold text-xs sm:text-sm focus:outline-none cursor-pointer w-full"
+                </div>
+                <button 
+                  type="button" 
+                  onClick={checkAvailability}
+                  className="w-full sm:w-auto px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-black text-[11px] sm:text-xs shadow-md shadow-orange-600/30 hover:scale-105 transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0"
                 >
-                  <option value="Electronic City">Electronic City Branch</option>
-                  <option value="BTM 2nd Stage">BTM 2nd Stage Branch</option>
-                </select>
+                  <span>Check Slots</span>
+                  <Icon name="arrow" size={12} />
+                </button>
               </div>
 
-              <div className="w-full sm:w-px h-px sm:h-8 bg-slate-200" />
-
-              <div className="flex items-center gap-2 px-3 w-full sm:w-auto">
-                <span className="text-[#ef4a23]"><Icon name="calendar" size={18} /></span>
-                <input 
-                  type="date" 
-                  value={date} 
-                  onChange={(e) => setDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                  className="bg-transparent text-[#141110] font-bold text-xs sm:text-sm focus:outline-none cursor-pointer w-full"
-                />
+              {/* Trust Reviews Pill */}
+              <div className="flex items-center gap-2 text-slate-700 text-[10px] sm:text-[11px] font-semibold pt-0.5">
+                <div className="flex -space-x-1.5">
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-amber-400 text-slate-950 font-black text-[8px] sm:text-[9px] flex items-center justify-center border border-white">RS</span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-orange-400 text-white font-black text-[8px] sm:text-[9px] flex items-center justify-center border border-white">AK</span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-rose-400 text-white font-black text-[8px] sm:text-[9px] flex items-center justify-center border border-white">NM</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-[#ef4a23] font-bold">★★★★★</span>
+                  <span className="truncate">Loved by 12,500+ guests in Bengaluru</span>
+                </div>
               </div>
-
-              <button 
-                type="button" 
-                onClick={checkAvailability}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-black text-xs sm:text-sm shadow-md shadow-orange-600/30 hover:scale-105 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
-              >
-                <span>Check Slots</span>
-                <Icon name="arrow" size={16} />
-              </button>
             </div>
 
-            {/* Trust Reviews Pill */}
-            <div className="mt-6 flex items-center gap-3 text-slate-700 text-xs font-semibold">
-              <div className="flex -space-x-1.5">
-                <span className="w-6 h-6 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] flex items-center justify-center border border-white">RS</span>
-                <span className="w-6 h-6 rounded-full bg-orange-400 text-white font-black text-[10px] flex items-center justify-center border border-white">AK</span>
-                <span className="w-6 h-6 rounded-full bg-rose-400 text-white font-black text-[10px] flex items-center justify-center border border-white">NM</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#ef4a23] font-bold">★★★★★</span>
-                <span>Loved by 12,500+ guests in Bengaluru</span>
+            {/* ═══ RIGHT COLUMN: Cinematic Arch Gallery ═══ */}
+            <div 
+              className="order-2 flex flex-col items-center w-full max-w-xl mx-auto lg:max-w-none mt-2 sm:mt-0"
+              onMouseEnter={() => setIsHeroCarouselPaused(true)}
+              onMouseLeave={() => setIsHeroCarouselPaused(false)}
+            >
+              {/* Gallery Container */}
+              <div className="w-full bg-white/80 backdrop-blur-md rounded-[20px] sm:rounded-[28px] p-3 sm:p-4 border border-white/90 shadow-[0_16px_40px_rgba(20,17,16,0.06)]">
+                {/* Header: Title + Counter + Controls */}
+                <div className="flex items-center justify-between px-1 pb-2 mb-2 border-b border-orange-200/60">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#ef4a23] animate-pulse" />
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#141110]">
+                      Cinematic Arch Gallery
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black tracking-wider text-[#ef4a23]">
+                      0{heroBgIndex + 1} <span className="text-slate-400 font-normal">/ 0{heroBgPhotos.length}</span>
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={prevHeroSlide}
+                        aria-label="Previous suite"
+                        className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white hover:bg-[#ef4a23] text-slate-700 hover:text-white border border-slate-200 shadow-2xs flex items-center justify-center transition-all cursor-pointer font-bold active:scale-90 text-xs"
+                      >
+                        ←
+                      </button>
+                      <button
+                        type="button"
+                        onClick={nextHeroSlide}
+                        aria-label="Next suite"
+                        className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white hover:bg-[#ef4a23] text-slate-700 hover:text-white border border-slate-200 shadow-2xs flex items-center justify-center transition-all cursor-pointer font-bold active:scale-90 text-xs"
+                      >
+                        →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5 Arch-Shaped Frames */}
+                <div 
+                  className="relative h-[200px] sm:h-[260px] md:h-[300px] lg:h-[340px] w-full flex items-end justify-center gap-1.5 sm:gap-2 select-none"
+                  onWheel={(e) => {
+                    if (Math.abs(e.deltaY) > 20 || Math.abs(e.deltaX) > 20) {
+                      if (e.deltaY > 0 || e.deltaX > 0) nextHeroSlide();
+                      else prevHeroSlide();
+                    }
+                  }}
+                  onTouchStart={handleHeroTouchStart}
+                  onTouchMove={handleHeroTouchMove}
+                  onTouchEnd={handleHeroTouchEnd}
+                >
+                  {[
+                    (heroBgIndex - 2 + heroBgPhotos.length) % heroBgPhotos.length,
+                    (heroBgIndex - 1 + heroBgPhotos.length) % heroBgPhotos.length,
+                    heroBgIndex,
+                    (heroBgIndex + 1) % heroBgPhotos.length,
+                    (heroBgIndex + 2) % heroBgPhotos.length,
+                  ].map((photoIdx, posIdx) => {
+                    const photo = heroBgPhotos[photoIdx];
+                    const isCenter = posIdx === 2;
+                    const isInner = posIdx === 1 || posIdx === 3;
+
+                    let widthClass = 'w-[15%] sm:w-[15%]';
+                    let heightClass = 'h-[72%] sm:h-[76%]';
+                    let roundClass = 'rounded-t-[28px] sm:rounded-t-[50px] md:rounded-t-[80px] rounded-b-lg sm:rounded-b-xl';
+                    let containerStyle = 'opacity-75 hover:opacity-95 hover:scale-[1.02] cursor-pointer';
+
+                    if (isCenter) {
+                      widthClass = 'w-[32%] sm:w-[32%]';
+                      heightClass = 'h-full';
+                      roundClass = 'rounded-t-[44px] sm:rounded-t-[80px] md:rounded-t-[110px] rounded-b-lg sm:rounded-b-xl';
+                      containerStyle = 'ring-2 sm:ring-3 ring-[#ef4a23] shadow-2xl cursor-default z-10';
+                    } else if (isInner) {
+                      widthClass = 'w-[19%] sm:w-[19%]';
+                      heightClass = 'h-[84%] sm:h-[86%]';
+                      roundClass = 'rounded-t-[34px] sm:rounded-t-[65px] md:rounded-t-[90px] rounded-b-lg sm:rounded-b-xl';
+                      containerStyle = 'opacity-85 hover:opacity-100 hover:scale-[1.02] cursor-pointer shadow-md';
+                    }
+
+                    return (
+                      <div
+                        key={`${photo.title}-${posIdx}`}
+                        onClick={() => { if (!isCenter) setHeroBgIndex(photoIdx); }}
+                        className={`relative overflow-hidden transition-all duration-500 ease-out ${widthClass} ${heightClass} ${roundClass} ${containerStyle}`}
+                      >
+                        <Image
+                          src={photo.src}
+                          alt={photo.title}
+                          fill
+                          priority={isCenter}
+                          className="object-cover object-center transition-transform duration-700 hover:scale-105"
+                          sizes="(max-width: 768px) 30vw, 300px"
+                        />
+                        <div className={`absolute inset-0 transition-opacity duration-300 ${
+                          isCenter 
+                            ? 'bg-gradient-to-t from-black/80 via-black/30 to-black/10'
+                            : 'bg-gradient-to-t from-black/75 via-black/20 to-transparent'
+                        }`} />
+
+                        {isCenter && (
+                          <div className="absolute top-10 sm:top-12 md:top-14 inset-x-0 z-20 flex flex-col items-center justify-center gap-1 sm:gap-1.5 pointer-events-none px-2 sm:px-3">
+                            <span className="inline-block max-w-[85%] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/90 backdrop-blur-md border border-white/30 text-[#ffd46e] text-[8px] sm:text-[10px] md:text-[11px] font-black uppercase tracking-normal sm:tracking-wider shadow-lg truncate text-center">
+                              {photo.badge}
+                            </span>
+                            <span className="inline-block max-w-[85%] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[#ef4a23] text-white text-[8px] sm:text-[10px] md:text-[11px] font-black shadow-lg truncate text-center">
+                              {photo.price}
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="absolute inset-x-0 bottom-0 z-20 p-1.5 sm:p-2.5 text-left">
+                          {isCenter ? (
+                            <>
+                              <h3 className="text-white font-['Archivo'] font-black text-[11px] sm:text-sm md:text-base leading-snug drop-shadow-sm line-clamp-2">
+                                {photo.title}
+                              </h3>
+                              <p className="text-white/80 text-[8px] sm:text-[10px] md:text-xs font-medium mt-0.5 drop-shadow-xs line-clamp-1 hidden sm:block">
+                                {photo.subtitle}
+                              </p>
+                              <div className="flex items-center gap-1 mt-1">
+                                {photo.specs.slice(0, 2).map((spec, si) => (
+                                  <span key={si} className="text-[7px] sm:text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-white border border-white/25">
+                                    {spec}
+                                  </span>
+                                ))}
+                              </div>
+                            </>
+                          ) : (
+                            <div className="text-center w-full px-0.5 pb-0.5">
+                              <span className="text-white text-[7.5px] sm:text-[9px] md:text-[10px] font-black drop-shadow-md block leading-tight text-center">
+                                {isInner ? photo.tabTitle : (photo.shortLabel || photo.tabTitle)}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Suite Selector Pills: All 5 always visible, perfectly balanced */}
+                <div className="mt-2.5 w-full">
+                  <div className="grid grid-cols-5 gap-1 sm:gap-1.5 w-full">
+                    {heroBgPhotos.map((photo, idx) => {
+                      const isActive = idx === heroBgIndex;
+                      return (
+                        <button
+                          key={photo.title}
+                          type="button"
+                          onClick={() => setHeroBgIndex(idx)}
+                          className={`w-full py-1.5 px-0.5 sm:px-1.5 rounded-lg text-[8.5px] sm:text-[10px] md:text-[11px] font-black transition-all cursor-pointer flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 shadow-2xs text-center leading-tight ${
+                            isActive
+                              ? 'bg-[#141110] text-[#ffd46e] border border-[#141110] shadow-sm ring-1 ring-[#ef4a23]'
+                              : 'bg-white hover:bg-orange-50 text-slate-700 border border-slate-200 hover:border-[#ef4a23]'
+                          }`}
+                          title={photo.title}
+                        >
+                          <span className="text-xs sm:text-sm">{photo.icon}</span>
+                          <span className="truncate">{photo.shortLabel || photo.tabTitle}</span>
+                          {isActive && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#ef4a23] animate-pulse hidden sm:inline-block ml-0.5" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Reversible Client / Feature Marquee at Bottom */}
+          {/* IN-PLACE LIVE SLOTS VIEWER (3 VERTICAL COLUMNS AS REQUESTED) */}
+          {showHeroSlots && (
+            <div className="relative z-30 max-w-6xl mx-auto px-4 sm:px-6 pb-6">
+              <div 
+                ref={heroSlotsModalRef}
+                className="w-full bg-white rounded-3xl p-5 sm:p-7 shadow-[0_25px_60px_rgba(20,17,16,0.14)] border-2 border-[#ef4a23]/30 text-left animate-in fade-in slide-in-from-top-4 duration-300"
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between pb-4 border-b border-orange-100 mb-5">
+                  <div>
+                    <h3 className="font-playfair text-xl sm:text-2xl font-black text-[#141110]">
+                      Available Showtime Slots &bull; {branch}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
+                      Showing live schedule for <strong className="text-[#ef4a23]">{date}</strong>
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-black">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      Live Slots Open
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowHeroSlots(false)}
+                      className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold flex items-center justify-center text-sm transition-colors cursor-pointer"
+                      title="Close slots view"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
+                {/* 3 Vertical Columns Side-by-Side (Like Reference Image) */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  {slotRooms
+                    .filter((room) => room.branch === (branch.includes('BTM') ? 'BTM 2nd Stage' : 'Electronic City'))
+                    .map((room) => {
+                      const roomSlots = liveAvailability[room.theatreId] || [];
+                      const openCount = roomSlots.length > 0 
+                        ? roomSlots.filter((s: any) => !s.is_booked).length 
+                        : room.slots.length;
+
+                      const emoji = room.theatreId === 1 || room.theatreId === 4 
+                        ? '🎬' 
+                        : room.theatreId === 2 || room.theatreId === 5 
+                        ? '🎉' 
+                        : room.theatreId === 3 || room.theatreId === 6 
+                        ? '🧑‍🧑‍🧒‍🧒' 
+                        : '✨';
+
+                      return (
+                        <div
+                          key={room.name}
+                          className="bg-[#FFFDF9] rounded-2xl border border-orange-200/80 p-4 sm:p-5 shadow-xs hover:border-[#ef4a23]/60 transition-all flex flex-col justify-between"
+                        >
+                          <div>
+                            {/* Card Top: Emoji + Price */}
+                            <div className="flex items-start justify-between mb-2">
+                              <span className="text-3xl p-1.5 rounded-xl bg-white border border-orange-100 shadow-2xs">{emoji}</span>
+                              <div className="text-right">
+                                <span className="font-playfair text-xl sm:text-2xl font-black text-[#141110] block">
+                                  {room.custom || room.price}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Title & Capacity */}
+                            <h4 className="font-playfair text-lg sm:text-xl font-black text-[#141110]">
+                              {room.name}
+                            </h4>
+                            <div className="flex items-center justify-between text-xs text-slate-600 font-bold mt-1 mb-3">
+                              <span className="flex items-center gap-1 text-slate-500">
+                                <Icon name="users" size={13} />
+                                {room.capacity}
+                              </span>
+                              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                {openCount} Open Slots
+                              </span>
+                            </div>
+
+                            {/* Divider Title */}
+                            <div className="text-[10px] font-extrabold tracking-wider uppercase text-slate-400 mb-2">
+                              CLICK A SLOT TO RESERVE:
+                            </div>
+
+                            {/* 2-Column Slot Grid */}
+                            <div className="grid grid-cols-2 gap-2">
+                              {(roomSlots.length > 0 
+                                ? roomSlots 
+                                : room.slots.map((t, idx) => ({ id: idx, time: t, is_booked: false }))
+                              ).map((slotItem: any) => {
+                                const displayTime = slotItem.time || slotItem;
+                                const isBooked = slotItem.is_booked;
+
+                                if (isBooked) {
+                                  return (
+                                    <div
+                                      key={slotItem.id || displayTime}
+                                      className="p-2 sm:p-2.5 rounded-xl bg-slate-100 border border-slate-200 text-center cursor-not-allowed opacity-50 flex flex-col items-center justify-center select-none"
+                                      title="Already booked"
+                                    >
+                                      <span className="text-[11px] font-bold text-slate-500 line-through truncate w-full">{displayTime}</span>
+                                      <span className="text-[9px] font-black uppercase text-rose-600 mt-0.5">Sold Out</span>
+                                    </div>
+                                  );
+                                }
+
+                                return (
+                                  <button
+                                    key={slotItem.id || displayTime}
+                                    type="button"
+                                    onClick={() => {
+                                      const slotParam = slotItem.id ? `&slot=${slotItem.id}` : '';
+                                      router.push(`/book-now/${room.branchSlug}?date=${date}&theatre=${room.theatreId}${slotParam}`);
+                                    }}
+                                    className="p-2 sm:p-2.5 rounded-xl border border-emerald-300/80 bg-white hover:border-[#ef4a23] hover:bg-[#fff9f4] text-center transition-all cursor-pointer shadow-2xs group flex flex-col items-center justify-center active:scale-95"
+                                    title={`Reserve ${room.name} at ${displayTime}`}
+                                  >
+                                    <strong className="text-[11px] sm:text-xs font-black text-[#141110] group-hover:text-[#ef4a23] truncate w-full">
+                                      {displayTime}
+                                    </strong>
+                                    <span className="text-[10px] font-extrabold text-[#059669] flex items-center justify-center gap-0.5 mt-0.5">
+                                      Book ↗
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Bottom Action Button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              router.push(`/book-now/${room.branchSlug}?date=${date}&theatre=${room.theatreId}`);
+                            }}
+                            className="w-full py-2.5 px-4 rounded-xl text-center text-xs font-black text-white bg-[#ef4a23] hover:bg-[#d83f1a] shadow-md transition-all block mt-4 cursor-pointer"
+                          >
+                            Book {room.name} &rarr;
+                          </button>
+                        </div>
+                      );
+                    })}
+                </div>
+
+                {/* Footer Links */}
+                <div className="mt-5 pt-3.5 border-t border-orange-100 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+                  <a href="#slots" className="flex items-center gap-1.5 font-bold text-slate-700 hover:text-[#ef4a23]">
+                    Explore Hall Amenities &amp; Room Photos Below &darr;
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const targetBranch = branch.includes('BTM') ? 'btm-stage-2' : 'electronic-city';
+                      router.push(`/book-now/${targetBranch}?date=${date}`);
+                    }}
+                    className="font-bold text-[#ef4a23] hover:underline cursor-pointer"
+                  >
+                    Go to Full Booking Page &rarr;
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Reversible Feature Marquee */}
           <div 
             ref={heroMarqueeRef}
-            className="w-full overflow-hidden flex relative z-10 pt-8 border-t border-[#ef4a23]/20 mt-8"
+            className="w-full overflow-hidden flex relative z-10 py-4 border-t border-[#ef4a23]/15 bg-[#FAF3E4]"
           >
             <div className="hero-marquee-track flex items-center gap-8 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wider text-[#ef4a23]">
               <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">⭐ 4.9★ RATED (12,500+ GUESTS)</span>
@@ -1385,7 +1878,7 @@ export default function RefineTheatreLanding() {
           </div>
         </section>
 
-        {/* 4. INTRO STATS STRIP */}
+{/* 4. INTRO STATS STRIP */}
         <section className="intro-strip" aria-label="Movie Bash highlights">
           <div><Icon name="users" /><strong>12,500+</strong><span>happy celebrations</span></div>
           <div><Icon name="star" /><strong>4.9 / 5</strong><span>guest rating</span></div>
@@ -1401,6 +1894,15 @@ export default function RefineTheatreLanding() {
               <h2>Choose your theatre.<br /><em>See every open slot.</em></h2>
               <p>Pick a branch and date, then reserve an available time directly. Weekend slots usually fill 48 hours in advance.</p>
             </div>
+
+            {slotFlashMessage && (
+              <div className="mb-6 flex justify-center">
+                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#ef4a23] text-white text-xs sm:text-sm font-black shadow-lg shadow-orange-500/30 animate-pulse">
+                  <Icon name="check" size={16} />
+                  <span>{slotFlashMessage} &bull; {days[activeDay].full}</span>
+                </div>
+              </div>
+            )}
 
             {/* Branch Switcher Tabs */}
             <div className="branch-tabs" role="tablist" aria-label="Choose Movie Bash branch">
@@ -1439,15 +1941,15 @@ export default function RefineTheatreLanding() {
 
             {/* Slot Room List */}
             <div className="slot-room-list">
-              {slotRooms.filter((room) => room.branch === slotBranch).map((room) => (
+              {slotRooms.filter((room) => room.branch === slotBranch).map((room, idx) => (
                 <article className="slot-room" key={room.name}>
-                  <div className="relative w-full h-[220px]">
+                  <div className="slot-room-media relative w-full aspect-[4/3] sm:aspect-auto sm:h-full overflow-hidden rounded-t-2xl sm:rounded-l-2xl sm:rounded-tr-none bg-slate-900">
                     <Image 
                       src={room.image} 
                       alt={`${room.name} at Movie Bash ${slotBranch}`} 
                       fill 
-                      className="object-cover" 
-                      sizes="(max-width: 800px) 100vw, 210px"
+                      className="object-cover object-center" 
+                      sizes="(max-width: 800px) 100vw, 280px"
                     />
                   </div>
 
@@ -1469,20 +1971,37 @@ export default function RefineTheatreLanding() {
                       <a href="#packages">Compare packages</a>
                     </div>
 
-                    {/* Slots Grid */}
+                    {/* Slots Grid with Dynamic Availability (Zero Shifted Badges) */}
                     <div className="slot-grid">
-                      {room.slots.map((time, index) => {
-                        const isSold = index === 3 && activeDay === 0;
+                      {((liveAvailability[room.theatreId] && liveAvailability[room.theatreId].length > 0)
+                        ? liveAvailability[room.theatreId]
+                        : room.slots.map((t: string, i: number) => ({ id: i, time: t, is_booked: false }))
+                      ).map((slotItem: any) => {
+                        const displayTime = slotItem.time || slotItem;
+                        const isBooked = slotItem.is_booked;
+
+                        if (isBooked) {
+                          return (
+                            <div
+                              key={slotItem.id || displayTime}
+                              className="slot cursor-not-allowed opacity-45 bg-slate-100 border-slate-300 select-none flex flex-col items-center justify-center text-center"
+                              title="Already reserved"
+                            >
+                              <strong className="line-through text-slate-500">{displayTime}</strong>
+                              <span className="text-rose-600 font-extrabold text-[10px] uppercase text-center mt-0.5">Booked</span>
+                            </div>
+                          );
+                        }
+
                         return (
                           <button
-                            key={time}
-                            disabled={isSold}
-                            onClick={() => handleSlotClick(room, time, isSold)}
-                            className={isSold ? 'slot sold' : 'slot cursor-pointer'}
-                            title={isSold ? 'Booked' : `Reserve ${room.name} at ${time}`}
+                            key={slotItem.id || displayTime}
+                            onClick={() => handleSlotClick(room, displayTime, false, slotItem.id)}
+                            className="slot cursor-pointer hover:border-[#ef4a23] flex flex-col items-center justify-center text-center"
+                            title={`Reserve ${room.name} at ${displayTime}`}
                           >
-                            <strong>{time}</strong>
-                            <span>{isSold ? 'Booked' : 'Available'}</span>
+                            <strong className="text-center">{displayTime}</strong>
+                            <span className="text-[#059669] font-bold text-center mt-0.5">Available</span>
                           </button>
                         );
                       })}
@@ -1498,7 +2017,7 @@ export default function RefineTheatreLanding() {
           </div>
         </section>
 
-        {/* 6. WHAT ARE YOU CELEBRATING? OCCASIONS GRID (GRAND ICONS & ATTRACTIVE BORDERS) */}
+        {/* 6. WHAT ARE YOU CELEBRATING? (DYNAMIC SPOTLIGHT STAGE + ANIMATED OCCASIONS DECK) */}
         <section className="section occasions" id="experiences">
           <div className="section-heading centered">
             <div className="eyebrow"><span /> Moments worth making special <span /></div>
@@ -1506,52 +2025,181 @@ export default function RefineTheatreLanding() {
             <p>Whatever the occasion, we set the stage with magical lighting, romantic setups, and 4K cinema. You simply walk in and enjoy your moment.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-10 max-w-6xl mx-auto">
-            {occasionsList.map((occ) => (
-              <Link
-                key={occ.slug}
-                href={`/book-now?occasion=${occ.slug}`}
-                className={`group relative p-6 rounded-3xl border-2 ${occ.borderColor} ${occ.bgGradient} ${occ.shadow} hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between cursor-pointer overflow-hidden`}
-              >
-                <div>
-                  {/* Top Row: Grand Icon & Luxury Badge */}
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className={`w-14 h-14 rounded-2xl ${occ.iconBg} flex items-center justify-center p-2 group-hover:scale-110 transition-transform duration-300 shadow-xs`}>
-                      <GrandOccasionIcon type={occ.type} className="w-9 h-9 drop-shadow-sm" />
+          <div 
+            className="max-w-6xl mx-auto px-4 mt-8"
+            onMouseEnter={() => setIsOccasionPaused(true)}
+            onMouseLeave={() => setIsOccasionPaused(false)}
+          >
+
+            {/* CELEBRATIONS HORIZONTAL CARD CAROUSEL WITH SMOOTH ANIMATIONS */}
+            {(() => {
+              const prevOcc = () => setActiveOccasion((prev) => (prev - 1 + occasionsList.length) % occasionsList.length);
+              const nextOcc = () => setActiveOccasion((prev) => (prev + 1) % occasionsList.length);
+              const currentOcc = occasionsList[activeOccasion];
+
+              return (
+                <div className="relative mb-8 sm:mb-10 select-none">
+                  {/* Main Feature Card (Full-Width with Split Layout) */}
+                  <div 
+                    className="relative rounded-[24px] sm:rounded-[32px] bg-white border-2 border-[#ef4a23]/20 shadow-[0_16px_40px_rgba(239,74,35,0.08)] overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(239,74,35,0.12)]"
+                    onTouchStart={handleOccTouchStart}
+                    onTouchMove={handleOccTouchMove}
+                    onTouchEnd={handleOccTouchEnd}
+                    onWheel={handleTheatreScreenWheel}
+                  >
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                      
+                      {/* Left: Large Image */}
+                      <div className="relative w-full h-[220px] sm:h-[280px] lg:h-[380px] overflow-hidden group transition-all duration-500">
+                        <Image
+                          key={currentOcc.slug}
+                          src={currentOcc.image}
+                          alt={currentOcc.title}
+                          fill
+                          loading="lazy"
+                          className="object-cover object-center transition-transform duration-700 group-hover:scale-105 animate-[fadeIn_0.6s_ease-out]"
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
+                        
+                        {/* Navigation Arrows on Image */}
+                        <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-3 sm:px-5 z-20">
+                          <button
+                            type="button"
+                            onClick={prevOcc}
+                            aria-label="Previous celebration"
+                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-[#141110] shadow-lg flex items-center justify-center transition-all cursor-pointer active:scale-90 backdrop-blur-sm"
+                          >
+                            <span className="text-lg font-bold">←</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={nextOcc}
+                            aria-label="Next celebration"
+                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-[#141110] shadow-lg flex items-center justify-center transition-all cursor-pointer active:scale-90 backdrop-blur-sm"
+                          >
+                            <span className="text-lg font-bold">→</span>
+                          </button>
+                        </div>
+                        
+                        {/* Bottom Image Overlay Info */}
+                        <div className="absolute bottom-3 left-3 right-3 z-20 flex items-end justify-between pointer-events-none">
+                          <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] sm:text-xs font-black uppercase tracking-wider border border-white/20">
+                            {currentOcc.badge}
+                          </span>
+                          <span className="px-3 py-1 rounded-full bg-[#ef4a23] text-white text-[10px] sm:text-xs font-black shadow-sm">
+                            {activeOccasion + 1} of {occasionsList.length}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Right: Info, Inclusions, CTA */}
+                      <div className="p-5 sm:p-7 md:p-8 flex flex-col justify-center space-y-4 animate-[slideInRight_0.5s_ease-out]" key={currentOcc.slug + '-info'}>
+                        {/* Badges */}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <div className={`w-9 h-9 rounded-xl ${currentOcc.iconBg} flex items-center justify-center p-1.5 shrink-0 shadow-2xs`}>
+                            <GrandOccasionIcon type={currentOcc.type} className="w-5 h-5" />
+                          </div>
+                          <span className="px-2.5 py-0.5 rounded-full bg-[#ef4a23]/10 text-[#ef4a23] text-[10px] sm:text-xs font-black uppercase border border-[#ef4a23]/20">
+                            100% Private
+                          </span>
+                        </div>
+
+                        {/* Title */}
+                        <h3 className="font-['Playfair'] font-bold text-2xl sm:text-3xl md:text-4xl text-[#141110] leading-tight tracking-tight">
+                          {currentOcc.title}
+                        </h3>
+
+                        {/* Tagline */}
+                        <p className="text-slate-600 text-sm sm:text-base font-medium leading-relaxed">
+                          {currentOcc.tagline}
+                        </p>
+
+                        {/* Experience Inclusions */}
+                        <div>
+                          <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2">
+                            Experience Includes
+                          </span>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="px-3 py-1.5 rounded-lg bg-[#FAF3E4] text-[#141110] text-xs font-bold border border-orange-200/60 shadow-2xs">
+                              🎬 4K Screening
+                            </span>
+                            <span className="px-3 py-1.5 rounded-lg bg-[#FAF3E4] text-[#141110] text-xs font-bold border border-orange-200/60 shadow-2xs">
+                              ✨ Custom Décor
+                            </span>
+                            <span className="px-3 py-1.5 rounded-lg bg-[#FAF3E4] text-[#141110] text-xs font-bold border border-orange-200/60 shadow-2xs">
+                              🎂 Cake Entry
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* CTA */}
+                        <div className="flex items-center gap-4 pt-2">
+                          <Link
+                            href={`/book-now?occasion=${currentOcc.slug}`}
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#141110] hover:bg-[#ef4a23] text-white font-['Archivo'] font-black text-xs sm:text-sm uppercase tracking-wider shadow-md hover:scale-105 active:scale-95 transition-all"
+                          >
+                            <span>Book This Experience</span>
+                            <span>&rarr;</span>
+                          </Link>
+                        </div>
+
+                        {/* Progress Dots */}
+                        <div className="flex items-center gap-1.5 pt-2">
+                          {occasionsList.map((_, dotIdx) => (
+                            <button
+                              key={dotIdx}
+                              type="button"
+                              onClick={() => setActiveOccasion(dotIdx)}
+                              className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                                dotIdx === activeOccasion ? 'w-6 bg-[#ef4a23]' : 'w-1.5 bg-slate-300 hover:bg-slate-400'
+                              }`}
+                              aria-label={`Go to ${occasionsList[dotIdx].title}`}
+                            />
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                    <span className={`text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full border shadow-2xs ${occ.badgeColor}`}>
-                      {occ.badge}
-                    </span>
-                  </div>
-
-                  {/* Title & Tagline */}
-                  <div>
-                    <h3 className="font-playfair text-xl font-bold text-ink group-hover:text-[#237eea] transition-colors leading-tight">
-                      {occ.title}
-                    </h3>
-                    <p className="text-xs text-slate-600 font-medium leading-relaxed mt-2">
-                      {occ.tagline}
-                    </p>
                   </div>
                 </div>
+              );
+            })()}
 
-                {/* Bottom Action Strip */}
-                <div className="mt-5 pt-3.5 border-t border-slate-200/60 flex items-center justify-between text-xs font-black">
-                  <span className="text-slate-500 font-bold group-hover:text-ink transition-colors">
-                    Private 4K Screening
-                  </span>
-                  <span className={`flex items-center gap-1.5 ${occ.arrowColor} group-hover:translate-x-1.5 transition-transform`}>
-                    <span>Select Setup</span>
-                    <span className="text-sm font-bold">&rarr;</span>
-                  </span>
-                </div>
-              </Link>
-            ))}
+            {/* 9-OCCASION SELECTION TILES */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4">
+              {occasionsList.map((occ, idx) => {
+                const isActive = idx === activeOccasion;
+                return (
+                  <button
+                    key={occ.slug}
+                    type="button"
+                    onClick={() => setActiveOccasion(idx)}
+                    className={`p-4 rounded-2xl border-2 text-left transition-all duration-300 flex items-center gap-3 cursor-pointer ${
+                      isActive
+                        ? 'border-[#ef4a23] bg-white ring-4 ring-[#ef4a23]/20 shadow-md scale-102'
+                        : 'border-slate-200/80 bg-white/70 hover:bg-white hover:border-[#ef4a23]/40 shadow-xs'
+                    }`}
+                  >
+                    <div className={`w-10 h-10 rounded-xl ${occ.iconBg} flex items-center justify-center p-1.5 shrink-0 shadow-2xs`}>
+                      <GrandOccasionIcon type={occ.type} className="w-6 h-6" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h4 className={`text-xs font-black truncate leading-tight ${isActive ? 'text-[#ef4a23]' : 'text-[#141110]'}`}>
+                        {occ.title}
+                      </h4>
+                      <p className="text-[10px] text-slate-500 font-medium truncate mt-0.5">
+                        {occ.badge}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </section>
 
-        {/* 7. SIGNATURE CELEBRATION PACKAGE BANNER */}
-        <section className="section package-section" id="packages">
+        {/* 7. SIGNATURE CELEBRATION PACKAGE BANNER (LUXURY BLACK CARD MATCHING FIGMA & USER DESIGN) */}
+        <section className="section package-section" id="signature-celebration">
           <div className="package-card">
             <div className="package-copy">
               <div className="eyebrow light"><span /> The signature celebration</div>
@@ -1587,8 +2235,8 @@ export default function RefineTheatreLanding() {
           </div>
         </section>
 
-        {/* 8. 3-TIER PRICING & ADD-ONS */}
-        <section className="section package-pricing">
+        {/* 8. 3-TIER PRICING & ADD-ONS (TARGET OF NAVBAR 'PACKAGES' LINK) */}
+        <section className="section package-pricing scroll-mt-24" id="packages">
           <div className="section-heading centered">
             <div className="eyebrow"><span /> Clear package options <span /></div>
             <h2>Everything included.<br /><em>No last-minute surprises.</em></h2>
@@ -1627,256 +2275,146 @@ export default function RefineTheatreLanding() {
           </div>
         </section>
 
-        {/* 8B. SCROLL-TRIGGERED 3D CARD STACKING ANIMATION (ADD-ONS & ATMOSPHERE) */}
+        {/* 8B. SCROLL-TRIGGERED STACKED CARDS ANIMATION (ADD-ONS & ATMOSPHERE - DESKTOP & MOBILE) */}
         <section 
-          ref={addonsSectionRef} 
-          className="relative bg-[#faf3e4] text-[#141110] border-y border-[#141110]/10 overflow-hidden" 
+          className="relative bg-[#FAF3E4] text-[#141110] border-y border-[#141110]/10 pt-16 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-6" 
           id="addons"
         >
-          {/* Floating Cursor Pill Follower */}
-          <div 
-            ref={cursorPillRef}
-            className="fixed top-0 left-0 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none scale-0 opacity-0 hidden lg:block"
-          >
-            <div className="px-4 py-2 rounded-full bg-[#ef4a23] text-white font-['Archivo'] font-bold text-xs uppercase tracking-wider shadow-2xl flex items-center gap-1.5 border border-white/30">
-              <span>Select Add-on</span>
-              <span>&rarr;</span>
+          {/* Section Header: Explicitly Branding Celebration Add-Ons */}
+          <div className="text-center max-w-2xl mx-auto space-y-3 mb-10 sm:mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ef4a23]/10 border border-[#ef4a23]/30 text-[#ef4a23] text-xs font-black uppercase tracking-wider shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[#ef4a23] animate-pulse" />
+              <span>Celebration Add-Ons · Signature Atmosphere</span>
+            </div>
+            <h2 className="font-['Archivo'] text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-[#141110] leading-tight">
+              Celebration Add-Ons, <span className="font-['Playfair'] italic font-normal text-[#ef4a23] normal-case">made to delight.</span>
+            </h2>
+            <p className="text-sm sm:text-base text-slate-700 font-medium leading-relaxed">
+              Scroll down through all 5 handcrafted Add-on collections: Gourmet Cakes, Fog &amp; Pyro FX, Romantic Décor, Photoshoots &amp; Popcorn Bar.
+            </p>
+            <div className="flex items-center justify-center gap-2 pt-1 text-xs font-black text-[#ef4a23]">
+              <span>↓ Scroll to stack celebration add-on cards</span>
             </div>
           </div>
 
-          {/* Desktop Pinned Stage (>= 992px) */}
-          <div 
-            ref={addonsPinRef} 
-            className="hidden lg:grid lg:grid-cols-12 gap-8 items-center h-screen w-full px-8 xl:px-16 overflow-hidden max-w-7xl mx-auto"
-          >
-            {/* Left Column: Editorial Headline & Rotating Sun Badge */}
-            <div className="lg:col-span-5 space-y-6 text-left pr-4">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#ef4a23]/10 border border-[#ef4a23]/30 text-[#ef4a23] text-xs font-black uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-[#ef4a23]" />
-                <span>Handcrafted Add-ons</span>
-              </div>
-
-              <h2 className="font-['Archivo'] text-4xl xl:text-5xl font-black uppercase tracking-tight text-[#141110] leading-[1.02]">
-                Every detail, <br />
-                <span className="font-['Playfair'] italic font-normal text-[#ef4a23] normal-case">made to delight.</span>
-              </h2>
-
-              <p className="font-['Playfair'] text-base text-slate-700 font-medium leading-relaxed max-w-md">
-                From pure Belgian chocolate cakes to dramatic dry-ice fog entries and romantic candlelight aisles, customize your screening into a grand celebration.
-              </p>
-
-              {/* Rotating Circular Sun Badge */}
-              <div className="pt-2 flex items-center gap-6">
-                <div className="relative w-24 h-24 shrink-0">
-                  <svg 
-                    ref={sunBadgeRef}
-                    viewBox="0 0 120 120" 
-                    className="w-full h-full text-[#ef4a23]"
-                  >
-                    <path
-                      id="sunBadgeTextPath"
-                      d="M 60, 60 m -46, 0 a 46,46 0 1,1 92,0 a 46,46 0 1,1 -92,0"
-                      fill="none"
-                    />
-                    <text className="text-[10.5px] uppercase tracking-[0.2em] font-['Archivo'] font-black fill-[#141110]">
-                      <textPath href="#sunBadgeTextPath" startOffset="0%">
-                        ✦ SCROLL · DISCOVER · CUSTOMIZE · CELEBRATE ·
-                      </textPath>
-                    </text>
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <span className="w-8 h-8 rounded-full bg-[#ffd46e] text-[#141110] flex items-center justify-center font-black text-xs shadow-sm">
-                      ★
-                    </span>
-                  </div>
-                </div>
-
-                {/* Active Card Progress */}
-                <div className="space-y-1.5">
-                  <div className="text-xs font-black uppercase tracking-wider text-slate-500">
-                    Active Extra: <span className="text-[#ef4a23] font-black">{activeStackSlide + 1} / {addonSlides.length}</span>
-                  </div>
-                  <div className="w-36 h-2 bg-black/10 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-[#ef4a23] transition-all duration-300 rounded-full"
-                      style={{ width: `${((activeStackSlide + 1) / addonSlides.length) * 100}%` }}
-                    />
-                  </div>
-                  <small className="text-[11px] text-slate-500 block font-semibold">
-                    Scroll down to peel cards
-                  </small>
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <div className="pt-4">
-                <Link
-                  href="/book-now"
-                  className="inline-flex items-center gap-2.5 px-7 py-3 rounded-full bg-[#141110] hover:bg-[#ef4a23] text-white font-['Archivo'] font-black text-xs uppercase tracking-wider shadow-xl transition-all hover:scale-105 cursor-pointer"
-                >
-                  <span>Build Celebration with Add-ons</span>
-                  <span className="text-sm">&rarr;</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Right Column: 3D Perspective Card Stack */}
-            <div className="lg:col-span-7 relative h-[620px] perspective-1400 flex items-center justify-center">
-              <div 
-                ref={addonsStackRootRef} 
-                className="relative w-full h-full transform-style-3d flex items-center justify-center"
+          {/* STACKED CARDS SCROLL DECK (Native Sticky Stacking with Luxury Matte Dark Style from Image 1) */}
+          <div className="relative max-w-4xl mx-auto space-y-10 sm:space-y-16 pb-28 min-h-[120vh]">
+            {addonSlides.map((slide, idx) => (
+              <div
+                key={slide.number}
+                className="sticky rounded-[24px] sm:rounded-[34px] p-6 sm:p-9 md:p-10 bg-white text-[#141110] border border-orange-200/60 shadow-[0_20px_50px_rgba(20,17,16,0.08)] transition-all duration-300 relative overflow-hidden"
+                style={{
+                  top: `calc(85px + ${idx * 28}px)`,
+                  zIndex: idx + 1,
+                  willChange: 'transform',
+                }}
               >
-                {addonSlides.map((slide, idx) => (
-                  <div
-                    key={slide.number}
-                    className={`drops-slide absolute w-[470px] xl:w-[500px] rounded-[32px] p-6 bg-gradient-to-br ${slide.bg} border-2 ${slide.cardBorder} shadow-[0_30px_70px_rgba(20,17,16,0.18)] flex flex-col justify-between cursor-pointer select-none`}
-                  >
+                {/* Subtle Luxury Curved Highlight Arc in Top-Left (Matching Image 1) */}
+                <div 
+                  className="absolute -top-32 -left-32 w-80 h-80 rounded-full border border-[#ef4a23]/[0.06] pointer-events-none" 
+                  aria-hidden="true"
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-7 sm:gap-8 md:gap-10 items-stretch">
+                  {/* Left Column: Eyebrow, Large Playfair Serif Headline, Description, Price & Cream CTA */}
+                  <div className="md:col-span-5 flex flex-col justify-between text-left">
                     <div>
-                      {/* Top Bar: Number & Category Badge */}
-                      <div className="flex items-center justify-between pb-3.5 border-b border-black/10 mb-3.5">
-                        <div className="flex items-center gap-2.5">
-                          <span className="w-9 h-9 rounded-xl bg-[#141110] text-[#ffd46e] flex items-center justify-center font-['Archivo'] font-black text-xs shadow">
-                            {slide.number}
-                          </span>
-                          <span className="text-xs font-black uppercase tracking-wider text-[#141110]">
-                            {slide.category}
-                          </span>
-                        </div>
-                        <span className={`text-[10px] font-black uppercase tracking-wider px-3 py-0.5 rounded-full border shadow-2xs ${slide.tagColor}`}>
-                          {slide.badge}
+                      {/* Eyebrow with horizontal dash */}
+                      <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                        <span className="w-5 h-[1.5px] bg-[#ef4a23]/40" />
+                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-[#ef4a23]">
+                          Celebration Add-On · {slide.category} · {slide.number}
                         </span>
                       </div>
 
-                      {/* Header Title & Tagline */}
-                      <h3 className="font-['Playfair'] text-xl font-bold text-[#141110] leading-snug">
-                        {slide.title}
+                      {/* Headline in Playfair Serif with Italic emphasis */}
+                      <h3 className="font-['Playfair'] text-2xl sm:text-3xl md:text-4xl font-bold text-[#141110] leading-[1.15] tracking-tight">
+                        {slide.title.includes('&') ? (
+                          <>
+                            {slide.title.split('&')[0]}&amp; <br />
+                            <em className="italic font-normal text-[#ef4a23]/80">{slide.title.split('&')[1]}</em>
+                          </>
+                        ) : (
+                          slide.title
+                        )}
                       </h3>
-                      <p className="text-xs text-slate-700 font-medium leading-relaxed mt-1 line-clamp-2">
+
+                      {/* Subtitle / Description */}
+                      <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed mt-3 sm:mt-4">
                         {slide.desc}
                       </p>
-
-                      {/* Add-ons List with Illustrated Grand Icons */}
-                      <div className="space-y-2 mt-4 pt-3 border-t border-black/10">
-                        {slide.items.map((item) => (
-                          <div 
-                            key={item.title} 
-                            className="flex items-center gap-3 p-2.5 rounded-2xl bg-white/95 border border-orange-200/80 shadow-2xs hover:border-[#ef4a23] transition-colors"
-                          >
-                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#FFF1E8] to-[#FFE2D4] flex items-center justify-center p-1.5 shrink-0 border border-orange-200/90 shadow-xs">
-                              <GrandAddonIcon name={item.iconKey} className="w-7 h-7 drop-shadow-xs" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between gap-2">
-                                <h4 className="text-xs font-bold text-[#141110] truncate">{item.title}</h4>
-                                <span className="text-[10px] font-black text-[#ef4a23] shrink-0 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200/60">
-                                  {item.price}
-                                </span>
-                              </div>
-                              <p className="text-[10px] text-slate-500 font-medium truncate mt-0.5">{item.desc}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
                     </div>
 
-                    {/* Bottom CTA Row */}
-                    <div className="mt-4 pt-3 border-t border-black/10 flex items-center justify-between">
-                      <span className="text-xs font-black text-[#141110]">
-                        {slide.price}
-                      </span>
+                    {/* Bottom Pricing & Cream Action Button */}
+                    <div className="mt-6 sm:mt-8 pt-4 border-t border-orange-200/40 md:border-t-0 md:pt-0">
+                      <div className="mb-4">
+                        <span className="block text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-1">
+                          Complete Extras From
+                        </span>
+                        <div className="font-['Playfair'] text-2xl sm:text-3xl font-bold text-[#141110]">
+                          {slide.price.split('·')[0].trim()}
+                        </div>
+                      </div>
+
                       <Link
                         href="/book-now"
-                        className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-[#ef4a23] hover:text-[#141110] transition-colors"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-['Archivo'] font-black text-xs uppercase tracking-wider transition-all shadow-md hover:shadow-lg hover:scale-[1.02] cursor-pointer"
                       >
-                        <span>Select in Booking</span>
-                        <span className="text-sm font-bold">&rarr;</span>
+                        <span>Explore the package</span>
+                        <span className="text-base font-bold">&rarr;</span>
                       </Link>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
 
-          {/* Mobile & Tablet Fallback (< 992px) */}
-          <div className="lg:hidden py-14 px-4 sm:px-6">
-            <div className="text-center max-w-xl mx-auto mb-8 space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ef4a23]/10 border border-[#ef4a23]/30 text-[#ef4a23] text-xs font-black uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-[#ef4a23]" />
-                <span>Handcrafted Add-ons</span>
-              </div>
-              <h2 className="font-['Archivo'] text-3xl font-black uppercase tracking-tight text-[#141110]">
-                Every detail, <span className="font-['Playfair'] italic font-normal text-[#ef4a23] normal-case">made to delight.</span>
-              </h2>
-              <p className="text-xs text-slate-700 font-medium">
-                Swipe through our celebration extras with custom cakes, special FX entries, romantic candlelight, and cinema bites.
-              </p>
-            </div>
-
-            {/* Mobile Cards Carousel */}
-            <div className="flex gap-4 overflow-x-auto pb-6 scrollbar-none snap-x snap-mandatory">
-              {addonSlides.map((slide) => (
-                <div
-                  key={slide.number}
-                  className={`w-[88vw] max-w-sm shrink-0 snap-center rounded-3xl p-5 bg-gradient-to-br ${slide.bg} border-2 ${slide.cardBorder} shadow-lg flex flex-col justify-between`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between pb-3 border-b border-black/10 mb-3">
-                      <span className="w-8 h-8 rounded-xl bg-[#141110] text-[#ffd46e] flex items-center justify-center font-['Archivo'] font-black text-xs">
-                        {slide.number}
-                      </span>
-                      <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${slide.tagColor}`}>
-                        {slide.badge}
-                      </span>
-                    </div>
-
-                    <h3 className="font-['Playfair'] text-lg font-bold text-[#141110]">
-                      {slide.title}
-                    </h3>
-                    <p className="text-xs text-slate-700 font-medium mt-1 leading-relaxed">
-                      {slide.desc}
-                    </p>
-
-                    <div className="space-y-2 mt-3 pt-3 border-t border-black/10">
-                      {slide.items.map((item) => (
-                        <div key={item.title} className="flex items-center gap-2.5 p-2 rounded-xl bg-white/95 border border-orange-200">
-                          <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center p-1 shrink-0">
-                            <GrandAddonIcon name={item.iconKey} className="w-5 h-5" />
+                  {/* Right Column: Clean List of Items with Horizontal Dividers, Circular Icon Discs & Checkmarks */}
+                  <div className="md:col-span-7 flex flex-col justify-center divide-y divide-orange-200/40 border-t border-b border-orange-200/40 md:border-t-0 md:border-b-0">
+                    {slide.items.map((item) => (
+                      <div
+                        key={item.title}
+                        className="py-3.5 sm:py-4 flex items-center justify-between gap-3 group transition-colors"
+                      >
+                        <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                          {/* Circular icon disc (matching Image 1) */}
+                          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FAF3E4] group-hover:bg-orange-100 text-[#ef4a23] flex items-center justify-center p-1.5 shrink-0 transition-colors shadow-2xs border border-orange-200/60">
+                            <GrandAddonIcon name={item.iconKey} className="w-4 h-4 sm:w-5 sm:h-5 text-[#ef4a23]" />
                           </div>
-                          <div className="flex-1 min-w-0 text-left">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-[#141110] truncate">{item.title}</span>
-                              <span className="text-[10px] font-black text-[#ef4a23] shrink-0">{item.price}</span>
-                            </div>
+                          <div className="min-w-0">
+                            <h4 className="text-xs sm:text-sm font-semibold text-[#141110] truncate leading-tight group-hover:text-[#ef4a23]">
+                              {item.title}
+                            </h4>
+                            <p className="text-[10px] sm:text-xs text-slate-500 font-normal truncate mt-0.5">
+                              {item.desc}
+                            </p>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  <div className="mt-4 pt-3 border-t border-black/10 flex items-center justify-between">
-                    <span className="text-xs font-black text-[#141110]">{slide.price}</span>
-                    <Link
-                      href="/book-now"
-                      className="text-xs font-black text-[#ef4a23] flex items-center gap-1"
-                    >
-                      <span>Add</span>
-                      <span>&rarr;</span>
-                    </Link>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="text-xs sm:text-sm font-bold text-[#ef4a23]">
+                            {item.price}
+                          </span>
+                          <span className="w-5 h-5 rounded-full flex items-center justify-center text-emerald-500 group-hover:text-emerald-600 transition-colors">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
 
-            <div className="mt-6 text-center">
-              <Link
-                href="/book-now"
-                className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-[#141110] text-white font-['Archivo'] font-black text-xs uppercase tracking-wider shadow-lg"
-              >
-                <span>Add Extras in Online Booking</span>
-                <span>&rarr;</span>
-              </Link>
-            </div>
+          {/* Bottom Direct CTA */}
+          <div className="text-center mt-6">
+            <Link
+              href="/book-now"
+              className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#141110] hover:bg-[#ef4a23] text-white font-['Archivo'] font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:shadow-xl transition-all hover:scale-105"
+            >
+              <span>Build Complete Celebration in Booking Wizard</span>
+              <span className="text-base">&rarr;</span>
+            </Link>
           </div>
         </section>
 
@@ -1892,36 +2430,42 @@ export default function RefineTheatreLanding() {
 
           <div className="theatre-grid">
             {theatres.map((theatre, i) => (
-              <article className="theatre-card" key={theatre.name}>
+              <article className="theatre-card flex flex-col justify-between" key={theatre.name}>
                 <div className="theatre-image relative">
                   <Image 
                     src={theatre.image} 
                     alt={`${theatre.name} private cinema`} 
                     fill 
-                    className="object-cover" 
+                    loading="lazy"
+                    className="object-cover object-center" 
                     sizes="(max-width: 800px) 100vw, 33vw"
                   />
                   {i === 1 && <span className="popular">Most loved</span>}
-                  <span className="photo-count"><Icon name="camera" size={15} /> View photos</span>
                 </div>
 
-                <div className="theatre-copy">
-                  <div className="theatre-title">
-                    <div>
-                      <h3>{theatre.name}</h3>
-                      <p>{theatre.meta}</p>
-                    </div>
-                    <div className="price">
-                      <small>From</small>
-                      <strong>{theatre.dealPrice}</strong>
+                <div className="p-5 text-center flex flex-col items-center justify-between flex-1 space-y-3">
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight">{theatre.name}</h3>
+                    <p className="text-xs text-slate-500 font-bold mt-1">📍 Electronic City, Bengaluru</p>
+                  </div>
+
+                  {/* Red Ribbon Banner */}
+                  <div className="relative my-1 w-full flex justify-center items-center">
+                    <div className="relative z-10 bg-[#e51e25] text-white font-black text-sm py-1 px-8 rounded-xs shadow-md uppercase tracking-wider inline-block">
+                      Starts @ {theatre.dealPrice.replace('₹', '')}/-
                     </div>
                   </div>
 
-                  <p>{theatre.description}</p>
+                  <p className="text-xs text-slate-600 font-medium line-clamp-2 px-1">{theatre.description}</p>
                   
-                  <Link href={`/book-now/${theatre.branchSlug}?theatre=${theatre.theatreId}`} className="cursor-pointer">
-                    View room & slots <Icon name="arrow" size={17} />
-                  </Link>
+                  <div className="w-full pt-1">
+                    <Link 
+                      href={`/book-now/${theatre.branchSlug}?theatre=${theatre.theatreId}`} 
+                      className="w-full py-2.5 px-6 rounded-xl bg-[#ef4a23] hover:bg-[#d63b15] text-white font-black text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <span>Book Now →</span>
+                    </Link>
+                  </div>
                 </div>
               </article>
             ))}
@@ -2022,7 +2566,7 @@ export default function RefineTheatreLanding() {
             type="button"
             onClick={prevReview}
             aria-label="Previous review"
-            className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-sky-200 bg-white/90 hover:bg-[#237eea] hover:text-white hover:border-[#237eea] text-slate-700 shadow-md flex items-center justify-center transition-all cursor-pointer z-10 opacity-70 group-hover:opacity-100"
+            className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-[#ef4a23]/25 bg-white/95 hover:bg-[#ef4a23] hover:text-white hover:border-[#ef4a23] text-stone-700 shadow-md flex items-center justify-center transition-all cursor-pointer z-10 opacity-70 group-hover:opacity-100"
           >
             <span className="text-xl font-bold leading-none -mt-0.5">&lsaquo;</span>
           </button>
@@ -2031,7 +2575,7 @@ export default function RefineTheatreLanding() {
             type="button"
             onClick={nextReview}
             aria-label="Next review"
-            className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-sky-200 bg-white/90 hover:bg-[#237eea] hover:text-white hover:border-[#237eea] text-slate-700 shadow-md flex items-center justify-center transition-all cursor-pointer z-10 opacity-70 group-hover:opacity-100"
+            className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-[#ef4a23]/25 bg-white/95 hover:bg-[#ef4a23] hover:text-white hover:border-[#ef4a23] text-stone-700 shadow-md flex items-center justify-center transition-all cursor-pointer z-10 opacity-70 group-hover:opacity-100"
           >
             <span className="text-xl font-bold leading-none -mt-0.5">&rsaquo;</span>
           </button>
@@ -2044,13 +2588,13 @@ export default function RefineTheatreLanding() {
               </span>
             </div>
 
-            <blockquote key={reviewIndex} className="transition-all duration-500 min-h-[110px] flex items-center justify-center">
+            <blockquote key={reviewIndex} className="transition-all duration-500 min-h-[90px] flex items-center justify-center font-['Playfair_Display'] text-xs sm:text-[13px] md:text-sm font-medium italic text-stone-700 leading-relaxed max-w-2xl mx-auto px-4 text-center">
               &ldquo;{guestReviews[reviewIndex].quote}&rdquo;
             </blockquote>
 
             <p className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm">
               <strong className="text-ink font-bold">{guestReviews[reviewIndex].author}</strong>
-              <span className="w-4 h-0.5 bg-[#237eea] rounded-full inline-block" />
+              <span className="w-4 h-0.5 bg-[#ef4a23] rounded-full inline-block" />
               <span className="text-slate-600 font-medium">{guestReviews[reviewIndex].occasion}</span>
             </p>
 
@@ -2063,7 +2607,7 @@ export default function RefineTheatreLanding() {
                   onClick={() => setReviewIndex(i)}
                   aria-label={`Go to review ${i + 1}`}
                   className={`h-2 rounded-full transition-all cursor-pointer ${
-                    i === reviewIndex ? 'w-7 bg-[#237eea]' : 'w-2 bg-slate-300 hover:bg-slate-400'
+                    i === reviewIndex ? 'w-7 bg-[#ef4a23]' : 'w-2 bg-stone-300 hover:bg-stone-400'
                   }`}
                 />
               ))}
@@ -2187,18 +2731,18 @@ export default function RefineTheatreLanding() {
                     <input
                       type="date"
                       value={ctaDate}
-                      min={new Date().toISOString().split('T')[0]}
+                      min={getTodayIST()}
                       onChange={(e) => setCtaDate(e.target.value)}
                       className="w-full bg-[#FBF8F5] border border-slate-200 hover:border-[#FF5B35] focus:border-[#FF5B35] focus:ring-2 focus:ring-[#FF5B35]/20 rounded-2xl py-3.5 pl-11 pr-4 text-xs sm:text-sm font-bold text-slate-900 transition-all cursor-pointer"
                     />
                   </div>
                 </div>
 
-                {/* Submit Action Button */}
+                {/* Submit Action Button - Solid Luxury Black */}
                 <button
                   type="button"
                   onClick={handleCtaSubmit}
-                  className="w-full py-4 rounded-2xl bg-[#0A1F5C] hover:bg-[#06143c] text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                  className="w-full py-4 rounded-2xl bg-[#141110] hover:bg-black text-white font-black text-sm flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                 >
                   <span>Show me the slots</span>
                   <span className="text-base">&rarr;</span>

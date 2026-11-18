@@ -1,64 +1,45 @@
-import mysql from 'mysql2/promise';
+import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
-import crypto from 'crypto';
 import { initialMockStore, MockStore } from './mock-data';
 
-let pool: mysql.Pool | null = null;
-let isMySQLAvailable: boolean | null = null;
-
-export function getPool(): mysql.Pool | null {
-  if (pool) return pool;
-
-  try {
-    // 1. If DATABASE_URL is provided (e.g. Render, Railway, PlanetScale, Aiven)
-    if (process.env.DATABASE_URL) {
-      pool = mysql.createPool({
-        uri: process.env.DATABASE_URL,
-        waitForConnections: true,
-        connectionLimit: 10,
-        queueLimit: 0,
-        timezone: '+05:30',
-        dateStrings: true,
-        multipleStatements: true,
-        ssl: process.env.DB_SSL === 'true' || process.env.DATABASE_URL.includes('sslmode=') 
-          ? { rejectUnauthorized: false } 
-          : undefined
-      });
-      return pool;
-    }
-
-    // 2. Standard individual environment variables
-    pool = mysql.createPool({
-      host: process.env.DB_HOST || '127.0.0.1',
-      port: Number(process.env.DB_PORT) || 3306,
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'movie_bash',
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0,
-      timezone: '+05:30',
-      dateStrings: true,
-      multipleStatements: true,
-      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined
-    });
-    return pool;
-  } catch (err) {
-    console.warn('MySQL pool initialization failed, using in-memory store:', err);
-    return null;
-  }
+// Database Directory & Path
+const DATA_DIR = path.join(process.cwd(), 'data');
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-// Persistent Store Mechanism (saves to data/store.json so data persists across restarts)
-const DATA_DIR = path.join(process.cwd(), 'data');
+const DB_PATH = process.env.SQLITE_DB_PATH || path.join(DATA_DIR, 'movie_bash.db');
+
+// Singleton SQLite Database Instance
+const globalForDb = globalThis as unknown as { sqliteDb?: Database.Database };
+
+export function getDb(): Database.Database {
+  if (globalForDb.sqliteDb) {
+    return globalForDb.sqliteDb;
+  }
+
+  const db = new Database(DB_PATH);
+  // Ultra-performance PRAGMAs for sub-millisecond query responses & high concurrency
+  db.pragma('journal_mode = WAL');
+  db.pragma('synchronous = NORMAL');
+  db.pragma('foreign_keys = ON');
+  db.pragma('busy_timeout = 5000');
+  db.pragma('cache_size = -64000');
+  db.pragma('temp_store = MEMORY');
+  db.pragma('mmap_size = 268435456');
+
+  ensureSqliteSchemaAndSeed(db);
+
+  globalForDb.sqliteDb = db;
+  return db;
+}
+
+// Persistent Store Mechanism (data/store.json) for in-memory / JSON persistence & sync
 const STORE_FILE = path.join(DATA_DIR, 'store.json');
 
-function loadPersistentStore() {
+function loadPersistentStore(): MockStore {
   try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
     if (fs.existsSync(STORE_FILE)) {
       const content = fs.readFileSync(STORE_FILE, 'utf-8');
       const parsed = JSON.parse(content);
@@ -78,99 +59,293 @@ export function saveStore() {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
-    fs.writeFileSync(STORE_FILE, JSON.stringify(mockStore, null, 2), 'utf-8');
+    // Asynchronous non-blocking file write to prevent event loop lag
+    fs.writeFile(STORE_FILE, JSON.stringify(mockStore, null, 2), 'utf-8', (err) => {
+      if (err) console.error('Error saving persistent store asynchronously:', err);
+    });
   } catch (err) {
     console.error('Error saving persistent store:', err);
   }
 }
 
-// Check if MySQL is actually responding
-let hasAutoInitialized = false;
-
-async function ensureDatabaseSchemaAndSeed(p: mysql.Pool) {
-  if (hasAutoInitialized) return;
-  hasAutoInitialized = true;
-
+// Auto-initialize Schema & Seed on fresh database boot
+function ensureSqliteSchemaAndSeed(db: Database.Database) {
   try {
-    const conn = await p.getConnection();
-    try {
-      // 1. Check if the branches table exists
-      const [tables]: any = await conn.query("SHOW TABLES LIKE 'branches'");
-      const tableExists = Array.isArray(tables) && tables.length > 0;
+    const tableCheck = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='branches'").get();
+    if (!tableCheck) {
+      console.log('[Movie Bash DB] ⚡ Fresh SQLite database detected. Auto-creating schema tables...');
+      
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS branches (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          slug TEXT NOT NULL UNIQUE,
+          address TEXT NOT NULL,
+          phone TEXT NOT NULL,
+          map_url TEXT,
+          image_url TEXT,
+          is_active INTEGER NOT NULL DEFAULT 1,
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+          updated_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        );
 
-      if (!tableExists) {
-        console.log('[Movie Bash DB] ⚡ Fresh database detected. Auto-creating schema tables...');
-        
-        const schemaPath = path.join(process.cwd(), 'schema.sql');
-        const seedPath = path.join(process.cwd(), 'seed.sql');
+        CREATE TABLE IF NOT EXISTS theatres (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          branch_id INTEGER NOT NULL,
+          name TEXT NOT NULL,
+          slug TEXT NOT NULL,
+          emoji TEXT NOT NULL DEFAULT '🎬',
+          capacity INTEGER NOT NULL DEFAULT 6,
+          base_price REAL NOT NULL DEFAULT 899.00,
+          extra_person_price REAL NOT NULL DEFAULT 150.00,
+          amenities TEXT,
+          image_url TEXT,
+          is_active INTEGER NOT NULL DEFAULT 1,
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+          updated_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+          FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE
+        );
 
-        if (fs.existsSync(schemaPath)) {
-          let schemaSql = fs.readFileSync(schemaPath, 'utf8')
-            .replace(/CREATE DATABASE[^\n;]+;/gi, '')
-            .replace(/USE\s+[`\w]+;/gi, '');
-          await conn.query(schemaSql);
-          console.log('[Movie Bash DB] ✅ Schema tables successfully created.');
-        }
+        CREATE TABLE IF NOT EXISTS time_slots (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          theatre_id INTEGER NOT NULL,
+          start_time TEXT NOT NULL,
+          end_time TEXT NOT NULL,
+          crosses_midnight INTEGER NOT NULL DEFAULT 0,
+          price_override REAL,
+          weekend_price REAL,
+          is_active INTEGER NOT NULL DEFAULT 1,
+          sort_order INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+          updated_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+          FOREIGN KEY (theatre_id) REFERENCES theatres(id) ON DELETE CASCADE
+        );
 
-        if (fs.existsSync(seedPath)) {
-          let seedSql = fs.readFileSync(seedPath, 'utf8')
-            .replace(/CREATE DATABASE[^\n;]+;/gi, '')
-            .replace(/USE\s+[`\w]+;/gi, '');
-          await conn.query(seedSql);
-          console.log('[Movie Bash DB] ✅ Venue metadata, slots, occasions & add-ons seeded successfully.');
-        }
+        CREATE TABLE IF NOT EXISTS occasions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          slug TEXT NOT NULL UNIQUE,
+          icon TEXT,
+          description TEXT,
+          image_url TEXT,
+          is_active INTEGER NOT NULL DEFAULT 1,
+          sort_order INTEGER NOT NULL DEFAULT 0
+        );
 
-        console.log('[Movie Bash DB] 🚀 Fresh database ready for live bookings (0 fake bookings, 0 dummy customers)!');
-      } else {
-        // Tables exist. Check if metadata exists (e.g. branches count > 0)
-        const [rows]: any = await conn.query('SELECT COUNT(*) as count FROM `branches`');
-        const count = rows[0]?.count || 0;
-        if (count === 0) {
-          console.log('[Movie Bash DB] ⚡ Empty tables detected. Seeding venue metadata...');
-          const seedPath = path.join(process.cwd(), 'seed.sql');
-          if (fs.existsSync(seedPath)) {
-            let seedSql = fs.readFileSync(seedPath, 'utf8')
-              .replace(/CREATE DATABASE[^\n;]+;/gi, '')
-              .replace(/USE\s+[`\w]+;/gi, '');
-            await conn.query(seedSql);
-            console.log('[Movie Bash DB] ✅ Seeded initial venues into existing schema.');
-          }
-        }
-      }
-    } finally {
-      conn.release();
+        CREATE TABLE IF NOT EXISTS addons (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          category TEXT NOT NULL DEFAULT 'general',
+          name TEXT NOT NULL,
+          description TEXT,
+          price REAL NOT NULL DEFAULT 0.00,
+          image_url TEXT,
+          is_active INTEGER NOT NULL DEFAULT 1,
+          sort_order INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+          updated_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        );
+
+        CREATE TABLE IF NOT EXISTS customers (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          phone TEXT NOT NULL UNIQUE,
+          email TEXT,
+          total_bookings INTEGER NOT NULL DEFAULT 0,
+          lifetime_spend REAL NOT NULL DEFAULT 0.00,
+          is_blocked INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+          updated_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        );
+
+        CREATE TABLE IF NOT EXISTS bookings (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          booking_ref TEXT NOT NULL UNIQUE,
+          customer_id INTEGER,
+          branch_id INTEGER NOT NULL,
+          theatre_id INTEGER NOT NULL,
+          slot_id INTEGER NOT NULL,
+          booking_date TEXT NOT NULL,
+          customer_name TEXT NOT NULL,
+          customer_phone TEXT NOT NULL,
+          customer_email TEXT,
+          screen_name TEXT,
+          guests INTEGER NOT NULL DEFAULT 2,
+          occasion_id INTEGER,
+          package_type TEXT,
+          cake_flavor TEXT,
+          extra_hours INTEGER NOT NULL DEFAULT 0,
+          extra_guests INTEGER NOT NULL DEFAULT 0,
+          subtotal REAL NOT NULL DEFAULT 0.00,
+          addons_total REAL NOT NULL DEFAULT 0.00,
+          discount REAL NOT NULL DEFAULT 0.00,
+          total REAL NOT NULL DEFAULT 0.00,
+          advance_paid REAL NOT NULL DEFAULT 0.00,
+          balance REAL NOT NULL DEFAULT 0.00,
+          status TEXT NOT NULL DEFAULT 'confirmed',
+          payment_status TEXT NOT NULL DEFAULT 'unpaid',
+          source TEXT NOT NULL DEFAULT 'web',
+          notes TEXT,
+          cancelled_reason TEXT,
+          refund_amount REAL NOT NULL DEFAULT 0.00,
+          is_deleted INTEGER NOT NULL DEFAULT 0,
+          deleted_at TEXT,
+          deleted_by TEXT,
+          idempotency_key TEXT,
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+          updated_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+          FOREIGN KEY (branch_id) REFERENCES branches(id),
+          FOREIGN KEY (theatre_id) REFERENCES theatres(id),
+          FOREIGN KEY (slot_id) REFERENCES time_slots(id),
+          FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL,
+          FOREIGN KEY (occasion_id) REFERENCES occasions(id) ON DELETE SET NULL
+        );
+
+        CREATE UNIQUE INDEX IF NOT EXISTS uk_theatre_date_slot_active 
+          ON bookings (theatre_id, booking_date, slot_id) 
+          WHERE is_deleted = 0 AND status != 'cancelled';
+
+        CREATE INDEX IF NOT EXISTS idx_bookings_branch_date ON bookings (branch_id, booking_date);
+        CREATE INDEX IF NOT EXISTS idx_bookings_phone ON bookings (customer_phone);
+        CREATE INDEX IF NOT EXISTS idx_bookings_ref ON bookings (booking_ref);
+        CREATE INDEX IF NOT EXISTS idx_bookings_date ON bookings (booking_date);
+        CREATE INDEX IF NOT EXISTS idx_bookings_status_date ON bookings (status, booking_date);
+        CREATE INDEX IF NOT EXISTS idx_bookings_deleted_status ON bookings (is_deleted, status, booking_date);
+        CREATE INDEX IF NOT EXISTS idx_bookings_theatre_date ON bookings (theatre_id, booking_date);
+        CREATE INDEX IF NOT EXISTS idx_bookings_created ON bookings (created_at DESC);
+        CREATE INDEX IF NOT EXISTS idx_time_slots_theatre ON time_slots (theatre_id);
+        CREATE INDEX IF NOT EXISTS idx_time_slots_active ON time_slots (theatre_id, is_active);
+        CREATE INDEX IF NOT EXISTS idx_theatres_branch ON theatres (branch_id);
+        CREATE INDEX IF NOT EXISTS idx_theatres_active ON theatres (branch_id, is_active);
+        CREATE INDEX IF NOT EXISTS idx_booking_addons_booking ON booking_addons (booking_id);
+        CREATE INDEX IF NOT EXISTS idx_booking_addons_addon ON booking_addons (addon_id);
+        CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers (phone);
+        CREATE INDEX IF NOT EXISTS idx_coupons_code ON coupons (code);
+        CREATE INDEX IF NOT EXISTS idx_coupons_active ON coupons (is_active, code);
+        CREATE INDEX IF NOT EXISTS idx_admin_users_email ON admin_users (email);
+        CREATE INDEX IF NOT EXISTS idx_admin_users_role ON admin_users (role);
+
+        CREATE TABLE IF NOT EXISTS booking_addons (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          booking_id INTEGER NOT NULL,
+          addon_id INTEGER NOT NULL,
+          addon_name TEXT NOT NULL,
+          price REAL NOT NULL,
+          quantity INTEGER NOT NULL DEFAULT 1,
+          subtotal REAL NOT NULL,
+          FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+          FOREIGN KEY (addon_id) REFERENCES addons(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS coupons (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          code TEXT NOT NULL UNIQUE,
+          discount_type TEXT NOT NULL DEFAULT 'flat',
+          discount_value REAL NOT NULL DEFAULT 0.00,
+          min_booking_amount REAL NOT NULL DEFAULT 0.00,
+          valid_from TEXT,
+          valid_until TEXT,
+          usage_limit INTEGER NOT NULL DEFAULT 100,
+          used_count INTEGER NOT NULL DEFAULT 0,
+          branch_id INTEGER,
+          is_active INTEGER NOT NULL DEFAULT 1,
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        );
+
+        CREATE TABLE IF NOT EXISTS enquiries (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          phone TEXT NOT NULL,
+          email TEXT,
+          branch_name TEXT,
+          preferred_date TEXT,
+          guests INTEGER,
+          message TEXT NOT NULL,
+          status TEXT NOT NULL DEFAULT 'new',
+          admin_notes TEXT,
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+          updated_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        );
+
+        CREATE TABLE IF NOT EXISTS testimonials (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          author_name TEXT NOT NULL,
+          occasion TEXT,
+          rating REAL NOT NULL DEFAULT 5.0,
+          review_text TEXT NOT NULL,
+          avatar_url TEXT,
+          is_active INTEGER NOT NULL DEFAULT 1,
+          sort_order INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        );
+
+        CREATE TABLE IF NOT EXISTS faqs (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          question TEXT NOT NULL,
+          answer TEXT NOT NULL,
+          category TEXT NOT NULL DEFAULT 'general',
+          sort_order INTEGER NOT NULL DEFAULT 0,
+          is_active INTEGER NOT NULL DEFAULT 1,
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        );
+
+        CREATE TABLE IF NOT EXISTS site_settings (
+          key_name TEXT PRIMARY KEY,
+          value_content TEXT NOT NULL,
+          updated_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        );
+
+        CREATE TABLE IF NOT EXISTS admin_users (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          email TEXT NOT NULL UNIQUE,
+          password_hash TEXT NOT NULL,
+          role TEXT NOT NULL DEFAULT 'staff',
+          branch_id INTEGER,
+          is_active INTEGER NOT NULL DEFAULT 1,
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+          updated_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        );
+
+        CREATE TABLE IF NOT EXISTS audit_logs (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER,
+          user_email TEXT NOT NULL,
+          action TEXT NOT NULL,
+          entity TEXT NOT NULL,
+          entity_id TEXT,
+          details TEXT,
+          ip_address TEXT,
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        );
+
+        CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          email TEXT,
+          phone TEXT,
+          channel TEXT NOT NULL DEFAULT 'both',
+          created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        );
+      `);
+      console.log('[Movie Bash DB] ✅ SQLite schema created successfully.');
     }
-  } catch (initErr) {
-    console.warn('[Movie Bash DB] Auto-initialization notice:', initErr);
-  }
-}
-
-export async function checkMySQL(): Promise<boolean> {
-  if (isMySQLAvailable !== null) return isMySQLAvailable;
-  const p = getPool();
-  if (!p) {
-    isMySQLAvailable = false;
-    return false;
-  }
-  try {
-    const conn = await p.getConnection();
-    await conn.ping();
-    conn.release();
-    isMySQLAvailable = true;
-    
-    // Auto-initialize schema & venue metadata on fresh database boot
-    ensureDatabaseSchemaAndSeed(p).catch(err => {
-      console.warn('[Movie Bash DB] Background auto-init warning:', err);
-    });
-
-    return true;
   } catch (err) {
-    isMySQLAvailable = false;
+    console.error('[Movie Bash DB] SQLite schema check/creation error:', err);
+  }
+}
+
+// Check database availability (Always true for embedded SQLite)
+export async function checkDatabase(): Promise<boolean> {
+  try {
+    const db = getDb();
+    const result = db.prepare('SELECT 1 as live').get() as { live: number };
+    return result?.live === 1;
+  } catch (err) {
+    console.error('[Movie Bash DB] SQLite check failed:', err);
     return false;
   }
 }
 
-// Transaction support
+// Transaction connection interface for multi-table atomic operations
 export interface TransactionConnection {
   query: (sql: string, params?: any[]) => Promise<any>;
   commit: () => Promise<void>;
@@ -179,30 +354,53 @@ export interface TransactionConnection {
 }
 
 export async function beginTransaction(): Promise<TransactionConnection | null> {
-  const isAvailable = await checkMySQL();
-  if (!isAvailable || !pool) return null;
-  
-  const conn = await pool.getConnection();
-  await conn.beginTransaction();
-  
+  const db = getDb();
+  let inTransaction = false;
+
+  try {
+    db.exec('BEGIN IMMEDIATE');
+    inTransaction = true;
+  } catch (err) {
+    console.error('Failed to begin SQLite transaction:', err);
+    return null;
+  }
+
   return {
     query: async (sql: string, params: any[] = []) => {
-      const [rows] = await conn.query(sql, params);
-      return rows;
+      const trimmed = sql.trim().toLowerCase();
+      if (trimmed.startsWith('select') || trimmed.startsWith('pragma')) {
+        return db.prepare(sql).all(...params);
+      } else {
+        const info = db.prepare(sql).run(...params);
+        return {
+          affectedRows: info.changes,
+          insertId: info.lastInsertRowid,
+          changes: info.changes,
+          lastInsertRowid: info.lastInsertRowid
+        };
+      }
     },
     commit: async () => {
-      await conn.commit();
+      if (inTransaction) {
+        db.exec('COMMIT');
+        inTransaction = false;
+      }
     },
     rollback: async () => {
-      await conn.rollback();
+      if (inTransaction) {
+        try {
+          db.exec('ROLLBACK');
+        } catch {}
+        inTransaction = false;
+      }
     },
     release: () => {
-      conn.release();
+      // No pool connection to release in SQLite
     }
   };
 }
 
-// Advisory lock for distributed double-booking prevention (MySQL advisory lock with in-memory mutex fallback)
+// In-process atomic lock for booking contention
 const inMemoryLocks = new Map<string, number>();
 
 export async function acquireBookingLock(
@@ -212,19 +410,6 @@ export async function acquireBookingLock(
   timeoutSeconds: number = 10
 ): Promise<boolean> {
   const lockName = `booking_${theatreId}_${bookingDate}_${slotId}`;
-  const isAvailable = await checkMySQL();
-  
-  if (isAvailable && pool) {
-    try {
-      const [rows] = await pool.query('SELECT GET_LOCK(?, ?) as result', [lockName, timeoutSeconds]);
-      const result = (rows as any[])[0]?.result;
-      return result === 1;
-    } catch (err) {
-      console.error('Failed to acquire MySQL booking lock, falling back to in-memory lock:', err);
-    }
-  }
-
-  // Robust in-memory mutex lock
   const now = Date.now();
   const existingLock = inMemoryLocks.get(lockName);
   if (existingLock && (now - existingLock) < (timeoutSeconds * 1000)) {
@@ -241,30 +426,14 @@ export async function releaseBookingLock(
 ): Promise<void> {
   const lockName = `booking_${theatreId}_${bookingDate}_${slotId}`;
   inMemoryLocks.delete(lockName);
-
-  const isAvailable = await checkMySQL();
-  if (isAvailable && pool) {
-    try {
-      await pool.query('SELECT RELEASE_LOCK(?)', [lockName]);
-    } catch (err) {
-      console.error('Failed to release MySQL booking lock:', err);
-    }
-  }
 }
 
-// Generate clean, short, human-readable booking reference by branch and financial year
-// Electronic City: MBEC202601, MBEC202602...
-// BTM 2nd Stage:   MBBTM202601, MBBTM202602...
-// Financial Year Rollover: Automatically rolls over every year after March 31 (e.g. April 1, 2027 becomes 2027).
+// Generate sequential booking reference by branch and financial year (e.g., MBEC202601, MBBTM202601)
 export async function generateBookingRef(branchId: number | string = 1, bookingDate?: string): Promise<string> {
   const bId = String(branchId).toLowerCase();
   const isBtm = bId === '2' || bId.includes('btm');
   const prefix = isBtm ? 'MBBTM' : 'MBEC';
 
-  // Indian Financial Year: April 1 to March 31
-  // If month >= 4 (April-Dec), FY = calYear (e.g. Nov 2026 -> 2026).
-  // If month <= 3 (Jan-March 31), FY = calYear - 1 (e.g. Feb 2027 -> 2026).
-  // After March 31 (i.e. from April 1, 2027 onwards), FY rolls over to 2027!
   const targetDate = bookingDate ? new Date(bookingDate) : new Date();
   const calYear = isNaN(targetDate.getTime()) ? new Date().getFullYear() : targetDate.getFullYear();
   const calMonth = isNaN(targetDate.getTime()) ? (new Date().getMonth() + 1) : (targetDate.getMonth() + 1);
@@ -273,31 +442,24 @@ export async function generateBookingRef(branchId: number | string = 1, bookingD
   const prefixWithYear = `${prefix}${fyYear}`;
   let maxSeq = 0;
 
-  // 1. Check MySQL if available
-  if (pool) {
-    try {
-      const [rows]: any = await pool.query(
-        'SELECT `booking_ref` FROM `bookings` WHERE `booking_ref` LIKE ?',
-        [`${prefixWithYear}%`]
-      );
-      if (Array.isArray(rows)) {
-        for (const row of rows) {
-          const ref = String(row.booking_ref || '');
-          const match = ref.match(new RegExp(`^${prefixWithYear}(\\d+)`, 'i'));
-          if (match && match[1]) {
-            const num = parseInt(match[1], 10);
-            if (!isNaN(num) && num > maxSeq) {
-              maxSeq = num;
-            }
-          }
+  try {
+    const db = getDb();
+    const rows = db.prepare('SELECT booking_ref FROM bookings WHERE booking_ref LIKE ?').all(`${prefixWithYear}%`) as Array<{ booking_ref: string }>;
+    for (const row of rows) {
+      const ref = String(row.booking_ref || '');
+      const match = ref.match(new RegExp(`^${prefixWithYear}(\\d+)`, 'i'));
+      if (match && match[1]) {
+        const num = parseInt(match[1], 10);
+        if (!isNaN(num) && num > maxSeq) {
+          maxSeq = num;
         }
       }
-    } catch (err) {
-      console.warn('Could not query max booking reference from MySQL:', err);
     }
+  } catch (err) {
+    console.warn('Could not query max booking reference from SQLite:', err);
   }
 
-  // 2. Also check mockStore / local persistent store
+  // Also check local mockStore
   if (Array.isArray(mockStore.bookings)) {
     for (const b of mockStore.bookings) {
       const ref = String(b.booking_ref || '');
@@ -313,59 +475,75 @@ export async function generateBookingRef(branchId: number | string = 1, bookingD
 
   const nextSeq = maxSeq + 1;
   const paddedSeq = String(nextSeq).padStart(2, '0');
-  let candidate = `${prefixWithYear}${paddedSeq}`;
 
-  // Collision safety against active local store
+  // Unpredictable suffix: a sequential reference (MBEC202601) lets anyone enumerate
+  // every customer's pass by incrementing the number. The suffix makes the pass a
+  // bearer token that cannot be guessed while keeping the readable sequence.
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const makeSuffix = () => Array.from(
+    { length: 4 },
+    () => alphabet[Math.floor(Math.random() * alphabet.length)]
+  ).join('');
+
+  let candidate = `${prefixWithYear}${paddedSeq}-${makeSuffix()}`;
   let safetyCounter = nextSeq;
+
+  // Collision safety against SQLite and the local store
   while (mockStore.bookings.some(b => b.booking_ref === candidate)) {
     safetyCounter++;
-    candidate = `${prefixWithYear}${String(safetyCounter).padStart(2, '0')}`;
+    candidate = `${prefixWithYear}${String(safetyCounter).padStart(2, '0')}-${makeSuffix()}`;
   }
 
   return candidate;
 }
 
-// Atomic coupon usage increment
+// Atomic coupon usage increment in SQLite
 export async function incrementCouponUsage(couponId: number): Promise<boolean> {
-  const isAvailable = await checkMySQL();
-  if (!isAvailable || !pool) return false;
-  
   try {
-    const [result] = await pool.query(
-      'UPDATE `coupons` SET `used_count` = `used_count` + 1 WHERE `id` = ? AND `used_count` < `usage_limit`',
-      [couponId]
-    );
-    return (result as any).affectedRows > 0;
+    const db = getDb();
+    const info = db.prepare(
+      'UPDATE coupons SET used_count = used_count + 1 WHERE id = ? AND used_count < usage_limit'
+    ).run(couponId);
+    return info.changes > 0;
   } catch (err) {
     console.error('Failed to increment coupon usage:', err);
     return false;
   }
 }
 
+// Primary Universal Query Function
 export async function query<T = any>(sql: string, params: any[] = []): Promise<T> {
-  const isAvailable = await checkMySQL();
-  if (isAvailable && pool) {
-    try {
-      const [rows] = await pool.query(sql, params);
-      return rows as T;
-    } catch (error) {
-      console.error('MySQL query error, using mock fallback:', error);
-    }
-  }
+  try {
+    const db = getDb();
+    const trimmed = sql.trim().toLowerCase();
 
-  // Fallback query emulator for standard SELECT / INSERT / UPDATE / DELETE
-  return executeMockQuery(sql, params) as T;
+    if (trimmed.startsWith('select') || trimmed.startsWith('pragma')) {
+      const rows = db.prepare(sql).all(...params);
+      return rows as T;
+    } else {
+      const info = db.prepare(sql).run(...params);
+      const res: any = {
+        affectedRows: info.changes,
+        insertId: info.lastInsertRowid,
+        changes: info.changes,
+        lastInsertRowid: info.lastInsertRowid
+      };
+      return res as T;
+    }
+  } catch (error) {
+    console.error('SQLite query error, using mock fallback:', error);
+    return executeMockQuery(sql, params) as T;
+  }
 }
 
+// Fallback query emulator for in-memory store
 export function executeMockQuery(sql: string, params: any[] = []): any {
   const lower = sql.toLowerCase().trim();
 
-  // Handle Branches
   if (lower.includes('from branches') || lower.includes('from `branches`')) {
     return mockStore.branches.filter(b => b.is_active === 1);
   }
 
-  // Handle Theatres
   if (lower.includes('from theatres') || lower.includes('from `theatres`')) {
     if (params.length > 0) {
       const branchId = Number(params[0]);
@@ -374,7 +552,6 @@ export function executeMockQuery(sql: string, params: any[] = []): any {
     return mockStore.theatres.filter(t => t.is_active === 1);
   }
 
-  // Handle Time Slots
   if (lower.includes('from time_slots') || lower.includes('from `time_slots`')) {
     if (params.length > 0) {
       const theatreId = Number(params[0]);
@@ -383,27 +560,22 @@ export function executeMockQuery(sql: string, params: any[] = []): any {
     return mockStore.timeSlots.filter(s => s.is_active === 1);
   }
 
-  // Handle Occasions
   if (lower.includes('from occasions') || lower.includes('from `occasions`')) {
     return mockStore.occasions.filter(o => o.is_active === 1);
   }
 
-  // Handle Addons
   if (lower.includes('from addons') || lower.includes('from `addons`')) {
     return mockStore.addons.filter(a => a.is_active === 1);
   }
 
-  // Handle FAQs
   if (lower.includes('from faqs') || lower.includes('from `faqs`')) {
     return mockStore.faqs;
   }
 
-  // Handle Testimonials
   if (lower.includes('from testimonials') || lower.includes('from `testimonials`')) {
     return mockStore.testimonials;
   }
 
-  // Handle Site Settings
   if (lower.includes('from site_settings') || lower.includes('from `site_settings`')) {
     return Object.entries(mockStore.siteSettings).map(([key_name, value_content]) => ({
       key_name,
@@ -411,7 +583,6 @@ export function executeMockQuery(sql: string, params: any[] = []): any {
     }));
   }
 
-  // Handle Bookings SELECT
   if (lower.startsWith('select') && (lower.includes('from bookings') || lower.includes('from `bookings`'))) {
     if (lower.includes('booking_ref = ?') && params.length > 0) {
       return mockStore.bookings.filter(b => b.booking_ref === params[0] && b.is_deleted === 0);
@@ -419,13 +590,10 @@ export function executeMockQuery(sql: string, params: any[] = []): any {
     return mockStore.bookings.filter(b => b.is_deleted === 0);
   }
 
-  // Handle INSERT for bookings (mock)
   if (lower.startsWith('insert') && lower.includes('into bookings')) {
-    // This is handled in the API route directly for mock
-    return { insertId: mockStore.bookings.length + 1 };
+    return { insertId: mockStore.bookings.length + 1, affectedRows: 1 };
   }
 
-  // Handle UPDATE for coupons used_count
   if (lower.startsWith('update') && lower.includes('coupons') && lower.includes('used_count')) {
     const couponId = params[0];
     const coupon = mockStore.coupons.find(c => c.id === couponId);
@@ -437,6 +605,5 @@ export function executeMockQuery(sql: string, params: any[] = []): any {
     return { affectedRows: 0 };
   }
 
-  // Default empty result
   return [];
 }

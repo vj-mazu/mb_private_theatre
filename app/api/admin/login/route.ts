@@ -1,108 +1,142 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import { signAdminToken } from '@/lib/auth';
 import { mockStore, saveStore } from '@/lib/db';
+import { createRateLimiter } from '@/lib/rate-limiter';
 
-function ensureStaffUsers() {
+const loginRateLimiter = createRateLimiter({
+  windowMs: 300000, // 5 minutes
+  maxRequests: 8,
+  keyPrefix: 'admin-login',
+  message: 'Too many login attempts. Please wait 5 minutes and try again.'
+});
+
+function hash(value: string): string {
+  return bcrypt.hashSync(value, 10);
+}
+
+/**
+ * Converts any legacy plaintext password left in store.json into a bcrypt hash.
+ * Plaintext credentials must never be persisted or committed.
+ */
+function migratePlaintextPasswords(): boolean {
+  let changed = false;
+  for (const user of mockStore.adminUsers || []) {
+    const legacy = (user as any).password_plain;
+    if (legacy) {
+      if (!user.password_hash) user.password_hash = hash(String(legacy));
+      delete (user as any).password_plain;
+      changed = true;
+    }
+  }
+  return changed;
+}
+
+function ensureStaffUsers(): boolean {
   if (!mockStore.adminUsers) {
     mockStore.adminUsers = [];
   }
 
-  // 1. Super Admin
-  let admin = mockStore.adminUsers.find(u => u.email.toLowerCase() === 'admin@moviebash.in' || u.username === 'admin');
+  const isProduction = process.env.NODE_ENV === 'production';
+  let changed = false;
+
+  // 1. Super Admin — credentials come from the environment in production.
+  let admin = mockStore.adminUsers.find(u => u.id === 1 || u.role === 'super_admin');
   if (!admin) {
-    admin = {
-      id: 1,
-      name: 'Super Admin (Director)',
-      email: 'admin@moviebash.in',
-      username: 'admin',
-      password_plain: 'Admin@MovieBash2026!',
-      role: 'super_admin',
-      branch_id: null,
-      is_active: 1,
-      created_at: '2026-01-01'
-    };
-    mockStore.adminUsers.push(admin);
-  } else {
-    admin.username = 'admin';
-    if (!admin.password_plain) admin.password_plain = 'Admin@MovieBash2026!';
+    const email = process.env.ADMIN_EMAIL || 'admin@moviebash.in';
+    const password = process.env.ADMIN_PASSWORD || (isProduction ? '' : 'Admin@MovieBash2026!');
+
+    if (password) {
+      admin = {
+        id: 1,
+        name: 'Super Admin',
+        email,
+        username: 'admin',
+        password_hash: hash(password),
+        role: 'super_admin',
+        branch_id: null,
+        is_active: 1,
+        created_at: '2026-01-01'
+      } as any;
+      mockStore.adminUsers.push(admin as any);
+      changed = true;
+    } else {
+      console.error('[Movie Bash Auth] ADMIN_PASSWORD is not set; no default super admin was created.');
+    }
   }
 
-  // 2. Staff - Electronic City
-  let staffEc = mockStore.adminUsers.find(u => u.email.toLowerCase() === 'staff_ec@moviebash.in' || u.username === 'staff_ec');
-  if (!staffEc) {
-    mockStore.adminUsers.push({
-      id: 2,
-      name: 'Staff – Electronic City',
-      email: 'staff_ec@moviebash.in',
-      username: 'staff_ec',
-      password_plain: 'Staff@EC2026!',
-      role: 'staff',
-      branch_id: 1,
-      is_active: 1,
-      created_at: '2026-01-01'
-    });
+  // 2. Branch staff seeds exist for local development only. In production staff
+  //    accounts are created by the Super Admin through the security console.
+  if (!isProduction) {
+    const staffSeeds = [
+      { id: 2, name: 'Staff – Electronic City', email: 'staff_ec@moviebash.in', username: 'staff_ec', password: 'Staff@EC2026!', branch_id: 1 },
+      { id: 3, name: 'Staff – BTM 2nd Stage', email: 'staff_btm@moviebash.in', username: 'staff_btm', password: 'Staff@BTM2026!', branch_id: 2 }
+    ];
+
+    for (const seed of staffSeeds) {
+      const exists = mockStore.adminUsers.find(
+        u => u.id === seed.id || (u.role === 'staff' && u.branch_id === seed.branch_id)
+      );
+      if (!exists) {
+        mockStore.adminUsers.push({
+          id: seed.id,
+          name: seed.name,
+          email: seed.email,
+          username: seed.username,
+          password_hash: hash(seed.password),
+          role: 'staff',
+          branch_id: seed.branch_id,
+          is_active: 1,
+          created_at: '2026-01-01'
+        } as any);
+        changed = true;
+      }
+    }
   }
 
-  // 3. Staff - BTM 2nd Stage
-  let staffBtm = mockStore.adminUsers.find(u => u.email.toLowerCase() === 'staff_btm@moviebash.in' || u.username === 'staff_btm');
-  if (!staffBtm) {
-    mockStore.adminUsers.push({
-      id: 3,
-      name: 'Staff – BTM 2nd Stage',
-      email: 'staff_btm@moviebash.in',
-      username: 'staff_btm',
-      password_plain: 'Staff@BTM2026!',
-      role: 'staff',
-      branch_id: 2,
-      is_active: 1,
-      created_at: '2026-01-01'
-    });
-  }
-
-  saveStore();
+  return changed;
 }
 
 export async function POST(request: NextRequest) {
+  const rateLimitResponse = await loginRateLimiter(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
-    ensureStaffUsers();
+    const accountsChanged = ensureStaffUsers();
+    const migrated = migratePlaintextPasswords();
+    if (accountsChanged || migrated) saveStore();
 
     const { email, password } = await request.json();
     const inputIdentifier = String(email || '').trim().toLowerCase();
-    const inputPassword = String(password || '').trim();
+    const inputPassword = String(password || '');
+
+    if (!inputIdentifier || !inputPassword) {
+      return NextResponse.json({ success: false, error: 'Please enter both your ID and password.' }, { status: 400 });
+    }
 
     // Match by email or username
-    const user = mockStore.adminUsers.find(u => 
-      u.email.toLowerCase() === inputIdentifier || 
+    const user = mockStore.adminUsers.find(u =>
+      (u.email && u.email.toLowerCase() === inputIdentifier) ||
       (u.username && u.username.toLowerCase() === inputIdentifier)
     );
 
-    if (!user) {
-      return NextResponse.json({ success: false, error: 'User account not found' }, { status: 401 });
-    }
+    // Uniform response for unknown account and wrong password
+    const invalid = NextResponse.json({ success: false, error: 'Invalid username or password.' }, { status: 401 });
 
+    if (!user) return invalid;
     if (user.is_active === 0) {
       return NextResponse.json({ success: false, error: 'This account has been deactivated.' }, { status: 403 });
     }
+    if (!user.password_hash) return invalid;
 
-    // Verify Password
-    const isMatch = 
-      (user.password_plain && user.password_plain === inputPassword) ||
-      inputPassword === 'admin' ||
-      inputPassword === 'admin123' ||
-      inputPassword === '1234' ||
-      (user.role === 'super_admin' && inputPassword === 'Admin@MovieBash2026!') ||
-      (user.username === 'staff_ec' && (inputPassword === 'Staff@EC2026!' || inputPassword === 'staff123')) ||
-      (user.username === 'staff_btm' && (inputPassword === 'Staff@BTM2026!' || inputPassword === 'staff123'));
-
-    if (!isMatch) {
-      return NextResponse.json({ success: false, error: 'Invalid password. Please check your credentials.' }, { status: 401 });
-    }
+    const isMatch = bcrypt.compareSync(inputPassword, user.password_hash);
+    if (!isMatch) return invalid;
 
     const token = signAdminToken({
       id: user.id,
       email: user.email,
       name: user.name,
-      role: user.role,
+      role: user.role as any,
       branch_id: user.branch_id
     });
 
@@ -136,11 +170,12 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 7 * 24 * 60 * 60 // 7 days
+      maxAge: 8 * 60 * 60 // 8 hours (active staff/admin shift)
     });
 
     return response;
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error('[Movie Bash Auth] Login failed:', error);
+    return NextResponse.json({ success: false, error: 'Unable to sign in right now. Please try again.' }, { status: 500 });
   }
 }

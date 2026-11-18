@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import MovieBashLogo from './MovieBashLogo';
 import { 
   Film, 
   MapPin, 
@@ -79,13 +80,10 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
           
           {/* Col 1: Brand & Socials */}
           <div className="space-y-4">
-            <Link href="/" className="inline-flex items-center gap-2.5 group">
-              <div className="w-10 h-10 rounded-2xl bg-[#ef4a23] text-white flex items-center justify-center shadow-md">
-                <Film className="w-5 h-5 text-white" />
+            <Link href="/" className="inline-flex items-center gap-2 group">
+              <div className="h-12 w-auto max-w-[200px] flex items-center group-hover:scale-[1.03] transition-transform">
+                <MovieBashLogo dark className="h-full w-auto" />
               </div>
-              <span className="font-playfair text-2xl font-black text-white tracking-tight">
-                MOVIE<span className="text-[#ef4a23]">BASH</span>
-              </span>
             </Link>
 
             <p className="text-xs sm:text-sm text-[#faf3e4]/75 leading-relaxed">
@@ -112,7 +110,7 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
                 <Twitter className="w-4 h-4" />
               </a>
               <a
-                href="https://instagram.com/moviebash_privatetheatre"
+                href="https://www.instagram.com/moviebash_privatetheatre?bqrl=dHBiYjgwcXduNmo2"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#faf3e4]/80 hover:text-white hover:bg-[#ef4a23] transition-colors"
@@ -139,37 +137,37 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm">
               <li>
-                <Link href="/" prefetch={true} className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/about" prefetch={true} className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/about" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/gallery" prefetch={true} className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/gallery" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
                   Celebration Gallery
                 </Link>
               </li>
               <li>
-                <Link href="/blog" prefetch={true} className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/blog" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
                   Party &amp; Movie Blog
                 </Link>
               </li>
               <li>
-                <Link href="/testimonials" prefetch={true} className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/testimonials" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
                   Reviews &amp; Ratings
                 </Link>
               </li>
               <li>
-                <Link href="/faq" prefetch={true} className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/faq" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
                   FAQs
                 </Link>
               </li>
               <li>
-                <Link href="/contact" prefetch={true} className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/contact" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
                   Contact Us
                 </Link>
               </li>
@@ -275,16 +273,16 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6">
-            <Link href="/terms-and-conditions" prefetch={true} className="hover:text-white transition-colors">
+            <Link href="/terms-and-conditions" className="hover:text-white transition-colors">
               Terms &amp; Conditions
             </Link>
-            <Link href="/privacy-policy" prefetch={true} className="hover:text-white transition-colors">
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/refund-policy" prefetch={true} className="hover:text-white transition-colors">
+            <Link href="/refund-policy" className="hover:text-white transition-colors">
               Refund Policy
             </Link>
-            <Link href="/contact" prefetch={true} className="hover:text-white transition-colors">
+            <Link href="/contact" className="hover:text-white transition-colors">
               Help &amp; Support
             </Link>
           </div>

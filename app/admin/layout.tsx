@@ -34,13 +34,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         .then(data => {
           if (data.success) {
             setCurrentUser(data.data);
+            // Strict RBAC: Staff role is restricted exclusively to Bookings management
+            if (data.data?.role === 'staff' && pathname !== '/admin/bookings') {
+              router.push('/admin/bookings');
+            }
           } else {
             router.push('/admin/login');
           }
         })
         .catch(() => router.push('/admin/login'));
     }
-  }, [isLoginPage, router]);
+  }, [isLoginPage, pathname, router]);
 
   const handleLogout = async () => {
     await fetch('/api/admin/logout', { method: 'POST' });
@@ -51,7 +55,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return <>{children}</>;
   }
 
-  const navItems = [
+  const isStaff = currentUser?.role === 'staff';
+
+  const allNavItems = [
     { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { label: 'Bookings', href: '/admin/bookings', icon: CalendarCheck },
     { label: 'Deleted / Cancelled', href: '/admin/deleted', icon: Trash2 },
@@ -59,6 +65,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: 'CMS & Settings', href: '/admin/cms', icon: Layers },
     { label: 'Security & Staff', href: '/admin/security', icon: Shield },
   ];
+
+  // Staff members ONLY get access to Bookings. Revenue, Coupons, CMS & Security are completely hidden.
+  const navItems = isStaff 
+    ? [{ label: 'Bookings & Schedule', href: '/admin/bookings', icon: CalendarCheck }]
+    : allNavItems;
 
   return (
     <div className="min-h-screen flex bg-cream text-ink">
@@ -68,14 +79,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div>
           {/* Logo */}
           <div className="p-6 border-b border-sky-100 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#237eea] text-white flex items-center justify-center font-black shadow-md shadow-[#237eea]/25">
+            <div className="w-10 h-10 rounded-xl bg-[#ef4a23] text-white flex items-center justify-center font-black shadow-md shadow-[#ef4a23]/25">
               <Film className="w-5 h-5 text-sky-200" />
             </div>
             <div>
               <span className="font-playfair text-lg font-black tracking-tight block leading-none text-ink">
                 MOVIE<span className="text-[#f39a4b]">BASH</span>
               </span>
-              <span className="text-[10px] text-[#237eea] font-bold uppercase tracking-wider">
+              <span className="text-[10px] text-[#ef4a23] font-bold uppercase tracking-wider">
                 Admin Console
               </span>
             </div>
@@ -92,11 +103,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   href={item.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all ${
                     isActive
-                      ? 'bg-[#237eea] text-white shadow-md shadow-[#237eea]/20'
-                      : 'text-slate-600 hover:bg-[#d9ebff]/50 hover:text-[#155fbd]'
+                      ? 'bg-[#ef4a23] text-white shadow-md shadow-[#ef4a23]/20'
+                      : 'text-slate-600 hover:bg-[#fff0ea]/50 hover:text-[#141110]'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#237eea]'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#ef4a23]'}`} />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -107,16 +118,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Footer info & Logout */}
         <div className="p-4 border-t border-sky-100 space-y-3">
           <div className="px-3.5 py-2.5 rounded-2xl bg-[#fffaf0] border border-sky-100 text-xs shadow-xs">
-            <span className="text-[10px] text-[#237eea] uppercase font-black tracking-wider block">Signed in as</span>
+            <span className="text-[10px] text-[#ef4a23] uppercase font-black tracking-wider block">
+              {isStaff ? 'Branch Booking Terminal' : 'Signed in as'}
+            </span>
             <span className="font-bold text-ink block truncate">{currentUser?.name || 'Administrator'}</span>
-            <span className="text-[10px] text-slate-500 capitalize">{currentUser?.role?.replace('_', ' ')}</span>
+            <span className="text-[10px] text-slate-500 font-semibold block mt-0.5">
+              {isStaff 
+                ? (currentUser?.branch_id === 1 ? 'Electronic City Staff (Bookings Only)' : 'BTM 2nd Stage Staff (Bookings Only)')
+                : (currentUser?.role?.replace('_', ' ') || 'Super Admin')}
+            </span>
           </div>
 
           <div className="flex items-center justify-between pt-1">
             <Link
               href="/"
               target="_blank"
-              className="text-xs text-[#155fbd] hover:text-[#237eea] flex items-center gap-1 font-bold transition-colors"
+              className="text-xs text-[#141110] hover:text-[#ef4a23] flex items-center gap-1 font-bold transition-colors"
             >
               <span>View Site</span>
               <ExternalLink className="w-3 h-3" />
@@ -139,7 +156,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Top Mobile Bar */}
         <header className="lg:hidden bg-white text-ink p-4 flex items-center justify-between border-b border-sky-100 shadow-sm">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#237eea] text-white flex items-center justify-center font-black shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-[#ef4a23] text-white flex items-center justify-center font-black shadow-xs">
               <Film className="w-4 h-4 text-sky-200" />
             </div>
             <span className="font-playfair text-base font-black text-ink">
@@ -149,7 +166,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <button
             onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
-            className="p-2 rounded-xl bg-sky-50 text-[#155fbd] hover:bg-sky-100 transition-colors cursor-pointer"
+            className="p-2 rounded-xl bg-sky-50 text-[#141110] hover:bg-sky-100 transition-colors cursor-pointer"
           >
             {mobileDrawerOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -164,14 +181,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 href={item.href}
                 onClick={() => setMobileDrawerOpen(false)}
                 className={`block px-4 py-2.5 rounded-xl text-xs font-bold ${
-                  pathname === item.href ? 'bg-[#237eea] text-white' : 'text-slate-700 hover:bg-sky-50'
+                  pathname === item.href ? 'bg-[#ef4a23] text-white' : 'text-slate-700 hover:bg-sky-50'
                 }`}
               >
                 {item.label}
               </Link>
             ))}
             <div className="pt-3 border-t border-sky-100 flex justify-between">
-              <Link href="/" target="_blank" className="text-xs text-[#155fbd] font-bold">View Public Site</Link>
+              <Link href="/" target="_blank" className="text-xs text-[#141110] font-bold">View Public Site</Link>
               <button onClick={handleLogout} className="text-xs text-rose-600 font-bold">Logout</button>
             </div>
           </div>

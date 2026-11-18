@@ -8,6 +8,9 @@ import FinalCtaBanner from '@/components/FinalCtaBanner';
 export const metadata = {
   title: 'Frequently Asked Questions | Movie Bash Private Theatre',
   description: 'Everything you need to know about Movie Bash private screenings, rescheduling, food policy, decorations, and booking in Bengaluru.',
+  alternates: {
+    canonical: 'https://moviebash.in/faq',
+  },
 };
 
 export default function FaqPage() {
@@ -16,7 +19,7 @@ export default function FaqPage() {
       <AnnouncementBar />
       <Navbar />
 
-      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#f0f7ff] via-cream to-cream text-ink text-center relative overflow-hidden border-b border-sky-100">
+      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#fff8f5] via-cream to-cream text-ink text-center relative overflow-hidden border-b border-sky-100">
         <div className="hero-orb orb-one" />
         <div className="hero-orb orb-two" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-4 relative z-10">

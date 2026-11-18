@@ -2,19 +2,30 @@ import { NextRequest, NextResponse } from 'next/server';
 import { activeOtps } from '@/lib/otp-store';
 import { signCustomerToken } from '@/lib/auth';
 import { mockStore } from '@/lib/db';
+import { createRateLimiter } from '@/lib/rate-limiter';
+
+const verifyRateLimiter = createRateLimiter({
+  windowMs: 300000,
+  maxRequests: 10,
+  keyPrefix: 'otp-verify',
+  message: 'Too many verification attempts. Please wait 5 minutes.'
+});
 
 export async function POST(request: NextRequest) {
+  const rateLimitResponse = await verifyRateLimiter(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const { phone, otp } = await request.json();
     const cleanPhone = String(phone || '').replace(/\D/g, '');
     const cleanOtp = String(otp || '').trim();
 
-    // Verify OTP
+    // Verify against the issued code only. There is no universal bypass code.
     const stored = activeOtps.get(cleanPhone);
-    const isValid = (stored && stored.code === cleanOtp && stored.expiresAt > Date.now()) || cleanOtp === '123456';
+    const isValid = !!stored && stored.code === cleanOtp && stored.expiresAt > Date.now();
 
     if (!isValid) {
-      return NextResponse.json({ success: false, error: 'Invalid or expired OTP. Use 123456 in dev mode.' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Invalid or expired OTP. Please request a new code.' }, { status: 400 });
     }
 
     // Clear OTP

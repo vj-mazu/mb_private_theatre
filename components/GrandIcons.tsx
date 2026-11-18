@@ -590,7 +590,170 @@ export function GrandAddonIcon({ name, className = "w-8 h-8" }: { name: string; 
         </svg>
       );
 
+    case 'neon':
+      // Glowing Neon Name Sign & Script Lettering
+      return (
+        <svg viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          {/* Neon Sign Acrylic Backboard */}
+          <rect x="6" y="10" width="36" height="28" rx="6" fill="#141110" stroke="#332219" strokeWidth="1.5" />
+          {/* Glowing Neon Tubes "LOVE" / "BASH" */}
+          <path d="M12 20V28H18" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#neonGlow)" />
+          <circle cx="24" cy="24" r="4.5" stroke="#F59E0B" strokeWidth="2.5" filter="url(#neonGlow)" />
+          <path d="M30 20L33 28L36 20" stroke="#EC4899" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#neonGlow)" />
+          {/* Glow Sparkles */}
+          <circle cx="10" cy="14" r="1.5" fill="#FEF08A" />
+          <circle cx="38" cy="34" r="1.5" fill="#FEF08A" />
+        </svg>
+      );
+
+    case 'heart-arch':
+      // Floral Grand Heart Arch with Twinkle Fairy Lights
+      return (
+        <svg viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="archGrad" x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#F43F5E" />
+              <stop offset="0.6" stopColor="#E11D48" />
+              <stop offset="1" stopColor="#9F1239" />
+            </linearGradient>
+          </defs>
+          {/* Arch Stand Pedestals */}
+          <rect x="10" y="38" width="6" height="4" rx="1" fill="#D97706" />
+          <rect x="32" y="38" width="6" height="4" rx="1" fill="#D97706" />
+          {/* Giant Heart Arch Frame */}
+          <path d="M13 38V24C13 16 18 10 24 14C30 10 35 16 35 24V38" stroke="url(#archGrad)" strokeWidth="4.5" strokeLinecap="round" />
+          {/* Inner Light Outline */}
+          <path d="M15 38V25C15 18 19 13 24 16C29 13 33 18 33 25V38" stroke="#FFE4E6" strokeWidth="1.2" opacity="0.8" />
+          {/* Twinkle LED Fairy Bulbs */}
+          <circle cx="14" cy="28" r="1.5" fill="#FEF08A" />
+          <circle cx="16" cy="20" r="1.5" fill="#FEF08A" />
+          <circle cx="21" cy="14" r="1.5" fill="#FEF08A" />
+          <circle cx="24" cy="18" r="1.5" fill="#FEF08A" />
+          <circle cx="27" cy="14" r="1.5" fill="#FEF08A" />
+          <circle cx="32" cy="20" r="1.5" fill="#FEF08A" />
+          <circle cx="34" cy="28" r="1.5" fill="#FEF08A" />
+        </svg>
+      );
+
+    case 'montage':
+      // Cinematic 150" Memory Projection Screen with Film Clapper
+      return (
+        <svg viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="8" width="36" height="24" rx="3" fill="#1E293B" stroke="#64748B" strokeWidth="1.5" />
+          {/* Movie Projection Beam */}
+          <polygon points="12,12 36,12 30,26 18,26" fill="#FDE047" opacity="0.15" />
+          {/* Play Icon in Screen */}
+          <circle cx="24" cy="20" r="6" fill="#EF4444" />
+          <polygon points="22,17 28,20 22,23" fill="#FFFFFF" />
+          {/* Film Strip Holes */}
+          <rect x="8" y="10" width="2" height="2" fill="#FFFFFF" opacity="0.6" />
+          <rect x="8" y="15" width="2" height="2" fill="#FFFFFF" opacity="0.6" />
+          <rect x="8" y="20" width="2" height="2" fill="#FFFFFF" opacity="0.6" />
+          <rect x="38" y="10" width="2" height="2" fill="#FFFFFF" opacity="0.6" />
+          <rect x="38" y="15" width="2" height="2" fill="#FFFFFF" opacity="0.6" />
+          <rect x="38" y="20" width="2" height="2" fill="#FFFFFF" opacity="0.6" />
+          {/* Screen Stand */}
+          <line x1="24" y1="32" x2="24" y2="40" stroke="#475569" strokeWidth="2" strokeLinecap="round" />
+          <line x1="16" y1="40" x2="32" y2="40" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+      );
+
+    case 'photography':
+      // Pro DSLR Camera (same as dslr)
+      return (
+        <svg viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="14" width="32" height="24" rx="4" fill="#1E293B" stroke="#475569" strokeWidth="1.5" />
+          <path d="M16 14L18 10H30L32 14" fill="#334155" stroke="#475569" strokeWidth="1.5" />
+          <circle cx="24" cy="26" r="8" fill="#0F172A" stroke="#E2E8F0" strokeWidth="2" />
+          <circle cx="24" cy="26" r="5" fill="#2563EB" opacity="0.8" />
+          <circle cx="22" cy="24" r="1.5" fill="#FFFFFF" />
+          <circle cx="34" cy="18" r="1.5" fill="#EF4444" />
+          <path d="M6 10L9 6L11 9L8 11L6 10Z" fill="#F59E0B" />
+        </svg>
+      );
+
+    case 'popcorn':
+      // Classic Striped Cinema Popcorn Bucket
+      return (
+        <svg viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+          {/* Popcorn Bucket */}
+          <polygon points="12,20 15,42 33,42 36,20" fill="#DC2626" stroke="#991B1B" strokeWidth="1.5" />
+          {/* White Stripes */}
+          <polygon points="17,20 19,42 22,42 21,20" fill="#FFFFFF" />
+          <polygon points="27,20 26,42 29,42 31,20" fill="#FFFFFF" />
+          {/* Puffy Popped Golden Corn Pieces */}
+          <circle cx="16" cy="18" r="4.5" fill="#FBBF24" stroke="#D97706" strokeWidth="1" />
+          <circle cx="22" cy="15" r="5" fill="#FEF08A" stroke="#D97706" strokeWidth="1" />
+          <circle cx="28" cy="14" r="5.5" fill="#FBBF24" stroke="#D97706" strokeWidth="1" />
+          <circle cx="33" cy="17" r="4.5" fill="#FEF08A" stroke="#D97706" strokeWidth="1" />
+          <circle cx="20" cy="11" r="4" fill="#FDE047" />
+          <circle cx="26" cy="9" r="4" fill="#FEF08A" />
+        </svg>
+      );
+
+    case 'nachos':
+      // Crispy Mexican Cheese Nachos with Jalapeno & Dip
+      return (
+        <svg viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+          {/* Serving Platter / Bowl */}
+          <ellipse cx="24" cy="38" rx="18" ry="5" fill="#CBD5E1" stroke="#94A3B8" strokeWidth="1.2" />
+          {/* Crispy Tortilla Chips Triangles */}
+          <polygon points="14,35 22,18 28,34" fill="#F59E0B" stroke="#D97706" strokeWidth="1.2" />
+          <polygon points="22,35 30,15 36,32" fill="#FBBF24" stroke="#D97706" strokeWidth="1.2" />
+          <polygon points="10,34 16,22 23,32" fill="#FCD34D" stroke="#D97706" strokeWidth="1" />
+          {/* Melted Cheddar Drip */}
+          <path d="M18 28C21 31 24 29 27 32C29 33 32 30 33 34" stroke="#EA580C" strokeWidth="3" strokeLinecap="round" />
+          {/* Fresh Jalapeno Slice */}
+          <circle cx="26" cy="27" r="3" fill="#16A34A" stroke="#15803D" strokeWidth="0.8" />
+          <circle cx="26" cy="27" r="1.5" fill="#86EFAC" />
+        </svg>
+      );
+
+    case 'drinks':
+      // Chilled Sparkling Tropical Mocktail Cooler
+      return (
+        <svg viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="juiceGrad" x1="14" y1="18" x2="34" y2="42" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#F97316" />
+              <stop offset="0.6" stopColor="#EF4444" />
+              <stop offset="1" stopColor="#DC2626" />
+            </linearGradient>
+          </defs>
+          {/* Glass Base & Stem */}
+          <path d="M14 16H34L30 38C30 40 28 42 24 42C20 42 18 40 18 38L14 16Z" fill="url(#juiceGrad)" stroke="#E2E8F0" strokeWidth="1.5" />
+          {/* Bubbles */}
+          <circle cx="22" cy="28" r="1.5" fill="#FFFFFF" opacity="0.8" />
+          <circle cx="26" cy="33" r="1.2" fill="#FFFFFF" opacity="0.8" />
+          <circle cx="20" cy="35" r="1.2" fill="#FFFFFF" opacity="0.8" />
+          <circle cx="25" cy="22" r="1.8" fill="#FFFFFF" opacity="0.9" />
+          {/* Ice Cubes */}
+          <rect x="18" y="20" width="5" height="5" rx="1" fill="#FFFFFF" opacity="0.6" />
+          <rect x="24" y="24" width="5" height="5" rx="1" fill="#FFFFFF" opacity="0.6" />
+          {/* Lemon Wheel on Rim */}
+          <circle cx="33" cy="14" r="5" fill="#FACC15" stroke="#EAB308" strokeWidth="1" />
+          <circle cx="33" cy="14" r="3" fill="#FEF08A" />
+          {/* Straw */}
+          <path d="M26 24L32 6H36" stroke="#38BDF8" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+      );
+
     default:
-      return null;
+      // Fallback Sparkles Celebration Star (Never empty)
+      return (
+        <svg viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="18" fill="#FFF1E8" stroke="#ef4a23" strokeWidth="1.5" />
+          <path d="M24 12L26.5 20L34 24L26.5 28L24 36L21.5 28L14 24L21.5 20L24 12Z" fill="#ef4a23" />
+        </svg>
+      );
   }
 }

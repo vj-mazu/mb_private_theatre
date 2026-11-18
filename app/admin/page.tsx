@@ -58,7 +58,7 @@ export default function AdminDashboardPage() {
       {/* Header & Branch Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#237eea]">Operations Control</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-[#ef4a23]">Operations Control</span>
           <h1 className="font-playfair text-2xl sm:text-3xl font-black text-ink">
             Manager Dashboard
           </h1>
@@ -66,11 +66,11 @@ export default function AdminDashboardPage() {
 
         <div className="flex items-center gap-3">
           {/* Branch Filter Switcher */}
-          <div className="p-1 rounded-2xl bg-[#d9ebff]/60 border border-sky-200 flex text-xs font-bold">
+          <div className="p-1 rounded-2xl bg-[#fff0ea]/60 border border-sky-200 flex text-xs font-bold">
             <button
               onClick={() => setBranchFilter('all')}
               className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                branchFilter === 'all' ? 'bg-[#237eea] text-white shadow-sm' : 'text-slate-700 hover:text-[#155fbd]'
+                branchFilter === 'all' ? 'bg-[#ef4a23] text-white shadow-sm' : 'text-slate-700 hover:text-[#141110]'
               }`}
             >
               All Branches
@@ -78,7 +78,7 @@ export default function AdminDashboardPage() {
             <button
               onClick={() => setBranchFilter('1')}
               className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                branchFilter === '1' ? 'bg-[#237eea] text-white shadow-sm' : 'text-slate-700 hover:text-[#155fbd]'
+                branchFilter === '1' ? 'bg-[#ef4a23] text-white shadow-sm' : 'text-slate-700 hover:text-[#141110]'
               }`}
             >
               Electronic City
@@ -86,7 +86,7 @@ export default function AdminDashboardPage() {
             <button
               onClick={() => setBranchFilter('2')}
               className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                branchFilter === '2' ? 'bg-[#237eea] text-white shadow-sm' : 'text-slate-700 hover:text-[#155fbd]'
+                branchFilter === '2' ? 'bg-[#ef4a23] text-white shadow-sm' : 'text-slate-700 hover:text-[#141110]'
               }`}
             >
               BTM 2nd Stage
@@ -123,13 +123,13 @@ export default function AdminDashboardPage() {
         {/* Monthly Revenue */}
         <div className="p-5 rounded-3xl bg-white border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] hover:border-sky-300 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#237eea] block">Monthly Revenue</span>
-            <Calendar className="w-4 h-4 text-[#237eea]" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#ef4a23] block">Monthly Revenue</span>
+            <Calendar className="w-4 h-4 text-[#ef4a23]" />
           </div>
-          <div className="font-playfair text-2xl sm:text-3xl font-black text-[#155fbd] mt-1">
+          <div className="font-playfair text-2xl sm:text-3xl font-black text-[#141110] mt-1">
             ₹{(metrics.this_month_revenue || metrics.total_revenue).toLocaleString()}
           </div>
-          <span className="text-[11px] text-[#237eea] font-semibold mt-1 block">
+          <span className="text-[11px] text-[#ef4a23] font-semibold mt-1 block">
             {metrics.this_month_bookings || metrics.total_bookings} bookings this month
           </span>
         </div>
@@ -165,7 +165,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Financial Reports Quick Nav Banner */}
-      <div className="p-5 rounded-3xl bg-gradient-to-r from-[#155fbd] to-[#237eea] text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md border border-sky-200/30">
+      <div className="p-5 rounded-3xl bg-gradient-to-r from-[#ef4a23] to-[#ff5b35] text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md border border-sky-200/30">
         <div className="flex items-center gap-2.5">
           <TrendingUp className="w-5 h-5 text-sky-200 shrink-0" />
           <div>
@@ -175,7 +175,7 @@ export default function AdminDashboardPage() {
         </div>
         <Link
           href="/admin/reports"
-          className="px-4 py-2.5 rounded-full bg-white hover:bg-sky-50 text-[#155fbd] font-black text-xs shrink-0 transition-transform active:scale-95 flex items-center gap-1 shadow-sm cursor-pointer"
+          className="px-4 py-2.5 rounded-full bg-white hover:bg-sky-50 text-[#141110] font-black text-xs shrink-0 transition-transform active:scale-95 flex items-center gap-1 shadow-sm cursor-pointer"
         >
           <span>View Detailed Reports</span>
           <ArrowRight className="w-3.5 h-3.5" />
@@ -186,12 +186,12 @@ export default function AdminDashboardPage() {
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-[#237eea]" />
+            <Clock className="w-5 h-5 text-[#ef4a23]" />
             <h3 className="font-playfair text-xl font-bold text-ink">
               Today&apos;s Screening Schedule Timeline
             </h3>
           </div>
-          <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#f0f7ff] text-[#155fbd] border border-sky-200">
+          <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#fff8f5] text-[#141110] border border-sky-200">
             {new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
           </span>
         </div>
@@ -212,11 +212,16 @@ export default function AdminDashboardPage() {
                     <span>{item.emoji}</span>
                     <span>{item.theatre}</span>
                   </span>
-                  <span className="font-mono text-[10px] text-[#237eea] font-bold">{item.ref}</span>
+                  <span className="font-mono text-[10px] text-[#ef4a23] font-bold">{item.ref}</span>
                 </div>
 
-                <div className="font-bold text-sm text-[#237eea]">
-                  {item.slot}
+                <div className="font-bold text-sm text-[#ef4a23] flex items-center justify-between">
+                  <span>{item.slot}</span>
+                  {item.extra_hours > 0 && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#ef4a23] text-white font-black shadow-2xs">
+                      +{item.extra_hours} Hr Extra
+                    </span>
+                  )}
                 </div>
 
                 <div className="text-xs text-slate-700 flex items-center justify-between pt-1 border-t border-sky-100">
@@ -239,7 +244,7 @@ export default function AdminDashboardPage() {
         {/* Bookings per branch */}
         <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-4">
           <h3 className="font-playfair text-xl font-bold text-ink flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-[#237eea]" />
+            <MapPin className="w-5 h-5 text-[#ef4a23]" />
             <span>Branch Performance</span>
           </h3>
 
@@ -250,9 +255,9 @@ export default function AdminDashboardPage() {
                   <span>{b.name}</span>
                   <span>{b.count} Bookings &bull; ₹{b.revenue.toLocaleString()}</span>
                 </div>
-                <div className="w-full bg-[#d9ebff]/50 h-2.5 rounded-full overflow-hidden">
+                <div className="w-full bg-[#fff0ea]/50 h-2.5 rounded-full overflow-hidden">
                   <div
-                    className="bg-[#237eea] h-full rounded-full"
+                    className="bg-[#ef4a23] h-full rounded-full"
                     style={{ width: `${Math.min(100, (b.count / (metrics.total_bookings || 1)) * 100)}%` }}
                   />
                 </div>
@@ -264,7 +269,7 @@ export default function AdminDashboardPage() {
         {/* Bookings by Occasion */}
         <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-4">
           <h3 className="font-playfair text-xl font-bold text-ink flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-[#237eea]" />
+            <Sparkles className="w-5 h-5 text-[#ef4a23]" />
             <span>Occasion Distribution</span>
           </h3>
 
@@ -272,7 +277,7 @@ export default function AdminDashboardPage() {
             {occasion_distribution.map((o: any, idx: number) => (
               <div key={idx} className="p-3.5 rounded-2xl bg-[#fffdf9] border border-sky-100">
                 <span className="text-xs text-slate-500 font-medium block truncate">{o.name}</span>
-                <span className="font-playfair text-xl font-black text-[#237eea]">{o.count}</span>
+                <span className="font-playfair text-xl font-black text-[#ef4a23]">{o.count}</span>
               </div>
             ))}
           </div>

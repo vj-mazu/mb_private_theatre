@@ -2,7 +2,7 @@
   "branches": [
     {
       "id": 1,
-      "name": "Movie Bash – Electronic City",
+      "name": "Movie Bash \u2013 Electronic City",
       "slug": "electronic-city",
       "address": "MovieBash, 4th Floor, Srinivasam, Nagananthapura Main Road, Beside Sri Vishnu Grand, Electronic City Post, Bengaluru 560100",
       "phone": "+91 99029 23656",
@@ -12,9 +12,9 @@
     },
     {
       "id": 2,
-      "name": "Movie Bash – BTM 2nd Stage",
+      "name": "Movie Bash \u2013 BTM 2nd Stage",
       "slug": "btm-stage-2",
-      "address": "MovieBash, 2nd Floor, 16th Main Road, Near Udupi Garden Signal, BTM 2nd Stage, Bengaluru 560076 (Owner editable)",
+      "address": "MovieBash, 2nd Floor, 16th Main Road, Near Udupi Garden Signal, BTM 2nd Stage, Bengaluru 560076",
       "phone": "+91 99029 23656",
       "map_url": "https://maps.google.com/?q=BTM+2nd+Stage+Bengaluru",
       "image_url": "/images/celebration_1.webp",
@@ -27,20 +27,27 @@
       "branch_id": 1,
       "name": "Couple Theater",
       "slug": "couple-theater-ecity",
-      "emoji": "🎬",
+      "emoji": "\ud83c\udfac",
       "capacity": 2,
       "base_price": 899,
       "extra_person_price": 150,
       "amenities": "Ultra HD 4K Projection, Recliner Sofas, Dolby Atmos Sound, Private Climate Control, OTT Ready",
-      "image_url": "/images/couple_1.webp",
-      "is_active": 1
+      "image_url": "/images/rooms/room_1_1794980138988.webp",
+      "is_active": 1,
+      "images": [
+        "/images/rooms/room_1_1794980138988.webp"
+      ],
+      "standard_price": 1499,
+      "custom_price": 899,
+      "premium_price": 2800,
+      "extra_hour_rate": 400
     },
     {
       "id": 2,
       "branch_id": 1,
       "name": "Celebration Theater",
       "slug": "celebration-theater-ecity",
-      "emoji": "🎉",
+      "emoji": "\ud83c\udf89",
       "capacity": 6,
       "base_price": 1499,
       "extra_person_price": 150,
@@ -53,65 +60,98 @@
       "branch_id": 1,
       "name": "Family Theater",
       "slug": "family-theater-ecity",
-      "emoji": "👨‍👩‍👧‍👦",
+      "emoji": "\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67\u200d\ud83d\udc66",
       "capacity": 12,
       "base_price": 1699,
       "extra_person_price": 150,
       "amenities": "Giant 150-inch Screen, Multi-tier Luxury Seating, Karaoke Microphones, Cake Podium",
-      "image_url": "/images/ambience_5.webp",
+      "image_url": "/images/celebration_1.webp",
       "is_active": 1
     },
     {
       "id": 4,
       "branch_id": 2,
-      "name": "Couple Theater",
-      "slug": "couple-theater-btm",
-      "emoji": "🎬",
+      "name": "Butterfly Blush",
+      "slug": "butterfly-blush-btm",
+      "emoji": "\ud83e\udd8b",
       "capacity": 2,
       "base_price": 899,
       "extra_person_price": 150,
-      "amenities": "Ultra HD 4K Projection, Recliner Sofas, Dolby Atmos Sound, Romantic Lighting, OTT Apps Logged-in",
-      "image_url": "/images/couple_2.webp",
-      "is_active": 1
+      "amenities": "Signature Blush Glow, 4K Laser Projection, Dolby Atmos Surround, Luxury Recliner Loungers, Private Climate Control, OTT Ready",
+      "image_url": "/images/rooms/room_4_1795003127354.webp",
+      "video_url": "/videos/btm-butterfly-blush.mp4",
+      "images": [
+        "/images/rooms/room_4_1795003127354.webp"
+      ],
+      "is_active": 1,
+      "standard_price": 1499,
+      "custom_price": 899,
+      "premium_price": 2800,
+      "extra_hour_rate": 400
     },
     {
       "id": 5,
       "branch_id": 2,
-      "name": "Celebration Theater",
-      "slug": "celebration-theater-btm",
-      "emoji": "🎉",
+      "name": "Lavender Mist",
+      "slug": "lavender-mist-btm",
+      "emoji": "\ud83e\udebb",
       "capacity": 6,
       "base_price": 1499,
       "extra_person_price": 150,
-      "amenities": "135-inch Screen, JBL High Fidelity Audio, Party Strobe & Glow Lighting, Stage Backdrop",
-      "image_url": "/images/celebration_3.webp",
-      "is_active": 1
+      "amenities": "Aesthetic Lavender Hues, 135-inch Cinema Display, High-Fidelity Audio, Fog Entry Compatible, Ambient LED Setup",
+      "image_url": "/images/rooms/btm-lavender-mist.webp",
+      "video_url": "/videos/btm-lavender-mist.mp4",
+      "images": [
+        "/images/rooms/btm-lavender-mist.webp"
+      ],
+      "is_active": 1,
+      "standard_price": 2200,
+      "custom_price": 1499,
+      "premium_price": 3200,
+      "extra_hour_rate": 750
     },
     {
       "id": 6,
       "branch_id": 2,
-      "name": "Family Theater",
-      "slug": "family-theater-btm",
-      "emoji": "👨‍👩‍👧‍👦",
+      "name": "Scarlet Red",
+      "slug": "scarlet-red-btm",
+      "emoji": "\ud83c\udf39",
       "capacity": 12,
       "base_price": 1699,
       "extra_person_price": 150,
-      "amenities": "150-inch Curved Screen, Recliners + Loungers, Private Dining Table, Cake Podium",
-      "image_url": "/images/ambience_3.webp",
-      "is_active": 1
+      "amenities": "Passionate Scarlet Theme, 150-inch 4K Cinema Screen, Recliners + Loungers, Private Dining Table, Cake Cutting Stage",
+      "image_url": "/images/rooms/btm-scarlet-red.webp",
+      "video_url": "/videos/btm-scarlet-red.mp4",
+      "images": [
+        "/images/rooms/btm-scarlet-red.webp",
+        "/images/rooms/btm-scarlet-red-alt.webp"
+      ],
+      "is_active": 1,
+      "standard_price": 2600,
+      "custom_price": 1699,
+      "premium_price": 3800,
+      "extra_hour_rate": 750
     },
     {
       "id": 7,
       "branch_id": 2,
-      "name": "VIP Celebration Suite",
-      "slug": "vip-celebration-suite-btm",
-      "emoji": "✨",
+      "name": "Shadow Suit",
+      "slug": "shadow-suit-btm",
+      "emoji": "\ud83c\udfac",
       "capacity": 8,
       "base_price": 1599,
       "extra_person_price": 150,
-      "amenities": "140-inch Laser 4K Screen, Luxury Recliner Suite, Dolby Audio, Private Party Dining, Fog Entry Ready",
-      "image_url": "/images/celebration_6.webp",
-      "is_active": 1
+      "amenities": "Stealth Cinema Suite, Deep Contrast Acoustic Walls, 140-inch Laser 4K Screen, Recliner Suite, Dolby Audio",
+      "image_url": "/images/rooms/btm-shadow-suit.webp",
+      "video_url": "/images/rooms/btm-shadow-suit-preview.webp",
+      "images": [
+        "/images/rooms/btm-shadow-suit.webp",
+        "/images/rooms/room_7_1795000596195.webp"
+      ],
+      "is_active": 1,
+      "custom_price": 1599,
+      "premium_price": 3500,
+      "extra_hour_rate": 750
     }
   ],
   "timeSlots": [
@@ -307,132 +347,6 @@
     {
       "id": 22,
       "theatre_id": 4,
-      "start_time": "12:15 PM",
-      "end_time": "02:15 PM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 2
-    },
-    {
-      "id": 23,
-      "theatre_id": 4,
-      "start_time": "02:30 PM",
-      "end_time": "04:30 PM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 3
-    },
-    {
-      "id": 24,
-      "theatre_id": 4,
-      "start_time": "05:00 PM",
-      "end_time": "06:00 PM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 4
-    },
-    {
-      "id": 25,
-      "theatre_id": 4,
-      "start_time": "06:30 PM",
-      "end_time": "08:30 PM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 5
-    },
-    {
-      "id": 26,
-      "theatre_id": 4,
-      "start_time": "08:45 PM",
-      "end_time": "10:45 PM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 6
-    },
-    {
-      "id": 27,
-      "theatre_id": 4,
-      "start_time": "11:00 PM",
-      "end_time": "01:00 AM",
-      "crosses_midnight": 1,
-      "is_active": 1,
-      "sort_order": 7
-    },
-    {
-      "id": 28,
-      "theatre_id": 5,
-      "start_time": "09:30 AM",
-      "end_time": "11:30 AM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 1
-    },
-    {
-      "id": 29,
-      "theatre_id": 5,
-      "start_time": "12:00 PM",
-      "end_time": "02:00 PM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 2
-    },
-    {
-      "id": 30,
-      "theatre_id": 5,
-      "start_time": "02:30 PM",
-      "end_time": "04:30 PM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 3
-    },
-    {
-      "id": 31,
-      "theatre_id": 5,
-      "start_time": "04:45 PM",
-      "end_time": "06:45 PM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 4
-    },
-    {
-      "id": 32,
-      "theatre_id": 5,
-      "start_time": "07:00 PM",
-      "end_time": "09:00 PM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 5
-    },
-    {
-      "id": 33,
-      "theatre_id": 5,
-      "start_time": "09:15 PM",
-      "end_time": "11:15 PM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 6
-    },
-    {
-      "id": 34,
-      "theatre_id": 5,
-      "start_time": "11:30 PM",
-      "end_time": "01:00 AM",
-      "crosses_midnight": 1,
-      "is_active": 1,
-      "sort_order": 7
-    },
-    {
-      "id": 35,
-      "theatre_id": 6,
-      "start_time": "10:00 AM",
-      "end_time": "12:00 PM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 1
-    },
-    {
-      "id": 36,
-      "theatre_id": 6,
       "start_time": "12:30 PM",
       "end_time": "02:30 PM",
       "crosses_midnight": 0,
@@ -440,8 +354,8 @@
       "sort_order": 2
     },
     {
-      "id": 37,
-      "theatre_id": 6,
+      "id": 23,
+      "theatre_id": 4,
       "start_time": "03:00 PM",
       "end_time": "05:00 PM",
       "crosses_midnight": 0,
@@ -449,7 +363,115 @@
       "sort_order": 3
     },
     {
-      "id": 38,
+      "id": 24,
+      "theatre_id": 4,
+      "start_time": "05:30 PM",
+      "end_time": "07:30 PM",
+      "crosses_midnight": 0,
+      "is_active": 1,
+      "sort_order": 4
+    },
+    {
+      "id": 25,
+      "theatre_id": 4,
+      "start_time": "08:00 PM",
+      "end_time": "10:00 PM",
+      "crosses_midnight": 0,
+      "is_active": 1,
+      "sort_order": 5
+    },
+    {
+      "id": 26,
+      "theatre_id": 4,
+      "start_time": "11:00 PM",
+      "end_time": "01:00 AM",
+      "crosses_midnight": 1,
+      "is_active": 1,
+      "sort_order": 6
+    },
+    {
+      "id": 27,
+      "theatre_id": 5,
+      "start_time": "10:30 AM",
+      "end_time": "12:30 PM",
+      "crosses_midnight": 0,
+      "is_active": 1,
+      "sort_order": 1
+    },
+    {
+      "id": 28,
+      "theatre_id": 5,
+      "start_time": "01:00 PM",
+      "end_time": "03:00 PM",
+      "crosses_midnight": 0,
+      "is_active": 1,
+      "sort_order": 2
+    },
+    {
+      "id": 29,
+      "theatre_id": 5,
+      "start_time": "03:30 PM",
+      "end_time": "05:30 PM",
+      "crosses_midnight": 0,
+      "is_active": 1,
+      "sort_order": 3
+    },
+    {
+      "id": 30,
+      "theatre_id": 5,
+      "start_time": "06:00 PM",
+      "end_time": "08:00 PM",
+      "crosses_midnight": 0,
+      "is_active": 1,
+      "sort_order": 4
+    },
+    {
+      "id": 31,
+      "theatre_id": 5,
+      "start_time": "08:30 PM",
+      "end_time": "10:30 PM",
+      "crosses_midnight": 0,
+      "is_active": 1,
+      "sort_order": 5
+    },
+    {
+      "id": 32,
+      "theatre_id": 5,
+      "start_time": "11:00 PM",
+      "end_time": "01:00 AM",
+      "crosses_midnight": 1,
+      "is_active": 1,
+      "sort_order": 6
+    },
+    {
+      "id": 33,
+      "theatre_id": 6,
+      "start_time": "10:30 AM",
+      "end_time": "12:30 PM",
+      "crosses_midnight": 0,
+      "is_active": 1,
+      "sort_order": 1
+    },
+    {
+      "id": 34,
+      "theatre_id": 6,
+      "start_time": "01:00 PM",
+      "end_time": "03:00 PM",
+      "crosses_midnight": 0,
+      "is_active": 1,
+      "sort_order": 2
+    },
+    {
+      "id": 35,
+      "theatre_id": 6,
+      "start_time": "03:30 PM",
+      "end_time": "05:30 PM",
+      "crosses_midnight": 0,
+      "is_active": 1,
+      "sort_order": 3
+    },
+    {
+      "id": 36,
       "theatre_id": 6,
       "start_time": "06:00 PM",
       "end_time": "08:00 PM",
@@ -458,7 +480,7 @@
       "sort_order": 4
     },
     {
-      "id": 39,
+      "id": 37,
       "theatre_id": 6,
       "start_time": "08:30 PM",
       "end_time": "10:30 PM",
@@ -467,16 +489,16 @@
       "sort_order": 5
     },
     {
-      "id": 40,
+      "id": 38,
       "theatre_id": 6,
-      "start_time": "10:45 PM",
-      "end_time": "12:45 AM",
+      "start_time": "11:00 PM",
+      "end_time": "01:00 AM",
       "crosses_midnight": 1,
       "is_active": 1,
       "sort_order": 6
     },
     {
-      "id": 41,
+      "id": 39,
       "theatre_id": 7,
       "start_time": "10:00 AM",
       "end_time": "12:00 PM",
@@ -485,58 +507,49 @@
       "sort_order": 1
     },
     {
-      "id": 42,
+      "id": 40,
       "theatre_id": 7,
-      "start_time": "12:15 PM",
-      "end_time": "02:15 PM",
+      "start_time": "12:30 PM",
+      "end_time": "02:30 PM",
       "crosses_midnight": 0,
       "is_active": 1,
       "sort_order": 2
     },
     {
-      "id": 43,
+      "id": 41,
       "theatre_id": 7,
-      "start_time": "02:30 PM",
-      "end_time": "04:30 PM",
+      "start_time": "03:00 PM",
+      "end_time": "05:00 PM",
       "crosses_midnight": 0,
       "is_active": 1,
       "sort_order": 3
     },
     {
-      "id": 44,
+      "id": 42,
       "theatre_id": 7,
-      "start_time": "04:45 PM",
-      "end_time": "06:45 PM",
+      "start_time": "05:30 PM",
+      "end_time": "07:30 PM",
       "crosses_midnight": 0,
       "is_active": 1,
       "sort_order": 4
     },
     {
-      "id": 45,
+      "id": 43,
       "theatre_id": 7,
-      "start_time": "07:00 PM",
-      "end_time": "09:00 PM",
+      "start_time": "08:00 PM",
+      "end_time": "10:00 PM",
       "crosses_midnight": 0,
       "is_active": 1,
       "sort_order": 5
     },
     {
-      "id": 46,
+      "id": 44,
       "theatre_id": 7,
-      "start_time": "09:15 PM",
-      "end_time": "11:15 PM",
-      "crosses_midnight": 0,
-      "is_active": 1,
-      "sort_order": 6
-    },
-    {
-      "id": 47,
-      "theatre_id": 7,
-      "start_time": "11:30 PM",
+      "start_time": "11:00 PM",
       "end_time": "01:00 AM",
       "crosses_midnight": 1,
       "is_active": 1,
-      "sort_order": 7
+      "sort_order": 6
     }
   ],
   "occasions": [
@@ -586,7 +599,7 @@
       "slug": "farewell",
       "icon": "Award",
       "description": "Bid farewell to friends with cherished moments on screen.",
-      "image_url": "/images/ambience_4.webp",
+      "image_url": "/images/celebration_4.webp",
       "is_active": 1,
       "sort_order": 5
     },
@@ -712,8 +725,413 @@
       "is_active": 1
     }
   ],
-  "bookings": [],
-  "customers": [],
+  "bookings": [
+    {
+      "id": 8,
+      "booking_ref": "MBBTM202603-FX2X",
+      "branch_id": 2,
+      "theatre_id": 7,
+      "slot_id": 40,
+      "slot_time": "12:30 PM \u2013 02:30 PM (2 Hours)",
+      "booking_date": "2026-11-18",
+      "customer_name": "girish",
+      "customer_phone": "9584584485",
+      "customer_email": "",
+      "screen_name": "",
+      "guests": 2,
+      "occasion_id": 1,
+      "package_type": "standard",
+      "cake_flavor": "Fresh Pineapple",
+      "extra_hours": 0,
+      "extra_guests": 0,
+      "subtotal": 2400,
+      "addons_total": 0,
+      "discount": 300,
+      "total": 2100,
+      "advance_paid": 500,
+      "balance": 1600,
+      "status": "confirmed",
+      "payment_status": "advance_pending_screenshot",
+      "source": "web",
+      "notes": "",
+      "cancelled_reason": "",
+      "refund_amount": 0,
+      "is_deleted": 0,
+      "created_at": "2026-11-18T11:26:27.077Z",
+      "addons": [],
+      "idempotency_key": null
+    },
+    {
+      "id": 7,
+      "booking_ref": "MBBTM202602-ZM5V",
+      "branch_id": 2,
+      "theatre_id": 5,
+      "slot_id": 28,
+      "slot_time": "01:00 PM \u2013 03:00 PM (2 Hours)",
+      "booking_date": "2026-11-18",
+      "customer_name": "gill",
+      "customer_phone": "9545844554",
+      "customer_email": "",
+      "screen_name": "",
+      "guests": 2,
+      "occasion_id": 1,
+      "package_type": "standard",
+      "cake_flavor": "Fresh Pineapple",
+      "extra_hours": 0,
+      "extra_guests": 0,
+      "subtotal": 2200,
+      "addons_total": 0,
+      "discount": 300,
+      "total": 1900,
+      "advance_paid": 500,
+      "balance": 1400,
+      "status": "confirmed",
+      "payment_status": "advance_pending_screenshot",
+      "source": "web",
+      "notes": "",
+      "cancelled_reason": "",
+      "refund_amount": 0,
+      "is_deleted": 0,
+      "created_at": "2026-11-18T09:08:01.742Z",
+      "addons": [],
+      "idempotency_key": null
+    },
+    {
+      "id": 6,
+      "booking_ref": "MBEC202605-7XQD",
+      "branch_id": 1,
+      "theatre_id": 2,
+      "slot_id": 9,
+      "slot_time": "12:00 PM \u2013 02:00 PM (2 Hours)",
+      "booking_date": "2026-11-18",
+      "customer_name": "Soma Narasimha",
+      "customer_phone": "9448986953",
+      "customer_email": "somanarasimha1234@gmail.com",
+      "screen_name": "",
+      "guests": 6,
+      "occasion_id": 1,
+      "package_type": "premium",
+      "cake_flavor": "Vanilla Strawberry",
+      "extra_hours": 0,
+      "extra_guests": 0,
+      "subtotal": 3500,
+      "addons_total": 499,
+      "discount": 300,
+      "total": 3699,
+      "advance_paid": 500,
+      "balance": 3199,
+      "status": "confirmed",
+      "payment_status": "advance_pending_screenshot",
+      "source": "web",
+      "notes": "",
+      "cancelled_reason": "",
+      "refund_amount": 0,
+      "is_deleted": 0,
+      "created_at": "2026-11-18T08:52:49.022Z",
+      "addons": [
+        {
+          "id": 1794991969020.3848,
+          "addon_id": 9,
+          "addon_name": "Romantic Rose Petal & Candle Aisle",
+          "price": 499,
+          "quantity": 1,
+          "subtotal": 499
+        }
+      ],
+      "idempotency_key": null
+    },
+    {
+      "id": 5,
+      "booking_ref": "MBEC202604-MTPN",
+      "branch_id": 1,
+      "theatre_id": 3,
+      "slot_id": 16,
+      "slot_time": "12:30 PM \u2013 02:30 PM (2 Hours)",
+      "booking_date": "2026-11-18",
+      "customer_name": "vderesh",
+      "customer_phone": "9487447454",
+      "customer_email": "",
+      "screen_name": "",
+      "guests": 6,
+      "occasion_id": 1,
+      "package_type": "premium",
+      "cake_flavor": "Classic Black Forest",
+      "extra_hours": 0,
+      "extra_guests": 0,
+      "subtotal": 3500,
+      "addons_total": 499,
+      "discount": 300,
+      "total": 3699,
+      "advance_paid": 500,
+      "balance": 3199,
+      "status": "confirmed",
+      "payment_status": "advance_pending_screenshot",
+      "source": "web",
+      "notes": "",
+      "cancelled_reason": "",
+      "refund_amount": 0,
+      "is_deleted": 0,
+      "created_at": "2026-11-18T07:55:42.107Z",
+      "addons": [
+        {
+          "id": 1794988542101.9507,
+          "addon_id": 3,
+          "addon_name": "Magical Fog Entry",
+          "price": 499,
+          "quantity": 1,
+          "subtotal": 499
+        }
+      ],
+      "idempotency_key": null
+    },
+    {
+      "id": 4,
+      "booking_ref": "MBEC202603",
+      "branch_id": 1,
+      "theatre_id": 3,
+      "slot_id": 15,
+      "slot_time": "10:00 AM \u2013 12:00 PM (2 Hours)",
+      "booking_date": "2026-11-18",
+      "customer_name": "gagan",
+      "customer_phone": "9148250234",
+      "customer_email": "",
+      "screen_name": "",
+      "guests": 6,
+      "occasion_id": 1,
+      "package_type": "standard",
+      "cake_flavor": "Red Velvet Heart",
+      "extra_hours": 0,
+      "extra_guests": 0,
+      "subtotal": 2200,
+      "addons_total": 0,
+      "discount": 300,
+      "total": 1900,
+      "advance_paid": 500,
+      "balance": 1400,
+      "status": "confirmed",
+      "payment_status": "advance_pending_screenshot",
+      "source": "web",
+      "notes": "",
+      "cancelled_reason": "",
+      "refund_amount": 0,
+      "is_deleted": 0,
+      "created_at": "2026-11-18T06:59:47.118Z",
+      "addons": [],
+      "idempotency_key": null
+    },
+    {
+      "id": 3,
+      "booking_ref": "MBBTM202601",
+      "branch_id": 2,
+      "theatre_id": 4,
+      "slot_id": 21,
+      "slot_time": "10:00 AM \u2013 01:00 PM (3 Hours \u00b7 +1 Hr Extra)",
+      "booking_date": "2026-11-18",
+      "customer_name": "Narasimha",
+      "customer_phone": "6361000941",
+      "customer_email": "",
+      "screen_name": "",
+      "guests": 2,
+      "occasion_id": 6,
+      "cake_flavor": "Classic Black Forest",
+      "extra_hours": 1,
+      "extra_guests": 0,
+      "subtotal": 1299,
+      "addons_total": 499,
+      "discount": 300,
+      "total": 1498,
+      "advance_paid": 0,
+      "balance": 1498,
+      "status": "confirmed",
+      "payment_status": "unpaid",
+      "source": "web",
+      "notes": "",
+      "cancelled_reason": "",
+      "refund_amount": 0,
+      "is_deleted": 0,
+      "created_at": "2026-11-18T05:33:39.458Z",
+      "addons": [
+        {
+          "id": 1794980019455.6167,
+          "addon_id": 9,
+          "addon_name": "Romantic Rose Petal & Candle Aisle",
+          "price": 499,
+          "quantity": 1,
+          "subtotal": 499
+        }
+      ],
+      "idempotency_key": null
+    },
+    {
+      "id": 2,
+      "booking_ref": "MBEC202602",
+      "branch_id": 1,
+      "theatre_id": 3,
+      "slot_id": 16,
+      "slot_time": "12:30 PM \u2013 03:30 PM (3 Hours \u00b7 +1 Hr Extra)",
+      "booking_date": "2026-11-17",
+      "customer_name": "manjunath",
+      "customer_phone": "9448986953",
+      "customer_email": "",
+      "screen_name": "manjunath | LED: 01",
+      "guests": 6,
+      "occasion_id": 6,
+      "package_type": "standard",
+      "cake_flavor": "Fresh Pineapple",
+      "extra_hours": 1,
+      "extra_guests": 0,
+      "subtotal": 2950,
+      "addons_total": 898,
+      "discount": 300,
+      "total": 3548,
+      "advance_paid": 3548,
+      "balance": 0,
+      "status": "confirmed",
+      "payment_status": "fully_paid",
+      "source": "web",
+      "notes": "",
+      "cancelled_reason": "",
+      "refund_amount": 0,
+      "is_deleted": 0,
+      "created_at": "2026-11-17T13:05:49.817Z",
+      "addons": [
+        {
+          "id": 1794920749809.7114,
+          "addon_id": 4,
+          "addon_name": "Cold Fire Pyro Sparklers (2 Pots)",
+          "price": 399,
+          "quantity": 1,
+          "subtotal": 399
+        },
+        {
+          "id": 1794920749809.7366,
+          "addon_id": 9,
+          "addon_name": "Romantic Rose Petal & Candle Aisle",
+          "price": 499,
+          "quantity": 1,
+          "subtotal": 499
+        }
+      ],
+      "idempotency_key": null
+    },
+    {
+      "id": 1,
+      "booking_ref": "MBEC202601",
+      "branch_id": 1,
+      "theatre_id": 1,
+      "slot_id": 1,
+      "booking_date": "2026-11-14",
+      "customer_name": "manjunath patil",
+      "customer_phone": "9885641232",
+      "customer_email": "",
+      "screen_name": "",
+      "guests": 2,
+      "occasion_id": 1,
+      "package_type": "standard",
+      "cake_flavor": "Fresh Pineapple",
+      "extra_hours": 1,
+      "extra_guests": 0,
+      "subtotal": 1899,
+      "addons_total": 0,
+      "discount": 200,
+      "total": 1699,
+      "advance_paid": 0,
+      "balance": 1699,
+      "status": "confirmed",
+      "payment_status": "unpaid",
+      "source": "web",
+      "notes": "",
+      "cancelled_reason": "",
+      "refund_amount": 0,
+      "is_deleted": 0,
+      "created_at": "2026-11-14T02:50:30.216Z",
+      "addons": [],
+      "idempotency_key": null,
+      "slot_time": "10:00 AM \u2013 01:00 PM (3 Hours \u00b7 +1 Hr Extra)"
+    }
+  ],
+  "customers": [
+    {
+      "id": 1,
+      "name": "manjunath patil",
+      "phone": "9448986953",
+      "email": "",
+      "total_bookings": 3,
+      "lifetime_spend": 11242,
+      "is_blocked": 0,
+      "created_at": "2026-11-12"
+    },
+    {
+      "id": 2,
+      "name": "Test Customer 1",
+      "phone": "9876543210",
+      "email": "",
+      "total_bookings": 1,
+      "lifetime_spend": 1499,
+      "is_blocked": 0,
+      "created_at": "2026-11-14"
+    },
+    {
+      "id": 3,
+      "name": "manjunath patil",
+      "phone": "9885641232",
+      "email": "",
+      "total_bookings": 1,
+      "lifetime_spend": 1699,
+      "is_blocked": 0,
+      "created_at": "2026-11-14"
+    },
+    {
+      "id": 4,
+      "name": "Narasimha",
+      "phone": "6361000941",
+      "email": "",
+      "total_bookings": 1,
+      "lifetime_spend": 1498,
+      "is_blocked": 0,
+      "created_at": "2026-11-18"
+    },
+    {
+      "id": 5,
+      "name": "gagan",
+      "phone": "9148250234",
+      "email": "",
+      "total_bookings": 1,
+      "lifetime_spend": 1900,
+      "is_blocked": 0,
+      "created_at": "2026-11-18"
+    },
+    {
+      "id": 6,
+      "name": "vderesh",
+      "phone": "9487447454",
+      "email": "",
+      "total_bookings": 1,
+      "lifetime_spend": 3699,
+      "is_blocked": 0,
+      "created_at": "2026-11-18"
+    },
+    {
+      "id": 7,
+      "name": "gill",
+      "phone": "9545844554",
+      "email": "",
+      "total_bookings": 1,
+      "lifetime_spend": 1900,
+      "is_blocked": 0,
+      "created_at": "2026-11-18"
+    },
+    {
+      "id": 8,
+      "name": "girish",
+      "phone": "9584584485",
+      "email": "",
+      "total_bookings": 1,
+      "lifetime_spend": 2100,
+      "is_blocked": 0,
+      "created_at": "2026-11-18"
+    }
+  ],
   "faqs": [
     {
       "id": 1,
@@ -817,7 +1235,7 @@
     }
   ],
   "siteSettings": {
-    "announcement_text": "✨ Book your private celebration at Movie Bash Bengaluru! Flat ₹200 OFF with code MOVIEBASH200 ✨",
+    "announcement_text": "\u2728 Book your private celebration at Movie Bash Bengaluru! Flat \u20b9300 OFF with code MOVIEBASH300 \u2728",
     "announcement_enabled": "true",
     "business_phone": "+91 99029 23656",
     "business_email": "bookmoviebash@gmail.com",
@@ -829,20 +1247,22 @@
     "branches_count": "2",
     "advance_amount_flat": "500",
     "advance_type": "flat",
-    "cancellation_window_hours": "72",
+    "cancellation_window_hours": 24,
     "payment_gateway_enabled": "false",
     "instagram_followers_count": "24.5K",
     "facebook_url": "https://facebook.com/moviebashprivatetheatre",
     "twitter_url": "https://x.com/Moviebashblr",
     "instagram_url": "https://instagram.com/moviebash_privatetheatre",
-    "youtube_url": "https://youtube.com/@MovieBashPrivateTheatre"
+    "youtube_url": "https://youtube.com/@MovieBashPrivateTheatre",
+    "site_name": "Movie Bash Bengaluru",
+    "primary_phone": "+919902923656"
   },
   "coupons": [
     {
       "id": 1794287090741,
       "code": "MOVIEBASH300",
       "discount_type": "flat",
-      "discount_value": 200,
+      "discount_value": 300,
       "min_booking_amount": 899,
       "is_active": 1
     },
@@ -862,38 +1282,887 @@
       "id": 1,
       "name": "Super Admin",
       "email": "admin@moviebash.in",
-      "password_hash": "$2a$12$L7R2Qo4mQYV8QZtY8uWfPeU38e3m0q1Q8V0V3x9i7Y6t3fX2U5vW2",
+      "password_hash": "$2a$10$EKeJ5iwJ3s3Orb3xT9iSQuWwdYRFy.r9Gydoty1drXyDQzaghyI4.",
       "role": "super_admin",
       "branch_id": null,
       "is_active": 1,
       "created_at": "2026-01-01",
-      "username": "admin",
-      "password_plain": "Admin@MovieBash2026!"
+      "username": "admin"
     },
     {
       "id": 2,
-      "name": "Staff – Electronic City",
+      "name": "Staff \u2013 Electronic City",
       "email": "staff_ec@moviebash.in",
-      "username": "staff_ec",
-      "password_plain": "Staff@EC2026!",
+      "username": "manju",
       "role": "staff",
       "branch_id": 1,
       "is_active": 1,
-      "created_at": "2026-01-01"
+      "created_at": "2026-01-01",
+      "password_hash": "$2a$10$2WOvTnvhvwChmoXF6hr6Uee4HI9yr1GId4mUSUZsWodDfVvnGcPzG"
     },
     {
       "id": 3,
-      "name": "Staff – BTM 2nd Stage",
+      "name": "Staff \u2013 BTM 2nd Stage",
       "email": "staff_btm@moviebash.in",
-      "username": "staff_btm",
-      "password_plain": "Staff@BTM2026!",
+      "username": "nitish",
       "role": "staff",
       "branch_id": 2,
       "is_active": 1,
-      "created_at": "2026-01-01"
+      "created_at": "2026-01-01",
+      "password_hash": "$2a$10$g7.fOZJgh5YaVkf3O.n8LuxaNf.nBzzWp0D3ebvnKhPCN.VkMNfxu"
     }
   ],
   "auditLogs": [
+    {
+      "id": 1795003127357,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPLOAD_ROOM_PHOTO",
+      "entity": "theatres",
+      "entity_id": "4",
+      "details": {
+        "url": "/images/rooms/room_4_1795003127354.webp",
+        "size_kb": "216.9"
+      },
+      "created_at": "2026-11-18T11:58:47.357Z"
+    },
+    {
+      "id": 1795000596198,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPLOAD_ROOM_PHOTO",
+      "entity": "theatres",
+      "entity_id": "7",
+      "details": {
+        "url": "/images/rooms/room_7_1795000596195.webp",
+        "size_kb": "216.9"
+      },
+      "created_at": "2026-11-18T11:16:36.198Z"
+    },
+    {
+      "id": 1794992013270,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-18T08:53:33.270Z"
+    },
+    {
+      "id": 1794987883499,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-18T07:44:43.499Z"
+    },
+    {
+      "id": 1794987882820,
+      "user_id": 2,
+      "user_email": "staff_ec@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "2",
+      "details": {
+        "role": "staff",
+        "branch_id": 1
+      },
+      "created_at": "2026-11-18T07:44:42.820Z"
+    },
+    {
+      "id": 1794987873635,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-18T07:44:33.635Z"
+    },
+    {
+      "id": 1794987873486,
+      "user_id": 2,
+      "user_email": "staff_ec@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "2",
+      "details": {
+        "role": "staff",
+        "branch_id": 1
+      },
+      "created_at": "2026-11-18T07:44:33.486Z"
+    },
+    {
+      "id": 1794987838381,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-18T07:43:58.381Z"
+    },
+    {
+      "id": 1794980141188,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_THEATRE_PACKAGE",
+      "entity": "theatres",
+      "entity_id": "1",
+      "details": {
+        "action": "edit_theatre",
+        "id": 1,
+        "images": [
+          "/images/rooms/room_1_1794980138988.webp"
+        ],
+        "image_url": "/images/rooms/room_1_1794980138988.webp",
+        "remove_image": "/images/rooms/room_1_1794904502353.webp"
+      },
+      "created_at": "2026-11-18T05:35:41.188Z"
+    },
+    {
+      "id": 1794980138995,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPLOAD_ROOM_PHOTO",
+      "entity": "theatres",
+      "entity_id": "1",
+      "details": {
+        "url": "/images/rooms/room_1_1794980138988.webp",
+        "size_kb": "187.0"
+      },
+      "created_at": "2026-11-18T05:35:38.995Z"
+    },
+    {
+      "id": 1794980063063,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-18T05:34:23.063Z"
+    },
+    {
+      "id": 1794936017779,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-17T17:20:17.779Z"
+    },
+    {
+      "id": 1794922724748,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "ADD_PAYMENT",
+      "entity": "bookings",
+      "entity_id": "2",
+      "details": {
+        "action": "add_payment",
+        "payment_add": "3548"
+      },
+      "created_at": "2026-11-17T13:38:44.748Z"
+    },
+    {
+      "id": 1794904558667,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "RESTORE_BOOKING",
+      "entity": "bookings",
+      "entity_id": "4",
+      "details": {
+        "ref": "MBEC202604"
+      },
+      "created_at": "2026-11-17T08:35:58.667Z"
+    },
+    {
+      "id": 1794904558607,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "DELETE",
+      "entity": "bookings",
+      "entity_id": "4",
+      "details": {
+        "action": "delete"
+      },
+      "created_at": "2026-11-17T08:35:58.607Z"
+    },
+    {
+      "id": 1794904558564,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "CANCEL",
+      "entity": "bookings",
+      "entity_id": "4",
+      "details": {
+        "action": "cancel",
+        "cancelled_reason": "Guest requested date change"
+      },
+      "created_at": "2026-11-17T08:35:58.564Z"
+    },
+    {
+      "id": 1794904558511,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "RESCHEDULE",
+      "entity": "bookings",
+      "entity_id": "4",
+      "details": {
+        "action": "reschedule",
+        "booking_date": "2026-11-22",
+        "slot_id": 2,
+        "slot_time": "12:15 PM \u2013 02:15 PM",
+        "theatre_id": 1
+      },
+      "created_at": "2026-11-17T08:35:58.511Z"
+    },
+    {
+      "id": 1794904557730,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "CREATE_MANUAL_PHONE_BOOKING",
+      "entity": "bookings",
+      "entity_id": "4",
+      "details": {
+        "ref": "MBEC202604",
+        "customer": "Test Customer Admin",
+        "extra_hours": 0,
+        "source": "phone"
+      },
+      "created_at": "2026-11-17T08:35:57.730Z"
+    },
+    {
+      "id": 1794904557687,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-17T08:35:57.687Z"
+    },
+    {
+      "id": 1794904508506,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "DELETE",
+      "entity": "bookings",
+      "entity_id": "3",
+      "details": {
+        "action": "delete"
+      },
+      "created_at": "2026-11-17T08:35:08.506Z"
+    },
+    {
+      "id": 1794904508444,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "CANCEL",
+      "entity": "bookings",
+      "entity_id": "3",
+      "details": {
+        "action": "cancel",
+        "cancelled_reason": "Guest rescheduled to next week"
+      },
+      "created_at": "2026-11-17T08:35:08.444Z"
+    },
+    {
+      "id": 1794904508373,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "RESCHEDULE",
+      "entity": "bookings",
+      "entity_id": "3",
+      "details": {
+        "action": "reschedule",
+        "booking_date": "2026-11-21",
+        "slot_id": 2,
+        "slot_time": "12:15 PM \u2013 02:15 PM",
+        "theatre_id": 1
+      },
+      "created_at": "2026-11-17T08:35:08.373Z"
+    },
+    {
+      "id": 1794904508176,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_THEATRE_PACKAGE",
+      "entity": "theatres",
+      "entity_id": "1",
+      "details": {
+        "action": "edit_theatre",
+        "id": 1,
+        "name": "Couple Theater",
+        "branch_id": 1,
+        "capacity": 2,
+        "base_price": 899,
+        "standard_price": 1499,
+        "custom_price": 899,
+        "premium_price": 2800,
+        "extra_hour_rate": 400,
+        "extra_person_price": 150,
+        "amenities": "Ultra HD 4K Projection, Recliner Sofas, Dolby Atmos Sound, Private Climate Control, OTT Ready",
+        "image_url": "/images/rooms/room_1_1794904502353.webp",
+        "images": [
+          "/images/rooms/room_1_1794904502353.webp"
+        ]
+      },
+      "created_at": "2026-11-17T08:35:08.176Z"
+    },
+    {
+      "id": 1794904507523,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "CREATE_MANUAL_PHONE_BOOKING",
+      "entity": "bookings",
+      "entity_id": "3",
+      "details": {
+        "ref": "MBEC202603",
+        "customer": "Test Customer Admin",
+        "extra_hours": 0,
+        "source": "phone"
+      },
+      "created_at": "2026-11-17T08:35:07.523Z"
+    },
+    {
+      "id": 1794904507441,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-17T08:35:07.441Z"
+    },
+    {
+      "id": 1794904502357,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPLOAD_ROOM_PHOTO",
+      "entity": "theatres",
+      "entity_id": "1",
+      "details": {
+        "url": "/images/rooms/room_1_1794904502353.webp",
+        "size_kb": "278.3"
+      },
+      "created_at": "2026-11-17T08:35:02.357Z"
+    },
+    {
+      "id": 1794904452055,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_BOOKING",
+      "entity": "bookings",
+      "entity_id": "2",
+      "details": {
+        "customer_name": "Test Customer Renamed",
+        "cake_message": "HBD Edited Title",
+        "notes": "VIP guest table setup"
+      },
+      "created_at": "2026-11-17T08:34:12.055Z"
+    },
+    {
+      "id": 1794904449444,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "CREATE_MANUAL_PHONE_BOOKING",
+      "entity": "bookings",
+      "entity_id": "2",
+      "details": {
+        "ref": "MBEC202602",
+        "customer": "Test Customer Admin",
+        "extra_hours": 0,
+        "source": "phone"
+      },
+      "created_at": "2026-11-17T08:34:09.444Z"
+    },
+    {
+      "id": 1794904449354,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-17T08:34:09.354Z"
+    },
+    {
+      "id": 1794904435382,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_SITE_SETTINGS",
+      "entity": "siteSettings",
+      "entity_id": "global",
+      "details": {
+        "site_name": "Movie Bash Bengaluru",
+        "primary_phone": "+919902923656"
+      },
+      "created_at": "2026-11-17T08:33:55.382Z"
+    },
+    {
+      "id": 1794904435359,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_THEATRE_PACKAGE",
+      "entity": "theatres",
+      "entity_id": "1",
+      "details": {
+        "action": "edit_theatre",
+        "id": 1,
+        "standard_price": 1499,
+        "custom_price": 899,
+        "premium_price": 2800,
+        "image_url": "/images/rooms/room_1_1794903288333.webp"
+      },
+      "created_at": "2026-11-17T08:33:55.359Z"
+    },
+    {
+      "id": 1794904435326,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "DELETE_COUPON",
+      "entity": "coupons",
+      "entity_id": "1794904435250",
+      "created_at": "2026-11-17T08:33:55.326Z"
+    },
+    {
+      "id": 1794904435298,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_COUPON",
+      "entity": "coupons",
+      "entity_id": "1794904435250",
+      "details": {
+        "id": 1794904435250,
+        "code": "TESTCOUPON99_EDITED",
+        "discount_type": "flat",
+        "discount_value": 350,
+        "min_booking_amount": 0,
+        "is_active": 0
+      },
+      "created_at": "2026-11-17T08:33:55.298Z"
+    },
+    {
+      "id": 1794904435251,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "CREATE_COUPON",
+      "entity": "coupons",
+      "entity_id": "1794904435250",
+      "details": {
+        "id": 1794904435250,
+        "code": "TESTCOUPON99",
+        "discount_type": "flat",
+        "discount_value": 250,
+        "min_booking_amount": 1000,
+        "is_active": 0
+      },
+      "created_at": "2026-11-17T08:33:55.251Z"
+    },
+    {
+      "id": 1794904434823,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-17T08:33:54.823Z"
+    },
+    {
+      "id": 1794904416203,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-17T08:33:36.203Z"
+    },
+    {
+      "id": 1794903298198,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_THEATRE_PACKAGE",
+      "entity": "theatres",
+      "entity_id": "1",
+      "details": {
+        "action": "edit_theatre",
+        "id": 1,
+        "name": "Couple Theater",
+        "branch_id": 1,
+        "capacity": 2,
+        "base_price": 899,
+        "standard_price": 1499,
+        "custom_price": 899,
+        "premium_price": 2800,
+        "extra_hour_rate": 400,
+        "extra_person_price": 150,
+        "amenities": "Ultra HD 4K Projection, Recliner Sofas, Dolby Atmos Sound, Private Climate Control, OTT Ready",
+        "image_url": "/images/rooms/room_1_1794903288333.webp",
+        "images": [
+          "/images/rooms/room_1_1794903288333.webp",
+          "/images/rooms/room_1_1794904502353.webp"
+        ]
+      },
+      "created_at": "2026-11-17T08:14:58.198Z"
+    },
+    {
+      "id": 1794903288338,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPLOAD_ROOM_PHOTO",
+      "entity": "theatres",
+      "entity_id": "1",
+      "details": {
+        "url": "/images/rooms/room_1_1794903288333.webp",
+        "size_kb": "187.0"
+      },
+      "created_at": "2026-11-17T08:14:48.338Z"
+    },
+    {
+      "id": 1794903216233,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_THEATRE_PACKAGE",
+      "entity": "theatres",
+      "entity_id": "1",
+      "details": {
+        "action": "edit_theatre",
+        "id": 1,
+        "name": "Couple Theater",
+        "branch_id": 1,
+        "capacity": 2,
+        "base_price": 899,
+        "standard_price": 1499,
+        "custom_price": 899,
+        "premium_price": 2800,
+        "extra_hour_rate": 400,
+        "extra_person_price": 150,
+        "amenities": "Ultra HD 4K Projection, Recliner Sofas, Dolby Atmos Sound, Private Climate Control, OTT Ready",
+        "image_url": "/images/rooms/room_1_1794903093953.webp",
+        "images": [
+          "/images/rooms/room_1_1794903093953.webp",
+          "/images/rooms/room_1_1794903288333.webp"
+        ]
+      },
+      "created_at": "2026-11-17T08:13:36.233Z"
+    },
+    {
+      "id": 1794903136337,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_SITE_SETTINGS",
+      "entity": "siteSettings",
+      "entity_id": "global",
+      "details": {
+        "announcement_text": "\u2728 Book your private celebration at Movie Bash Bengaluru! Flat \u20b9200 OFF with code MOVIEBASH200 \u2728",
+        "announcement_enabled": "true",
+        "business_phone": "+91 99029 23656",
+        "business_email": "bookmoviebash@gmail.com",
+        "whatsapp_number": "+919902923656",
+        "google_reviews_count": "850+",
+        "google_rating": "4.9",
+        "bookings_completed_count": "12,500+",
+        "max_capacity_per_theatre": "20",
+        "branches_count": "2",
+        "advance_amount_flat": "500",
+        "advance_type": "flat",
+        "cancellation_window_hours": 24,
+        "payment_gateway_enabled": "false",
+        "instagram_followers_count": "24.5K",
+        "facebook_url": "https://facebook.com/moviebashprivatetheatre",
+        "twitter_url": "https://x.com/Moviebashblr",
+        "instagram_url": "https://instagram.com/moviebash_privatetheatre",
+        "youtube_url": "https://youtube.com/@MovieBashPrivateTheatre"
+      },
+      "created_at": "2026-11-17T08:12:16.337Z"
+    },
+    {
+      "id": 1794903111743,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_THEATRE_PACKAGE",
+      "entity": "theatres",
+      "entity_id": "1",
+      "details": {
+        "action": "edit_theatre",
+        "id": 1,
+        "name": "Couple Theater",
+        "branch_id": 1,
+        "capacity": 2,
+        "base_price": 899,
+        "standard_price": 1499,
+        "custom_price": 899,
+        "premium_price": 2800,
+        "extra_hour_rate": 400,
+        "extra_person_price": 150,
+        "amenities": "Ultra HD 4K Projection, Recliner Sofas, Dolby Atmos Sound, Private Climate Control, OTT Ready",
+        "image_url": "/images/rooms/room_1_1794903093953.webp",
+        "images": [
+          "/images/rooms/room_1_1794896164960.webp",
+          "/images/rooms/room_1_1794896222005.webp",
+          "/images/rooms/room_1_1794903093953.webp"
+        ]
+      },
+      "created_at": "2026-11-17T08:11:51.743Z"
+    },
+    {
+      "id": 1794903093960,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPLOAD_ROOM_PHOTO",
+      "entity": "theatres",
+      "entity_id": "1",
+      "details": {
+        "url": "/images/rooms/room_1_1794903093953.webp",
+        "size_kb": "187.0"
+      },
+      "created_at": "2026-11-17T08:11:33.960Z"
+    },
+    {
+      "id": 1794903022862,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_STAFF_ACCOUNT",
+      "entity": "adminUsers",
+      "entity_id": "2",
+      "details": {
+        "name": "Staff \u2013 Electronic City",
+        "username": "manju",
+        "email": "staff_ec@moviebash.in",
+        "branch_id": 1,
+        "password_updated": true
+      },
+      "created_at": "2026-11-17T08:10:22.862Z"
+    },
+    {
+      "id": 1794903006334,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_STAFF_ACCOUNT",
+      "entity": "adminUsers",
+      "entity_id": "1",
+      "details": {
+        "name": "Super Admin",
+        "username": "admin",
+        "email": "admin@moviebash.in",
+        "branch_id": null,
+        "password_updated": true
+      },
+      "created_at": "2026-11-17T08:10:06.334Z"
+    },
+    {
+      "id": 1794902989121,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-17T08:09:49.121Z"
+    },
+    {
+      "id": 1794899101939,
+      "user_id": 2,
+      "user_email": "staff_ec@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "2",
+      "details": {
+        "role": "staff",
+        "branch_id": 1
+      },
+      "created_at": "2026-11-17T07:05:01.939Z"
+    },
+    {
+      "id": 1794899093083,
+      "user_id": 3,
+      "user_email": "staff_btm@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "3",
+      "details": {
+        "role": "staff",
+        "branch_id": 2
+      },
+      "created_at": "2026-11-17T07:04:53.083Z"
+    },
+    {
+      "id": 1794899093018,
+      "user_id": 2,
+      "user_email": "staff_ec@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "2",
+      "details": {
+        "role": "staff",
+        "branch_id": 1
+      },
+      "created_at": "2026-11-17T07:04:53.018Z"
+    },
+    {
+      "id": 1794899092900,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-17T07:04:52.900Z"
+    },
+    {
+      "id": 1794898217175,
+      "user_id": 2,
+      "user_email": "staff_ec@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "2",
+      "details": {
+        "role": "staff",
+        "branch_id": 1
+      },
+      "created_at": "2026-11-17T06:50:17.175Z"
+    },
+    {
+      "id": 1794898145856,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_STAFF_ACCOUNT",
+      "entity": "adminUsers",
+      "entity_id": "3",
+      "details": {
+        "name": "Staff \u2013 BTM 2nd Stage",
+        "username": "nitish",
+        "email": "staff_btm@moviebash.in",
+        "branch_id": 2,
+        "password_updated": true
+      },
+      "created_at": "2026-11-17T06:49:05.856Z"
+    },
+    {
+      "id": 1794896221938,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-17T06:17:01.938Z"
+    },
+    {
+      "id": 1794896220732,
+      "user_id": 2,
+      "user_email": "staff_ec@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "2",
+      "details": {
+        "role": "staff",
+        "branch_id": 1
+      },
+      "created_at": "2026-11-17T06:17:00.732Z"
+    },
+    {
+      "id": 1794896164966,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPLOAD_ROOM_PHOTO",
+      "entity": "theatres",
+      "entity_id": "1",
+      "details": {
+        "url": "/images/rooms/room_1_1794896164960.webp",
+        "size_kb": "0.0"
+      },
+      "created_at": "2026-11-17T06:16:04.966Z"
+    },
+    {
+      "id": 1794896164246,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-17T06:16:04.246Z"
+    },
+    {
+      "id": 1794627261782,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-14T03:34:21.782Z"
+    },
+    {
+      "id": 1794627248484,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-14T03:34:08.484Z"
+    },
     {
       "id": 1794387628071,
       "user_id": 1,

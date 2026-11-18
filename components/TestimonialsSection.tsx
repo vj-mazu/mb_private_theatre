@@ -10,83 +10,53 @@ export default function TestimonialsSection() {
   const testimonials = [
     {
       id: 1,
-      author: 'Kavin Raj',
-      occasion: 'Family Gathering',
+      author: 'Neha Sultana',
+      occasion: "Baby's Birthday Celebration",
       branch: 'Electronic City',
       rating: 5,
-      date: '2 weeks ago',
+      date: 'a month ago',
       avatar: '/images/couple_7.webp',
-      text: 'Great place to spend time with friends and family on a special day. Lovely decoration, cozy and neat, great service, easy to book and add on. Outside food is allowed and you can use your own OTT platforms.',
+      text: "Had the absolute best time celebrating our baby's birthday here! The team provided outstanding service and genuine cooperation throughout the event. The photos and videos turned out stunning—crisp, well-lit, and beautiful memory-keepers. The cake was a huge hit too! The design was exactly what we asked for, and it tasted amazing. Thank you for making our baby's day so memorable!",
     },
     {
       id: 2,
-      author: 'Shreya Sharma',
-      occasion: 'Couple Private Screening',
+      author: 'Pavani Pandu',
+      occasion: "Son's 2nd Birthday Party",
       branch: 'Electronic City',
       rating: 5,
-      date: '3 weeks ago',
+      date: '4 months ago',
       avatar: '/images/couple_8.webp',
-      text: 'One of the best private theatres in Bengaluru to celebrate. Booked the couple theatre for 4 members; the magical fog entry and fairy light setup was breathtaking!',
+      text: "We celebrated our son's 2nd birthday at Bash Movie yesterday, and it was an unforgettable experience! From the moment we arrived, everything was well organized and beautifully arranged. The decorations, lighting, and overall ambiance created a perfect setting for the celebration. The staff was extremely friendly, polite, and attentive. They took care of every little detail and made sure our event went smoothly without any stress. Our guests enjoyed the venue, and the kids had an amazing time. The service was excellent, and the entire team went above and beyond to make our special day memorable. Seeing the smiles on our son's face made it all the more special. Thank you to the entire Bash Movie team for making our little prince's 2nd birthday such a beautiful and cherished memory. We truly appreciate your effort and hospitality. We highly recommend this place for birthday parties and family celebrations, and we look forward to celebrating many more special occasions here! ❤️ 🎉 🎂",
     },
     {
       id: 3,
-      author: 'Mani Kandan',
-      occasion: 'Birthday Surprise',
-      branch: 'BTM 2nd Stage',
+      author: 'Rajesh raju',
+      occasion: 'Birthday Celebration & Party',
+      branch: 'Electronic City',
       rating: 5,
-      date: '1 month ago',
+      date: 'a month ago',
       avatar: '/images/celebration_3.webp',
-      text: "Top-notch arrangements, great for surprising loved ones. Thanks for making my husband's 30th birthday so memorable. The 135-inch laser screen clarity was mindblowing.",
+      text: "Yesterday night we have celebrated birthday... 🎉 Really superb.. service's and I love your hospitality and prosperity.. 🤗 coming to the party hall and decor and snacks all such things are Really fabulous and our children had enjoyed and created thair own memories 🤩 🤩 You mad Hanish's day some more special 💖 ✨ He loved and got surprised 🥰 We were so happy about that 🫠 Thank you... Movie Bash for what you mad for us. 🤝",
     },
     {
       id: 4,
-      author: 'Kumar & Ananya',
-      occasion: 'Wedding Anniversary',
+      author: 'Naveen Sudarshan',
+      occasion: 'Birthday Party Experience',
       branch: 'Electronic City',
       rating: 5,
-      date: '1 month ago',
+      date: 'a month ago',
       avatar: '/images/celebration_4.webp',
-      text: 'Amazing experience for our 5th anniversary. Fog entry, fresh chocolate truffle cake, customized flower decoration and photo shoot were completely fabulous.',
+      text: "Had a really nice experience at Movie Bash, Bangalore! 😊 We celebrated a birthday here, and it was a lovely experience. The staff were very patient, friendly, and supportive throughout, and they made sure we felt comfortable. ❤️ The private theatre setup made the celebration feel extra special and gave us some wonderful memories. 🎂 🎬 It’s a great place to plan a birthday surprise or celebrate a special occasion with friends and family. Really appreciate the staff for their patience and support. Overall, we had a great time and would definitely recommend this place! ❤️ ✨",
     },
     {
       id: 5,
-      author: 'Divya Ramesh',
-      occasion: 'Romantic Date Night',
+      author: "Nandu's Quest",
+      occasion: 'Small Gathering & Ample Parking',
       branch: 'Electronic City',
-      rating: 5,
-      date: 'Recent Visit',
+      rating: 4,
+      date: '3 months ago',
       avatar: '/images/couple_1.webp',
-      text: 'Booked the Couple Theater at Electronic City. The rose petal walkway and 4K cinema projection blew my partner away. Super clean, 100% private, and very polite crew!',
-    },
-    {
-      id: 6,
-      author: 'Arvind & Sneha',
-      occasion: 'Milestone 25th Anniversary',
-      branch: 'BTM 2nd Stage',
-      rating: 5,
-      date: 'Last month',
-      avatar: '/images/celebration_2.webp',
-      text: 'Celebrated 25th anniversary with our children. The 150-inch family theatre Dolby Atmos sound was crystal clear. The cold fire sparklers during cake cutting gave us goosebumps!',
-    },
-    {
-      id: 7,
-      author: 'Priya Sundaram',
-      occasion: 'Best Friend’s Bachelorette',
-      branch: 'BTM 2nd Stage',
-      rating: 5,
-      date: '3 weeks ago',
-      avatar: '/images/celebration_5.webp',
-      text: 'Booked the VIP Celebration Suite at BTM 2nd Stage. We connected our Netflix and danced with karaoke mics. The ambient wall lights were picture-perfect for our Instagram reels.',
-    },
-    {
-      id: 8,
-      author: 'Rajesh G.',
-      occasion: 'Surprise Birthday for Daughter',
-      branch: 'Electronic City',
-      rating: 5,
-      date: '2 weeks ago',
-      avatar: '/images/ambience_5.webp',
-      text: 'The cloud fog walk entry was pure magic! My 8-year-old daughter felt like a princess. Truly a 5-star celebration destination in Bangalore, hassle-free booking.',
+      text: 'This venue is good for small events, especially if food is not required. It has ample parking, which is a big advantage. They have two celebration rooms with nice decorations and screens, making them suitable for birthday parties and other small gatherings. However, it is not ideal for events that require food, as there is no dedicated dining area.',
     },
   ];
 
@@ -175,7 +145,7 @@ export default function TestimonialsSection() {
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <div className="flex items-center gap-1">
                     {[...Array(item.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                      <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
 
@@ -190,8 +160,8 @@ export default function TestimonialsSection() {
                   </div>
                 </div>
 
-                {/* Review Text: High contrast readable font */}
-                <p className="font-playfair text-sm sm:text-base font-medium italic text-[#101410] leading-relaxed line-clamp-4">
+                {/* Review Text: Compact ~60% size, high-aesthetic readable font */}
+                <p className="font-playfair text-[10.5px] sm:text-[11.5px] font-medium italic text-stone-700 leading-relaxed max-h-[140px] overflow-y-auto pr-1">
                   &ldquo;{item.text}&rdquo;
                 </p>
               </div>

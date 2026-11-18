@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query, checkMySQL, mockStore } from '@/lib/db';
+import { query, mockStore } from '@/lib/db';
 import { bookingRateLimiter } from '@/lib/rate-limiter';
 
 export async function GET(
@@ -15,11 +15,10 @@ export async function GET(
   }
 
   try {
-    const isMySQL = await checkMySQL();
     let booking: any = null;
     let addons: any[] = [];
 
-    if (isMySQL) {
+    try {
       const rows = await query(
         `SELECT 
           b.*,
@@ -43,6 +42,8 @@ export async function GET(
         );
         addons = addonRows || [];
       }
+    } catch (dbErr) {
+      console.warn('SQLite query error in booking lookup:', dbErr);
     }
 
     if (!booking) {

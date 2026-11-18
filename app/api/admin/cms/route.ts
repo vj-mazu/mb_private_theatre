@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
-import { mockStore, saveStore } from '@/lib/db';
+import { mockStore, saveStore, query } from '@/lib/db';
 
 export async function GET() {
   const session = await getAdminSession();
@@ -165,20 +165,57 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: `Coupon is now ${coupon.is_active ? 'Active' : 'Inactive'}`, coupons: mockStore.coupons });
     }
 
-    // 6. EDIT THEATRE PRICING
+    // 6. EDIT THEATRE PRICING & PACKAGES
     if (action === 'edit_theatre') {
-      const { id, base_price, extra_person_price, amenities } = body;
+      const { 
+        id, 
+        name,
+        capacity,
+        base_price, 
+        standard_price, 
+        custom_price, 
+        premium_price, 
+        extra_hour_rate, 
+        extra_person_price, 
+        amenities, 
+        image_url, 
+        images,
+        remove_image 
+      } = body;
       const th = mockStore.theatres.find(t => t.id === Number(id));
       if (!th) {
         return NextResponse.json({ success: false, error: 'Theatre not found' }, { status: 404 });
       }
 
+      if (name !== undefined) th.name = String(name);
+      if (capacity !== undefined) th.capacity = Number(capacity);
       if (base_price !== undefined) th.base_price = Number(base_price);
+      if (standard_price !== undefined) (th as any).standard_price = Number(standard_price);
+      if (custom_price !== undefined) (th as any).custom_price = Number(custom_price);
+      if (premium_price !== undefined) (th as any).premium_price = Number(premium_price);
+      if (extra_hour_rate !== undefined) (th as any).extra_hour_rate = Number(extra_hour_rate);
       if (extra_person_price !== undefined) th.extra_person_price = Number(extra_person_price);
       if (amenities !== undefined) th.amenities = amenities;
+      if (image_url !== undefined) th.image_url = image_url;
+      if (images !== undefined && Array.isArray(images)) (th as any).images = images;
+
+      if (remove_image && (th as any).images) {
+        (th as any).images = (th as any).images.filter((img: string) => img !== remove_image);
+        if (th.image_url === remove_image) {
+          th.image_url = (th as any).images[0] || '';
+        }
+      }
 
       saveStore();
-      return NextResponse.json({ success: true, message: 'Theatre updated successfully', theatres: mockStore.theatres });
+
+      try {
+        await query(
+          'UPDATE theatres SET name = COALESCE(?, name), capacity = COALESCE(?, capacity), base_price = COALESCE(?, base_price), extra_person_price = COALESCE(?, extra_person_price), amenities = COALESCE(?, amenities), image_url = COALESCE(?, image_url) WHERE id = ?',
+          [name, capacity, base_price, extra_person_price, amenities, image_url, id]
+        );
+      } catch (e) {}
+
+      return NextResponse.json({ success: true, message: 'Theatre package pricing updated successfully', theatres: mockStore.theatres });
     }
 
     // 7. EDIT ADDON PRICING

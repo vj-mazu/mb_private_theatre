@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
-import { mockStore } from '@/lib/db';
+import { mockStore, getDb } from '@/lib/db';
+import { formatBookingSlotTime } from '@/lib/slot-engine';
+import { getTodayIST, getYesterdayIST, getCurrentMonthIST, getDaysAgoIST } from '@/lib/time';
 
 export async function GET(request: NextRequest) {
   const session = await getAdminSession();
   if (!session) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Staff members are strictly restricted from viewing dashboard revenue and financial analytics
+  if (session.role === 'staff') {
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Access restricted: Dashboard revenue metrics and operational analytics are reserved for Super Administrators.' 
+    }, { status: 403 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -18,24 +28,38 @@ export async function GET(request: NextRequest) {
     effectiveBranchId = session.branch_id;
   }
 
-  let allBookings = [...mockStore.bookings];
+  let allBookings: any[] = [];
+  try {
+    const db = getDb();
+    const rows = db.prepare(`
+      SELECT b.*,
+             br.name as branch_name, br.map_url as map_url,
+             th.name as theatre_name, th.emoji as theatre_emoji,
+             ts.start_time as slot_start, ts.end_time as slot_end,
+             oc.name as occasion_name
+      FROM bookings b
+      LEFT JOIN branches br ON b.branch_id = br.id
+      LEFT JOIN theatres th ON b.theatre_id = th.id
+      LEFT JOIN time_slots ts ON b.slot_id = ts.id
+      LEFT JOIN occasions oc ON b.occasion_id = oc.id
+      ORDER BY b.booking_date DESC, b.id DESC
+    `).all();
+    allBookings = rows && rows.length > 0 ? rows : [...mockStore.bookings];
+  } catch (e) {
+    allBookings = [...mockStore.bookings];
+  }
+
   if (effectiveBranchId) {
     allBookings = allBookings.filter(b => b.branch_id === effectiveBranchId);
   }
 
-  const today = new Date();
-  const todayStr = today.toISOString().split('T')[0];
-  
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  const todayStr = getTodayIST();
+  const yesterdayStr = getYesterdayIST();
+  const currentMonthStr = getCurrentMonthIST();
 
-  const currentYear = today.getFullYear();
-  const currentMonthNum = today.getMonth() + 1;
-  const currentMonthStr = `${currentYear}-${String(currentMonthNum).padStart(2, '0')}`;
-
-  const lastMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-  const lastMonthStr = `${lastMonthDate.getFullYear()}-${String(lastMonthDate.getMonth() + 1).padStart(2, '0')}`;
+  const prevMonthDate = new Date();
+  prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
+  const lastMonthStr = getCurrentMonthIST(prevMonthDate);
 
   // Categorize bookings
   const confirmedAndCompleted = allBookings.filter(b => b.is_deleted === 0 && (b.status === 'confirmed' || b.status === 'completed'));
@@ -82,16 +106,16 @@ export async function GET(request: NextRequest) {
   const cancellationRate = totalBookingsAll > 0 ? (cancelledBookings.length / totalBookingsAll) * 100 : 0;
   const collectionRate = totalRevenue > 0 ? (advanceCollected / totalRevenue) * 100 : 0;
 
-  // 14-day daily timeline
+  // 18-day window covering future (tomorrow, +2d, +3d), today, and past 14 days
   const dailyTimeline: Array<{ date: string; display_date: string; revenue: number; advance: number; count: number }> = [];
-  for (let i = 13; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    const dStr = d.toISOString().split('T')[0];
+  for (let i = -3; i <= 14; i++) {
+    const dStr = getDaysAgoIST(i);
     const dayMatches = confirmedAndCompleted.filter(b => b.booking_date === dStr);
     const dayRev = dayMatches.reduce((acc, b) => acc + Number(b.total || 0), 0);
     const dayAdv = dayMatches.reduce((acc, b) => acc + Number(b.advance_paid || 0), 0);
-    const displayDate = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+    const [y, m, dNum] = dStr.split('-');
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const displayDate = `${dNum} ${monthNames[parseInt(m, 10) - 1]}`;
     dailyTimeline.push({
       date: dStr,
       display_date: displayDate,
@@ -100,11 +124,14 @@ export async function GET(request: NextRequest) {
       count: dayMatches.length
     });
   }
+  // Sort descending so upcoming & today are displayed prominently
+  dailyTimeline.sort((a, b) => b.date.localeCompare(a.date));
 
   // Monthly timeline (last 6 months)
   const monthlyTimeline: Array<{ month_key: string; display_month: string; revenue: number; advance: number; count: number }> = [];
+  const now = new Date();
   for (let i = 5; i >= 0; i--) {
-    const m = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const m = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const mKey = `${m.getFullYear()}-${String(m.getMonth() + 1).padStart(2, '0')}`;
     const monthMatches = confirmedAndCompleted.filter(b => b.booking_date.startsWith(mKey));
     const mRev = monthMatches.reduce((acc, b) => acc + Number(b.total || 0), 0);
@@ -198,6 +225,11 @@ export async function GET(request: NextRequest) {
     const slot = mockStore.timeSlots.find(s => s.id === b.slot_id);
     const theatre = mockStore.theatres.find(t => t.id === b.theatre_id);
     const branch = mockStore.branches.find(br => br.id === b.branch_id);
+    const extraHours = Math.max(0, Number(b.extra_hours || 0));
+    const computedSlotTime = slot 
+      ? formatBookingSlotTime(slot.start_time, slot.end_time, extraHours)
+      : (b.slot_time || 'Slot');
+
     return {
       id: b.id,
       ref: b.booking_ref,
@@ -206,7 +238,8 @@ export async function GET(request: NextRequest) {
       branch: branch?.name || 'Branch',
       customer: b.customer_name,
       phone: b.customer_phone,
-      slot: slot ? `${slot.start_time} - ${slot.end_time}` : 'Slot',
+      slot: computedSlotTime,
+      extra_hours: extraHours,
       status: b.status,
       guests: b.guests,
       title: b.screen_name || 'Celebration',

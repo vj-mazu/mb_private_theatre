@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { getTodayIST, getTomorrowIST } from '@/lib/time';
 import { 
   Search, 
   Filter, 
@@ -26,6 +27,7 @@ import {
   Copy,
   ExternalLink
 } from 'lucide-react';
+import { formatBookingSlotTime } from '@/lib/slot-engine';
 
 export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState<Array<any>>([]);
@@ -36,6 +38,7 @@ export default function AdminBookingsPage() {
   const [dateFilter, setDateFilter] = useState('');
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState<any>({ totalPages: 1, total: 0 });
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   // Modal states
   const [showManualModal, setShowManualModal] = useState(false);
@@ -43,6 +46,20 @@ export default function AdminBookingsPage() {
   const [paymentAddAmount, setPaymentAddAmount] = useState('');
   const [bookingSuccessData, setBookingSuccessData] = useState<any>(null);
   const [copiedText, setCopiedText] = useState(false);
+
+  // Reschedule modal states
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+  const [rescheduleBooking, setRescheduleBooking] = useState<any>(null);
+  const [rescheduleForm, setRescheduleForm] = useState({
+    booking_date: getTodayIST(),
+    branch_id: 1,
+    theatre_id: 1,
+    slot_id: 1,
+    slot_time: '',
+    screen_name: '',
+  });
+  const [rescheduleSlots, setRescheduleSlots] = useState<Array<any>>([]);
+  const [loadingRescheduleSlots, setLoadingRescheduleSlots] = useState(false);
 
   // Manual phone booking form state
   const [manualForm, setManualForm] = useState({
@@ -52,10 +69,11 @@ export default function AdminBookingsPage() {
     branch_id: 1,
     theatre_id: 1,
     slot_id: 1,
-    booking_date: new Date().toISOString().split('T')[0],
+    booking_date: getTodayIST(),
     screen_name: '',
     occasion_id: 2, // Birthday default
     guests: 2,
+    extra_hours: 0,
     total: 899,
     advance_paid: 500,
     source: 'phone',
@@ -72,6 +90,34 @@ export default function AdminBookingsPage() {
       setShowManualModal(true);
     }
   }, []);
+
+  // Fetch current logged-in role & lock branch if staff
+  useEffect(() => {
+    fetch('/api/admin/me')
+      .then(r => r.json())
+      .then(d => {
+        if (d.success && d.data) {
+          setCurrentUser(d.data);
+          if (d.data.role === 'staff' && d.data.branch_id) {
+            const staffBranch = String(d.data.branch_id);
+            setBranchFilter(staffBranch);
+            setManualForm(prev => ({ 
+              ...prev, 
+              branch_id: d.data.branch_id,
+              theatre_id: d.data.branch_id === 2 ? 4 : 1
+            }));
+            setRescheduleForm(prev => ({ 
+              ...prev, 
+              branch_id: d.data.branch_id,
+              theatre_id: d.data.branch_id === 2 ? 4 : 1
+            }));
+          }
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const isStaff = currentUser?.role === 'staff';
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -147,6 +193,73 @@ export default function AdminBookingsPage() {
     }));
   };
 
+  // Dynamic slots loading for reschedule modal
+  useEffect(() => {
+    if (!showRescheduleModal) return;
+    async function loadRescheduleSlots() {
+      setLoadingRescheduleSlots(true);
+      try {
+        const res = await fetch(`/api/availability?theatre=${rescheduleForm.theatre_id}&date=${rescheduleForm.booking_date}`);
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          setRescheduleSlots(json.data);
+          const currentValid = json.data.find((s: any) => s.id === rescheduleForm.slot_id && !s.is_booked);
+          if (!currentValid) {
+            const firstAvail = json.data.find((s: any) => !s.is_booked);
+            if (firstAvail) {
+              setRescheduleForm(prev => ({ 
+                ...prev, 
+                slot_id: firstAvail.id,
+                slot_time: `${firstAvail.start_time} - ${firstAvail.end_time}` 
+              }));
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load slots for reschedule:', err);
+      } finally {
+        setLoadingRescheduleSlots(false);
+      }
+    }
+    loadRescheduleSlots();
+  }, [showRescheduleModal, rescheduleForm.theatre_id, rescheduleForm.booking_date]);
+
+  const openRescheduleModal = (booking: any) => {
+    setRescheduleBooking(booking);
+    setRescheduleForm({
+      booking_date: booking.booking_date || getTodayIST(),
+      branch_id: booking.branch_id || 1,
+      theatre_id: booking.theatre_id || (booking.branch_id === 2 ? 4 : 1),
+      slot_id: booking.slot_id || 1,
+      slot_time: booking.slot_time || '',
+      screen_name: booking.screen_name || '',
+    });
+    setShowRescheduleModal(true);
+  };
+
+  const handleRescheduleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!rescheduleBooking) return;
+    
+    const branchName = rescheduleForm.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage';
+    let screenName = rescheduleForm.screen_name;
+    if (!screenName) {
+      if (rescheduleForm.theatre_id === 1 || rescheduleForm.theatre_id === 4) screenName = 'Couple Suite (2-4 guests)';
+      else if (rescheduleForm.theatre_id === 2 || rescheduleForm.theatre_id === 5) screenName = 'Celebration Suite (6-10 guests)';
+      else if (rescheduleForm.theatre_id === 3 || rescheduleForm.theatre_id === 6) screenName = 'Grand Family Suite (12-16 guests)';
+      else screenName = 'Celebration Lounge';
+    }
+
+    await handleAction(rescheduleBooking.id, 'reschedule', {
+      ...rescheduleForm,
+      branch_name: branchName,
+      screen_name: screenName
+    });
+
+    setShowRescheduleModal(false);
+    setRescheduleBooking(null);
+  };
+
   // Actions
   const handleAction = async (id: number, action: string, payload: any = {}) => {
     try {
@@ -191,6 +304,7 @@ export default function AdminBookingsPage() {
       (b.cake_flavor ? `🎂 *Cake:* 500g ${b.cake_flavor}\n` : '') +
       `📅 *Date:* ${b.booking_date}\n` +
       `⏰ *Showtime Slot:* ${b.slot_time || 'Scheduled Slot'}\n` +
+      (b.extra_hours > 0 ? `⏳ *Extended Duration:* +${b.extra_hours} Hour Extra Showtime (${2 + Number(b.extra_hours)} Hours Total)\n` : `⏳ *Duration:* 2 Hours Standard Showtime\n`) +
       `👥 *Guests:* ${b.guests}\n` +
       (b.screen_name ? `✨ *Screen Name:* "${b.screen_name}"\n` : '') +
       `💰 *Total Amount:* ₹${b.total}\n` +
@@ -213,8 +327,14 @@ export default function AdminBookingsPage() {
 
   const handleCreateManualBooking = async (e: React.FormEvent, dispatchWhatsApp: boolean) => {
     e.preventDefault();
-    if (!manualForm.customer_name || !manualForm.customer_phone) {
-      alert('Please fill in customer name and phone number.');
+    if (!manualForm.customer_name.trim()) {
+      alert('Please enter the customer full name.');
+      return;
+    }
+
+    const cleanPhone = manualForm.customer_phone.replace(/\D/g, '');
+    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+      alert('Please enter a valid 10-digit Indian mobile number (e.g. 9876543210 starting with 6, 7, 8, or 9).');
       return;
     }
 
@@ -266,28 +386,38 @@ export default function AdminBookingsPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <a
-            href="/api/admin/backup"
-            download
-            className="px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 bg-[#f0f7ff] hover:bg-[#d9ebff]/50 border border-sky-200 transition-colors flex items-center gap-1.5"
-            title="Download full database snapshot"
-          >
-            <Download className="w-3.5 h-3.5 text-[#237eea]" />
-            <span>Backup DB</span>
-          </a>
+          {!isStaff && (
+            <div className="flex items-center gap-2">
+              <a
+                href={`/api/admin/bookings/export?format=xlsx&${dateFilter ? `date=${dateFilter}&` : ''}${branchFilter !== 'all' ? `branch=${branchFilter}&` : ''}`}
+                download
+                className="px-3.5 py-2.5 rounded-2xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                title="Download formatted Excel (.xlsx) spreadsheet with colors, alignment & formulas"
+              >
+                <Download className="w-3.5 h-3.5 text-white" />
+                <span>Export Excel (.xlsx)</span>
+              </a>
 
-          <a
-            href={`/api/admin/bookings/export?${dateFilter ? `date=${dateFilter}&` : ''}${branchFilter !== 'all' ? `branch=${branchFilter}&` : ''}`}
-            download
-            className="px-3.5 py-2.5 rounded-2xl text-xs font-bold text-ink bg-[#f0f7ff] hover:bg-[#d9ebff]/50 border border-sky-200 transition-colors flex items-center gap-1.5"
-          >
-            <Download className="w-3.5 h-3.5 text-[#237eea]" />
-            <span>Export CSV</span>
-          </a>
+              <a
+                href={`/api/admin/bookings/export?format=csv&${dateFilter ? `date=${dateFilter}&` : ''}${branchFilter !== 'all' ? `branch=${branchFilter}&` : ''}`}
+                download
+                className="px-3 py-2.5 rounded-2xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                title="Download CSV file (with phone formatting)"
+              >
+                <Download className="w-3.5 h-3.5 text-slate-500" />
+                <span>CSV</span>
+              </a>
+            </div>
+          )}
 
           <button
             onClick={() => {
-              setManualForm(prev => ({ ...prev, source: 'phone' }));
+              setManualForm(prev => ({ 
+                ...prev, 
+                source: 'phone',
+                branch_id: isStaff && currentUser?.branch_id ? currentUser.branch_id : prev.branch_id,
+                theatre_id: isStaff && currentUser?.branch_id === 2 ? 4 : (isStaff ? 1 : prev.theatre_id)
+              }));
               setShowManualModal(true);
             }}
             className="px-4 py-2.5 rounded-2xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
@@ -340,18 +470,25 @@ export default function AdminBookingsPage() {
             )}
           </div>
 
-          <select
-            value={branchFilter}
-            onChange={(e) => {
-              setBranchFilter(e.target.value);
-              setPage(1);
-            }}
-            className="flex-1 md:flex-initial px-3 py-2.5 rounded-2xl bg-[#fffdf9] border border-sky-100 text-xs font-bold text-ink focus:outline-none"
-          >
-            <option value="all">All Branches</option>
-            <option value="1">Electronic City</option>
-            <option value="2">BTM 2nd Stage</option>
-          </select>
+          {isStaff ? (
+            <div className="flex-1 md:flex-initial px-3.5 py-2 rounded-2xl bg-[#fff0ea] border border-[#ef4a23]/30 text-xs font-black text-[#ef4a23] flex items-center gap-1.5 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-[#ef4a23]" />
+              <span>{currentUser?.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage'} (Assigned)</span>
+            </div>
+          ) : (
+            <select
+              value={branchFilter}
+              onChange={(e) => {
+                setBranchFilter(e.target.value);
+                setPage(1);
+              }}
+              className="flex-1 md:flex-initial px-3 py-2.5 rounded-2xl bg-[#fffdf9] border border-sky-100 text-xs font-bold text-ink focus:outline-none"
+            >
+              <option value="all">All Branches</option>
+              <option value="1">Electronic City</option>
+              <option value="2">BTM 2nd Stage</option>
+            </select>
+          )}
 
           <select
             value={statusFilter}
@@ -372,7 +509,7 @@ export default function AdminBookingsPage() {
       {/* Quick Status Tabs & Date Quick Pills */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         {/* Status Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        <div className="flex flex-wrap items-center gap-2">
           {[
             { label: 'All Bookings', value: 'all' },
             { label: 'Confirmed', value: 'confirmed' },
@@ -397,7 +534,7 @@ export default function AdminBookingsPage() {
         </div>
 
         {/* Date Quick Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+        <div className="flex flex-wrap items-center gap-1.5 text-xs">
           <span className="text-[11px] font-black text-slate-500 uppercase tracking-wider mr-1">Date:</span>
           <button
             type="button"
@@ -416,11 +553,11 @@ export default function AdminBookingsPage() {
           <button
             type="button"
             onClick={() => {
-              setDateFilter(new Date().toISOString().split('T')[0]);
+              setDateFilter(getTodayIST());
               setPage(1);
             }}
             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              dateFilter === new Date().toISOString().split('T')[0]
+              dateFilter === getTodayIST()
                 ? 'bg-emerald-700 text-white shadow-sm'
                 : 'bg-white border border-sky-200 text-slate-700 hover:bg-slate-100'
             }`}
@@ -430,19 +567,18 @@ export default function AdminBookingsPage() {
           <button
             type="button"
             onClick={() => {
-              const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
-              setDateFilter(tomorrow);
+              setDateFilter(getTomorrowIST());
               setPage(1);
             }}
             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              dateFilter === new Date(Date.now() + 86400000).toISOString().split('T')[0]
+              dateFilter === getTomorrowIST()
                 ? 'bg-emerald-700 text-white shadow-sm'
                 : 'bg-white border border-sky-200 text-slate-700 hover:bg-slate-100'
             }`}
           >
             Tomorrow
           </button>
-          {dateFilter && dateFilter !== new Date().toISOString().split('T')[0] && dateFilter !== new Date(Date.now() + 86400000).toISOString().split('T')[0] && (
+          {dateFilter && dateFilter !== getTodayIST() && dateFilter !== getTomorrowIST() && (
             <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-300 text-xs font-extrabold flex items-center gap-1.5">
               <span>📅 {dateFilter}</span>
               <button
@@ -462,133 +598,163 @@ export default function AdminBookingsPage() {
       </div>
 
       {/* Bookings Table / Cards on mobile */}
-      <div className="bg-white rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] overflow-hidden">
+      <div className="bg-white rounded-xl border-2 border-slate-300 shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-12 text-center text-xs font-bold text-ink">Loading bookings...</div>
         ) : bookings.length === 0 ? (
           <div className="py-12 text-center text-xs text-ink/60">No bookings found for the selected criteria.</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+          <div className="overflow-x-auto lg:overflow-x-hidden">
+            <table className="w-full text-left border-collapse text-xs border border-slate-300">
               <thead>
-                <tr className="border-b border-sky-100 bg-[#fffdf9]/50 text-[11px] font-bold text-ink/60 uppercase tracking-wider">
-                  <th className="py-3 px-4">Ref &amp; Customer</th>
-                  <th className="py-3 px-4">Venue &amp; Theatre</th>
-                  <th className="py-3 px-4">Date &amp; Slot</th>
-                  <th className="py-3 px-4">Pricing &amp; Balance</th>
-                  <th className="py-3 px-4">Source</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                <tr className="bg-slate-100 text-[11px] font-black text-slate-800 uppercase tracking-wider">
+                  <th className="py-2.5 px-3 border border-slate-300 w-[22%]">Ref &amp; Customer</th>
+                  <th className="py-2.5 px-3 border border-slate-300 w-[17%]">Venue &amp; Theatre</th>
+                  <th className="py-2.5 px-3 border border-slate-300 w-[16%]">Date &amp; Slot</th>
+                  <th className="py-2.5 px-3 border border-slate-300 w-[16%]">Pricing &amp; Balance</th>
+                  <th className="py-2.5 px-2 border border-slate-300 text-center w-[7%]">Source</th>
+                  <th className="py-2.5 px-2 border border-slate-300 text-center w-[8%]">Status</th>
+                  <th className="py-2.5 px-3 border border-slate-300 text-right w-[14%]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-sand-100">
+              <tbody>
                 {bookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-[#fffdf9]/60 transition-colors">
+                  <tr key={b.id} className="even:bg-slate-50/70 hover:bg-sky-50/70 transition-colors">
                     
                     {/* Ref & Customer */}
-                    <td className="py-3 px-4">
-                      <strong className="block text-ink font-bold">{b.customer_name}</strong>
-                      <div className="flex items-center gap-1.5 text-[11px] text-ink/60">
-                        <span className="font-mono text-[#237eea] font-semibold">{b.booking_ref}</span>
-                        <span>&bull;</span>
-                        <a href={`tel:${b.customer_phone}`} className="hover:underline flex items-center gap-0.5">
-                          <Phone className="w-3 h-3 text-[#237eea]" />
-                          <span>{b.customer_phone}</span>
+                    <td className="py-2.5 px-3 border border-slate-300 align-middle">
+                      <strong className="block text-slate-900 font-extrabold text-[12.5px] truncate">{b.customer_name}</strong>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="font-mono text-[#155fbd] font-bold text-[10.5px] bg-sky-50 px-1 py-0.5 rounded border border-sky-300 shrink-0">
+                          {b.booking_ref}
+                        </span>
+                        <a href={`tel:${b.customer_phone}`} className="hover:underline flex items-center gap-1 text-[11px] font-semibold text-slate-700 truncate">
+                          <Phone className="w-3 h-3 text-slate-400 shrink-0" />
+                          <span className="truncate">{b.customer_phone}</span>
                         </a>
                       </div>
                     </td>
 
                     {/* Venue & Theatre */}
-                    <td className="py-3 px-4">
-                      <div className="font-bold text-ink flex items-center gap-1">
-                        <span>{b.theatre_emoji || '🎬'}</span>
-                        <span>{b.theatre_name || 'Screen'}</span>
+                    <td className="py-2.5 px-3 border border-slate-300 align-middle">
+                      <div className="font-extrabold text-slate-900 text-xs flex items-center gap-1">
+                        <span className="text-sm shrink-0">{b.theatre_emoji || '🎬'}</span>
+                        <span className="truncate">{b.theatre_name || 'Screen'}</span>
                       </div>
-                      <span className="text-[11px] text-ink/60 block">{b.branch_name}</span>
+                      <span className="text-[10.5px] font-medium text-slate-500 block mt-0.5 truncate">{b.branch_name}</span>
                     </td>
 
                     {/* Date & Slot */}
-                    <td className="py-3 px-4">
-                      <strong className="block text-ink">{b.booking_date}</strong>
-                      <span className="text-[11px] text-[#237eea] font-semibold">{b.slot_time}</span>
+                    <td className="py-2.5 px-3 border border-slate-300 align-middle">
+                      <strong className="block text-slate-900 text-xs font-black">{b.booking_date}</strong>
+                      <div className="text-[10.5px] text-[#155fbd] font-bold mt-0.5 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-sky-600 shrink-0" />
+                        <span className="truncate">{b.slot_time}</span>
+                      </div>
                     </td>
 
                     {/* Pricing */}
-                    <td className="py-3 px-4">
-                      <strong className="block text-ink font-black">₹{b.total}</strong>
-                      <div className="text-[10px] space-x-1">
-                        <span className="text-emerald-700 font-bold">Adv: ₹{b.advance_paid || 0}</span>
+                    <td className="py-2.5 px-3 border border-slate-300 align-middle">
+                      <strong className="block text-slate-900 font-black text-xs">₹{b.total}</strong>
+                      <div className="text-[10px] mt-0.5 flex items-center gap-1">
+                        <span className="text-emerald-800 font-extrabold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-300 whitespace-nowrap">Adv: ₹{b.advance_paid || 0}</span>
                         {b.balance > 0 ? (
-                          <span className="text-amber-700 font-bold">&bull; Due: ₹{b.balance}</span>
+                          <span className="text-amber-900 font-extrabold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 whitespace-nowrap">Due: ₹{b.balance}</span>
                         ) : (
-                          <span className="text-slate-500">&bull; Paid</span>
+                          <span className="text-emerald-800 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-300">Paid</span>
                         )}
                       </div>
                     </td>
 
                     {/* Source */}
-                    <td className="py-3 px-4">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    <td className="py-2.5 px-2 border border-slate-300 align-middle text-center">
+                      <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9.5px] font-extrabold uppercase border whitespace-nowrap ${
                         b.source === 'phone' 
-                          ? 'bg-amber-100 text-amber-900 border border-amber-300' 
+                          ? 'bg-amber-50 text-amber-900 border-amber-300' 
                           : b.source === 'walk_in'
-                          ? 'bg-purple-100 text-purple-900'
-                          : 'bg-blue-100 text-blue-900'
+                          ? 'bg-purple-50 text-purple-900 border-purple-300'
+                          : 'bg-sky-50 text-sky-900 border-sky-300'
                       }`}>
                         {b.source === 'phone' ? '📞 Phone' : b.source === 'walk_in' ? '🚶 Walk-in' : '🌐 Web'}
                       </span>
                     </td>
 
                     {/* Status */}
-                    <td className="py-3 px-4">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${
-                        b.status === 'confirmed' ? 'bg-emerald-100 text-emerald-800' :
-                        b.status === 'completed' ? 'bg-royal-100 text-[#155fbd]' :
-                        b.status === 'cancelled' ? 'bg-rose-100 text-rose-800' :
-                        'bg-amber-100 text-amber-800'
+                    <td className="py-2.5 px-2 border border-slate-300 align-middle text-center">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9.5px] font-black uppercase tracking-wider border whitespace-nowrap ${
+                        b.status === 'confirmed' ? 'bg-emerald-50 text-emerald-800 border-emerald-300' :
+                        b.status === 'completed' ? 'bg-sky-50 text-sky-800 border-sky-300' :
+                        b.status === 'cancelled' ? 'bg-rose-50 text-rose-800 border-rose-300' :
+                        'bg-amber-50 text-amber-800 border-amber-300'
                       }`}>
                         {b.status}
                       </span>
                     </td>
 
                     {/* Actions */}
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
+                    <td className="py-2.5 px-3 border border-slate-300 align-middle text-right">
+                      <div className="flex items-center justify-end gap-1">
                         
                         {/* 1-CLICK WHATSAPP BUTTON */}
                         <button
                           onClick={() => sendCustomerWhatsApp(b)}
-                          className="px-2.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-transform active:scale-95 cursor-pointer"
+                          className="px-2 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-transform active:scale-95 cursor-pointer whitespace-nowrap"
                           title="Send reservation confirmation to customer on WhatsApp"
                         >
                           <MessageCircle className="w-3.5 h-3.5 fill-white" />
-                          <span className="hidden sm:inline">WhatsApp</span>
+                          <span>WhatsApp</span>
+                        </button>
+
+                        {/* Reschedule Slot */}
+                        <button
+                          onClick={() => openRescheduleModal(b)}
+                          className="p-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 transition-colors cursor-pointer"
+                          title="Reschedule Slot"
+                        >
+                          <Clock className="w-3.5 h-3.5" />
                         </button>
 
                         {/* View / Manage Details */}
                         <button
                           onClick={() => setSelectedBooking(b)}
-                          className="p-1.5 rounded-xl bg-[#f0f7ff] hover:bg-[#d9ebff]/50 text-[#237eea]"
+                          className="p-1 rounded-lg bg-[#f0f7ff] hover:bg-[#d9ebff]/50 text-[#155fbd] border border-sky-200 transition-colors cursor-pointer"
                           title="View Details"
                         >
-                          <Eye className="w-4 h-4" />
+                          <Eye className="w-3.5 h-3.5" />
                         </button>
 
-                        {/* Soft Delete */}
-                        <button
-                          onClick={() => {
-                            if (confirm(`Move booking #${b.booking_ref} to Trash?`)) {
-                              handleAction(b.id, 'soft_delete');
-                            }
-                          }}
-                          className="p-1.5 rounded-xl bg-[#f0f7ff] hover:bg-rose-100 text-rose-600"
-                          title="Delete Booking"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {/* Cancel Booking Quick Action */}
+                        {b.status !== 'cancelled' && (
+                          <button
+                            onClick={() => {
+                              const reason = prompt(`Cancel reservation #${b.booking_ref} for ${b.customer_name}?\nEnter cancellation reason:`, 'Cancelled by guest request');
+                              if (reason) {
+                                handleAction(b.id, 'cancel', { cancelled_reason: reason });
+                              }
+                            }}
+                            className="p-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors cursor-pointer"
+                            title="Cancel Booking"
+                          >
+                            <XCircle className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+
+                        {/* Soft Delete (Admin Only) */}
+                        {!isStaff && (
+                          <button
+                            onClick={() => {
+                              if (confirm(`Move booking #${b.booking_ref} to Trash?`)) {
+                                handleAction(b.id, 'soft_delete');
+                              }
+                            }}
+                            className="p-1 rounded-lg bg-slate-50 hover:bg-rose-100 text-rose-600 border border-slate-200 hover:border-rose-300 transition-colors cursor-pointer"
+                            title="Delete Booking (Admin Only)"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                     </td>
-
                   </tr>
                 ))}
               </tbody>
@@ -682,6 +848,19 @@ export default function AdminBookingsPage() {
                   </button>
                 </div>
               </div>
+
+              {/* RESCHEDULE SLOT BUTTON */}
+              <button
+                type="button"
+                onClick={() => {
+                  openRescheduleModal(selectedBooking);
+                  setSelectedBooking(null);
+                }}
+                className="w-full py-2.5 px-4 rounded-xl text-xs font-extrabold text-[#141110] bg-amber-50 hover:bg-amber-100 border border-amber-300 shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                <Clock className="w-4 h-4 text-amber-700" />
+                <span>Reschedule Date / Time Slot</span>
+              </button>
 
               {selectedBooking.screen_name && (
                 <div className="p-3 rounded-xl bg-[#f0f7ff]">
@@ -854,6 +1033,52 @@ export default function AdminBookingsPage() {
                 </div>
               </div>
 
+              {/* Extra Hours Extension */}
+              <div className="space-y-1.5 p-3 rounded-2xl bg-orange-50/70 border border-orange-200">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-slate-900 text-xs">
+                    Extend Showtime Duration (Extra Hours)
+                  </label>
+                  <span className="text-[10px] font-black text-[#ef4a23]">
+                    {manualForm.theatre_id === 1 || manualForm.theatre_id === 4 ? '+₹400 / Hr (Couple)' : '+₹750 / Hr (Celebration & Family)'}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {[0, 1, 2].map((extra) => {
+                    const isSelected = (manualForm.extra_hours || 0) === extra;
+                    const hourlyRate = (manualForm.theatre_id === 1 || manualForm.theatre_id === 4) ? 400 : 750;
+                    const extraCost = extra * hourlyRate;
+                    return (
+                      <button
+                        key={extra}
+                        type="button"
+                        onClick={() => {
+                          const currentExtra = manualForm.extra_hours || 0;
+                          const currentExtraCost = currentExtra * hourlyRate;
+                          const basePrice = manualForm.total - currentExtraCost;
+                          const newTotal = basePrice + extraCost;
+                          setManualForm(prev => ({
+                            ...prev,
+                            extra_hours: extra,
+                            total: newTotal
+                          }));
+                        }}
+                        className={`py-2 px-2.5 rounded-xl border text-center transition-all cursor-pointer ${
+                          isSelected
+                            ? 'border-[#ef4a23] bg-[#ef4a23] text-white font-black shadow-xs'
+                            : 'border-slate-300 bg-white hover:border-[#ef4a23] text-slate-800 font-bold'
+                        }`}
+                      >
+                        <span className="block text-xs">{extra === 0 ? 'Standard 2 Hrs' : `+${extra} Hr (${2 + extra} Hrs)`}</span>
+                        <span className={`block text-[10px] mt-0.5 ${isSelected ? 'text-white/90' : 'text-slate-500'}`}>
+                          {extra === 0 ? 'Regular timing' : `+₹${extraCost}`}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Date & Showtime Slots Selection */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -876,7 +1101,10 @@ export default function AdminBookingsPage() {
                     {manualSlots.map((s) => {
                       const isSelected = manualForm.slot_id === s.id;
                       const isBooked = s.is_booked;
-                      const slotTime = s.time || `${s.start_time} - ${s.end_time}`;
+                      let slotTime = s.time || `${s.start_time} - ${s.end_time}`;
+                      if (manualForm.extra_hours > 0) {
+                        slotTime = formatBookingSlotTime(s.dynamic_start_time || s.start_time, s.dynamic_end_time || s.end_time, manualForm.extra_hours);
+                      }
                       return (
                         <button
                           type="button"
@@ -1077,6 +1305,184 @@ export default function AdminBookingsPage() {
           </div>
         </div>
       )}
+
+      {/* RESCHEDULE SLOT MODAL */}
+      {showRescheduleModal && rescheduleBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-orange-200 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900">Reschedule Booking</h3>
+                  <p className="text-xs text-slate-500 font-mono">Ref: #{rescheduleBooking.booking_ref} &bull; {rescheduleBooking.customer_name}</p>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => {
+                  setShowRescheduleModal(false);
+                  setRescheduleBooking(null);
+                }}
+                className="p-1 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleRescheduleSubmit} className="space-y-4 pt-4">
+              {/* Current Slot Info */}
+              <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-200 text-xs space-y-1">
+                <span className="font-bold text-amber-900 block">Current Reservation:</span>
+                <p className="text-slate-700">
+                  📅 <strong>{rescheduleBooking.booking_date}</strong> &bull; ⏰ <strong>{rescheduleBooking.slot_time || 'Standard Slot'}</strong>
+                </p>
+                <p className="text-slate-600">
+                  📍 {rescheduleBooking.branch_name || (rescheduleBooking.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage')} &bull; 🎭 {rescheduleBooking.theatre_name || rescheduleBooking.screen_name || 'Standard Screen'}
+                </p>
+              </div>
+
+              {/* Select Branch */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Select Branch</label>
+                <select
+                  value={rescheduleForm.branch_id}
+                  onChange={(e) => {
+                    const newBranchId = Number(e.target.value);
+                    const defaultTheatre = newBranchId === 1 ? 1 : 4;
+                    setRescheduleForm(prev => ({
+                      ...prev,
+                      branch_id: newBranchId,
+                      theatre_id: defaultTheatre
+                    }));
+                  }}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#ef4a23]"
+                >
+                  <option value={1}>Electronic City Branch</option>
+                  <option value={2}>BTM 2nd Stage Branch</option>
+                </select>
+              </div>
+
+              {/* Select Theatre / Suite */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Select Theatre / Suite</label>
+                <select
+                  value={rescheduleForm.theatre_id}
+                  onChange={(e) => {
+                    const tId = Number(e.target.value);
+                    setRescheduleForm(prev => ({ ...prev, theatre_id: tId }));
+                  }}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#ef4a23]"
+                >
+                  {rescheduleForm.branch_id === 1 ? (
+                    <>
+                      <option value={1}>Couple Suite (Screen 1 &bull; 2-4 Guests)</option>
+                      <option value={2}>Celebration Suite (Screen 2 &bull; 6-10 Guests)</option>
+                      <option value={3}>Grand Family Suite (Screen 3 &bull; 12-16 Guests)</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value={4}>Couple Suite (Screen 1 &bull; 2-4 Guests)</option>
+                      <option value={5}>Celebration Suite (Screen 2 &bull; 6-10 Guests)</option>
+                      <option value={6}>Grand Family Suite (Screen 3 &bull; 12-16 Guests)</option>
+                      <option value={7}>Skyline Celebration Suite (Screen 4 &bull; 8 Guests)</option>
+                    </>
+                  )}
+                </select>
+              </div>
+
+              {/* Select New Date */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Select New Date</label>
+                <input
+                  type="date"
+                  value={rescheduleForm.booking_date}
+                  onChange={(e) => setRescheduleForm(prev => ({ ...prev, booking_date: e.target.value }))}
+                  min={getTodayIST()}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#ef4a23]"
+                  required
+                />
+              </div>
+
+              {/* Live Slot Picker */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Choose Available Time Slot {loadingRescheduleSlots && '(Checking slots...)'}
+                </label>
+                {loadingRescheduleSlots ? (
+                  <div className="py-4 text-center text-xs text-slate-500 animate-pulse">
+                    Checking slot availability...
+                  </div>
+                ) : rescheduleSlots.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-1">
+                    {rescheduleSlots.map((slot) => {
+                      const isSelected = rescheduleForm.slot_id === slot.id;
+                      const isBooked = slot.is_booked;
+
+                      return (
+                        <button
+                          key={slot.id}
+                          type="button"
+                          disabled={isBooked}
+                          onClick={() => {
+                            const extraHours = Number(rescheduleBooking?.extra_hours || 0);
+                            const formattedTime = formatBookingSlotTime(slot.dynamic_start_time || slot.start_time, slot.dynamic_end_time || slot.end_time, extraHours);
+                            setRescheduleForm(prev => ({
+                              ...prev,
+                              slot_id: slot.id,
+                              slot_time: formattedTime
+                            }));
+                          }}
+                          className={`p-2.5 rounded-xl border text-left transition-all text-xs flex flex-col justify-between ${
+                            isBooked
+                              ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60'
+                              : isSelected
+                              ? 'bg-[#141110] text-[#ffd46e] border-[#141110] shadow-sm font-bold scale-[1.02]'
+                              : 'bg-white hover:bg-orange-50/50 border-slate-200 text-slate-800'
+                          }`}
+                        >
+                          <span className="font-mono font-bold">{slot.start_time} - {slot.end_time}</span>
+                          <span className="text-[10px] mt-1 font-medium">
+                            {isBooked ? '❌ Booked' : isSelected ? '✓ Selected Slot' : '🟢 Available'}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="p-3 rounded-xl bg-slate-50 text-xs text-slate-500 text-center">
+                    No slot data found for this date. Defaulting to standard time slots.
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowRescheduleModal(false);
+                    setRescheduleBooking(null);
+                  }}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl text-xs font-black bg-[#ef4a23] hover:bg-[#ff5d38] text-white shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Confirm Reschedule</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
 
     </div>
   );

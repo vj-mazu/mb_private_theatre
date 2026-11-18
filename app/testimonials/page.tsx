@@ -10,41 +10,52 @@ import { Star, ShieldCheck, Heart } from 'lucide-react';
 export const metadata = {
   title: 'Guest Testimonials & Reviews | Movie Bash Private Theatre Bengaluru',
   description: 'Read verified 4.9-star Google reviews from guests celebrating birthdays, anniversaries, and romantic dates at Movie Bash.',
+  alternates: {
+    canonical: 'https://moviebash.in/testimonials',
+  },
 };
 
 export default function TestimonialsPage() {
   const reviews = [
     {
-      author: 'Kavin',
-      occasion: 'Family Gathering',
+      author: 'Neha Sultana',
+      occasion: "Baby's Birthday Celebration • Electronic City",
       rating: 5,
-      date: '2 weeks ago',
+      date: 'a month ago',
       avatar: '/images/couple_7.webp',
-      text: 'Great place to spend time with friends and family on a special day. Lovely decoration, cozy and neat, great service, easy to book and add on. Outside food is allowed and you can use your own OTT platforms.',
+      text: "Had the absolute best time celebrating our baby's birthday here! The team provided outstanding service and genuine cooperation throughout the event. The photos and videos turned out stunning—crisp, well-lit, and beautiful memory-keepers. The cake was a huge hit too! The design was exactly what we asked for, and it tasted amazing. Thank you for making our baby's day so memorable!",
     },
     {
-      author: 'Shreya',
-      occasion: 'Couple Celebration',
+      author: 'Pavani Pandu',
+      occasion: "Son's 2nd Birthday Party • Electronic City",
       rating: 5,
-      date: '1 month ago',
+      date: '4 months ago',
       avatar: '/images/couple_8.webp',
-      text: 'One of the best places to celebrate. Booked the couple theatre for 4 members; the fog effect and everything was amazing.',
+      text: "We celebrated our son's 2nd birthday at Bash Movie yesterday, and it was an unforgettable experience! From the moment we arrived, everything was well organized and beautifully arranged. The decorations, lighting, and overall ambiance created a perfect setting for the celebration. The staff was extremely friendly, polite, and attentive. They took care of every little detail and made sure our event went smoothly without any stress. Our guests enjoyed the venue, and the kids had an amazing time. The service was excellent, and the entire team went above and beyond to make our special day memorable. Seeing the smiles on our son's face made it all the more special. Thank you to the entire Bash Movie team for making our little prince's 2nd birthday such a beautiful and cherished memory. We truly appreciate your effort and hospitality. We highly recommend this place for birthday parties and family celebrations, and we look forward to celebrating many more special occasions here! ❤️ 🎉 🎂",
     },
     {
-      author: 'Mani',
-      occasion: 'Birthday Surprise',
+      author: 'Rajesh raju',
+      occasion: 'Birthday Celebration & Party • Electronic City',
       rating: 5,
-      date: '1 month ago',
+      date: 'a month ago',
       avatar: '/images/celebration_3.webp',
-      text: "Good arrangements, great for surprising loved ones. Thanks for making my husband's birthday memorable.",
+      text: "Yesterday night we have celebrated birthday... 🎉 Really superb.. service's and I love your hospitality and prosperity.. 🤗 coming to the party hall and decor and snacks all such things are Really fabulous and our children had enjoyed and created thair own memories 🤩 🤩 You mad Hanish's day some more special 💖 ✨ He loved and got surprised 🥰 We were so happy about that 🫠 Thank you... Movie Bash for what you mad for us. 🤝",
     },
     {
-      author: 'Kumar',
-      occasion: 'Wedding Anniversary',
+      author: 'Naveen Sudarshan',
+      occasion: 'Birthday Party Experience • Electronic City',
       rating: 5,
-      date: '2 months ago',
+      date: 'a month ago',
       avatar: '/images/celebration_4.webp',
-      text: 'Amazing experience for our anniversary. Fog entry, cake, decoration and photo shoot were fabulous.',
+      text: "Had a really nice experience at Movie Bash, Bangalore! 😊 We celebrated a birthday here, and it was a lovely experience. The staff were very patient, friendly, and supportive throughout, and they made sure we felt comfortable. ❤️ The private theatre setup made the celebration feel extra special and gave us some wonderful memories. 🎂 🎬 It’s a great place to plan a birthday surprise or celebrate a special occasion with friends and family. Really appreciate the staff for their patience and support. Overall, we had a great time and would definitely recommend this place! ❤️ ✨",
+    },
+    {
+      author: "Nandu's Quest",
+      occasion: 'Small Gathering & Ample Parking • Electronic City',
+      rating: 4,
+      date: '3 months ago',
+      avatar: '/images/couple_1.webp',
+      text: 'This venue is good for small events, especially if food is not required. It has ample parking, which is a big advantage. They have two celebration rooms with nice decorations and screens, making them suitable for birthday parties and other small gatherings. However, it is not ideal for events that require food, as there is no dedicated dining area.',
     },
   ];
 
@@ -78,26 +89,26 @@ export default function TestimonialsPage() {
               More Google Reviews
             </h2>
             <p className="text-xs sm:text-sm text-ink/75 mt-2">
-              Browse reviews shared by recent guests across Electronic City &amp; BTM 2nd Stage.
+              Browse authentic 5-star Google reviews from verified guests at Electronic City.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {reviews.map((r, i) => (
               <div
                 key={i}
-                className="p-8 rounded-3xl bg-white border border-sand-200 shadow-soft hover:shadow-elevated transition-all flex flex-col justify-between"
+                className="p-6 sm:p-7 rounded-3xl bg-white border border-sand-200 shadow-soft hover:shadow-elevated transition-all flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-1 text-amber-400">
                       {[...Array(r.rating)].map((_, idx) => (
-                        <Star key={idx} className="w-4 h-4 fill-amber-400" />
+                        <Star key={idx} className="w-3.5 h-3.5 fill-amber-400" />
                       ))}
                     </div>
-                    <span className="text-xs text-ink/50 font-semibold">{r.date}</span>
+                    <span className="text-[11px] text-ink/50 font-semibold">{r.date}</span>
                   </div>
 
-                  <p className="font-playfair text-base font-medium italic text-royal-900 leading-relaxed mb-6">
+                  <p className="font-playfair text-[11px] sm:text-xs font-medium italic text-stone-700 leading-relaxed mb-4">
                     &ldquo;{r.text}&rdquo;
                   </p>
                 </div>

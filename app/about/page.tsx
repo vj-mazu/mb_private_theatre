@@ -12,6 +12,9 @@ import { Sparkles, Heart, Film, ShieldCheck } from 'lucide-react';
 export const metadata = {
   title: 'About Us | Movie Bash Private Theatre Bengaluru',
   description: 'Learn how Movie Bash became Bengaluru’s premier private screening theatre for birthdays, anniversaries, and exclusive celebrations.',
+  alternates: {
+    canonical: 'https://moviebash.in/about',
+  },
 };
 
 export default function AboutPage() {
@@ -21,7 +24,7 @@ export default function AboutPage() {
       <Navbar />
 
       {/* Hero Banner */}
-      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#f0f7ff] via-cream to-cream text-ink relative overflow-hidden border-b border-sky-100">
+      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#fff8f5] via-cream to-cream text-ink relative overflow-hidden border-b border-sky-100">
         <div className="hero-orb orb-one" />
         <div className="hero-orb orb-two" />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-6 relative z-10">
@@ -46,7 +49,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             <div className="lg:col-span-6 space-y-6">
-              <span className="text-xs font-bold uppercase tracking-widest text-[#237eea]">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#ef4a23]">
                 The Movie Bash Journey
               </span>
               <h2 className="font-playfair text-3xl sm:text-4xl font-black text-ink leading-tight">
@@ -59,11 +62,11 @@ export default function AboutPage() {
                 Whether it is reliving cherished wedding videos on a 135-inch screen, surprising your partner with an enchanted fog entry, or watching a blockbuster in total peace without screaming crowds, Movie Bash gives you the theater entirely to yourselves.
               </p>
 
-              <div className="p-6 rounded-3xl bg-white border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] border-l-4 border-l-[#237eea]">
+              <div className="p-6 rounded-3xl bg-white border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] border-l-4 border-l-[#ef4a23]">
                 <p className="font-playfair text-lg font-bold italic text-ink">
                   &ldquo;Walk in, see the setup, hit play on your favourite movie… and watch the moment turn special.&rdquo;
                 </p>
-                <span className="block mt-2 text-xs font-bold text-[#237eea] uppercase tracking-wider">
+                <span className="block mt-2 text-xs font-bold text-[#ef4a23] uppercase tracking-wider">
                   — The Movie Bash Founding Vision
                 </span>
               </div>
@@ -72,15 +75,15 @@ export default function AboutPage() {
             <div className="lg:col-span-6 relative">
               <div className="relative rounded-3xl overflow-hidden shadow-[0_16px_50px_rgba(22,48,79,0.08)] border-4 border-white aspect-[4/3]">
                 <Image
-                  src="/images/ambience_2.webp"
-                  alt="Movie Bash Private Screen Ambience"
+                  src="/images/celebration_1.webp"
+                  alt="Movie Bash Luxury Private Theatre Celebration Experience"
                   fill
                   sizes="(max-width: 1024px) 100vw, 500px"
                   className="object-cover"
                 />
               </div>
               <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-[0_12px_40px_rgba(22,48,79,0.08)] border border-sky-100 max-w-[200px]">
-                <span className="font-playfair text-2xl font-black text-[#237eea] block">12,500+</span>
+                <span className="font-playfair text-2xl font-black text-[#ef4a23] block">12,500+</span>
                 <span className="text-xs font-bold text-slate-700">Celebrations Hosted</span>
               </div>
             </div>

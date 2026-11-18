@@ -32,7 +32,7 @@ export default function HomeStats() {
   ];
 
   return (
-    <section className="py-8 sm:py-14 bg-white border-y border-sky-100 text-ink relative overflow-hidden">
+    <section className="py-8 sm:py-14 bg-white border-y border-[#ef4a23]/15 text-ink relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {stats.map((s, idx) => {
@@ -40,12 +40,12 @@ export default function HomeStats() {
             return (
               <div
                 key={idx}
-                className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#fffdf9] border border-sky-100 hover:border-[#237eea]/50 transition-all text-center flex flex-col items-center justify-center group"
+                className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#fffdf9] border border-[#ef4a23]/15 hover:border-[#ef4a23] transition-all text-center flex flex-col items-center justify-center group"
               >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#d9ebff] text-[#155fbd] flex items-center justify-center mb-2.5 sm:mb-3 group-hover:bg-[#237eea] group-hover:text-white transition-colors">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#fff0ea] text-[#ef4a23] flex items-center justify-center mb-2.5 sm:mb-3 group-hover:bg-[#ef4a23] group-hover:text-white transition-colors">
                   <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <div className="font-playfair text-2xl sm:text-4xl font-black text-[#237eea] tracking-tight">
+                <div className="font-playfair text-2xl sm:text-4xl font-black text-[#ef4a23] tracking-tight">
                   {s.value}
                 </div>
                 <div className="mt-1 text-xs sm:text-sm font-bold text-ink">

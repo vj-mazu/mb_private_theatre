@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import BookingWizard from '@/components/BookingWizard';
 import FloatingContact from '@/components/FloatingContact';
 import AnnouncementBar from '@/components/AnnouncementBar';
+import { mockStore } from '@/lib/db';
 
 export default function BranchBookNowPage({ params }: { params: { 'branch-slug': string } }) {
   const slug = params['branch-slug'];
@@ -14,7 +15,7 @@ export default function BranchBookNowPage({ params }: { params: { 'branch-slug':
       
       <div className="flex-1 py-8 sm:py-12">
         <Suspense fallback={<div className="p-12 text-center text-sm font-bold text-royal-900">Loading Booking Wizard...</div>}>
-          <BookingWizard initialBranch={slug} />
+          <BookingWizard initialBranch={slug} initialLiveTheatres={mockStore.theatres} />
         </Suspense>
       </div>
 

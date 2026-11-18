@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mockStore, query, incrementCouponUsage } from '@/lib/db';
+import { mockStore, query, incrementCouponUsage, getDb } from '@/lib/db';
 import { couponRateLimiter } from '@/lib/rate-limiter';
 
 export async function POST(request: NextRequest) {
@@ -14,7 +14,16 @@ export async function POST(request: NextRequest) {
     }
 
     const cleanCode = String(code).trim().toUpperCase();
-    const coupon = mockStore.coupons.find(c => c.code === cleanCode && c.is_active === 1);
+    let coupon: any = null;
+    try {
+      const db = getDb();
+      coupon = db.prepare('SELECT * FROM coupons WHERE code = ? AND is_active = 1').get(cleanCode);
+    } catch {
+      coupon = mockStore.coupons.find(c => c.code === cleanCode && c.is_active === 1);
+    }
+    if (!coupon) {
+      coupon = mockStore.coupons.find(c => c.code === cleanCode && c.is_active === 1);
+    }
 
     if (!coupon) {
       return NextResponse.json({ success: false, error: 'Invalid or expired coupon code' }, { status: 404 });

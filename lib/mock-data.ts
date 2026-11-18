@@ -20,7 +20,13 @@ export interface Theatre {
   extra_person_price: number;
   amenities: string;
   image_url: string;
+  video_url?: string;
   is_active: number;
+  images?: string[];
+  standard_price?: number;
+  custom_price?: number;
+  premium_price?: number;
+  extra_hour_rate?: number;
 }
 
 export interface TimeSlot {
@@ -89,7 +95,7 @@ export const initialMockStore: MockStore = {
       id: 2,
       name: 'Movie Bash – BTM 2nd Stage',
       slug: 'btm-stage-2',
-      address: 'MovieBash, 2nd Floor, 16th Main Road, Near Udupi Garden Signal, BTM 2nd Stage, Bengaluru 560076 (Owner editable)',
+      address: 'MovieBash, 2nd Floor, 16th Main Road, Near Udupi Garden Signal, BTM 2nd Stage, Bengaluru 560076',
       phone: '+91 99029 23656',
       map_url: 'https://maps.google.com/?q=BTM+2nd+Stage+Bengaluru',
       image_url: '/images/celebration_1.webp',
@@ -133,59 +139,63 @@ export const initialMockStore: MockStore = {
       base_price: 1699.00,
       extra_person_price: 0.00,
       amenities: 'Giant 150-inch Screen, Multi-tier Luxury Seating, Karaoke Microphones, Cake Podium',
-      image_url: '/images/ambience_2.webp',
+      image_url: '/images/celebration_1.webp',
       is_active: 1
     },
     {
       id: 4,
       branch_id: 2,
-      name: 'Couple Theater',
-      slug: 'couple-theater-btm',
-      emoji: '🎬',
+      name: 'Butterfly Blush',
+      slug: 'butterfly-blush-btm',
+      emoji: '🦋',
       capacity: 2,
       base_price: 899.00,
-      extra_person_price: 0.00,
-      amenities: 'Ultra HD 4K Projection, Recliner Sofas, Dolby Atmos Sound, Romantic Lighting, OTT Apps Logged-in',
-      image_url: '/images/couple_2.webp',
+      extra_person_price: 150.00,
+      amenities: 'Signature Blush Glow, 4K Laser Projection, Dolby Atmos Surround, Luxury Recliner Loungers, Private Climate Control, OTT Ready',
+      image_url: '/images/rooms/btm-butterfly-blush.webp',
+      video_url: '/videos/btm-butterfly-blush.mp4',
       is_active: 1
     },
     {
       id: 5,
       branch_id: 2,
-      name: 'Celebration Theater',
-      slug: 'celebration-theater-btm',
-      emoji: '🎉',
+      name: 'Lavender Mist',
+      slug: 'lavender-mist-btm',
+      emoji: '🪻',
       capacity: 6,
       base_price: 1499.00,
-      extra_person_price: 0.00,
-      amenities: '135-inch Screen, JBL High Fidelity Audio, Party Strobe & Glow Lighting, Stage Backdrop',
-      image_url: '/images/celebration_3.webp',
+      extra_person_price: 150.00,
+      amenities: 'Aesthetic Lavender Hues, 135-inch Cinema Display, High-Fidelity Audio, Fog Entry Compatible, Ambient LED Setup',
+      image_url: '/images/rooms/btm-lavender-mist.webp',
+      video_url: '/videos/btm-lavender-mist.mp4',
       is_active: 1
     },
     {
       id: 6,
       branch_id: 2,
-      name: 'Family Theater',
-      slug: 'family-theater-btm',
-      emoji: '👨‍👩‍👧‍👦',
+      name: 'Scarlet Red',
+      slug: 'scarlet-red-btm',
+      emoji: '🌹',
       capacity: 12,
       base_price: 1699.00,
-      extra_person_price: 0.00,
-      amenities: '150-inch Curved Screen, Recliners + Loungers, Private Dining Table, Cake Podium',
-      image_url: '/images/ambience_3.webp',
+      extra_person_price: 150.00,
+      amenities: 'Passionate Scarlet Theme, 150-inch 4K Cinema Screen, Recliners + Loungers, Private Dining Table, Cake Cutting Stage',
+      image_url: '/images/rooms/btm-scarlet-red.webp',
+      video_url: '/videos/btm-scarlet-red.mp4',
       is_active: 1
     },
     {
       id: 7,
       branch_id: 2,
-      name: 'VIP Celebration Suite',
-      slug: 'vip-celebration-suite-btm',
-      emoji: '✨',
+      name: 'Shadow Suit',
+      slug: 'shadow-suit-btm',
+      emoji: '🎬',
       capacity: 8,
       base_price: 1599.00,
-      extra_person_price: 0.00,
-      amenities: '140-inch Laser 4K Screen, Luxury Recliner Suite, Dolby Audio, Private Party Dining, Fog Entry Ready',
-      image_url: '/images/celebration_6.webp',
+      extra_person_price: 150.00,
+      amenities: 'Stealth Cinema Suite, Deep Contrast Acoustic Walls, 140-inch Laser 4K Screen, Recliner Suite, Dolby Audio',
+      image_url: '/images/rooms/btm-shadow-suit.webp',
+      video_url: '/videos/video_2.mp4',
       is_active: 1
     }
   ],
@@ -218,47 +228,44 @@ export const initialMockStore: MockStore = {
     { id: 20, theatre_id: 3, start_time: '10:45 PM', end_time: '12:45 AM', crosses_midnight: 1, is_active: 1, sort_order: 6 },
 
     // --- BTM 2nd Stage (Branch 2) ---
-    // 🎬 Couple Theater (theatre_id: 4)
+    // 🦋 Butterfly Blush (theatre_id: 4) - 6 Slots Exactly as specified
     { id: 21, theatre_id: 4, start_time: '10:00 AM', end_time: '12:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 1 },
-    { id: 22, theatre_id: 4, start_time: '12:15 PM', end_time: '02:15 PM', crosses_midnight: 0, is_active: 1, sort_order: 2 },
-    { id: 23, theatre_id: 4, start_time: '02:30 PM', end_time: '04:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 3 },
-    { id: 24, theatre_id: 4, start_time: '05:00 PM', end_time: '06:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 4 },
-    { id: 25, theatre_id: 4, start_time: '06:30 PM', end_time: '08:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 5 },
-    { id: 26, theatre_id: 4, start_time: '08:45 PM', end_time: '10:45 PM', crosses_midnight: 0, is_active: 1, sort_order: 6 },
-    { id: 27, theatre_id: 4, start_time: '11:00 PM', end_time: '01:00 AM', crosses_midnight: 1, is_active: 1, sort_order: 7 },
+    { id: 22, theatre_id: 4, start_time: '12:30 PM', end_time: '02:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 2 },
+    { id: 23, theatre_id: 4, start_time: '03:00 PM', end_time: '05:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 3 },
+    { id: 24, theatre_id: 4, start_time: '05:30 PM', end_time: '07:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 4 },
+    { id: 25, theatre_id: 4, start_time: '08:00 PM', end_time: '10:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 5 },
+    { id: 26, theatre_id: 4, start_time: '11:00 PM', end_time: '01:00 AM', crosses_midnight: 1, is_active: 1, sort_order: 6 },
 
-    // 🎉 Celebration Theater (theatre_id: 5)
-    { id: 28, theatre_id: 5, start_time: '09:30 AM', end_time: '11:30 AM', crosses_midnight: 0, is_active: 1, sort_order: 1 },
-    { id: 29, theatre_id: 5, start_time: '12:00 PM', end_time: '02:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 2 },
-    { id: 30, theatre_id: 5, start_time: '02:30 PM', end_time: '04:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 3 },
-    { id: 31, theatre_id: 5, start_time: '04:45 PM', end_time: '06:45 PM', crosses_midnight: 0, is_active: 1, sort_order: 4 },
-    { id: 32, theatre_id: 5, start_time: '07:00 PM', end_time: '09:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 5 },
-    { id: 33, theatre_id: 5, start_time: '09:15 PM', end_time: '11:15 PM', crosses_midnight: 0, is_active: 1, sort_order: 6 },
-    { id: 34, theatre_id: 5, start_time: '11:30 PM', end_time: '01:00 AM', crosses_midnight: 1, is_active: 1, sort_order: 7 },
+    // 🪻 Lavender Mist (theatre_id: 5) - 6 Slots Exactly as specified
+    { id: 27, theatre_id: 5, start_time: '10:30 AM', end_time: '12:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 1 },
+    { id: 28, theatre_id: 5, start_time: '01:00 PM', end_time: '03:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 2 },
+    { id: 29, theatre_id: 5, start_time: '03:30 PM', end_time: '05:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 3 },
+    { id: 30, theatre_id: 5, start_time: '06:00 PM', end_time: '08:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 4 },
+    { id: 31, theatre_id: 5, start_time: '08:30 PM', end_time: '10:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 5 },
+    { id: 32, theatre_id: 5, start_time: '11:00 PM', end_time: '01:00 AM', crosses_midnight: 1, is_active: 1, sort_order: 6 },
 
-    // 👨‍👩‍👧‍👦 Family Theater (theatre_id: 6)
-    { id: 35, theatre_id: 6, start_time: '10:00 AM', end_time: '12:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 1 },
-    { id: 36, theatre_id: 6, start_time: '12:30 PM', end_time: '02:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 2 },
-    { id: 37, theatre_id: 6, start_time: '03:00 PM', end_time: '05:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 3 },
-    { id: 38, theatre_id: 6, start_time: '06:00 PM', end_time: '08:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 4 },
-    { id: 39, theatre_id: 6, start_time: '08:30 PM', end_time: '10:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 5 },
-    { id: 40, theatre_id: 6, start_time: '10:45 PM', end_time: '12:45 AM', crosses_midnight: 1, is_active: 1, sort_order: 6 },
+    // 🌹 Scarlet Red (theatre_id: 6) - 6 Slots Exactly as specified
+    { id: 33, theatre_id: 6, start_time: '10:30 AM', end_time: '12:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 1 },
+    { id: 34, theatre_id: 6, start_time: '01:00 PM', end_time: '03:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 2 },
+    { id: 35, theatre_id: 6, start_time: '03:30 PM', end_time: '05:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 3 },
+    { id: 36, theatre_id: 6, start_time: '06:00 PM', end_time: '08:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 4 },
+    { id: 37, theatre_id: 6, start_time: '08:30 PM', end_time: '10:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 5 },
+    { id: 38, theatre_id: 6, start_time: '11:00 PM', end_time: '01:00 AM', crosses_midnight: 1, is_active: 1, sort_order: 6 },
 
-    // ✨ VIP Celebration Suite (theatre_id: 7) - 4th Theatre for BTM
-    { id: 41, theatre_id: 7, start_time: '10:00 AM', end_time: '12:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 1 },
-    { id: 42, theatre_id: 7, start_time: '12:15 PM', end_time: '02:15 PM', crosses_midnight: 0, is_active: 1, sort_order: 2 },
-    { id: 43, theatre_id: 7, start_time: '02:30 PM', end_time: '04:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 3 },
-    { id: 44, theatre_id: 7, start_time: '04:45 PM', end_time: '06:45 PM', crosses_midnight: 0, is_active: 1, sort_order: 4 },
-    { id: 45, theatre_id: 7, start_time: '07:00 PM', end_time: '09:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 5 },
-    { id: 46, theatre_id: 7, start_time: '09:15 PM', end_time: '11:15 PM', crosses_midnight: 0, is_active: 1, sort_order: 6 },
-    { id: 47, theatre_id: 7, start_time: '11:30 PM', end_time: '01:00 AM', crosses_midnight: 1, is_active: 1, sort_order: 7 }
+    // 🎬 Shadow Suit (theatre_id: 7) - 6 Slots Exactly as specified
+    { id: 39, theatre_id: 7, start_time: '10:00 AM', end_time: '12:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 1 },
+    { id: 40, theatre_id: 7, start_time: '12:30 PM', end_time: '02:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 2 },
+    { id: 41, theatre_id: 7, start_time: '03:00 PM', end_time: '05:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 3 },
+    { id: 42, theatre_id: 7, start_time: '05:30 PM', end_time: '07:30 PM', crosses_midnight: 0, is_active: 1, sort_order: 4 },
+    { id: 43, theatre_id: 7, start_time: '08:00 PM', end_time: '10:00 PM', crosses_midnight: 0, is_active: 1, sort_order: 5 },
+    { id: 44, theatre_id: 7, start_time: '11:00 PM', end_time: '01:00 AM', crosses_midnight: 1, is_active: 1, sort_order: 6 }
   ],
   occasions: [
     { id: 1, name: 'Anniversary', slug: 'anniversary', icon: 'Heart', description: 'Celebrate your love milestone with fairy lights and rose petals.', image_url: '/images/couple_3.webp', is_active: 1, sort_order: 1 },
     { id: 2, name: 'Birthday Party', slug: 'birthday-party', icon: 'Cake', description: 'Make their birthday unforgettable with grand balloon decor.', image_url: '/images/celebration_4.webp', is_active: 1, sort_order: 2 },
     { id: 3, name: 'Date & Proposal', slug: 'date-and-proposal', icon: 'Sparkles', description: 'The most romantic ambiance in Bangalore for dream proposals.', image_url: '/images/couple_4.webp', is_active: 1, sort_order: 3 },
     { id: 4, name: 'Bachelorette Party', slug: 'bachelorette-party', icon: 'Wine', description: 'Glamorous private night with karaoke and fun photo props.', image_url: '/images/celebration_5.webp', is_active: 1, sort_order: 4 },
-    { id: 5, name: 'Farewell', slug: 'farewell', icon: 'Award', description: 'Bid farewell to friends with cherished moments on screen.', image_url: '/images/ambience_4.webp', is_active: 1, sort_order: 5 },
+    { id: 5, name: 'Farewell', slug: 'farewell', icon: 'Award', description: 'Bid farewell to friends with cherished moments on screen.', image_url: '/images/celebration_4.webp', is_active: 1, sort_order: 5 },
     { id: 6, name: 'Baby Shower', slug: 'baby-shower', icon: 'Baby', description: 'Pastel balloons and fairy buggy entry for mothers-to-be.', image_url: '/images/celebration_6.webp', is_active: 1, sort_order: 6 },
     { id: 7, name: 'Corporate Event', slug: 'corporate-event', icon: 'Briefcase', description: 'Private presentations with Dolby sound and big screens.', image_url: '/images/ambience_5.webp', is_active: 1, sort_order: 7 }
   ],
@@ -314,7 +321,7 @@ export const initialMockStore: MockStore = {
     instagram_followers_count: '24.5K',
     facebook_url: 'https://facebook.com/moviebashprivatetheatre',
     twitter_url: 'https://x.com/Moviebashblr',
-    instagram_url: 'https://instagram.com/moviebash_privatetheatre',
+    instagram_url: 'https://www.instagram.com/moviebash_privatetheatre?bqrl=dHBiYjgwcXduNmo2',
     youtube_url: 'https://youtube.com/@MovieBashPrivateTheatre'
   },
   coupons: [

@@ -1,4 +1,5 @@
 import RefineTheatreLanding from '@/components/RefineTheatreLanding';
+import { mockStore } from '@/lib/db';
 
 export const metadata = {
   title: 'Movie Bash | Private Theatre for Birthdays & Celebrations in Bengaluru',
@@ -8,7 +9,7 @@ export const metadata = {
 export default function HomePage() {
   return (
     <main>
-      <RefineTheatreLanding />
+      <RefineTheatreLanding initialLiveTheatres={mockStore.theatres} />
     </main>
   );
 }

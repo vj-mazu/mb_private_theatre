@@ -5,7 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import FloatingContact from '@/components/FloatingContact';
 import AnnouncementBar from '@/components/AnnouncementBar';
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, MessageCircle, ExternalLink } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, MessageCircle, ExternalLink, Instagram } from 'lucide-react';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -54,7 +54,7 @@ export default function ContactPage() {
       <AnnouncementBar />
       <Navbar />
 
-      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#f0f7ff] via-cream to-cream text-ink text-center relative overflow-hidden border-b border-sky-100">
+      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#fff8f5] via-cream to-cream text-ink text-center relative overflow-hidden border-b border-sky-100">
         <div className="hero-orb orb-one" />
         <div className="hero-orb orb-two" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-4 relative z-10">
@@ -110,7 +110,7 @@ export default function ContactPage() {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="e.g. Aditi Rao"
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea]"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#ef4a23]"
                         required
                       />
                     </div>
@@ -124,7 +124,7 @@ export default function ContactPage() {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="10-digit mobile"
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea]"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#ef4a23]"
                         required
                       />
                     </div>
@@ -140,7 +140,7 @@ export default function ContactPage() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="aditi@example.com"
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea]"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#ef4a23]"
                       />
                     </div>
 
@@ -151,7 +151,7 @@ export default function ContactPage() {
                       <select
                         value={formData.branch_name}
                         onChange={(e) => setFormData({ ...formData, branch_name: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea]"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#ef4a23]"
                       >
                         <option value="Electronic City">Electronic City Branch</option>
                         <option value="BTM 2nd Stage">BTM 2nd Stage Branch</option>
@@ -168,7 +168,7 @@ export default function ContactPage() {
                         type="date"
                         value={formData.preferred_date}
                         onChange={(e) => setFormData({ ...formData, preferred_date: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea] cursor-pointer"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#ef4a23] cursor-pointer"
                       />
                     </div>
 
@@ -183,7 +183,7 @@ export default function ContactPage() {
                         value={formData.guests}
                         onChange={(e) => setFormData({ ...formData, guests: e.target.value })}
                         placeholder="e.g. 6"
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea]"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#ef4a23]"
                       />
                     </div>
                   </div>
@@ -197,7 +197,7 @@ export default function ContactPage() {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder="Tell us what you're planning: birthday, anniversary, special themes, or specific timing requirements..."
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#237eea]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-medium text-ink focus:outline-none focus:border-[#ef4a23]"
                       required
                     />
                   </div>
@@ -219,7 +219,7 @@ export default function ContactPage() {
               
               {/* Branch 1 */}
               <div className="p-6 rounded-3xl bg-white border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] space-y-4">
-                <span className="px-3 py-1 rounded-full bg-[#d9ebff] text-[#155fbd] text-[10px] font-black uppercase">
+                <span className="px-3 py-1 rounded-full bg-[#fff0ea] text-[#141110] text-[10px] font-black uppercase">
                   Flagship Branch
                 </span>
                 <h3 className="font-playfair text-xl font-bold text-royal-900">
@@ -290,6 +290,26 @@ export default function ContactPage() {
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>WhatsApp +91 99029 23656</span>
+                </a>
+              </div>
+
+              {/* Instagram Follow Box */}
+              <div className="p-6 rounded-3xl bg-gradient-to-br from-[#833ab4]/10 via-[#fd1d1d]/10 to-[#fcb045]/10 border border-pink-200/80 bg-white shadow-soft space-y-3">
+                <div className="flex items-center gap-2">
+                  <Instagram className="w-5 h-5 text-[#E1306C]" />
+                  <h4 className="font-bold text-sm text-ink">Watch Us on Instagram</h4>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Explore customer surprise celebrations, reels, and grand decor setups on our official handle.
+                </p>
+                <a
+                  href="https://www.instagram.com/moviebash_privatetheatre?bqrl=dHBiYjgwcXduNmo2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-full bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-95 text-white font-bold text-xs transition-opacity shadow-sm"
+                >
+                  <Instagram className="w-4 h-4" />
+                  <span>Follow @moviebash_privatetheatre</span>
                 </a>
               </div>
 

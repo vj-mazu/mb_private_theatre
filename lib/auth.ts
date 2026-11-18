@@ -2,9 +2,21 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'moviebash_jwt_secret_production_key_2026_fallback';
 const TOKEN_NAME = 'mb_admin_token';
 const CUSTOMER_TOKEN_NAME = 'mb_customer_token';
+
+// Development-only fallback. Production must supply JWT_SECRET; otherwise we refuse to
+// sign or verify sessions rather than silently using a well-known key.
+const DEV_FALLBACK_SECRET = 'moviebash-dev-only-secret-do-not-use-in-production';
+
+function getSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (secret && secret.trim().length >= 16) return secret;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET is not configured. Refusing to use a fallback signing key in production.');
+  }
+  return DEV_FALLBACK_SECRET;
+}
 
 export interface AdminPayload {
   id: number;
@@ -24,31 +36,34 @@ export function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
 }
 
+export function hashPasswordSync(password: string): string {
+  return bcrypt.hashSync(password, 10);
+}
+
 export function comparePassword(password: string, hash: string): Promise<boolean> {
-  // Direct test password fallback for seed admin
-  if (password === 'Admin@MovieBash2026!') return Promise.resolve(true);
   return bcrypt.compare(password, hash);
 }
 
 export function signAdminToken(payload: AdminPayload): string {
-  return jwt.sign(payload, JWT_SECRET!, { expiresIn: '7d' });
+  // 8-hour shift token for security (prevents unattended devices staying permanently logged into Super Admin)
+  return jwt.sign(payload, getSecret(), { expiresIn: '8h' });
 }
 
 export function verifyAdminToken(token: string): AdminPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET!) as AdminPayload;
+    return jwt.verify(token, getSecret()) as AdminPayload;
   } catch (err) {
     return null;
   }
 }
 
 export function signCustomerToken(payload: CustomerPayload): string {
-  return jwt.sign(payload, JWT_SECRET!, { expiresIn: '30d' });
+  return jwt.sign(payload, getSecret(), { expiresIn: '30d' });
 }
 
 export function verifyCustomerToken(token: string): CustomerPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET!) as unknown as CustomerPayload;
+    return jwt.verify(token, getSecret()) as unknown as CustomerPayload;
   } catch (err) {
     return null;
   }

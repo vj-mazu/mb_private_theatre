@@ -5,15 +5,20 @@ import Footer from '@/components/Footer';
 import FloatingContact from '@/components/FloatingContact';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import { MapPin, Phone, Star, Check, CalendarDays, ExternalLink, Clock } from 'lucide-react';
+import { mockStore } from '@/lib/db';
 
 export const metadata = {
   title: 'Movie Bash Electronic City | Private Theatre Bengaluru',
   description: 'Book private theatre celebrations in Electronic City Post Bengaluru. Couple, Celebration, and Family 4K screens with fog entry and custom decors.',
+  alternates: {
+    canonical: 'https://moviebash.in/venues/electronic-city',
+  },
 };
 
 export default function ElectronicCityPage() {
-  const screens = [
+  const baseScreens = [
     {
+      id: 1,
       name: 'Couple Theater',
       capacity: 'Up to 2 Guests',
       price: '₹899',
@@ -21,6 +26,7 @@ export default function ElectronicCityPage() {
       amenities: ['4K Ultra HD Visuals', 'Dolby Atmos Sound', 'Recliner Loungers', 'Romantic Fairy Lights']
     },
     {
+      id: 2,
       name: 'Celebration Theater',
       capacity: 'Up to 6 Guests',
       price: '₹1,499',
@@ -28,20 +34,31 @@ export default function ElectronicCityPage() {
       amenities: ['135-inch Cinema Screen', 'JBL Audio', 'Balloon Decor Space', 'Fog Entry Compatible']
     },
     {
+      id: 3,
       name: 'Family Theater',
       capacity: 'Up to 12-20 Guests',
       price: '₹1,699',
-      image: '/images/ambience_5.webp',
+      image: '/images/celebration_1.webp',
       amenities: ['150-inch Curved Screen', 'Luxury Sofa Seating', 'Karaoke Microphones', 'Dining Space']
     }
   ];
+
+  const screens = baseScreens.map(s => {
+    const match = mockStore.theatres.find(t => t.id === s.id);
+    const p = (match as any)?.custom_price || match?.base_price;
+    return {
+      ...s,
+      price: p ? `₹${Number(p).toLocaleString('en-IN')}` : s.price,
+      image: match?.image_url || s.image
+    };
+  });
 
   return (
     <main className="min-h-screen flex flex-col bg-cream text-ink">
       <AnnouncementBar />
       <Navbar />
 
-      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#f0f7ff] via-cream to-cream text-ink relative overflow-hidden border-b border-sky-100">
+      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#fff8f5] via-cream to-cream text-ink relative overflow-hidden border-b border-sky-100">
         <div className="hero-orb orb-one" />
         <div className="hero-orb orb-two" />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-4 relative z-10">
@@ -65,7 +82,7 @@ export default function ElectronicCityPage() {
               href="https://maps.google.com/?q=Movie+Bash+Electronic+City"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 rounded-full text-xs sm:text-sm font-bold text-[#155fbd] bg-[#d9ebff]/70 border border-sky-200 hover:bg-[#d9ebff] transition-all"
+              className="px-6 py-3 rounded-full text-xs sm:text-sm font-bold text-[#141110] bg-[#fff0ea]/70 border border-sky-200 hover:bg-[#fff0ea] transition-all"
             >
               Get Directions &rarr;
             </a>
@@ -95,13 +112,13 @@ export default function ElectronicCityPage() {
                   <div>
                     <div className="flex justify-between items-baseline mb-2">
                       <h3 className="font-bold text-lg text-ink">{s.name}</h3>
-                      <span className="font-playfair font-black text-[#237eea] text-lg">{s.price}</span>
+                      <span className="font-playfair font-black text-[#ef4a23] text-lg">{s.price}</span>
                     </div>
                     <span className="text-xs text-slate-500 block mb-3 font-medium">{s.capacity}</span>
                     <ul className="space-y-1.5 text-xs text-slate-600">
                       {s.amenities.map((a, i) => (
                         <li key={i} className="flex items-center gap-1.5">
-                          <Check className="w-3.5 h-3.5 text-[#237eea]" />
+                          <Check className="w-3.5 h-3.5 text-[#ef4a23]" />
                           <span>{a}</span>
                         </li>
                       ))}
@@ -110,7 +127,7 @@ export default function ElectronicCityPage() {
 
                   <Link
                     href={`/book-now?branch=electronic-city`}
-                    className="w-full py-3 rounded-full text-center text-xs font-bold text-white bg-gradient-to-r from-[#237eea] to-[#155fbd] hover:opacity-95 shadow-md block mt-4 transition-all"
+                    className="w-full py-3 rounded-full text-center text-xs font-bold text-white bg-gradient-to-r from-[#ef4a23] to-[#ff5b35] hover:opacity-95 shadow-md block mt-4 transition-all"
                   >
                     Select &amp; Book &rarr;
                   </Link>

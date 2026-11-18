@@ -5,7 +5,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-brightgreen?style=for-the-badge)]()
 
-A high-performance, modern web application and management platform for **Movie Bash**, Bengaluru's premier private cinema and celebration destination. Engineered with **Next.js 14 App Router**, **TypeScript**, **Tailwind CSS**, and **MySQL 8** (with an automatic resilient fallback store).
+A high-performance, modern web application and management platform for **Movie Bash**, Bengaluru's premier private cinema and celebration destination. Engineered with **Next.js 14 App Router**, **TypeScript**, **Tailwind CSS**, and **SQLite 3** (`better-sqlite3` with WAL mode and resilient persistence).
 
 ---
 
@@ -39,7 +39,7 @@ A high-performance, modern web application and management platform for **Movie B
 - **Direct WhatsApp Confirmation**: Upon booking submission, an order summary message is automatically formatted and triggered to the customer and the Movie Bash venue manager (`+91 99029 23656`), with a 1-click WhatsApp action on the confirmation screen.
 - **Zero Dummy Data Guarantee**: Clean fresh database state with 0 bookings and 0 test customer records ready for live commercial reservations.
 - **High-Performance GPU Rendering**: Converted hero animation to GPU `translate3d` transforms with viewport video culling and WebP image optimization for ultra-fast, smooth scrolling on mobile.
-- **Dual-Mode Persistence**: Seamlessly switches between **MySQL 8.0** connection pooling (`mysql2/promise`) and an automatic resilient JSON store (`data/store.json`) for zero-downtime local development and high availability.
+- **Embedded SQLite Persistence**: Powered by **SQLite 3** (`better-sqlite3`) with WAL (Write-Ahead Logging) journal mode and synchronized local store (`data/store.json`) for sub-millisecond query performance, zero network latency, and zero external daemon setup.
 - **Strict High-Contrast Accessibility**: Clean, crisp typography eliminating low-contrast washed-out tones in favor of deep black (`#101410`), rich forest green (`#08482D`), and vibrant amber/gold accents.
 
 ---
@@ -139,17 +139,18 @@ movie_bash/
 ├── data/
 │   └── store.json                       # Atomic fallback persistent JSON database
 ├── lib/
-│   ├── db.ts                            # MySQL connection pool + fallback adapter
+│   ├── db.ts                            # SQLite database engine + resilient storage adapter
 │   └── mock-data.ts                     # Initial seeded data & TypeScript interfaces
 ├── public/
 │   ├── images/                          # Highly-optimized WebP photos (full + thumbnails)
 │   └── videos/                          # Lightweight MP4 celebration clips (< 500 KB each)
 ├── scripts/
+│   ├── init-sqlite.js                   # SQLite schema initialization & seeding script
 │   ├── compress_videos.js               # Utility script for MP4 ffmpeg compression
 │   └── optimize_images.js               # Utility script for WebP conversion & thumbnails
 ├── middleware.ts                        # Edge route guard for /admin routes
-├── schema.sql                           # MySQL 8.0 table definitions & indexes
-├── seed.sql                             # Seed records, slots & admin credentials
+├── schema.sql                           # SQLite 3 table definitions & indexes
+├── seed.sql                             # SQLite 3 seed records, slots & admin credentials
 └── tailwind.config.ts                   # Custom color palette, fonts & animations
 ```
 
@@ -289,7 +290,7 @@ npm start
 For complete, step-by-step production instructions with zero hardcoded URLs, see [**DEPLOYMENT.md**](./DEPLOYMENT.md).
 
 - **Frontend & Serverless API Routes**: Hosted on **Vercel** with worldwide edge CDN, automatic HTTPS, and dynamic image optimization.
-- **Database Backend**: Hosted on **Render Free Tier** or any cloud MySQL 8.0 instance (e.g., TiDB Serverless, Aiven, Railway) using `DATABASE_URL` with SSL.
+- **Database Backend**: High-performance embedded **SQLite 3** (`data/movie_bash.db`) with WAL mode and resilient local storage, requiring zero external database configuration.
 - **Zero Dummy Records**: Starts completely fresh with `0 Bookings` and `0 Customers`. Real user reservations will populate the database live.
 - **Dynamic Port & Path Handling**: Runs using dynamic `process.env.PORT` and relative `/api/*` endpoints.
 

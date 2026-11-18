@@ -59,13 +59,13 @@ export default function WhyChooseUs() {
             return (
               <div
                 key={item.num}
-                className="p-6 sm:p-7 rounded-3xl bg-white border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] hover:shadow-[0_16px_50px_rgba(22,48,79,0.1)] hover:border-sky-300 transition-all hover:-translate-y-1 group"
+                className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-[0_12px_40px_rgba(20,17,16,0.06)] hover:shadow-[0_16px_50px_rgba(239,74,35,0.12)] hover:border-[#ef4a23] transition-all hover:-translate-y-1 group"
               >
                 <div className="flex items-center justify-between mb-4 sm:mb-6">
-                  <span className="font-playfair text-2xl sm:text-3xl font-black text-[#237eea]">
+                  <span className="font-playfair text-2xl sm:text-3xl font-black text-[#ef4a23]">
                     {item.num}
                   </span>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#d9ebff] text-[#155fbd] flex items-center justify-center group-hover:bg-[#237eea] group-hover:text-white transition-colors">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#fff0ea] text-[#ef4a23] flex items-center justify-center group-hover:bg-[#ef4a23] group-hover:text-white transition-colors">
                     <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                 </div>
@@ -84,13 +84,13 @@ export default function WhyChooseUs() {
             return (
               <div
                 key={item.num}
-                className="p-6 sm:p-7 rounded-3xl bg-white border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] hover:shadow-[0_16px_50px_rgba(22,48,79,0.1)] hover:border-sky-300 transition-all hover:-translate-y-1 group"
+                className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-[0_12px_40px_rgba(20,17,16,0.06)] hover:shadow-[0_16px_50px_rgba(239,74,35,0.12)] hover:border-[#ef4a23] transition-all hover:-translate-y-1 group"
               >
                 <div className="flex items-center justify-between mb-4 sm:mb-6">
-                  <span className="font-playfair text-2xl sm:text-3xl font-black text-[#237eea]">
+                  <span className="font-playfair text-2xl sm:text-3xl font-black text-[#ef4a23]">
                     {item.num}
                   </span>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#d9ebff] text-[#155fbd] flex items-center justify-center group-hover:bg-[#237eea] group-hover:text-white transition-colors">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#fff0ea] text-[#ef4a23] flex items-center justify-center group-hover:bg-[#ef4a23] group-hover:text-white transition-colors">
                     <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                 </div>
@@ -105,23 +105,23 @@ export default function WhyChooseUs() {
           })}
 
           {/* Bonus 6th highlight card */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#155fbd] to-[#237eea] text-white shadow-[0_16px_50px_rgba(22,48,79,0.15)] flex flex-col justify-between border border-sky-300/30">
+          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#141110] to-[#2a2220] text-white shadow-[0_16px_50px_rgba(0,0,0,0.3)] flex flex-col justify-between border border-white/10">
             <div>
-              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-sky-200">Opening Special</span>
-              <h3 className="font-playfair text-2xl sm:text-3xl font-bold mt-2">
-                Flat ₹200 Off First Booking
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#ffd46e]">Opening Special</span>
+              <h3 className="font-playfair text-2xl sm:text-3xl font-bold mt-2 text-white">
+                Flat ₹300 Off First Booking
               </h3>
               <p className="text-xs sm:text-sm text-white/90 mt-3 leading-relaxed">
-                Use promo code <strong className="text-white font-mono bg-white/20 px-2 py-0.5 rounded">MOVIEBASH200</strong> on checkout. Includes free celebration cake &amp; personal name board!
+                Use promo code <strong className="text-white font-mono bg-white/20 px-2 py-0.5 rounded">MOVIEBASH300</strong> on checkout. Includes free celebration cake &amp; personal name board!
               </p>
             </div>
 
             <div className="mt-6 pt-4 border-t border-white/20">
               <a
                 href="/book-now"
-                className="w-full py-3 rounded-full text-center text-xs sm:text-sm font-bold text-[#16304f] bg-white hover:bg-sky-50 shadow-md block transition-all hover:scale-105"
+                className="w-full py-3 rounded-full text-center text-xs sm:text-sm font-bold text-[#141110] bg-[#FAF3E4] hover:bg-[#ef4a23] hover:text-white shadow-md block transition-all hover:scale-105"
               >
-                Claim ₹200 Voucher &rarr;
+                Claim ₹300 Voucher &rarr;
               </a>
             </div>
           </div>

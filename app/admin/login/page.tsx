@@ -1,32 +1,52 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Film, Lock, Mail, ArrowRight, ShieldAlert } from 'lucide-react';
+import { Film, Lock, Mail, ArrowRight, ShieldAlert, Shield, Eye, EyeOff, User } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('admin@moviebash.in');
-  const [password, setPassword] = useState('Admin@MovieBash2026!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Clear stale session on visiting login page to guarantee clean authentication
+  useEffect(() => {
+    fetch('/api/admin/logout', { method: 'POST' }).catch(() => {});
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
+
+    const trimmedIdentifier = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedIdentifier || !trimmedPassword) {
+      setErrorMsg('Please enter both your Username/Email and Password.');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: trimmedIdentifier, password: trimmedPassword }),
       });
       const data = await res.json();
       if (data.success) {
-        router.push('/admin');
+        // Staff goes directly to bookings terminal, Admin goes to manager dashboard
+        if (data.data?.role === 'staff') {
+          router.push('/admin/bookings');
+        } else {
+          router.push('/admin');
+        }
       } else {
-        setErrorMsg(data.error || 'Authentication failed');
+        setErrorMsg(data.error || 'Authentication failed. Please verify your credentials.');
       }
     } catch (err) {
       setErrorMsg('Network error. Please try again.');
@@ -36,115 +56,112 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cream text-ink flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Decorative Orbs */}
-      <div className="hero-orb orb-one" />
-      <div className="hero-orb orb-two" />
+    <div className="min-h-screen bg-[#FAF3E4] text-[#141110] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative Warm Ambient Elements */}
+      <div className="absolute top-[-10%] right-[-5%] w-[420px] h-[420px] rounded-full bg-[#ef4a23]/10 blur-[90px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-5%] w-[380px] h-[380px] rounded-full bg-amber-200/25 blur-[90px] pointer-events-none" />
 
-      <div className="max-w-md w-full bg-white border border-sky-100 rounded-3xl p-8 sm:p-10 text-ink shadow-[0_20px_60px_rgba(35,126,234,0.1)] space-y-6 relative z-10">
+      <div className="max-w-md w-full bg-white border border-stone-200/80 rounded-3xl p-8 sm:p-10 text-[#141110] shadow-[0_20px_60px_rgba(20,17,16,0.08)] space-y-6 relative z-10">
         
+        {/* Header */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-[#237eea] text-white flex items-center justify-center mx-auto shadow-md shadow-[#237eea]/25">
-            <Film className="w-6 h-6 text-sky-200" />
+          <div className="w-13 h-13 rounded-2xl bg-[#ef4a23] text-white flex items-center justify-center mx-auto shadow-md shadow-[#ef4a23]/25">
+            <Film className="w-6 h-6 text-white" />
           </div>
-          <h1 className="font-playfair text-2xl sm:text-3xl font-black text-ink">
-            Movie<span className="text-[#f39a4b]">Bash</span> Admin
+          <h1 className="font-playfair text-2xl sm:text-3xl font-black text-[#141110]">
+            Movie<span className="text-[#ef4a23]">Bash</span> Console
           </h1>
-          <p className="text-xs text-slate-500 font-medium">
-            Internal console for venue managers &amp; operations
+          <p className="text-xs text-stone-500 font-medium">
+            Authorized Personnel Terminal &bull; Requires Manual Login
           </p>
         </div>
 
+        {/* Security Badge */}
+        <div className="py-2 px-3 rounded-xl bg-stone-50 border border-stone-200/80 text-[11px] text-stone-600 flex items-center gap-2">
+          <Shield className="w-3.5 h-3.5 text-[#ef4a23] shrink-0" />
+          <span>Restricted Portal: Enter your personal staff ID and password.</span>
+        </div>
+
         {errorMsg && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+          <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
             <ShieldAlert className="w-4 h-4 shrink-0 text-rose-500" />
-            <span>{errorMsg}</span>
+            <span className="font-semibold">{errorMsg}</span>
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">
-              Admin Email or Staff Username
+            <label className="block text-xs font-bold text-[#141110] uppercase tracking-wider mb-1.5">
+              Username or Email
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-[#237eea] absolute left-3 top-3.5" />
+              <User className="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" />
               <input
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@moviebash.in or staff_ec"
-                className="w-full pl-9 pr-4 py-3 rounded-2xl bg-[#fffdf9] border border-sky-200 text-xs font-semibold text-ink focus:outline-none focus:border-[#237eea]"
+                placeholder="Type your username or email"
+                autoComplete="username"
+                autoFocus
+                spellCheck={false}
+                className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[#FAF3E4]/30 border border-stone-200 text-xs sm:text-sm font-semibold text-[#141110] placeholder:text-stone-400 focus:outline-none focus:border-[#ef4a23] focus:bg-white transition-all"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">
-              Password / Security PIN
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold text-[#141110] uppercase tracking-wider">
+                Password
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-[11px] font-bold text-stone-500 hover:text-[#ef4a23] flex items-center gap-1 transition-colors cursor-pointer"
+              >
+                {showPassword ? (
+                  <>
+                    <EyeOff className="w-3.5 h-3.5" />
+                    <span>Hide</span>
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Show</span>
+                  </>
+                )}
+              </button>
+            </div>
             <div className="relative">
-              <Lock className="w-4 h-4 text-[#237eea] absolute left-3 top-3.5" />
+              <Lock className="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password or PIN"
-                className="w-full pl-9 pr-4 py-3 rounded-2xl bg-[#fffdf9] border border-sky-200 text-xs font-semibold text-ink focus:outline-none focus:border-[#237eea]"
+                placeholder="Type your password"
+                autoComplete="current-password"
+                className="w-full pl-10 pr-10 py-3 rounded-2xl bg-[#FAF3E4]/30 border border-stone-200 text-xs sm:text-sm font-semibold text-[#141110] placeholder:text-stone-400 focus:outline-none focus:border-[#ef4a23] focus:bg-white transition-all"
                 required
               />
-            </div>
-          </div>
-
-          {/* Quick Credential Switchers */}
-          <div className="p-3.5 rounded-2xl bg-[#f0f7ff] border border-sky-100 text-[11px] text-slate-600 space-y-2">
-            <span className="font-bold text-[#237eea] block text-[10px] uppercase tracking-wider">
-              One-Click Test Accounts:
-            </span>
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('admin@moviebash.in');
-                  setPassword('Admin@MovieBash2026!');
-                }}
-                className="px-2.5 py-1 rounded-lg bg-white border border-sky-200 hover:bg-[#237eea] hover:text-white text-[10px] font-bold text-[#155fbd] transition-colors cursor-pointer shadow-xs"
-              >
-                Super Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('staff_ec@moviebash.in');
-                  setPassword('Staff@EC2026!');
-                }}
-                className="px-2.5 py-1 rounded-lg bg-white border border-sky-200 hover:bg-[#237eea] hover:text-white text-[10px] font-bold text-[#155fbd] transition-colors cursor-pointer shadow-xs"
-              >
-                Staff (Electronic City)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('staff_btm@moviebash.in');
-                  setPassword('Staff@BTM2026!');
-                }}
-                className="px-2.5 py-1 rounded-lg bg-white border border-sky-200 hover:bg-[#237eea] hover:text-white text-[10px] font-bold text-[#155fbd] transition-colors cursor-pointer shadow-xs"
-              >
-                Staff (BTM 2nd Stage)
-              </button>
             </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-full font-extrabold text-xs sm:text-sm text-white bg-gradient-to-r from-[#f39a4b] to-[#e6832e] hover:shadow-[0_8px_25px_rgba(243,154,75,0.35)] shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+            className="w-full py-3.5 rounded-full font-extrabold text-xs sm:text-sm text-white bg-[#ef4a23] hover:bg-[#d93b16] shadow-md shadow-[#ef4a23]/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50 mt-2"
           >
-            <span>{loading ? 'Authenticating...' : 'Sign In to Dashboard'}</span>
+            <span>{loading ? 'Authenticating...' : 'Sign In to Terminal'}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
+
+        <div className="text-center pt-1 border-t border-stone-100">
+          <p className="text-[11px] text-stone-400 font-medium">
+            Staff access is monitored &bull; Sessions automatically expire after 8 hours
+          </p>
+        </div>
 
       </div>
     </div>

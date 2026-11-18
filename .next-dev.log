@@ -1,0 +1,66 @@
+  ▲ Next.js 14.2.15
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.4s
+ ○ Compiling /book-now ...
+ ✓ Compiled /book-now in 10.4s (788 modules)
+ GET /book-now 200 in 11292ms
+ ✓ Compiled in 952ms (364 modules)
+ GET /book-now 200 in 134ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1769ms (774 modules)
+ GET / 200 in 2296ms
+ GET / 200 in 143ms
+ GET / 200 in 149ms
+ ✓ Compiled /api/availability in 263ms (442 modules)
+ ✓ Compiled (448 modules)
+ GET /api/availability?branch=electronic-city&date=2026-11-18 200 in 506ms
+ GET /api/theatres 200 in 527ms
+ GET /api/coupons/featured 200 in 539ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 530ms (777 modules)
+ GET /book-now 404 in 1085ms
+ GET /_next/static/css/app/layout.css?v=1794989860087 404 in 72ms
+ GET /_next/static/chunks/main-app.js?v=1794989860087 404 in 95ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 125ms
+ GET /_next/static/chunks/app/not-found.js 404 in 127ms
+ GET /book-now 404 in 187ms
+ GET /_next/static/css/app/layout.css?v=1794989860562 404 in 50ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 75ms
+ GET /_next/static/chunks/app/not-found.js 404 in 72ms
+ GET /_next/static/chunks/main-app.js?v=1794989860562 404 in 161ms
+ GET /book-now 404 in 197ms
+ GET /_next/static/css/app/layout.css?v=1794989860787 404 in 59ms
+ GET /_next/static/chunks/main-app.js?v=1794989860787 404 in 65ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 71ms
+ GET /_next/static/chunks/app/not-found.js 404 in 70ms
+ GET /book-now 404 in 98ms
+ GET /_next/static/css/app/layout.css?v=1794989861065 404 in 63ms
+ GET /_next/static/chunks/main-app.js?v=1794989861065 404 in 153ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 115ms
+ GET /_next/static/chunks/app/not-found.js 404 in 112ms
+ GET /book-now 404 in 174ms
+ GET /_next/static/css/app/layout.css?v=1794989861358 404 in 32ms
+ GET /_next/static/chunks/main-app.js?v=1794989861358 404 in 134ms
+ GET /book-now 404 in 201ms
+ GET /_next/static/css/app/layout.css?v=1794989861460 404 in 102ms
+ GET /_next/static/chunks/main-app.js?v=1794989861460 404 in 165ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 128ms
+ GET /_next/static/chunks/app/not-found.js 404 in 120ms
+ GET /book-now 404 in 165ms
+ GET /_next/static/css/app/layout.css?v=1794989861895 404 in 84ms
+ GET /_next/static/chunks/main-app.js?v=1794989861895 404 in 179ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 161ms
+ GET /_next/static/chunks/app/not-found.js 404 in 162ms
+ GET /book-now 404 in 225ms
+ GET /_next/static/css/app/layout.css?v=1794989862188 404 in 60ms
+ GET /_next/static/chunks/main-app.js?v=1794989862188 404 in 162ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 96ms
+ GET /_next/static/chunks/app/not-found.js 404 in 95ms
+ GET /book-now 404 in 198ms
+ GET /_next/static/css/app/layout.css?v=1794989862414 404 in 53ms
+ GET /_next/static/chunks/main-app.js?v=1794989862414 404 in 61ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 79ms
+ GET /_next/static/chunks/app/not-found.js 404 in 79ms

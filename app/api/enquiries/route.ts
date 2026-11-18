@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query, mockStore } from '@/lib/db';
+import { mockStore } from '@/lib/db';
+import { getAdminSession } from '@/lib/auth';
 import { enquiryRateLimiter } from '@/lib/rate-limiter';
 
 export async function POST(request: NextRequest) {
@@ -40,5 +41,11 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
+  // Enquiries contain personal contact details — admin only.
+  const session = await getAdminSession();
+  if (!session) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
   return NextResponse.json({ success: true, data: mockStore.enquiries });
 }

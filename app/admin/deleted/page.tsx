@@ -71,7 +71,7 @@ export default function AdminDeletedBookingsPage() {
         </p>
       </div>
 
-      <div className="bg-white rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] overflow-hidden">
+      <div className="bg-white rounded-xl border-2 border-slate-300 shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-12 text-center text-xs font-bold text-ink">Loading ledger...</div>
         ) : bookings.length === 0 ? (
@@ -80,55 +80,59 @@ export default function AdminDeletedBookingsPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full text-left border-collapse text-xs border border-slate-300">
               <thead>
-                <tr className="border-b border-sky-100 bg-[#fffdf9] text-[11px] font-bold uppercase tracking-wider text-ink">
-                  <th className="py-3.5 px-4">Ref</th>
-                  <th className="py-3.5 px-4">Customer</th>
-                  <th className="py-3.5 px-4">Branch &amp; Date</th>
-                  <th className="py-3.5 px-4">Reason / Notes</th>
-                  <th className="py-3.5 px-4">Refund Amount</th>
-                  <th className="py-3.5 px-4">Deleted By</th>
-                  <th className="py-3.5 px-4 text-right">Actions</th>
+                <tr className="bg-slate-100 text-[11px] font-black uppercase tracking-wider text-slate-800">
+                  <th className="py-3 px-3.5 border border-slate-300 whitespace-nowrap">Ref</th>
+                  <th className="py-3 px-3.5 border border-slate-300 whitespace-nowrap">Customer</th>
+                  <th className="py-3 px-3.5 border border-slate-300 whitespace-nowrap">Branch &amp; Date</th>
+                  <th className="py-3 px-3.5 border border-slate-300">Reason / Notes</th>
+                  <th className="py-3 px-3.5 border border-slate-300 whitespace-nowrap">Refund Amount</th>
+                  <th className="py-3 px-3.5 border border-slate-300 whitespace-nowrap">Deleted By</th>
+                  <th className="py-3 px-3.5 border border-slate-300 text-right whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-sand-100">
+              <tbody>
                 {bookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-[#fffdf9]/80 transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-[#237eea] whitespace-nowrap">
-                      {b.booking_ref}
+                  <tr key={b.id} className="even:bg-slate-50/70 hover:bg-sky-50/70 transition-colors">
+                    <td className="py-3 px-3.5 border border-slate-300 font-mono font-bold text-[#ef4a23] whitespace-nowrap align-middle">
+                      <span className="bg-rose-50 border border-rose-300 px-2 py-0.5 rounded">
+                        {b.booking_ref}
+                      </span>
                     </td>
-                    <td className="py-3.5 px-4">
-                      <strong className="block text-ink">{b.customer_name}</strong>
-                      <span className="text-[11px] text-ink/60">{b.customer_phone}</span>
+                    <td className="py-3 px-3.5 border border-slate-300 align-middle">
+                      <strong className="block text-slate-900 font-black">{b.customer_name}</strong>
+                      <span className="text-[11px] text-slate-600 font-semibold">{b.customer_phone}</span>
                     </td>
-                    <td className="py-3.5 px-4 whitespace-nowrap">
-                      <span>{b.branch_name}</span>
-                      <span className="text-[10px] text-ink/60 block">{b.booking_date}</span>
+                    <td className="py-3 px-3.5 border border-slate-300 whitespace-nowrap align-middle">
+                      <span className="font-bold text-slate-800">{b.branch_name}</span>
+                      <span className="text-[10.5px] text-slate-600 font-medium block mt-0.5">{b.booking_date}</span>
                     </td>
-                    <td className="py-3.5 px-4 max-w-xs text-ink/80 truncate">
+                    <td className="py-3 px-3.5 border border-slate-300 max-w-xs text-slate-700 truncate align-middle">
                       {b.cancelled_reason || b.notes || 'User/Admin requested removal'}
                     </td>
-                    <td className="py-3.5 px-4 whitespace-nowrap font-bold text-ink">
+                    <td className="py-3 px-3.5 border border-slate-300 whitespace-nowrap font-black text-slate-900 align-middle">
                       ₹{b.refund_amount || 0}
                     </td>
-                    <td className="py-3.5 px-4 text-ink/60 whitespace-nowrap">
-                      {b.deleted_by || 'Staff Operator'}
+                    <td className="py-3 px-3.5 border border-slate-300 text-slate-700 whitespace-nowrap align-middle">
+                      <span className="bg-slate-100 border border-slate-300 px-2 py-0.5 rounded text-[11px] font-bold">
+                        {b.deleted_by || 'Staff Operator'}
+                      </span>
                     </td>
-                    <td className="py-3.5 px-4 text-right whitespace-nowrap space-x-2">
+                    <td className="py-3 px-3.5 border border-slate-300 text-right whitespace-nowrap space-x-2 align-middle">
                       <button
                         onClick={() => handleRestore(b.id)}
-                        className="px-3 py-1.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-xs inline-flex items-center gap-1"
+                        className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs inline-flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
                       >
-                        <RotateCcw className="w-3.5 h-3.5" />
+                        <RotateCcw className="w-3.5 h-3.5 text-emerald-600" />
                         <span>Restore</span>
                       </button>
 
                       <button
                         onClick={() => handlePermanentDelete(b.id)}
-                        className="px-3 py-1.5 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold text-xs inline-flex items-center gap-1"
+                        className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 font-bold text-xs inline-flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5 text-rose-600" />
                         <span>Purge</span>
                       </button>
                     </td>

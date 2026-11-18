@@ -41,7 +41,7 @@ export default function PrivacyPolicyPage() {
 
           <h2 className="font-bold text-base text-royal-900">4. Third-Party Sharing</h2>
           <p>
-            We do not sell, rent, or lease your personal contact details to any third-party marketing companies. Data is shared only with secure payment gateways (e.g. Razorpay) when online payments are made.
+            We do not sell, rent, or lease your personal contact details to any third-party marketing companies. Data is processed securely for UPI and direct venue reservation transactions.
           </p>
         </div>
       </div>

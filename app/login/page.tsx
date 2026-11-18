@@ -36,7 +36,7 @@ export default function LoginPage() {
       const data = await res.json();
       if (data.success) {
         setStep('otp');
-        setInfoMsg(data.message || 'OTP sent! Use 123456 in dev mode.');
+        setInfoMsg(data.message || 'OTP sent successfully to your mobile number.');
       } else {
         setErrorMsg(data.error || 'Failed to send OTP');
       }
@@ -120,6 +120,8 @@ export default function LoginPage() {
                   <input
                     type="tel"
                     maxLength={10}
+                    autoComplete="tel"
+                    inputMode="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                     placeholder="9876543210"
@@ -147,9 +149,11 @@ export default function LoginPage() {
                 <input
                   type="text"
                   maxLength={6}
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  placeholder="123456"
+                  placeholder="••••••"
                   className="w-full px-4 py-3 rounded-2xl bg-sand-50 border border-sand-300 text-center font-mono text-xl tracking-widest font-black text-royal-900 focus:outline-none focus:border-royal-700"
                   required
                 />

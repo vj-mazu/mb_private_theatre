@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import { getAdminSession, hashPassword } from '@/lib/auth';
 import { mockStore, saveStore } from '@/lib/db';
 
@@ -7,6 +8,13 @@ export async function POST(request: NextRequest) {
     const session = await getAdminSession();
     if (!session) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (session.role !== 'super_admin') {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Unauthorized: Only the Super Administrator has authorization to modify credentials or user authorizations.' 
+      }, { status: 403 });
     }
 
     const { current_password, new_password, target_user_id } = await request.json();
@@ -30,25 +38,26 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, error: 'Please enter your current password.' }, { status: 400 });
       }
 
-      const match = (user.password_plain && user.password_plain === current_password) ||
-        current_password === 'Admin@MovieBash2026!' ||
-        current_password === 'admin123' ||
-        current_password === 'admin' ||
-        current_password === '1234' ||
-        current_password === 'Staff@EC2026!' ||
-        current_password === 'Staff@BTM2026!' ||
-        current_password === 'staff123';
+      // Verify against the stored bcrypt hash only. No master/backdoor passwords.
+      let storedHash: string | null = (user as any).password_hash || null;
+      const legacyPlain = (user as any).password_plain;
+
+      if (!storedHash && legacyPlain) {
+        storedHash = bcrypt.hashSync(String(legacyPlain), 10);
+        (user as any).password_hash = storedHash;
+        delete (user as any).password_plain;
+      }
+
+      const match = storedHash ? bcrypt.compareSync(String(current_password), storedHash) : false;
 
       if (!match) {
         return NextResponse.json({ success: false, error: 'Current password is incorrect.' }, { status: 400 });
       }
     }
 
-    // Set new password
-    user.password_plain = new_password;
-    try {
-      user.password_hash = await hashPassword(new_password);
-    } catch (_) {}
+    // Set new password (hash only — never persist plaintext)
+    (user as any).password_hash = await hashPassword(String(new_password));
+    delete (user as any).password_plain;
 
     // Audit log
     mockStore.auditLogs.unshift({

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
-import { mockStore, saveStore } from '@/lib/db';
+import { mockStore, saveStore, getDb } from '@/lib/db';
 
 export async function PATCH(
   request: NextRequest,
@@ -16,6 +16,13 @@ export async function PATCH(
 
   if (!booking) {
     return NextResponse.json({ success: false, error: 'Booking not found' }, { status: 404 });
+  }
+
+  try {
+    const db = getDb();
+    db.prepare("UPDATE bookings SET is_deleted = 0, status = CASE WHEN status = 'cancelled' THEN 'confirmed' ELSE status END WHERE id = ?").run(bookingId);
+  } catch (dbErr) {
+    console.warn('SQLite restore error:', dbErr);
   }
 
   booking.is_deleted = 0;
@@ -38,3 +45,5 @@ export async function PATCH(
   saveStore();
   return NextResponse.json({ success: true, data: booking });
 }
+
+export const POST = PATCH;
