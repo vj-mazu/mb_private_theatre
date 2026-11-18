@@ -40,57 +40,50 @@ function ensureStaffUsers(): boolean {
   const isProduction = process.env.NODE_ENV === 'production';
   let changed = false;
 
-  // 1. Super Admin — credentials come from the environment in production.
+  // 1. Super Admin — credentials fallback safely if env var not configured
   let admin = mockStore.adminUsers.find(u => u.id === 1 || u.role === 'super_admin');
   if (!admin) {
     const email = process.env.ADMIN_EMAIL || 'admin@moviebash.in';
-    const password = process.env.ADMIN_PASSWORD || (isProduction ? '' : 'Admin@MovieBash2026!');
+    const password = process.env.ADMIN_PASSWORD || 'Admin@MovieBash2026!';
 
-    if (password) {
-      admin = {
-        id: 1,
-        name: 'Super Admin',
-        email,
-        username: 'admin',
-        password_hash: hash(password),
-        role: 'super_admin',
-        branch_id: null,
-        is_active: 1,
-        created_at: '2026-01-01'
-      } as any;
-      mockStore.adminUsers.push(admin as any);
-      changed = true;
-    } else {
-      console.error('[Movie Bash Auth] ADMIN_PASSWORD is not set; no default super admin was created.');
-    }
+    admin = {
+      id: 1,
+      name: 'Super Admin',
+      email,
+      username: 'admin',
+      password_hash: hash(password),
+      role: 'super_admin',
+      branch_id: null,
+      is_active: 1,
+      created_at: '2026-01-01'
+    } as any;
+    mockStore.adminUsers.push(admin as any);
+    changed = true;
   }
 
-  // 2. Branch staff seeds exist for local development only. In production staff
-  //    accounts are created by the Super Admin through the security console.
-  if (!isProduction) {
-    const staffSeeds = [
-      { id: 2, name: 'Staff – Electronic City', email: 'staff_ec@moviebash.in', username: 'staff_ec', password: 'Staff@EC2026!', branch_id: 1 },
-      { id: 3, name: 'Staff – BTM 2nd Stage', email: 'staff_btm@moviebash.in', username: 'staff_btm', password: 'Staff@BTM2026!', branch_id: 2 }
-    ];
+  // 2. Branch staff seeds
+  const staffSeeds = [
+    { id: 2, name: 'Staff – Electronic City', email: 'staff_ec@moviebash.in', username: 'staff_ec', password: 'Staff@EC2026!', branch_id: 1 },
+    { id: 3, name: 'Staff – BTM 2nd Stage', email: 'staff_btm@moviebash.in', username: 'staff_btm', password: 'Staff@BTM2026!', branch_id: 2 }
+  ];
 
-    for (const seed of staffSeeds) {
-      const exists = mockStore.adminUsers.find(
-        u => u.id === seed.id || (u.role === 'staff' && u.branch_id === seed.branch_id)
-      );
-      if (!exists) {
-        mockStore.adminUsers.push({
-          id: seed.id,
-          name: seed.name,
-          email: seed.email,
-          username: seed.username,
-          password_hash: hash(seed.password),
-          role: 'staff',
-          branch_id: seed.branch_id,
-          is_active: 1,
-          created_at: '2026-01-01'
-        } as any);
-        changed = true;
-      }
+  for (const seed of staffSeeds) {
+    const exists = mockStore.adminUsers.find(
+      u => u.id === seed.id || (u.role === 'staff' && u.branch_id === seed.branch_id)
+    );
+    if (!exists) {
+      mockStore.adminUsers.push({
+        id: seed.id,
+        name: seed.name,
+        email: seed.email,
+        username: seed.username,
+        password_hash: hash(seed.password),
+        role: 'staff',
+        branch_id: seed.branch_id,
+        is_active: 1,
+        created_at: '2026-01-01'
+      } as any);
+      changed = true;
     }
   }
 

@@ -43,15 +43,15 @@ export default function Navbar() {
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${
       scrolled 
-        ? 'bg-white/95 backdrop-blur-xl shadow-md py-2.5 sm:py-3 border-b border-[#ef4a23]/15' 
-        : 'bg-[#FFFDF9]/95 backdrop-blur-md py-3 sm:py-4 border-b border-[#ef4a23]/10'
+        ? 'bg-white/95 backdrop-blur-xl shadow-md py-2 sm:py-2.5 border-b border-[#ef4a23]/15' 
+        : 'bg-[#FFFDF9]/95 backdrop-blur-md py-2 sm:py-3 border-b border-[#ef4a23]/10'
     }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between">
         
         {/* Brand Logo - Authentic Vector Emblem (Zoomed, High-Contrast & Crisp) */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="h-13 sm:h-15 md:h-16 w-auto max-w-[260px] sm:max-w-[310px] md:max-w-[350px] flex items-center group-hover:scale-105 transition-transform drop-shadow-[0_2px_6px_rgba(20,17,16,0.10)]">
-            <MovieBashLogo className="h-full w-auto" />
+        <Link href="/" className="flex items-center gap-2 group shrink-0">
+          <div className="h-10 sm:h-12 md:h-14 w-[96px] sm:w-[124px] md:w-[145px] flex items-center group-hover:scale-105 transition-transform drop-shadow-[0_2px_6px_rgba(20,17,16,0.10)]" style={{ aspectRatio: '370 / 160' }}>
+            <MovieBashLogo className="h-full w-full block" />
           </div>
         </Link>
 
