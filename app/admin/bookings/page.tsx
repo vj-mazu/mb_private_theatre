@@ -244,10 +244,14 @@ export default function AdminBookingsPage() {
     const branchName = rescheduleForm.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage';
     let screenName = rescheduleForm.screen_name;
     if (!screenName) {
-      if (rescheduleForm.theatre_id === 1 || rescheduleForm.theatre_id === 4) screenName = 'Couple Suite (2-4 guests)';
-      else if (rescheduleForm.theatre_id === 2 || rescheduleForm.theatre_id === 5) screenName = 'Celebration Suite (6-10 guests)';
-      else if (rescheduleForm.theatre_id === 3 || rescheduleForm.theatre_id === 6) screenName = 'Grand Family Suite (12-16 guests)';
-      else screenName = 'Celebration Lounge';
+      if (rescheduleForm.theatre_id === 1) screenName = 'Couple Theater (2 guests)';
+      else if (rescheduleForm.theatre_id === 2) screenName = 'Celebration Theater (6 guests)';
+      else if (rescheduleForm.theatre_id === 3) screenName = 'Family Theater (12 guests)';
+      else if (rescheduleForm.theatre_id === 4) screenName = 'Butterfly Blush (2 guests)';
+      else if (rescheduleForm.theatre_id === 5) screenName = 'Lavender Mist (6 guests)';
+      else if (rescheduleForm.theatre_id === 6) screenName = 'Scarlet Red (12 guests)';
+      else if (rescheduleForm.theatre_id === 7) screenName = 'Shadow Suit (8 guests)';
+      else screenName = 'Private Screen';
     }
 
     await handleAction(rescheduleBooking.id, 'reschedule', {
@@ -1023,10 +1027,10 @@ export default function AdminBookingsPage() {
                       </>
                     ) : (
                       <>
-                        <option value={4}>🎬 Couple Theater (₹899 • 2 Guests)</option>
-                        <option value={5}>🎉 Celebration Theater (₹1499 • 6 Guests)</option>
-                        <option value={7}>✨ VIP Celebration Suite (₹1599 • 8 Guests)</option>
-                        <option value={6}>👨‍👩‍👧‍👦 Family Theater (₹1699 • 12-20 Guests)</option>
+                        <option value={4}>🦋 Butterfly Blush (₹899 • 2 Guests)</option>
+                        <option value={5}>🪻 Lavender Mist (₹1499 • 6 Guests)</option>
+                        <option value={6}>🌹 Scarlet Red (₹1699 • 12 Guests)</option>
+                        <option value={7}>🖤 Shadow Suit (₹1599 • 8 Guests)</option>
                       </>
                     )}
                   </select>
@@ -1378,16 +1382,16 @@ export default function AdminBookingsPage() {
                 >
                   {rescheduleForm.branch_id === 1 ? (
                     <>
-                      <option value={1}>Couple Suite (Screen 1 &bull; 2-4 Guests)</option>
-                      <option value={2}>Celebration Suite (Screen 2 &bull; 6-10 Guests)</option>
-                      <option value={3}>Grand Family Suite (Screen 3 &bull; 12-16 Guests)</option>
+                      <option value={1}>🎬 Couple Theater (Screen 1 &bull; 2 Guests)</option>
+                      <option value={2}>🎉 Celebration Theater (Screen 2 &bull; 6 Guests)</option>
+                      <option value={3}>👨‍👩‍👧‍👦 Family Theater (Screen 3 &bull; 12 Guests)</option>
                     </>
                   ) : (
                     <>
-                      <option value={4}>Couple Suite (Screen 1 &bull; 2-4 Guests)</option>
-                      <option value={5}>Celebration Suite (Screen 2 &bull; 6-10 Guests)</option>
-                      <option value={6}>Grand Family Suite (Screen 3 &bull; 12-16 Guests)</option>
-                      <option value={7}>Skyline Celebration Suite (Screen 4 &bull; 8 Guests)</option>
+                      <option value={4}>🦋 Butterfly Blush (Screen 1 &bull; 2 Guests)</option>
+                      <option value={5}>🪻 Lavender Mist (Screen 2 &bull; 6 Guests)</option>
+                      <option value={6}>🌹 Scarlet Red (Screen 3 &bull; 12 Guests)</option>
+                      <option value={7}>🖤 Shadow Suit (Screen 4 &bull; 8 Guests)</option>
                     </>
                   )}
                 </select>
