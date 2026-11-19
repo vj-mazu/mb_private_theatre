@@ -2701,6 +2701,164 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           })()}
         </section>
 
+        {/* ─── HOW IT WORKS IN 4 STEPS (BINGE TOWN ARCHITECTURE + LABAN SPOT ELEGANCE) ─── */}
+        <section className="py-12 sm:py-20 bg-[#F6FAFD] border-t border-sky-100/80 relative overflow-hidden" id="how-it-works">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00A2E4]/10 border border-[#00A2E4]/30 text-[#0072AE] text-xs font-black uppercase tracking-wider mb-3">
+                <span className="w-2 h-2 rounded-full bg-[#00A2E4] animate-pulse" />
+                <span>Seamless 4-Step Booking</span>
+              </div>
+              <h2 className="font-['Playfair_Display'] text-3xl sm:text-5xl font-black text-[#0B2238] tracking-tight">
+                How It Works.<br />
+                <em className="italic text-[#00A2E4] font-normal">From slot booking to celebration.</em>
+              </h2>
+              <p className="mt-3 text-xs sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
+                Planning your private celebration at Movie Bash takes less than 2 minutes with instant confirmation.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {[
+                {
+                  step: '01',
+                  title: 'Select Screen & Branch',
+                  desc: 'Pick from 7 private theatres across Electronic City and BTM 2nd Stage tailored for 2 to 20 guests.',
+                  tag: 'Couple or Group',
+                  icon: '🎬'
+                },
+                {
+                  step: '02',
+                  title: 'Choose Date & Time Slot',
+                  desc: 'View live real-time open slots for morning, afternoon, sunset golden hour, or midnight shows.',
+                  tag: 'Live Availability',
+                  icon: '⏰'
+                },
+                {
+                  step: '03',
+                  title: 'Customize Decor & Add-ons',
+                  desc: 'Select cake flavour, dramatic fog entry, cold pyro sparklers, LED letters, and pro photography.',
+                  tag: 'Personalized Setup',
+                  icon: '🎂'
+                },
+                {
+                  step: '04',
+                  title: 'Walk In & Celebrate',
+                  desc: 'Your private cinema suite is fully air-conditioned, decorated, soundproofed, and ready when you arrive.',
+                  tag: 'Zero Stress',
+                  icon: '✨'
+                }
+              ].map((s) => (
+                <div 
+                  key={s.step}
+                  className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-[0_12px_32px_rgba(11,34,56,0.06)] hover:shadow-[0_20px_48px_rgba(0,162,228,0.14)] hover:-translate-y-1 transition-all flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="w-11 h-11 rounded-2xl bg-[#00A2E4]/10 text-[#0072AE] font-black text-sm flex items-center justify-center font-mono group-hover:bg-[#00A2E4] group-hover:text-white transition-colors">
+                        {s.step}
+                      </span>
+                      <span className="text-2xl">{s.icon}</span>
+                    </div>
+                    <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-[#0072AE] mb-1">
+                      {s.tag}
+                    </span>
+                    <h3 className="font-['Playfair_Display'] text-lg sm:text-xl font-bold text-[#0B2238] mb-2">
+                      {s.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                      {s.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ─── HOW CONTENT STREAMING WORKS (BINGE TOWN CLARITY + LABAN SPOT ELEGANCE) ─── */}
+        <section className="py-12 sm:py-20 bg-white border-t border-sky-100/80 relative overflow-hidden" id="how-streaming-works">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C68A4E]/10 border border-[#C68A4E]/30 text-[#C68A4E] text-xs font-black uppercase tracking-wider mb-3">
+                <span className="w-2 h-2 rounded-full bg-[#C68A4E] animate-pulse" />
+                <span>Unlimited Entertainment Freedom</span>
+              </div>
+              <h2 className="font-['Playfair_Display'] text-3xl sm:text-5xl font-black text-[#0B2238] tracking-tight">
+                Stream Anything You Love.<br />
+                <em className="italic text-[#00A2E4] font-normal">On a giant 150-inch 4K laser cinema screen.</em>
+              </h2>
+              <p className="mt-3 text-xs sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
+                You control the screen! Watch movies, binge favorite series, show personal surprise videos, or play games.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+              
+              {/* Card 1: OTT Streaming Apps */}
+              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all">
+                <div className="w-12 h-12 rounded-2xl bg-[#00A2E4]/10 text-[#0072AE] flex items-center justify-center text-2xl mb-5">
+                  🍿
+                </div>
+                <h3 className="font-['Playfair_Display'] text-xl font-bold text-[#0B2238] mb-2">
+                  All OTT Apps Ready
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                  Log in directly to your personal accounts on our 4K Smart Cinema setup:
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {['Netflix', 'Prime Video', 'Disney+ Hotstar', 'YouTube 4K', 'Aha', 'Zee5', 'SonyLIV'].map((app) => (
+                    <span key={app} className="px-2.5 py-1 rounded-full bg-white text-[11px] font-bold text-slate-800 border border-slate-200">
+                      {app}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card 2: Plug & Play Personal Videos (HDMI) */}
+              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-700 flex items-center justify-center text-2xl mb-5">
+                  💻
+                </div>
+                <h3 className="font-['Playfair_Display'] text-xl font-bold text-[#0B2238] mb-2">
+                  Plug &amp; Play HDMI / Phone
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                  Connect your Laptop, iPhone, Android, or Pen Drive via our high-speed HDMI &amp; Type-C cables:
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {['Photo Slideshows', 'Personal Video Montage', 'Private Movies', 'Corporate Pitch', 'Family Videos'].map((item) => (
+                    <span key={item} className="px-2.5 py-1 rounded-full bg-white text-[11px] font-bold text-slate-800 border border-slate-200">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card 3: Bluetooth Music & Console Gaming */}
+              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all">
+                <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-700 flex items-center justify-center text-2xl mb-5">
+                  🎵
+                </div>
+                <h3 className="font-['Playfair_Display'] text-xl font-bold text-[#0B2238] mb-2">
+                  Bluetooth Music &amp; Gaming
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                  Stream your favorite Spotify playlist during cake cutting, or hook up your gaming console:
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {['Spotify Bluetooth', 'Cake Cutting Songs', 'PS5 & Xbox Ready', 'Surround Sound Audio'].map((item) => (
+                    <span key={item} className="px-2.5 py-1 rounded-full bg-white text-[11px] font-bold text-slate-800 border border-slate-200">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
         {/* 10. LOCATIONS */}
         <section className="section locations" id="locations">
           <div className="location-image relative">
