@@ -5,21 +5,25 @@
 :root {
   /* Opt-in globally for modern intrinsic size animations (Chrome 129+, Edge 129+) */
   interpolate-size: allow-keywords;
-  --royal-900: #141110;
-  --royal-700: #ef4a23;
-  --royal-600: #ff5b35;
-  --royal-500: #ef4a23;
-  --royal-100: #fff0ea;
-  --sand-50: #FAF3E4;
-  --sand-100: #F5EFE0;
-  --sand-200: #EADFC8;
-  --sand-400: #D4BE92;
-  --ink: #141110;
+  --royal-900: #0B2238;
+  --royal-800: #0D2D4D;
+  --royal-700: #00A2E4;
+  --royal-600: #0072AE;
+  --royal-500: #00A2E4;
+  --royal-100: #E6F3FB;
+  --sand-50: #F6FAFD;
+  --sand-100: #E6F3FB;
+  --sand-200: #D8E7F3;
+  --sand-400: #C68A4E;
+  --ink: #0B2238;
+  --milk: #F6FAFD;
+  --laban: #00A2E4;
+  --laban-deep: #0072AE;
 }
 
 body {
   color: var(--ink);
-  background: var(--sand-50);
+  background: var(--milk);
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;

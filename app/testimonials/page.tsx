@@ -9,7 +9,7 @@ import { Star, ShieldCheck, Heart } from 'lucide-react';
 
 export const metadata = {
   title: 'Guest Testimonials & Reviews | Movie Bash Private Theatre Bengaluru',
-  description: 'Read verified 4.9-star Google reviews from guests celebrating birthdays, anniversaries, and romantic dates at Movie Bash.',
+  description: 'Read verified 5.0-star Google reviews from guests celebrating birthdays, anniversaries, and romantic dates at Movie Bash.',
   alternates: {
     canonical: 'https://moviebash.in/testimonials',
   },
@@ -68,7 +68,7 @@ export default function TestimonialsPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-4">
           <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-400 text-royal-900 text-xs font-bold">
             <Star className="w-3.5 h-3.5 fill-royal-900" />
-            <span>4.9 / 5 Rating on Google (850+ Reviews)</span>
+            <span>5.0 / 5 Rating on Google (850+ Reviews)</span>
           </div>
           <h1 className="font-playfair text-4xl sm:text-5xl font-black tracking-tight">
             Guest Testimonials &amp; Stories

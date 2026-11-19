@@ -7,13 +7,13 @@ export default function HomeStats() {
   const stats = [
     {
       label: 'Bookings Completed',
-      value: '12,500+',
+      value: '3,500+',
       desc: 'Memorable celebrations hosted',
       icon: Film,
     },
     {
       label: 'Google Rating',
-      value: '4.9 ★',
+      value: '5.0 ★',
       desc: 'Based on 850+ real reviews',
       icon: Star,
     },

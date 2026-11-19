@@ -109,9 +109,9 @@ export default function Navbar() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h4 className="text-sm font-bold text-[#141110]">BTM 2nd Stage</h4>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#ef4a23] text-white">NEW</span>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#ef4a23] text-white">4 SCREENS</span>
                     </div>
-                    <p className="text-xs text-stone-500 mt-0.5">3 Theatres • Near Udupi Garden</p>
+                    <p className="text-xs text-stone-500 mt-0.5">4 Theatres • Near Udupi Garden</p>
                   </div>
                 </Link>
               </div>

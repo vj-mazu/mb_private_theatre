@@ -77,7 +77,7 @@ export default function TestimonialsSection() {
             <span className="flex items-center text-amber-500">
               <Star className="w-4 h-4 fill-amber-500" />
             </span>
-            <span>Rated 4.9 ★ by 850+ Verified Google Reviews</span>
+            <span>Rated 5.0 ★ by 850+ Verified Google Reviews</span>
           </div>
 
           <h2 className="font-playfair text-3xl sm:text-5xl font-black text-royal-900 tracking-tight">

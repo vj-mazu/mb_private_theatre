@@ -149,15 +149,26 @@ export async function POST(request: NextRequest) {
       booking_date,
       customer_name,
       customer_phone,
+      whatsapp_number,
+      special_person_name = '',
       customer_email = '',
       screen_name = '',
       occasion_id = 1,
+      occasion: customOccasion = '',
       guests = 2,
+      extra_persons = 0,
       extra_hours = 0,
+      package_type = 'standard',
+      cake_flavor = '',
+      addons = [],
+      custom_item_name = '',
+      custom_item_amount = 0,
+      discount = 0,
       total = 899,
       advance_paid = 500,
+      payment_type = 'upi',
       notes = '',
-      source = 'phone'
+      source = 'phone_call'
     } = body;
 
     // If staff, force booking to their own assigned branch
@@ -179,6 +190,9 @@ export async function POST(request: NextRequest) {
 
     const extraRate = th ? getExtraHourRate(th.id) : (Number(theatre_id) === 1 || Number(theatre_id) === 4 ? 400 : 750);
     const extraHoursCost = validExtraHours * extraRate;
+    const finalWhatsApp = (whatsapp_number || customer_phone || '').replace(/\D/g, '').slice(-10);
+    const finalPhone = (customer_phone || whatsapp_number || '').replace(/\D/g, '').slice(-10);
+    const occasionTitle = customOccasion || oc?.name || 'Celebration';
 
     const newBooking = {
       id: mockStore.bookings.length + 1,
@@ -191,18 +205,29 @@ export async function POST(request: NextRequest) {
       extra_hours_cost: extraHoursCost,
       total_duration_hours: 2 + validExtraHours,
       occasion_id: Number(occasion_id),
+      occasion: occasionTitle,
       booking_date,
       customer_name,
-      customer_phone,
+      customer_phone: finalPhone,
+      whatsapp_number: finalWhatsApp,
+      special_person_name,
       customer_email,
-      screen_name: screen_name || `Celebration for ${customer_name}`,
+      screen_name: screen_name || (special_person_name ? `Celebration for ${special_person_name}` : `Celebration for ${customer_name}`),
       guests: Number(guests),
+      extra_persons: Number(extra_persons || 0),
+      package_type,
+      cake_flavor,
+      addons: Array.isArray(addons) ? addons : [],
+      addons_json: JSON.stringify(addons || []),
+      custom_item_name,
+      custom_item_amount: Number(custom_item_amount || 0),
       subtotal: Number(total),
-      addons_total: 0,
-      discount: 0,
+      addons_total: Array.isArray(addons) ? addons.reduce((sum: number, a: any) => sum + (Number(a.price || 0) * Number(a.quantity || 1)), 0) : 0,
+      discount: Number(discount || 0),
       total: Number(total),
       advance_paid: Number(advance_paid),
       balance: Math.max(0, Number(total) - Number(advance_paid)),
+      payment_type: payment_type || 'upi',
       status: 'confirmed' as const,
       payment_status: Number(advance_paid) >= Number(total) ? 'fully_paid' : 'advance_paid',
       source: source as any,
@@ -217,18 +242,30 @@ export async function POST(request: NextRequest) {
         INSERT INTO bookings (
           booking_ref, branch_id, theatre_id, slot_id, booking_date,
           customer_name, customer_phone, customer_email, screen_name,
-          guests, occasion_id, extra_hours, subtotal, addons_total,
+          special_person_name, whatsapp_number, package_type, cake_flavor,
+          custom_item_name, custom_item_amount, payment_type, extra_persons,
+          occasion, guests, occasion_id, extra_hours, subtotal, addons_total,
           discount, total, advance_paid, balance, status, payment_status,
-          source, notes, is_deleted
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+          source, notes, addons_json, is_deleted
+        ) VALUES (
+          ?, ?, ?, ?, ?,
+          ?, ?, ?, ?,
+          ?, ?, ?, ?,
+          ?, ?, ?, ?,
+          ?, ?, ?, ?, ?, ?,
+          ?, ?, ?, ?, ?, ?,
+          ?, ?, ?, 0
+        )
       `);
       const result = insertStmt.run(
         bookingRef, Number(effectiveBranchId), Number(theatre_id), Number(slot_id), booking_date,
-        customer_name, String(customer_phone).replace(/\D/g, ''), customer_email || '', screen_name || '',
-        Number(guests), Number(occasion_id), validExtraHours, Number(total), 0,
-        0, Number(total), Number(advance_paid), Math.max(0, Number(total) - Number(advance_paid)),
+        customer_name, finalPhone, customer_email || '', newBooking.screen_name,
+        special_person_name, finalWhatsApp, package_type, cake_flavor,
+        custom_item_name, Number(custom_item_amount || 0), payment_type, Number(extra_persons || 0),
+        occasionTitle, Number(guests), Number(occasion_id), validExtraHours, Number(total), newBooking.addons_total,
+        Number(discount || 0), Number(total), Number(advance_paid), Math.max(0, Number(total) - Number(advance_paid)),
         'confirmed', Number(advance_paid) >= Number(total) ? 'fully_paid' : 'advance_paid',
-        source, notes || ''
+        source, notes || '', JSON.stringify(addons || [])
       );
       if (result.lastInsertRowid) {
         newBooking.id = Number(result.lastInsertRowid);
@@ -245,10 +282,10 @@ export async function POST(request: NextRequest) {
       id: Date.now(),
       user_id: session.id,
       user_email: session.email,
-      action: 'CREATE_MANUAL_PHONE_BOOKING',
+      action: 'CREATE_BOOKING',
       entity: 'bookings',
       entity_id: String(newBooking.id),
-      details: { ref: bookingRef, customer: customer_name, extra_hours: validExtraHours, source },
+      details: { ref: bookingRef, customer: customer_name, special_person: special_person_name, extra_hours: validExtraHours, source },
       created_at: new Date().toISOString()
     });
 
@@ -258,7 +295,7 @@ export async function POST(request: NextRequest) {
       theatre_name: th?.name || 'Screen',
       theatre_emoji: th?.emoji || '🎬',
       slot_time: computedSlotTime,
-      occasion_name: oc?.name || 'Celebration',
+      occasion_name: occasionTitle,
       map_url: br?.map_url || 'https://maps.google.com/?q=Movie+Bash+Bengaluru'
     };
 

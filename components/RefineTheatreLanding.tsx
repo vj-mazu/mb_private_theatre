@@ -1609,7 +1609,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="text-[#ef4a23] font-bold">★★★★★</span>
-                    <span className="truncate">Loved by 12,500+ guests in Bengaluru</span>
+                    <span className="truncate">Loved by 3,500+ guests in Bengaluru</span>
                   </div>
                 </div>
               </div>
@@ -1844,7 +1844,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               </div>
               <div className="flex items-center gap-1">
                 <span className="text-[#ef4a23] font-bold">★★★★★</span>
-                <span className="truncate">Loved by 12,500+ guests in Bengaluru</span>
+                <span className="truncate">Loved by 3,500+ guests in Bengaluru</span>
               </div>
             </div>
           </div>
@@ -2021,7 +2021,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             className="w-full overflow-hidden flex relative z-10 py-4 border-t border-[#ef4a23]/15 bg-[#FAF3E4]"
           >
             <div className="hero-marquee-track flex items-center gap-8 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wider text-[#ef4a23]">
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">⭐ 4.9★ RATED (12,500+ GUESTS)</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">⭐ 5.0★ RATED (3,500+ GUESTS)</span>
               <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🎬 4K LASER SCREENING</span>
               <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🔊 DOLBY ATMOS 7.1.2 SURROUND</span>
               <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🔒 100% PRIVATE & SOUNDPROOF</span>
@@ -2029,7 +2029,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🎂 HANDCRAFTED GOURMET CAKES</span>
             </div>
             <div className="hero-marquee-track flex items-center gap-8 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wider text-[#ef4a23]">
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">⭐ 4.9★ RATED (12,500+ GUESTS)</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">⭐ 5.0★ RATED (3,500+ GUESTS)</span>
               <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🎬 4K LASER SCREENING</span>
               <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🔊 DOLBY ATMOS 7.1.2 SURROUND</span>
               <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🔒 100% PRIVATE & SOUNDPROOF</span>
@@ -2041,8 +2041,8 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
 
 {/* 4. INTRO STATS STRIP */}
         <section className="intro-strip" aria-label="Movie Bash highlights">
-          <div><Icon name="users" /><strong>12,500+</strong><span>happy celebrations</span></div>
-          <div><Icon name="star" /><strong>4.9 / 5</strong><span>guest rating</span></div>
+          <div><Icon name="users" /><strong>3,500+</strong><span>happy celebrations</span></div>
+          <div><Icon name="star" /><strong>5.0 / 5</strong><span>guest rating</span></div>
           <div><Icon name="location" /><strong>2 locations</strong><span>across Bengaluru</span></div>
           <div><Icon name="sparkles" /><strong>100% private</strong><span>zero interruptions</span></div>
         </section>

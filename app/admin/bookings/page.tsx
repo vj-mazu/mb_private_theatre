@@ -61,22 +61,34 @@ export default function AdminBookingsPage() {
   const [rescheduleSlots, setRescheduleSlots] = useState<Array<any>>([]);
   const [loadingRescheduleSlots, setLoadingRescheduleSlots] = useState(false);
 
-  // Manual phone booking form state
+  // Manual phone / operational booking form state (Full 17 Fields)
   const [manualForm, setManualForm] = useState({
     customer_name: '',
     customer_phone: '',
+    whatsapp_number: '',
+    special_person_name: '',
     customer_email: '',
+    occasion: 'Birthday Party',
+    occasion_id: 2, // Birthday default
     branch_id: 1,
     theatre_id: 1,
     slot_id: 1,
+    slot_time: '',
     booking_date: getTodayIST(),
     screen_name: '',
-    occasion_id: 2, // Birthday default
+    package_type: 'standard', // 'standard' | 'custom' | 'premium'
     guests: 2,
+    extra_persons: 0,
     extra_hours: 0,
+    cake_flavor: 'Chocolate Truffle (500g)',
+    addons: [] as string[],
+    custom_item_name: '',
+    custom_item_amount: 0,
+    discount: 0,
     total: 899,
     advance_paid: 500,
-    source: 'phone',
+    payment_type: 'UPI', // 'UPI' | 'Cash' | 'Card' | 'Net Banking'
+    source: 'whatsapp', // 'whatsapp' | 'walkin' | 'phone_call' | 'instagram' | 'website'
     notes: ''
   });
 
@@ -175,22 +187,84 @@ export default function AdminBookingsPage() {
     loadSlots();
   }, [showManualModal, manualForm.theatre_id, manualForm.booking_date]);
 
+  // Addons catalog for operational booking
+  const ADDONS_CATALOG: Record<string, { label: string; price: number }> = {
+    fog: { label: 'Dramatic Fog Entry', price: 499 },
+    pyro: { label: 'Cold Pyro Sparklers (2 Shots)', price: 399 },
+    marquee: { label: 'LED Marquee Name Letters', price: 299 },
+    bouquet: { label: 'Fresh Red Rose Bouquet', price: 499 },
+    photo: { label: 'Pro Photography & 4K Video', price: 999 },
+  };
+
+  const recomputeManualTotal = (draft: typeof manualForm) => {
+    let base = 899;
+    if (draft.theatre_id === 1 || draft.theatre_id === 4) base = 899;
+    else if (draft.theatre_id === 2 || draft.theatre_id === 5) base = 1499;
+    else if (draft.theatre_id === 3 || draft.theatre_id === 6) base = 1699;
+    else if (draft.theatre_id === 7) base = 1599;
+
+    const pkgAdd = draft.package_type === 'premium' ? 1000 : draft.package_type === 'custom' ? 500 : 0;
+    const extraPersonsCost = Math.max(0, Number(draft.extra_persons || 0)) * 150;
+    const hourlyRate = (draft.theatre_id === 1 || draft.theatre_id === 4) ? 400 : 750;
+    const extraHoursCost = Math.max(0, Number(draft.extra_hours || 0)) * hourlyRate;
+    
+    let addonsTotal = 0;
+    if (Array.isArray(draft.addons)) {
+      draft.addons.forEach(key => {
+        if (ADDONS_CATALOG[key]) addonsTotal += ADDONS_CATALOG[key].price;
+      });
+    }
+
+    const customCost = Math.max(0, Number(draft.custom_item_amount || 0));
+    const discountVal = Math.max(0, Number(draft.discount || 0));
+
+    return Math.max(0, base + pkgAdd + extraPersonsCost + extraHoursCost + addonsTotal + customCost - discountVal);
+  };
+
+  const updateManualField = (field: string, value: any) => {
+    setManualForm(prev => {
+      const next = { ...prev, [field]: value };
+      if (field === 'special_person_name' && value && (!prev.screen_name || prev.screen_name.startsWith('Celebration for '))) {
+        next.screen_name = `Celebration for ${value} ❤️`;
+      }
+      if (field === 'whatsapp_number' && !prev.customer_phone) {
+        next.customer_phone = value;
+      }
+      if (['theatre_id', 'package_type', 'extra_persons', 'extra_hours', 'custom_item_amount', 'discount'].includes(field)) {
+        next.total = recomputeManualTotal(next);
+      }
+      return next;
+    });
+  };
+
+  const toggleManualAddon = (addonKey: string) => {
+    setManualForm(prev => {
+      const current = Array.isArray(prev.addons) ? prev.addons : [];
+      const exists = current.includes(addonKey);
+      const updated = exists ? current.filter(k => k !== addonKey) : [...current, addonKey];
+      const next = { ...prev, addons: updated };
+      next.total = recomputeManualTotal(next);
+      return next;
+    });
+  };
+
   // Handle theatre presets
   const handleTheatreChange = (theatreId: number) => {
-    let basePrice = 899;
     let defaultGuests = 2;
-    if (theatreId === 1 || theatreId === 4) { basePrice = 899; defaultGuests = 2; }
-    else if (theatreId === 2 || theatreId === 5) { basePrice = 1499; defaultGuests = 6; }
-    else if (theatreId === 3 || theatreId === 6) { basePrice = 1699; defaultGuests = 12; }
-    else if (theatreId === 7) { basePrice = 1599; defaultGuests = 8; }
+    if (theatreId === 1 || theatreId === 4) defaultGuests = 2;
+    else if (theatreId === 2 || theatreId === 5) defaultGuests = 6;
+    else if (theatreId === 3 || theatreId === 6) defaultGuests = 12;
+    else if (theatreId === 7) defaultGuests = 8;
 
-    setManualForm(prev => ({
-      ...prev,
-      theatre_id: theatreId,
-      total: basePrice,
-      guests: defaultGuests,
-      advance_paid: Math.min(prev.advance_paid, basePrice)
-    }));
+    setManualForm(prev => {
+      const next = {
+        ...prev,
+        theatre_id: theatreId,
+        guests: defaultGuests,
+      };
+      next.total = recomputeManualTotal(next);
+      return next;
+    });
   };
 
   // Dynamic slots loading for reschedule modal
@@ -300,25 +374,30 @@ export default function AdminBookingsPage() {
     return (
       `🎬 *Movie Bash Private Theatre — Reservation Confirmed* 🍿\n\n` +
       `Dear *${b.customer_name}*,\n` +
-      `Your private theatre booking with our manager via phone is *${statusText}*!\n\n` +
+      `Your private theatre reservation is *${statusText}*!\n\n` +
       `🎟️ *Booking Ref:* ${b.booking_ref}\n` +
+      (b.special_person_name ? `🌟 *Celebrant / Special Person:* ${b.special_person_name}\n` : '') +
+      (b.occasion || b.occasion_name ? `🎉 *Occasion:* ${b.occasion || b.occasion_name}\n` : '') +
       `📍 *Venue:* Movie Bash (${branchName})\n` +
       `🎭 *Theatre:* ${b.theatre_name || 'Private Screen'}\n` +
-      (b.package_type ? `📦 *Package:* ${String(b.package_type).toUpperCase()} PACKAGE\n` : '') +
-      (b.cake_flavor ? `🎂 *Cake:* 500g ${b.cake_flavor}\n` : '') +
+      `📦 *Package:* ${String(b.package_type || 'standard').toUpperCase()}\n` +
+      (b.cake_flavor && b.cake_flavor !== 'None' ? `🎂 *Cake:* ${b.cake_flavor}\n` : '') +
       `📅 *Date:* ${b.booking_date}\n` +
       `⏰ *Showtime Slot:* ${b.slot_time || 'Scheduled Slot'}\n` +
       (b.extra_hours > 0 ? `⏳ *Extended Duration:* +${b.extra_hours} Hour Extra Showtime (${2 + Number(b.extra_hours)} Hours Total)\n` : `⏳ *Duration:* 2 Hours Standard Showtime\n`) +
-      `👥 *Guests:* ${b.guests}\n` +
-      (b.screen_name ? `✨ *Screen Name:* "${b.screen_name}"\n` : '') +
+      `👥 *Guests:* ${b.guests} ${b.extra_persons > 0 ? `(+${b.extra_persons} extra)` : ''}\n` +
+      (b.screen_name ? `✨ *LED Screen Title:* "${b.screen_name}"\n` : '') +
+      (b.custom_item_name ? `🎁 *Custom Request:* ${b.custom_item_name} (+₹${b.custom_item_amount})\n` : '') +
+      (b.discount > 0 ? `🏷️ *Discount Applied:* -₹${b.discount}\n` : '') +
       `💰 *Total Amount:* ₹${b.total}\n` +
       `✅ *Advance Paid:* ₹${b.advance_paid || 0}\n` +
       `💵 *Balance Due at Venue:* ₹${b.balance || 0}\n` +
+      `💳 *Payment Type:* ${b.payment_type || 'UPI'}\n` +
       `📍 *Location:* ${branchAddress}\n` +
       `🗺️ *Google Maps:* https://maps.google.com/?q=Movie+Bash+${encodeURIComponent(branchName)}\n\n` +
-      `🍿 *Amenities Included:* 4K Cinema projection, Dolby sound, recliner seating, customizable music/OTT, and celebration atmosphere.\n\n` +
-      `For any special requests (cakes, decor, songs), simply reply to this WhatsApp message or call us at *+91 99029 23656*.\n\n` +
-      `We look forward to hosting your celebration! 🎉`
+      `🍿 *Amenities Included:* 4K Laser Projection, Dolby Surround, Luxury Recliners, Full Privacy & Soundproofing, OTT / Music streaming setup.\n\n` +
+      `For any special requests, call or WhatsApp our desk at *+91 99029 23656*.\n\n` +
+      `We look forward to hosting your grand celebration! 🎉`
     );
   };
 
@@ -331,22 +410,32 @@ export default function AdminBookingsPage() {
 
   const handleCreateManualBooking = async (e: React.FormEvent, dispatchWhatsApp: boolean) => {
     e.preventDefault();
-    if (!manualForm.customer_name.trim()) {
-      alert('Please enter the customer full name.');
+    const finalName = manualForm.customer_name.trim() || manualForm.special_person_name.trim();
+    if (!finalName) {
+      alert('Please enter the Special Person’s Name or Customer Name.');
       return;
     }
 
-    const cleanPhone = manualForm.customer_phone.replace(/\D/g, '');
+    const cleanPhone = (manualForm.whatsapp_number || manualForm.customer_phone).replace(/\D/g, '').slice(-10);
     if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
-      alert('Please enter a valid 10-digit Indian mobile number (e.g. 9876543210 starting with 6, 7, 8, or 9).');
+      alert('Please enter a valid 10-digit Indian WhatsApp / mobile number (e.g. 9876543210 starting with 6, 7, 8, or 9).');
       return;
     }
+
+    const payload = {
+      ...manualForm,
+      customer_name: manualForm.customer_name.trim() || finalName,
+      customer_phone: cleanPhone,
+      whatsapp_number: cleanPhone,
+      screen_name: manualForm.screen_name || (manualForm.special_person_name ? `Celebration for ${manualForm.special_person_name} ❤️` : `Celebration for ${finalName}`),
+      balance: Math.max(0, manualForm.total - manualForm.advance_paid)
+    };
 
     try {
       const res = await fetch('/api/admin/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(manualForm)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (data.success) {
@@ -418,16 +507,16 @@ export default function AdminBookingsPage() {
             onClick={() => {
               setManualForm(prev => ({ 
                 ...prev, 
-                source: 'phone',
+                source: 'phone_call',
                 branch_id: isStaff && currentUser?.branch_id ? currentUser.branch_id : prev.branch_id,
                 theatre_id: isStaff && currentUser?.branch_id === 2 ? 4 : (isStaff ? 1 : prev.theatre_id)
               }));
               setShowManualModal(true);
             }}
-            className="px-4 py-2.5 rounded-2xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+            className="px-4 py-2.5 rounded-2xl text-xs font-bold text-white bg-[#00A2E4] hover:bg-[#0072AE] shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
           >
-            <PhoneCall className="w-4 h-4" />
-            <span>+ Phone Call Booking</span>
+            <Plus className="w-4 h-4" />
+            <span>Book</span>
           </button>
         </div>
       </div>
@@ -925,87 +1014,139 @@ export default function AdminBookingsPage() {
         </div>
       )}
 
-      {/* PHONE CALL / MANUAL BOOKING MODAL */}
+      {/* BOOKING MODAL (FULL 17 OPERATIONAL FIELDS) */}
       {showManualModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white max-w-xl w-full rounded-3xl p-6 sm:p-8 space-y-4 shadow-elevated border-2 border-sky-100 max-h-[92vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-[#0B2238]/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white max-w-2xl w-full rounded-3xl p-5 sm:p-7 space-y-4 shadow-elevated border border-[#00A2E4]/20 max-h-[92vh] overflow-y-auto">
             
-            <div className="flex items-center justify-between border-b border-sky-100 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-emerald-100 text-emerald-800">
-                  <PhoneCall className="w-5 h-5" />
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <span className="w-10 h-10 rounded-2xl bg-[#00A2E4]/10 text-[#00A2E4] flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-[#00A2E4]" />
                 </span>
                 <div>
-                  <h3 className="font-playfair text-xl font-bold text-ink">
-                    New Phone Call / Direct Booking
+                  <h3 className="font-playfair text-xl sm:text-2xl font-bold text-[#0B2238]">
+                    Book Showtime
                   </h3>
                   <span className="text-[11px] text-slate-500">
-                    Book instantly on call &amp; send WhatsApp confirmation to customer
+                    Create private theatre reservation &amp; dispatch customer WhatsApp voucher
                   </span>
                 </div>
               </div>
-              <button onClick={() => setShowManualModal(false)}><X className="w-5 h-5 text-slate-500" /></button>
+              <button 
+                onClick={() => setShowManualModal(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
             <form onSubmit={(e) => handleCreateManualBooking(e, true)} className="space-y-4 text-xs">
               
-              {/* Customer Contact */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-900 mb-1">Customer Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Ramesh Babu"
-                    value={manualForm.customer_name}
-                    onChange={(e) => setManualForm({ ...manualForm, customer_name: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-semibold"
-                  />
+              {/* SECTION 1: Celebrant & Contact (Fields 1, 2, + Contact Name) */}
+              <div className="p-3.5 rounded-2xl bg-[#F6FAFD] border border-sky-100/80 space-y-3">
+                <span className="text-[11px] font-black uppercase tracking-wider text-[#0072AE] flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" /> 1. Celebrant &amp; Contact Details
+                </span>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-[#0B2238] mb-1">
+                      Special person’s Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Sneha / Arjun"
+                      value={manualForm.special_person_name}
+                      onChange={(e) => updateManualField('special_person_name', e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-[#0B2238] mb-1">
+                      Whatsapp number (10 digits) *
+                    </label>
+                    <div className="flex">
+                      <span className="px-3 py-2 rounded-l-xl bg-slate-200 border border-r-0 border-sky-200 font-bold text-slate-700">
+                        +91
+                      </span>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="9876543210"
+                        value={manualForm.whatsapp_number}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          updateManualField('whatsapp_number', val);
+                        }}
+                        className="w-full px-3 py-2 rounded-r-xl bg-white border border-sky-200 font-black text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block font-bold text-slate-900 mb-1">Phone Number (10 digits) *</label>
-                  <div className="flex">
-                    <span className="px-3 py-2 rounded-l-xl bg-slate-200 border border-r-0 border-sky-200 font-bold text-slate-700">
-                      +91
-                    </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">
+                      Customer / Booked By (Name)
+                    </label>
                     <input
-                      type="tel"
-                      required
-                      placeholder="9876543210"
-                      value={manualForm.customer_phone}
-                      onChange={(e) => setManualForm({ ...manualForm, customer_phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
-                      className="w-full px-3 py-2 rounded-r-xl bg-[#fffdf9] border border-sky-200 font-bold text-slate-900"
+                      type="text"
+                      placeholder="e.g. Ramesh Babu"
+                      value={manualForm.customer_name}
+                      onChange={(e) => updateManualField('customer_name', e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-semibold text-slate-800 focus:border-[#00A2E4] focus:outline-none"
                     />
+                  </div>
+
+                  {/* FIELD 3: Occasion */}
+                  <div>
+                    <label className="block font-bold text-[#0B2238] mb-1">
+                      Occasion *
+                    </label>
+                    <select
+                      value={manualForm.occasion}
+                      onChange={(e) => {
+                        const occ = e.target.value;
+                        let occId = 1;
+                        if (occ.includes('Birthday')) occId = 2;
+                        else if (occ.includes('Proposal') || occ.includes('Date')) occId = 1;
+                        else if (occ.includes('Anniversary')) occId = 3;
+                        else if (occ.includes('Bride')) occId = 4;
+                        else if (occ.includes('Family')) occId = 5;
+                        updateManualField('occasion', occ);
+                        updateManualField('occasion_id', occId);
+                      }}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                    >
+                      <option value="Birthday Party">🎂 Birthday Party</option>
+                      <option value="Romantic Proposal / Date">💍 Romantic Proposal / Date</option>
+                      <option value="Anniversary Celebration">💖 Anniversary Celebration</option>
+                      <option value="Bride-to-Be / Bachelorette">👰 Bride-to-Be / Bachelorette</option>
+                      <option value="Groom-to-Be">🤵 Groom-to-Be</option>
+                      <option value="Family & Friends Movie Night">🍿 Family &amp; Friends Movie Night</option>
+                      <option value="Surprise Celebration">✨ Surprise Celebration</option>
+                    </select>
                   </div>
                 </div>
               </div>
 
-              {/* Screen Title Display (Celebrant) */}
-              <div>
-                <label className="block font-bold text-slate-900 mb-1">Screen Title Display (Optional)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Happy 25th Birthday Sneha ❤️"
-                  value={manualForm.screen_name}
-                  onChange={(e) => setManualForm({ ...manualForm, screen_name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-medium"
-                />
-              </div>
-
-              {/* Branch & Theatre Selection */}
+              {/* SECTION 2: Branch & Theatre (Fields 4, 5) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-900 mb-1">Branch</label>
+                  <label className="block font-bold text-[#0B2238] mb-1">Branch *</label>
                   <select
                     value={manualForm.branch_id}
                     onChange={(e) => {
                       const newBranch = Number(e.target.value);
                       const defaultTheatre = newBranch === 1 ? 1 : 4;
-                      setManualForm(prev => ({ ...prev, branch_id: newBranch, theatre_id: defaultTheatre }));
+                      updateManualField('branch_id', newBranch);
                       handleTheatreChange(defaultTheatre);
                     }}
-                    className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-bold"
+                    className="w-full px-3 py-2 rounded-xl bg-[#F6FAFD] border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
                   >
                     <option value={1}>Electronic City (3 Screens)</option>
                     <option value={2}>BTM 2nd Stage (4 Screens)</option>
@@ -1013,11 +1154,11 @@ export default function AdminBookingsPage() {
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-900 mb-1">Select Private Theatre</label>
+                  <label className="block font-bold text-[#0B2238] mb-1">Private Theatre *</label>
                   <select
                     value={manualForm.theatre_id}
                     onChange={(e) => handleTheatreChange(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 font-bold"
+                    className="w-full px-3 py-2 rounded-xl bg-[#F6FAFD] border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
                   >
                     {manualForm.branch_id === 1 ? (
                       <>
@@ -1037,71 +1178,28 @@ export default function AdminBookingsPage() {
                 </div>
               </div>
 
-              {/* Extra Hours Extension */}
-              <div className="space-y-1.5 p-3 rounded-2xl bg-orange-50/70 border border-orange-200">
-                <div className="flex items-center justify-between">
-                  <label className="font-bold text-slate-900 text-xs">
-                    Extend Showtime Duration (Extra Hours)
+              {/* SECTION 3: Timings & Slot Selection (Field 6) */}
+              <div className="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-2.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <label className="font-bold text-[#0B2238] flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-[#00A2E4]" />
+                    <span>Timings / Showtime Slot *</span>
                   </label>
-                  <span className="text-[10px] font-black text-[#ef4a23]">
-                    {manualForm.theatre_id === 1 || manualForm.theatre_id === 4 ? '+₹400 / Hr (Couple)' : '+₹750 / Hr (Celebration & Family)'}
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {[0, 1, 2].map((extra) => {
-                    const isSelected = (manualForm.extra_hours || 0) === extra;
-                    const hourlyRate = (manualForm.theatre_id === 1 || manualForm.theatre_id === 4) ? 400 : 750;
-                    const extraCost = extra * hourlyRate;
-                    return (
-                      <button
-                        key={extra}
-                        type="button"
-                        onClick={() => {
-                          const currentExtra = manualForm.extra_hours || 0;
-                          const currentExtraCost = currentExtra * hourlyRate;
-                          const basePrice = manualForm.total - currentExtraCost;
-                          const newTotal = basePrice + extraCost;
-                          setManualForm(prev => ({
-                            ...prev,
-                            extra_hours: extra,
-                            total: newTotal
-                          }));
-                        }}
-                        className={`py-2 px-2.5 rounded-xl border text-center transition-all cursor-pointer ${
-                          isSelected
-                            ? 'border-[#ef4a23] bg-[#ef4a23] text-white font-black shadow-xs'
-                            : 'border-slate-300 bg-white hover:border-[#ef4a23] text-slate-800 font-bold'
-                        }`}
-                      >
-                        <span className="block text-xs">{extra === 0 ? 'Standard 2 Hrs' : `+${extra} Hr (${2 + extra} Hrs)`}</span>
-                        <span className={`block text-[10px] mt-0.5 ${isSelected ? 'text-white/90' : 'text-slate-500'}`}>
-                          {extra === 0 ? 'Regular timing' : `+₹${extraCost}`}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Date & Showtime Slots Selection */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="font-bold text-slate-900">Screening Date &amp; Showtime Slot *</label>
                   <input
                     type="date"
                     required
                     value={manualForm.booking_date}
-                    onChange={(e) => setManualForm({ ...manualForm, booking_date: e.target.value })}
-                    className="px-3 py-1.5 rounded-xl bg-[#fffdf9] border border-sky-200 font-bold"
+                    onChange={(e) => updateManualField('booking_date', e.target.value)}
+                    className="px-3 py-1.5 rounded-xl bg-[#F6FAFD] border border-sky-200 font-bold text-[#0B2238] text-xs focus:outline-none"
                   />
                 </div>
 
                 {loadingManualSlots ? (
                   <div className="p-3 text-center text-slate-500 animate-pulse bg-slate-50 rounded-xl">
-                    Loading slots for selected date...
+                    Checking slot availability...
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-1">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-36 overflow-y-auto p-1">
                     {manualSlots.map((s) => {
                       const isSelected = manualForm.slot_id === s.id;
                       const isBooked = s.is_booked;
@@ -1114,13 +1212,16 @@ export default function AdminBookingsPage() {
                           type="button"
                           key={s.id}
                           disabled={isBooked}
-                          onClick={() => setManualForm(prev => ({ ...prev, slot_id: s.id }))}
-                          className={`p-2 rounded-xl text-center border-2 transition-all cursor-pointer ${
+                          onClick={() => {
+                            updateManualField('slot_id', s.id);
+                            updateManualField('slot_time', slotTime);
+                          }}
+                          className={`p-2 rounded-xl text-center border transition-all cursor-pointer ${
                             isSelected
-                              ? 'border-royal-800 bg-[#155fbd] text-white font-black shadow-sm'
+                              ? 'border-[#00A2E4] bg-[#00A2E4] text-white font-black shadow-xs'
                               : isBooked
-                              ? 'border-sky-100 bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed line-through'
-                              : 'border-slate-300 bg-white hover:border-royal-600 text-slate-800 font-bold'
+                              ? 'border-slate-200 bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed line-through'
+                              : 'border-slate-200 bg-white hover:border-[#00A2E4] text-slate-800 font-bold'
                           }`}
                         >
                           <span className="block text-xs">{slotTime}</span>
@@ -1132,74 +1233,304 @@ export default function AdminBookingsPage() {
                     })}
                   </div>
                 )}
+
+                {/* Extra Hours Extension */}
+                <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <span className="text-[11px] font-bold text-slate-700">
+                    Extend Duration:
+                  </span>
+                  <div className="flex gap-2">
+                    {[0, 1, 2].map((extra) => {
+                      const isSelected = manualForm.extra_hours === extra;
+                      const hourlyRate = (manualForm.theatre_id === 1 || manualForm.theatre_id === 4) ? 400 : 750;
+                      return (
+                        <button
+                          key={extra}
+                          type="button"
+                          onClick={() => updateManualField('extra_hours', extra)}
+                          className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                            isSelected 
+                              ? 'bg-[#0B2238] text-white shadow-xs' 
+                              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          }`}
+                        >
+                          {extra === 0 ? 'Standard 2h' : `+${extra}h (+₹${extra * hourlyRate})`}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
 
-              {/* Pricing, Advance Paid & Balance */}
-              <div className="p-3.5 rounded-2xl bg-[#f0f7ff] border border-sky-200 space-y-3">
-                <div className="grid grid-cols-3 gap-2">
+              {/* SECTION 4: Package or Custom (Field 7) & Extra Persons (Field 8) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#0B2238] mb-1">
+                    Package or Custom *
+                  </label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {[
+                      { key: 'standard', label: 'Standard', sub: 'Base setup' },
+                      { key: 'custom', label: 'Custom', sub: '+₹500 theme' },
+                      { key: 'premium', label: 'VIP Suite', sub: '+₹1,000 all-in' },
+                    ].map((pkg) => {
+                      const isSel = manualForm.package_type === pkg.key;
+                      return (
+                        <button
+                          key={pkg.key}
+                          type="button"
+                          onClick={() => updateManualField('package_type', pkg.key)}
+                          className={`p-2 rounded-xl text-center border transition-all cursor-pointer ${
+                            isSel 
+                              ? 'border-[#00A2E4] bg-[#00A2E4]/10 text-[#0072AE] font-black' 
+                              : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                          }`}
+                        >
+                          <span className="block text-xs font-bold">{pkg.label}</span>
+                          <span className="block text-[9px] text-slate-500">{pkg.sub}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-[#0B2238] mb-1">
+                    Extra persons (+₹150/guest)
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min={0}
+                      max={20}
+                      value={manualForm.extra_persons}
+                      onChange={(e) => updateManualField('extra_persons', Math.max(0, parseInt(e.target.value) || 0))}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                    />
+                    <span className="text-[11px] text-slate-500 shrink-0 font-medium">
+                      +₹{manualForm.extra_persons * 150}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION 5: Cake Flavour (Field 9) & LED Screen Title */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#0B2238] mb-1">
+                    Cake flavour *
+                  </label>
+                  <select
+                    value={manualForm.cake_flavor}
+                    onChange={(e) => updateManualField('cake_flavor', e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                  >
+                    <option value="Chocolate Truffle (500g)">🍫 Chocolate Truffle (500g)</option>
+                    <option value="Dutch Dark Chocolate (500g)">🍫 Dutch Dark Chocolate (500g)</option>
+                    <option value="Red Velvet (500g)">❤️ Red Velvet (500g)</option>
+                    <option value="Black Forest (500g)">🍒 Black Forest (500g)</option>
+                    <option value="Butterscotch (500g)">🍯 Butterscotch (500g)</option>
+                    <option value="Fresh Pineapple (500g)">🍍 Fresh Pineapple (500g)</option>
+                    <option value="None">🚫 None (Bringing Own Cake / ₹0)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Screen Title Display (LED Screen)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Happy 25th Birthday Sneha ❤️"
+                    value={manualForm.screen_name}
+                    onChange={(e) => updateManualField('screen_name', e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-medium text-slate-800 focus:border-[#00A2E4] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* SECTION 6: Addons (Field 10) */}
+              <div className="space-y-1.5 p-3 rounded-2xl bg-[#F6FAFD] border border-sky-100">
+                <span className="font-bold text-[#0B2238] block text-[11px]">
+                  Celebration Add-ons (Tap to select)
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {Object.entries(ADDONS_CATALOG).map(([key, item]) => {
+                    const isSelected = manualForm.addons.includes(key);
+                    return (
+                      <button
+                        type="button"
+                        key={key}
+                        onClick={() => toggleManualAddon(key)}
+                        className={`px-3 py-1.5 rounded-xl border text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
+                          isSelected
+                            ? 'border-[#00A2E4] bg-[#00A2E4] text-white font-bold shadow-2xs'
+                            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                        }`}
+                      >
+                        <span>{isSelected ? '✓' : '+'}</span>
+                        <span>{item.label}</span>
+                        <span className={`text-[10px] ${isSelected ? 'text-white/90' : 'text-slate-500'}`}>
+                          ₹{item.price}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* SECTION 7: Extra custom field (Field 11: Name & Amount) & Discount (Field 12) */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-2xl bg-[#FFFDF9] border border-amber-200/70">
+                <div className="sm:col-span-2">
+                  <label className="block font-bold text-[#0B2238] mb-1">
+                    Extra custom field (Item Name)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Custom Balloon Arch / Flower Crown / Gift Hamper"
+                    value={manualForm.custom_item_name}
+                    onChange={(e) => updateManualField('custom_item_name', e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-amber-200 font-medium text-slate-800 focus:border-amber-400 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-[#0B2238] mb-1">
+                    Custom Amount (₹)
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="0"
+                    value={manualForm.custom_item_amount || ''}
+                    onChange={(e) => updateManualField('custom_item_amount', Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-amber-200 font-black text-[#0B2238] focus:border-amber-400 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* SECTION 8: Discount, Payment Type (Field 16) & Booking Source (Field 17) */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-800 mb-1">
+                    Discount (₹)
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="0"
+                    value={manualForm.discount || ''}
+                    onChange={(e) => updateManualField('discount', Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-black text-rose-600 focus:border-[#00A2E4] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-[#0B2238] mb-1">
+                    Payment type *
+                  </label>
+                  <select
+                    value={manualForm.payment_type}
+                    onChange={(e) => updateManualField('payment_type', e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                  >
+                    <option value="UPI">📱 UPI (GPay / PhonePe / Paytm)</option>
+                    <option value="Cash">💵 Cash</option>
+                    <option value="Card">💳 Credit / Debit Card</option>
+                    <option value="Net Banking">🏦 Net Banking</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-[#0B2238] mb-1">
+                    Booking Source *
+                  </label>
+                  <select
+                    value={manualForm.source}
+                    onChange={(e) => updateManualField('source', e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                  >
+                    <option value="whatsapp">💬 WhatsApp</option>
+                    <option value="phone_call">📞 Phone Call</option>
+                    <option value="walkin">🚶 Walk-in</option>
+                    <option value="instagram">📸 Instagram</option>
+                    <option value="website">🌐 Website</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* SECTION 9: Financial Calculation Card (Fields 13, 14, 15) */}
+              <div className="p-4 rounded-2xl bg-[#0B2238] text-white space-y-3 shadow-sm">
+                <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Total (₹)</label>
+                    <label className="block text-[11px] font-bold text-white/80 mb-1">
+                      Total amount (₹) *
+                    </label>
                     <input
                       type="number"
                       required
                       value={manualForm.total}
-                      onChange={(e) => setManualForm({ ...manualForm, total: Number(e.target.value) })}
-                      className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-sky-200 font-black text-slate-900"
+                      onChange={(e) => updateManualField('total', Math.max(0, parseInt(e.target.value) || 0))}
+                      className="w-full px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 font-black text-white text-base focus:outline-none"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Advance (₹)</label>
+                    <label className="block text-[11px] font-bold text-white/80 mb-1">
+                      Advance (₹) *
+                    </label>
                     <input
                       type="number"
                       required
                       value={manualForm.advance_paid}
-                      onChange={(e) => setManualForm({ ...manualForm, advance_paid: Number(e.target.value) })}
-                      className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-sky-200 font-black text-emerald-700"
+                      onChange={(e) => updateManualField('advance_paid', Math.max(0, parseInt(e.target.value) || 0))}
+                      className="w-full px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-400 font-black text-emerald-300 text-base focus:outline-none"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Balance Due</label>
-                    <div className="px-2.5 py-1.5 rounded-xl bg-white border border-sky-200 font-black text-amber-700">
+                    <label className="block text-[11px] font-bold text-white/80 mb-1">
+                      Balance Due (₹)
+                    </label>
+                    <div className="px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/50 font-black text-amber-300 text-base flex items-center">
                       ₹{Math.max(0, manualForm.total - manualForm.advance_paid)}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-[11px]">
-                  <span className="text-slate-600 font-bold">Quick Advance:</span>
+                <div className="flex items-center gap-2 text-[11px] pt-1 border-t border-white/10">
+                  <span className="text-white/60 font-medium">Quick Advance:</span>
+                  {[500, 1000].map((amt) => (
+                    <button
+                      key={amt}
+                      type="button"
+                      onClick={() => updateManualField('advance_paid', amt)}
+                      className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold transition-colors cursor-pointer"
+                    >
+                      ₹{amt}
+                    </button>
+                  ))}
                   <button
                     type="button"
-                    onClick={() => setManualForm(prev => ({ ...prev, advance_paid: 500 }))}
-                    className="px-2.5 py-1 rounded-lg bg-white border border-slate-300 font-bold hover:bg-slate-50"
-                  >
-                    ₹500
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setManualForm(prev => ({ ...prev, advance_paid: 1000 }))}
-                    className="px-2.5 py-1 rounded-lg bg-white border border-slate-300 font-bold hover:bg-slate-50"
-                  >
-                    ₹1,000
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setManualForm(prev => ({ ...prev, advance_paid: prev.total }))}
-                    className="px-2.5 py-1 rounded-lg bg-white border border-slate-300 font-bold hover:bg-slate-50"
+                    onClick={() => updateManualField('advance_paid', manualForm.total)}
+                    className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold transition-colors cursor-pointer"
                   >
                     Full (₹{manualForm.total})
                   </button>
                 </div>
               </div>
 
-              {/* Notes */}
+              {/* Notes / Special Instructions */}
               <div>
-                <label className="block font-bold text-slate-900 mb-1">Call Notes / Special Requests</label>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Special Requests / Internal Notes
+                </label>
                 <input
                   type="text"
-                  placeholder="e.g. Asked for red balloon decor, bringing own cake"
+                  placeholder="e.g. Preferred red heart backdrop, playing favorite Spotify playlist"
                   value={manualForm.notes}
-                  onChange={(e) => setManualForm({ ...manualForm, notes: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200"
+                  onChange={(e) => updateManualField('notes', e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#F6FAFD] border border-sky-100 font-medium text-slate-800"
                 />
               </div>
 
@@ -1208,20 +1539,20 @@ export default function AdminBookingsPage() {
                 <button
                   type="button"
                   onClick={() => setShowManualModal(false)}
-                  className="px-4 py-2.5 rounded-xl bg-[#d9ebff]/50 font-bold text-slate-700 hover:bg-sand-300"
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 font-bold text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={(e) => handleCreateManualBooking(e, false)}
-                  className="px-4 py-2.5 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-900"
+                  className="px-5 py-2.5 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-900 transition-colors cursor-pointer"
                 >
                   Save Only
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                  className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all"
                 >
                   <MessageCircle className="w-4 h-4 fill-white" />
                   <span>Book &amp; Dispatch WhatsApp</span>
@@ -1243,7 +1574,7 @@ export default function AdminBookingsPage() {
 
             <div>
               <span className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider">
-                Phone Booking Successfully Saved
+                Booking Successfully Confirmed
               </span>
               <h3 className="font-playfair text-2xl font-black text-slate-900 mt-1">
                 Ref #{bookingSuccessData.booking_ref}
@@ -1251,13 +1582,19 @@ export default function AdminBookingsPage() {
             </div>
 
             <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-left text-xs space-y-1.5">
+              {bookingSuccessData.special_person_name && (
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Celebrant:</span>
+                  <strong className="text-emerald-900 font-bold">{bookingSuccessData.special_person_name}</strong>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-slate-600">Guest Name:</span>
                 <strong className="text-slate-900">{bookingSuccessData.customer_name}</strong>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Customer Phone:</span>
-                <strong className="text-emerald-800 font-mono">+91 {bookingSuccessData.customer_phone}</strong>
+                <span className="text-slate-600">WhatsApp / Phone:</span>
+                <strong className="text-emerald-800 font-mono">+91 {bookingSuccessData.whatsapp_number || bookingSuccessData.customer_phone}</strong>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-600">Screen &amp; Slot:</span>
@@ -1265,7 +1602,7 @@ export default function AdminBookingsPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-600">Advance Collected:</span>
-                <strong className="text-emerald-700">₹{bookingSuccessData.advance_paid}</strong>
+                <strong className="text-emerald-700">₹{bookingSuccessData.advance_paid} ({bookingSuccessData.payment_type || 'UPI'})</strong>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-600">Remaining Balance:</span>

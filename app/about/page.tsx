@@ -83,7 +83,7 @@ export default function AboutPage() {
                 />
               </div>
               <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-[0_12px_40px_rgba(22,48,79,0.08)] border border-sky-100 max-w-[200px]">
-                <span className="font-playfair text-2xl font-black text-[#ef4a23] block">12,500+</span>
+                <span className="font-playfair text-2xl font-black text-[#ef4a23] block">3,500+</span>
                 <span className="text-xs font-bold text-slate-700">Celebrations Hosted</span>
               </div>
             </div>

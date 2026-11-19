@@ -248,6 +248,14 @@ function ensureSqliteSchemaAndSeed(db: Database.Database) {
           occasion_id INTEGER,
           package_type TEXT,
           cake_flavor TEXT,
+          special_person_name TEXT,
+          whatsapp_number TEXT,
+          custom_item_name TEXT,
+          custom_item_amount REAL NOT NULL DEFAULT 0.00,
+          payment_type TEXT NOT NULL DEFAULT 'upi',
+          extra_persons INTEGER NOT NULL DEFAULT 0,
+          occasion TEXT,
+          addons_json TEXT,
           extra_hours INTEGER NOT NULL DEFAULT 0,
           extra_guests INTEGER NOT NULL DEFAULT 0,
           subtotal REAL NOT NULL DEFAULT 0.00,
@@ -402,6 +410,39 @@ function ensureSqliteSchemaAndSeed(db: Database.Database) {
         );
       `);
       console.log('[Movie Bash DB] ✅ SQLite schema created successfully.');
+    }
+
+    // Auto-migrate new columns into bookings table if they don't exist yet
+    try {
+      const columns = db.prepare("PRAGMA table_info(bookings)").all() as Array<{ name: string }>;
+      const colNames = new Set(columns.map(c => c.name.toLowerCase()));
+      
+      if (!colNames.has('special_person_name')) {
+        db.exec("ALTER TABLE bookings ADD COLUMN special_person_name TEXT;");
+      }
+      if (!colNames.has('whatsapp_number')) {
+        db.exec("ALTER TABLE bookings ADD COLUMN whatsapp_number TEXT;");
+      }
+      if (!colNames.has('custom_item_name')) {
+        db.exec("ALTER TABLE bookings ADD COLUMN custom_item_name TEXT;");
+      }
+      if (!colNames.has('custom_item_amount')) {
+        db.exec("ALTER TABLE bookings ADD COLUMN custom_item_amount REAL NOT NULL DEFAULT 0.00;");
+      }
+      if (!colNames.has('payment_type')) {
+        db.exec("ALTER TABLE bookings ADD COLUMN payment_type TEXT NOT NULL DEFAULT 'upi';");
+      }
+      if (!colNames.has('extra_persons')) {
+        db.exec("ALTER TABLE bookings ADD COLUMN extra_persons INTEGER NOT NULL DEFAULT 0;");
+      }
+      if (!colNames.has('occasion')) {
+        db.exec("ALTER TABLE bookings ADD COLUMN occasion TEXT;");
+      }
+      if (!colNames.has('addons_json')) {
+        db.exec("ALTER TABLE bookings ADD COLUMN addons_json TEXT;");
+      }
+    } catch (colErr) {
+      console.warn('[Movie Bash DB] Column check/migration notice:', colErr);
     }
   } catch (err) {
     console.error('[Movie Bash DB] SQLite schema check/creation error:', err);

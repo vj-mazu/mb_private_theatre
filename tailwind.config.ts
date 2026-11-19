@@ -10,6 +10,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        laban: {
+          DEFAULT: "#00A2E4",
+          deep: "#0072AE",
+          light: "#43C6FA",
+          glow: "rgba(0, 162, 228, 0.35)",
+        },
+        milk: {
+          DEFAULT: "#F6FAFD",
+          pure: "#FFFFFF",
+          mist: "#E6F3FB",
+        },
+        caramel: "#C68A4E",
+        cocoa: "#26140B",
         royal: {
           950: "#050F30",
           900: "#0A1F5C",
@@ -23,15 +36,19 @@ const config: Config = {
           50: "#F0F4FE",
         },
         sand: {
-          50: "#FBF8F1",
-          100: "#F5EFE0",
-          200: "#EADFC8",
+          50: "#F6FAFD",
+          100: "#E6F3FB",
+          200: "#D8E7F3",
           300: "#DFD0B0",
           400: "#D4BE92",
           500: "#C2A875",
         },
-        ink: "#0B1330",
-        cream: "#FFFDF9",
+        ink: {
+          DEFAULT: "#0B2238",
+          soft: "#4B6076",
+          faint: "#8FA4B8",
+        },
+        cream: "#F6FAFD",
         /* shadcn/ui semantic tokens — consumed by components/ui/* */
         border: "hsl(var(--border) / <alpha-value>)",
         background: "hsl(var(--background) / <alpha-value>)",
