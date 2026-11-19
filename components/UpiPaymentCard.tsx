@@ -112,9 +112,9 @@ export default function UpiPaymentCard({
     <div className="relative overflow-hidden rounded-3xl backdrop-blur-xl bg-white/80 border-2 border-[#00A2E4]/30 shadow-[0_16px_40px_rgba(239,74,35,0.08)] p-5 sm:p-6 space-y-5">
       
       {/* Top Header Badge */}
-      <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-orange-100">
+      <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-200">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#00A2E4] to-[#ff7a59] text-white flex items-center justify-center font-black shadow-md shadow-orange-500/20">
+          <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#00A2E4] to-[#00A2E4] text-white flex items-center justify-center font-black shadow-md shadow-[#00A2E4]/20">
             <IndianRupee className="w-5 h-5" />
           </div>
           <div>
@@ -134,7 +134,7 @@ export default function UpiPaymentCard({
       </div>
 
       {/* Official Mandatory Terms & Conditions Banner */}
-      <div className="p-4 rounded-2xl bg-gradient-to-br from-[#fff7f2] via-white to-[#E6F3FB] border-2 border-orange-200/80 shadow-xs space-y-2">
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-[#F8F0E5]/30 via-white to-[#E6F3FB] border-2 border-slate-200 shadow-xs space-y-2">
         <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#00A2E4]">
           <Sparkles className="w-4 h-4 text-[#00A2E4]" />
           <span>Booking Terms &amp; Conditions</span>
@@ -285,7 +285,7 @@ export default function UpiPaymentCard({
                 ? 'bg-red-50 border-red-300 text-red-900 shadow-xs' 
                 : secondsLeft <= 25 
                   ? 'bg-amber-50 border-amber-300 text-amber-900 animate-pulse'
-                  : 'bg-gradient-to-r from-orange-50 via-white to-amber-50 border-orange-200/90 text-orange-950 shadow-xs'
+                  : 'bg-gradient-to-r from-slate-50 via-white to-amber-50 border-slate-200 text-slate-900 shadow-xs'
             }`}>
               <div className="flex items-center gap-2 text-left">
                 <Clock className={`w-4 h-4 shrink-0 ${isExpired ? 'text-red-600' : 'text-[#00A2E4]'}`} />
@@ -303,7 +303,7 @@ export default function UpiPaymentCard({
                 <span className={`font-mono font-black text-sm px-2.5 py-1 rounded-xl shadow-2xs border ${
                   isExpired 
                     ? 'bg-red-100 text-red-700 border-red-200' 
-                    : 'bg-white text-[#00A2E4] border-orange-200'
+                    : 'bg-white text-[#00A2E4] border-slate-200'
                 }`}>
                   {formattedTime}
                 </span>
@@ -328,7 +328,7 @@ export default function UpiPaymentCard({
                     ? 'bg-red-500 w-0' 
                     : secondsLeft <= 25 
                       ? 'bg-amber-500' 
-                      : 'bg-gradient-to-r from-[#00A2E4] to-[#ff7a59]'
+                      : 'bg-gradient-to-r from-[#00A2E4] to-[#00A2E4]'
                 }`}
                 style={{ width: `${(secondsLeft / 90) * 100}%` }}
               />

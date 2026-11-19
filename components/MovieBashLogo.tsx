@@ -36,19 +36,19 @@ export default function MovieBashLogo({
           .mb-light-frame { fill: #050405; stroke: #050405; stroke-width: 0.15; stroke-linejoin: round; }
           .mb-dark-frame { fill: #050405; stroke: rgba(255,255,255,0.3); stroke-width: 0.15; stroke-linejoin: round; }
           .mb-paper { fill: #ffffff; stroke: #c8bba8; stroke-width: 1.4; stroke-linejoin: round; }
-          .mb-c-orange { fill: #f69a0b; stroke-width: 0.15; stroke-linejoin: round; }
+          .mb-c-orange { fill: #00A2E4; stroke-width: 0.15; stroke-linejoin: round; }
           .mb-c-red { fill: #dc1e22; stroke-width: 0.15; stroke-linejoin: round; }
           .mb-light-ink { fill: #141110 !important; stroke: #141110 !important; stroke-width: 0.65px; stroke-linejoin: round; }
           .mb-dark-ink { fill: #faf3e4 !important; stroke: #faf3e4 !important; stroke-width: 0.45px; stroke-linejoin: round; }
-          .mb-light-rule { fill: #ef4a23 !important; }
-          .mb-dark-rule { fill: #ef4a23 !important; }
+          .mb-light-rule { fill: #00A2E4 !important; }
+          .mb-dark-rule { fill: #00A2E4 !important; }
           .mb-film-body { fill: #1b1b1b; }
           .mb-fa { fill: #a6a6a6; }
           .mb-fb { fill: #949494; }
           .mb-fc { fill: #626262; }
           .mb-fd { fill: #3c3c3c; }
           .mb-film-hole { fill: #ffffff; }
-          .mb-rim { fill: #f59300; stroke: #f59300; stroke-width: 3; stroke-linejoin: round; }
+          .mb-rim { fill: #082052; stroke: #082052; stroke-width: 3; stroke-linejoin: round; }
           .mb-bulbs { fill: none; stroke: #ffc928; stroke-width: 1.7; stroke-linecap: round; stroke-dasharray: 0 4.1; }
           .mb-face { fill: #f1dcbc; stroke: #a81c12; stroke-width: 2.4; stroke-linejoin: round; }
           .mb-badge-text { fill: #dc1e22; }
@@ -161,8 +161,8 @@ export default function MovieBashLogo({
         />
         <rect
           className={ruleClass}
-          style={{ fill: '#ef4a23' }}
-          fill="#ef4a23"
+          style={{ fill: '#00A2E4' }}
+          fill="#00A2E4"
           x="159"
           y="82.85"
           width="208"

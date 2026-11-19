@@ -751,8 +751,8 @@ export function GrandAddonIcon({ name, className = "w-8 h-8" }: { name: string; 
       // Fallback Sparkles Celebration Star (Never empty)
       return (
         <svg viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-          <circle cx="24" cy="24" r="18" fill="#FFF1E8" stroke="#ef4a23" strokeWidth="1.5" />
-          <path d="M24 12L26.5 20L34 24L26.5 28L24 36L21.5 28L14 24L21.5 20L24 12Z" fill="#ef4a23" />
+          <circle cx="24" cy="24" r="18" fill="#F8F0E5" stroke="#082052" strokeWidth="1.5" />
+          <path d="M24 12L26.5 20L34 24L26.5 28L24 36L21.5 28L14 24L21.5 20L24 12Z" fill="#082052" />
         </svg>
       );
   }

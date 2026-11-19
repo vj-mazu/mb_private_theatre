@@ -114,7 +114,7 @@ export default function AdminReportsPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#ef4a23]">Financial Intelligence</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-[#082052]">Financial Intelligence</span>
           <h1 className="font-playfair text-2xl sm:text-3xl font-black text-ink">
             Revenue &amp; Analytics Dashboard
           </h1>
@@ -124,28 +124,28 @@ export default function AdminReportsPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="p-1 rounded-2xl bg-[#fff0ea]/50 border border-sky-200 flex text-xs font-bold">
+          <div className="p-1 rounded-2xl bg-[#F8F0E5]/50 border border-sky-200 flex text-xs font-bold">
             <button
               onClick={() => setTimeframe('all')}
-              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'all' ? 'bg-[#ef4a23] text-white shadow-sm' : 'text-ink'}`}
+              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'all' ? 'bg-[#082052] text-white shadow-sm' : 'text-ink'}`}
             >
               Overview
             </button>
             <button
               onClick={() => setTimeframe('daily')}
-              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'daily' ? 'bg-[#ef4a23] text-white shadow-sm' : 'text-ink'}`}
+              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'daily' ? 'bg-[#082052] text-white shadow-sm' : 'text-ink'}`}
             >
               Daily
             </button>
             <button
               onClick={() => setTimeframe('monthly')}
-              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'monthly' ? 'bg-[#ef4a23] text-white shadow-sm' : 'text-ink'}`}
+              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'monthly' ? 'bg-[#082052] text-white shadow-sm' : 'text-ink'}`}
             >
               Monthly
             </button>
             <button
               onClick={() => setTimeframe('cancelled')}
-              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'cancelled' ? 'bg-[#ef4a23] text-white shadow-sm' : 'text-ink'}`}
+              className={`px-3 py-1.5 rounded-xl transition-all ${timeframe === 'cancelled' ? 'bg-[#082052] text-white shadow-sm' : 'text-ink'}`}
             >
               Cancellations
             </button>
@@ -154,9 +154,9 @@ export default function AdminReportsPage() {
           <a
             href="/api/admin/bookings/export"
             download
-            className="px-4 py-2 rounded-2xl text-xs font-bold text-ink bg-[#fff8f5] hover:bg-[#fff0ea]/50 border border-sky-200 transition-colors flex items-center gap-1.5 shrink-0"
+            className="px-4 py-2 rounded-2xl text-xs font-bold text-ink bg-[#fff8f5] hover:bg-[#F8F0E5]/50 border border-sky-200 transition-colors flex items-center gap-1.5 shrink-0"
           >
-            <Download className="w-4 h-4 text-[#ef4a23]" />
+            <Download className="w-4 h-4 text-[#082052]" />
             <span>Export CSV</span>
           </a>
         </div>
@@ -169,13 +169,13 @@ export default function AdminReportsPage() {
           {/* Branch Filter Selector */}
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-black text-slate-700 uppercase tracking-wider shrink-0 flex items-center gap-1">
-              <Building className="w-3.5 h-3.5 text-[#ef4a23]" />
+              <Building className="w-3.5 h-3.5 text-[#082052]" />
               <span>Branch:</span>
             </span>
             <select
               value={branchFilter}
               onChange={(e) => setBranchFilter(e.target.value as any)}
-              className="px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 bg-white focus:outline-none focus:border-[#ef4a23] cursor-pointer"
+              className="px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 bg-white focus:outline-none focus:border-[#082052] cursor-pointer"
             >
               <option value="all">🏢 All Branches Combined</option>
               <option value="1">📍 Movie Bash - BTM 2nd Stage</option>
@@ -197,7 +197,7 @@ export default function AdminReportsPage() {
                   setCustomDate(e.target.value);
                   setQuickDate('custom' as any);
                 }}
-                className="px-2.5 py-1 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 bg-white focus:outline-none focus:border-[#ef4a23]"
+                className="px-2.5 py-1 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 bg-white focus:outline-none focus:border-[#082052]"
               />
               {customDate && (
                 <button
@@ -280,7 +280,7 @@ export default function AdminReportsPage() {
         <div className="p-6 rounded-3xl bg-white border-2 border-sky-100 shadow-sm hover:border-royal-500 transition-all">
           <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
             <span>This Month Revenue</span>
-            <span className="p-2 rounded-xl bg-royal-50 text-[#ef4a23]">
+            <span className="p-2 rounded-xl bg-royal-50 text-[#082052]">
               <Calendar className="w-4 h-4" />
             </span>
           </div>
@@ -347,7 +347,7 @@ export default function AdminReportsPage() {
         <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-sky-100 shadow-sm space-y-5">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-[#ef4a23]" />
+              <Calendar className="w-5 h-5 text-[#082052]" />
               <h2 className="font-playfair text-xl font-bold text-ink">
                 14-Day Daily Revenue Activity
               </h2>
@@ -460,7 +460,7 @@ export default function AdminReportsPage() {
         <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-sky-100 shadow-sm space-y-5">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-[#ef4a23]" />
+              <TrendingUp className="w-5 h-5 text-[#082052]" />
               <h2 className="font-playfair text-xl font-bold text-ink">
                 Monthly Financial History (Last 6 Months)
               </h2>
@@ -490,7 +490,7 @@ export default function AdminReportsPage() {
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-600">Avg Ticket Value:</span>
-                    <strong className="text-[#ef4a23]">
+                    <strong className="text-[#082052]">
                       ₹{m.count > 0 ? Math.round(m.revenue / m.count).toLocaleString() : 0}
                     </strong>
                   </div>
@@ -590,7 +590,7 @@ export default function AdminReportsPage() {
         {/* Booking Channel Distribution (Phone Call vs Web vs Walk-in) */}
         <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-sky-100 shadow-sm space-y-4">
           <h3 className="font-playfair text-xl font-bold text-ink flex items-center gap-2">
-            <PhoneCall className="w-5 h-5 text-[#ef4a23]" />
+            <PhoneCall className="w-5 h-5 text-[#082052]" />
             <span>Booking Source Breakdown</span>
           </h3>
           <p className="text-xs text-slate-500">
@@ -615,7 +615,7 @@ export default function AdminReportsPage() {
         {/* Branch Revenue Breakdown */}
         <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-sky-100 shadow-sm space-y-4">
           <h3 className="font-playfair text-xl font-bold text-ink flex items-center gap-2">
-            <Building className="w-5 h-5 text-[#ef4a23]" />
+            <Building className="w-5 h-5 text-[#082052]" />
             <span>Branch Performance Comparison</span>
           </h3>
           <p className="text-xs text-slate-500">

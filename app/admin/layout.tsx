@@ -79,14 +79,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div>
           {/* Logo */}
           <div className="p-6 border-b border-sky-100 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#ef4a23] text-white flex items-center justify-center font-black shadow-md shadow-[#ef4a23]/25">
+            <div className="w-10 h-10 rounded-xl bg-[#082052] text-white flex items-center justify-center font-black shadow-md shadow-[#082052]/25">
               <Film className="w-5 h-5 text-sky-200" />
             </div>
             <div>
               <span className="font-playfair text-lg font-black tracking-tight block leading-none text-ink">
                 MOVIE<span className="text-[#f39a4b]">BASH</span>
               </span>
-              <span className="text-[10px] text-[#ef4a23] font-bold uppercase tracking-wider">
+              <span className="text-[10px] text-[#082052] font-bold uppercase tracking-wider">
                 Admin Console
               </span>
             </div>
@@ -103,11 +103,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   href={item.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all ${
                     isActive
-                      ? 'bg-[#ef4a23] text-white shadow-md shadow-[#ef4a23]/20'
-                      : 'text-slate-600 hover:bg-[#fff0ea]/50 hover:text-[#141110]'
+                      ? 'bg-[#082052] text-white shadow-md shadow-[#082052]/20'
+                      : 'text-slate-600 hover:bg-[#F8F0E5]/50 hover:text-[#141110]'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#ef4a23]'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#082052]'}`} />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -118,7 +118,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Footer info & Logout */}
         <div className="p-4 border-t border-sky-100 space-y-3">
           <div className="px-3.5 py-2.5 rounded-2xl bg-[#fffaf0] border border-sky-100 text-xs shadow-xs">
-            <span className="text-[10px] text-[#ef4a23] uppercase font-black tracking-wider block">
+            <span className="text-[10px] text-[#082052] uppercase font-black tracking-wider block">
               {isStaff ? 'Branch Booking Terminal' : 'Signed in as'}
             </span>
             <span className="font-bold text-ink block truncate">{currentUser?.name || 'Administrator'}</span>
@@ -133,7 +133,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link
               href="/"
               target="_blank"
-              className="text-xs text-[#141110] hover:text-[#ef4a23] flex items-center gap-1 font-bold transition-colors"
+              className="text-xs text-[#141110] hover:text-[#082052] flex items-center gap-1 font-bold transition-colors"
             >
               <span>View Site</span>
               <ExternalLink className="w-3 h-3" />
@@ -156,7 +156,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Top Mobile Bar */}
         <header className="lg:hidden bg-white text-ink p-4 flex items-center justify-between border-b border-sky-100 shadow-sm">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#ef4a23] text-white flex items-center justify-center font-black shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-[#082052] text-white flex items-center justify-center font-black shadow-xs">
               <Film className="w-4 h-4 text-sky-200" />
             </div>
             <span className="font-playfair text-base font-black text-ink">
@@ -181,7 +181,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 href={item.href}
                 onClick={() => setMobileDrawerOpen(false)}
                 className={`block px-4 py-2.5 rounded-xl text-xs font-bold ${
-                  pathname === item.href ? 'bg-[#ef4a23] text-white' : 'text-slate-700 hover:bg-sky-50'
+                  pathname === item.href ? 'bg-[#082052] text-white' : 'text-slate-700 hover:bg-sky-50'
                 }`}
               >
                 {item.label}

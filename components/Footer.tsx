@@ -52,7 +52,7 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
               <Link
                 href="/book-now"
-                className="px-7 py-3.5 rounded-full bg-[#00A2E4] hover:bg-[#0072AE] text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-600/30 hover:scale-105 transition-all"
+                className="px-7 py-3.5 rounded-full bg-[#00A2E4] hover:bg-[#0072AE] text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-sky-500/20 hover:scale-105 transition-all"
               >
                 <CalendarDays className="w-4 h-4 text-white" />
                 <span>Book Private Screen</span>

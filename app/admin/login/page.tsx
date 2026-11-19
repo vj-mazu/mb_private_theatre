@@ -58,18 +58,18 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-[#FAF3E4] text-[#141110] flex items-center justify-center p-4 relative overflow-hidden">
       {/* Decorative Warm Ambient Elements */}
-      <div className="absolute top-[-10%] right-[-5%] w-[420px] h-[420px] rounded-full bg-[#ef4a23]/10 blur-[90px] pointer-events-none" />
+      <div className="absolute top-[-10%] right-[-5%] w-[420px] h-[420px] rounded-full bg-[#082052]/10 blur-[90px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-5%] w-[380px] h-[380px] rounded-full bg-amber-200/25 blur-[90px] pointer-events-none" />
 
       <div className="max-w-md w-full bg-white border border-stone-200/80 rounded-3xl p-8 sm:p-10 text-[#141110] shadow-[0_20px_60px_rgba(20,17,16,0.08)] space-y-6 relative z-10">
         
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="w-13 h-13 rounded-2xl bg-[#ef4a23] text-white flex items-center justify-center mx-auto shadow-md shadow-[#ef4a23]/25">
+          <div className="w-13 h-13 rounded-2xl bg-[#082052] text-white flex items-center justify-center mx-auto shadow-md shadow-[#082052]/25">
             <Film className="w-6 h-6 text-white" />
           </div>
           <h1 className="font-playfair text-2xl sm:text-3xl font-black text-[#141110]">
-            Movie<span className="text-[#ef4a23]">Bash</span> Console
+            Movie<span className="text-[#082052]">Bash</span> Console
           </h1>
           <p className="text-xs text-stone-500 font-medium">
             Authorized Personnel Terminal &bull; Requires Manual Login
@@ -78,7 +78,7 @@ export default function AdminLoginPage() {
 
         {/* Security Badge */}
         <div className="py-2 px-3 rounded-xl bg-stone-50 border border-stone-200/80 text-[11px] text-stone-600 flex items-center gap-2">
-          <Shield className="w-3.5 h-3.5 text-[#ef4a23] shrink-0" />
+          <Shield className="w-3.5 h-3.5 text-[#082052] shrink-0" />
           <span>Restricted Portal: Enter your personal staff ID and password.</span>
         </div>
 
@@ -104,7 +104,7 @@ export default function AdminLoginPage() {
                 autoComplete="username"
                 autoFocus
                 spellCheck={false}
-                className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[#FAF3E4]/30 border border-stone-200 text-xs sm:text-sm font-semibold text-[#141110] placeholder:text-stone-400 focus:outline-none focus:border-[#ef4a23] focus:bg-white transition-all"
+                className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[#FAF3E4]/30 border border-stone-200 text-xs sm:text-sm font-semibold text-[#141110] placeholder:text-stone-400 focus:outline-none focus:border-[#082052] focus:bg-white transition-all"
                 required
               />
             </div>
@@ -118,7 +118,7 @@ export default function AdminLoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-[11px] font-bold text-stone-500 hover:text-[#ef4a23] flex items-center gap-1 transition-colors cursor-pointer"
+                className="text-[11px] font-bold text-stone-500 hover:text-[#082052] flex items-center gap-1 transition-colors cursor-pointer"
               >
                 {showPassword ? (
                   <>
@@ -141,7 +141,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Type your password"
                 autoComplete="current-password"
-                className="w-full pl-10 pr-10 py-3 rounded-2xl bg-[#FAF3E4]/30 border border-stone-200 text-xs sm:text-sm font-semibold text-[#141110] placeholder:text-stone-400 focus:outline-none focus:border-[#ef4a23] focus:bg-white transition-all"
+                className="w-full pl-10 pr-10 py-3 rounded-2xl bg-[#FAF3E4]/30 border border-stone-200 text-xs sm:text-sm font-semibold text-[#141110] placeholder:text-stone-400 focus:outline-none focus:border-[#082052] focus:bg-white transition-all"
                 required
               />
             </div>
@@ -150,7 +150,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-full font-extrabold text-xs sm:text-sm text-white bg-[#ef4a23] hover:bg-[#d93b16] shadow-md shadow-[#ef4a23]/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50 mt-2"
+            className="w-full py-3.5 rounded-full font-extrabold text-xs sm:text-sm text-white bg-[#082052] hover:bg-[#041224] shadow-md shadow-[#082052]/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50 mt-2"
           >
             <span>{loading ? 'Authenticating...' : 'Sign In to Terminal'}</span>
             <ArrowRight className="w-4 h-4" />

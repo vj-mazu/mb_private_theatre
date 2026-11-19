@@ -458,7 +458,7 @@ export default function AdminCmsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#ef4a23]">Content Management System</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-[#082052]">Content Management System</span>
           <h1 className="font-playfair text-2xl sm:text-3xl font-black text-ink">
             Coupons, Pricing &amp; Site Settings
           </h1>
@@ -513,7 +513,7 @@ export default function AdminCmsPage() {
             <button
               type="button"
               onClick={openNewCouponModal}
-              className="px-5 py-2.5 rounded-2xl text-xs font-black text-white bg-[#ef4a23] hover:bg-royal-600 shadow-md flex items-center gap-1.5 shrink-0 transition-transform active:scale-95 cursor-pointer"
+              className="px-5 py-2.5 rounded-2xl text-xs font-black text-white bg-[#082052] hover:bg-royal-600 shadow-md flex items-center gap-1.5 shrink-0 transition-transform active:scale-95 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>+ Create New Coupon</span>
@@ -554,7 +554,7 @@ export default function AdminCmsPage() {
                       type="button"
                       onClick={() => handleToggleCoupon(c)}
                       title={isActive ? 'Click to deactivate coupon' : 'Click to activate coupon'}
-                      className="p-1 rounded-xl text-[#ef4a23] hover:bg-[#fff0ea]/50 transition-colors"
+                      className="p-1 rounded-xl text-[#082052] hover:bg-[#F8F0E5]/50 transition-colors"
                     >
                       {isActive ? (
                         <ToggleRight className="w-7 h-7 text-emerald-600" />
@@ -576,7 +576,7 @@ export default function AdminCmsPage() {
                       onClick={() => openEditCouponModal(c)}
                       className="px-3 py-1.5 rounded-xl bg-white border border-sky-200 hover:border-royal-700 text-[#141110] font-bold text-xs flex items-center gap-1 shadow-xs transition-colors cursor-pointer"
                     >
-                      <Edit className="w-3.5 h-3.5 text-[#ef4a23]" />
+                      <Edit className="w-3.5 h-3.5 text-[#082052]" />
                       <span>Edit</span>
                     </button>
 
@@ -606,7 +606,7 @@ export default function AdminCmsPage() {
             </div>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-2xl text-xs font-black bg-[#ef4a23] text-white hover:bg-royal-600 transition-colors shadow-md active:scale-95 cursor-pointer"
+              className="px-6 py-2.5 rounded-2xl text-xs font-black bg-[#082052] text-white hover:bg-royal-600 transition-colors shadow-md active:scale-95 cursor-pointer"
             >
               Save Settings
             </button>
@@ -675,7 +675,7 @@ export default function AdminCmsPage() {
           <div className="pt-2 flex justify-end">
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-2xl text-xs font-black bg-[#ef4a23] text-white hover:bg-royal-600 transition-colors shadow-md active:scale-95 cursor-pointer"
+              className="px-6 py-2.5 rounded-2xl text-xs font-black bg-[#082052] text-white hover:bg-royal-600 transition-colors shadow-md active:scale-95 cursor-pointer"
             >
               Save All Changes
             </button>
@@ -737,7 +737,7 @@ export default function AdminCmsPage() {
                       </div>
                       <div className="text-right">
                         <span className="text-[10px] text-slate-500 font-semibold block uppercase">Standard</span>
-                        <span className="text-base font-black text-[#ef4a23]">₹{stdPrice}</span>
+                        <span className="text-base font-black text-[#082052]">₹{stdPrice}</span>
                       </div>
                     </div>
 
@@ -768,7 +768,7 @@ export default function AdminCmsPage() {
                     <button
                       type="button"
                       onClick={() => openEditTheatreModal(t)}
-                      className="w-full py-2 px-3 rounded-xl bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 cursor-pointer"
+                      className="w-full py-2 px-3 rounded-xl bg-[#082052] hover:bg-[#00A2E4] text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 cursor-pointer"
                     >
                       <Camera className="w-3.5 h-3.5" />
                       <span>Manage Photos &amp; Pricing</span>
@@ -795,16 +795,16 @@ export default function AdminCmsPage() {
             {addons.map((a) => (
               <div key={a.id} className="p-4 rounded-2xl bg-[#fffdf9] border border-sky-100 flex justify-between items-center">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-[#ef4a23] block">{a.category}</span>
+                  <span className="text-[10px] uppercase font-bold text-[#082052] block">{a.category}</span>
                   <strong className="text-ink block leading-tight">{a.name}</strong>
                   <span className="text-ink/60 text-[11px] line-clamp-1">{a.description}</span>
                 </div>
                 <div className="text-right shrink-0 ml-3">
-                  <span className="font-playfair text-base font-bold text-[#ef4a23] block">₹{a.price}</span>
+                  <span className="font-playfair text-base font-bold text-[#082052] block">₹{a.price}</span>
                   <button
                     type="button"
                     onClick={() => handleEditAddon(a.id, a.price)}
-                    className="text-[10px] font-bold text-[#ef4a23] hover:underline mt-1"
+                    className="text-[10px] font-bold text-[#082052] hover:underline mt-1"
                   >
                     Edit Price
                   </button>
@@ -866,7 +866,7 @@ export default function AdminCmsPage() {
                         {c.total_bookings} bookings
                       </span>
                     </td>
-                    <td className="py-3 px-4 border border-slate-300 font-black text-[#ef4a23] align-middle">₹{c.lifetime_spend}</td>
+                    <td className="py-3 px-4 border border-slate-300 font-black text-[#082052] align-middle">₹{c.lifetime_spend}</td>
                   </tr>
                 ))}
               </tbody>
@@ -980,13 +980,13 @@ export default function AdminCmsPage() {
                 <button
                   type="button"
                   onClick={() => setCouponModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-[#fff0ea]/50 font-bold text-slate-700 hover:bg-sand-300"
+                  className="px-4 py-2 rounded-xl bg-[#F8F0E5]/50 font-bold text-slate-700 hover:bg-sand-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-xl bg-[#ef4a23] hover:bg-royal-600 text-white font-black shadow-md cursor-pointer active:scale-95"
+                  className="px-6 py-2 rounded-xl bg-[#082052] hover:bg-royal-600 text-white font-black shadow-md cursor-pointer active:scale-95"
                 >
                   {couponForm.id ? 'Save Changes' : 'Create Coupon'}
                 </button>
@@ -1002,7 +1002,7 @@ export default function AdminCmsPage() {
           <div className="bg-white max-w-2xl w-full rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border border-sky-100 max-h-[92vh] overflow-y-auto animate-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-sky-100 pb-3">
               <div>
-                <span className="text-[10px] text-[#ef4a23] font-black uppercase tracking-wider block">
+                <span className="text-[10px] text-[#082052] font-black uppercase tracking-wider block">
                   Package Pricing &amp; Media CMS
                 </span>
                 <h3 className="font-playfair text-xl sm:text-2xl font-black text-ink">
@@ -1025,7 +1025,7 @@ export default function AdminCmsPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <h4 className="font-extrabold text-sm text-ink flex items-center gap-1.5">
-                      <Camera className="w-4 h-4 text-[#ef4a23]" />
+                      <Camera className="w-4 h-4 text-[#082052]" />
                       <span>Room &amp; Suite Photos ({theatreForm.images?.length || 0})</span>
                     </h4>
                     <p className="text-[11px] text-slate-500">
@@ -1033,7 +1033,7 @@ export default function AdminCmsPage() {
                     </p>
                   </div>
 
-                  <label className={`px-4 py-2 rounded-xl bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-black text-xs flex items-center gap-1.5 cursor-pointer shadow-sm transition-all active:scale-95 shrink-0 ${uploadingImage ? 'opacity-60 cursor-not-allowed' : ''}`}>
+                  <label className={`px-4 py-2 rounded-xl bg-[#082052] hover:bg-[#00A2E4] text-white font-black text-xs flex items-center gap-1.5 cursor-pointer shadow-sm transition-all active:scale-95 shrink-0 ${uploadingImage ? 'opacity-60 cursor-not-allowed' : ''}`}>
                     <UploadCloud className="w-4 h-4" />
                     <span>{uploadingImage ? 'Compressing & Uploading...' : '+ Upload New Photo'}</span>
                     <input 
@@ -1060,7 +1060,7 @@ export default function AdminCmsPage() {
                     {theatreForm.images.map((imgUrl, idx) => {
                       const isCover = theatreForm.image_url === imgUrl;
                       return (
-                        <div key={idx} className="relative rounded-xl overflow-hidden border-2 group bg-slate-100 aspect-video shadow-xs" style={{ borderColor: isCover ? '#ef4a23' : '#e2e8f0' }}>
+                        <div key={idx} className="relative rounded-xl overflow-hidden border-2 group bg-slate-100 aspect-video shadow-xs" style={{ borderColor: isCover ? '#082052' : '#e2e8f0' }}>
                           <img 
                             src={imgUrl} 
                             alt={`Photo ${idx + 1}`} 
@@ -1068,7 +1068,7 @@ export default function AdminCmsPage() {
                           />
 
                           {isCover && (
-                            <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-[#ef4a23] text-white text-[9px] font-black uppercase flex items-center gap-1 shadow-xs">
+                            <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-[#082052] text-white text-[9px] font-black uppercase flex items-center gap-1 shadow-xs">
                               <Star className="w-2.5 h-2.5 fill-white" />
                               <span>Primary Cover</span>
                             </span>
@@ -1110,20 +1110,20 @@ export default function AdminCmsPage() {
               {/* SECTION 2: PACKAGE PRICING */}
               <div className="space-y-4">
                 <h4 className="font-extrabold text-sm text-ink flex items-center gap-1.5">
-                  <IndianRupee className="w-4 h-4 text-[#ef4a23]" />
+                  <IndianRupee className="w-4 h-4 text-[#082052]" />
                   <span>Package Pricing Configurations</span>
                 </h4>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {/* Standard Package */}
-                  <div className="p-3 rounded-xl bg-orange-50/50 border border-orange-200">
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                     <label className="block font-bold text-slate-900 mb-1">Standard Package (₹)</label>
                     <input
                       type="number"
                       required
                       value={theatreForm.standard_price}
                       onChange={(e) => setTheatreForm({ ...theatreForm, standard_price: Number(e.target.value) })}
-                      className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 font-extrabold text-[#ef4a23]"
+                      className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 font-extrabold text-[#082052]"
                     />
                     <span className="text-[10px] text-slate-500 mt-1 block">Full celebration with decor &amp; cake</span>
                   </div>
@@ -1220,7 +1220,7 @@ export default function AdminCmsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-black shadow-md cursor-pointer active:scale-95 flex items-center gap-1.5"
+                  className="px-6 py-2.5 rounded-xl bg-[#082052] hover:bg-[#00A2E4] text-white font-black shadow-md cursor-pointer active:scale-95 flex items-center gap-1.5"
                 >
                   <Check className="w-4 h-4" />
                   <span>Save All Changes</span>

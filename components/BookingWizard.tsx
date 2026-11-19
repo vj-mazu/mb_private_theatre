@@ -862,7 +862,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
               className={`px-3.5 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer whitespace-nowrap ${
                 branchId === b.id
                   ? 'bg-[#00A2E4] text-white shadow-sm'
-                  : 'text-slate-600 hover:bg-orange-50'
+                  : 'text-slate-600 hover:bg-slate-50'
               }`}
             >
               {b.label}
@@ -922,7 +922,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 border border-[#00A2E4]/30 text-[#00A2E4] text-xs font-black uppercase tracking-wider">
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E6F3FB] border border-[#00A2E4]/30 text-[#00A2E4] text-xs font-black uppercase tracking-wider">
                     <span>✨ {packageType.toUpperCase()} PACKAGE</span>
                   </div>
                   <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
@@ -1144,8 +1144,8 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                   const theatreSlots = allBranchSlots.filter((s: any) => s.theatre_id === selectedTheatre.id);
 
                   return (
-                    <div className="p-5 sm:p-6 rounded-3xl border-2 border-[#00A2E4]/30 bg-gradient-to-br from-orange-50/50 via-white to-amber-50/40 shadow-sm space-y-3.5 mt-4">
-                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-orange-200/60 pb-3">
+                    <div className="p-5 sm:p-6 rounded-3xl border-2 border-[#00A2E4]/30 bg-gradient-to-br from-[#F8F0E5]/40/50 via-white to-amber-50/40 shadow-sm space-y-3.5 mt-4">
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
                         <div className="flex items-center gap-2">
                           <Clock className="w-4 h-4 text-[#00A2E4]" />
                                                       <h4 className="text-sm sm:text-base font-black text-slate-900">
@@ -1194,7 +1194,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                                 className={`p-3 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center cursor-pointer shadow-xs active:scale-95 group min-h-[72px] ${
                                   isSelected
                                     ? 'border-[#00A2E4] bg-[#00A2E4] text-white shadow-md ring-2 ring-orange-300 scale-[1.02]'
-                                    : 'border-slate-200/90 hover:border-[#00A2E4] bg-white hover:bg-orange-50/50 text-slate-900'
+                                    : 'border-slate-200/90 hover:border-[#00A2E4] bg-white hover:bg-slate-50 text-slate-900'
                                 }`}
                               >
                                 <div className="flex items-center gap-1.5">
@@ -1206,7 +1206,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                                 <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full mt-1.5 shadow-2xs ${
                                   isSelected
                                     ? 'bg-white text-[#00A2E4]'
-                                    : 'bg-orange-100/80 text-orange-900 group-hover:bg-[#00A2E4] group-hover:text-white'
+                                    : 'bg-[#E6F3FB] text-[#082052] group-hover:bg-[#00A2E4] group-hover:text-white'
                                 }`}>
                                   {isSelected ? '✓ Selected Slot' : 'Reserve Slot'}
                                 </span>
@@ -1581,7 +1581,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
               {/* ----------------------------------------------------------------- */}
               {/* CAKE SECTION WITH ULTRA-LUXURY GLASSMORPHISM & REAL ICONS         */}
               {/* ----------------------------------------------------------------- */}
-              <div className="p-5 sm:p-6 rounded-3xl backdrop-blur-2xl bg-gradient-to-br from-amber-50/90 via-white/80 to-orange-50/70 border-2 border-amber-300/80 shadow-[0_16px_40px_rgba(245,158,11,0.08)] space-y-4">
+              <div className="p-5 sm:p-6 rounded-3xl backdrop-blur-2xl bg-gradient-to-br from-amber-50/90 via-white/80 to-[#E6F3FB]/40/70 border-2 border-amber-300/80 shadow-[0_16px_40px_rgba(245,158,11,0.08)] space-y-4">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-2xl backdrop-blur-md bg-amber-100/80 border border-amber-300/70 shadow-xs flex items-center justify-center text-3xl">
@@ -1634,7 +1634,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                             onClick={() => setSelectedCakeFlavor(cake.name)}
                             className={`p-3.5 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 cursor-pointer relative flex flex-col justify-between group hover:-translate-y-1 ${
                               isSelected
-                                ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2] via-white to-[#E6F3FB] shadow-[0_14px_36px_rgba(239,74,35,0.20)] ring-2 ring-[#00A2E4]/30 scale-[1.02]'
+                                ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5] via-white to-[#E6F3FB] shadow-[0_14px_36px_rgba(239,74,35,0.20)] ring-2 ring-[#00A2E4]/30 scale-[1.02]'
                                 : 'border-amber-200/80 bg-white/75 hover:bg-white/95 shadow-xs hover:shadow-md hover:border-[#00A2E4]/60'
                             }`}
                           >
@@ -1651,7 +1651,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                             <div className="mt-2.5">
                               <div className="font-black text-xs text-ink leading-tight">{cake.name}</div>
                               <div className="text-[10px] text-slate-500 font-medium mt-0.5 leading-snug">{cake.desc}</div>
-                              <span className="inline-block mt-2 text-[9px] font-extrabold uppercase tracking-wider text-[#0B2238] bg-[#E6F3FB] border border-orange-200/60 px-2 py-0.5 rounded-md">
+                              <span className="inline-block mt-2 text-[9px] font-extrabold uppercase tracking-wider text-[#0B2238] bg-[#E6F3FB] border border-slate-200 px-2 py-0.5 rounded-md">
                                 {cake.badge}
                               </span>
                             </div>
@@ -1749,7 +1749,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                             <p className="text-[11px] text-slate-600 font-medium">Dramatic dense dry-ice smoke effect billowing at your feet</p>
                           </div>
                         </div>
-                        <span className="text-xs font-black text-[#00A2E4] px-2.5 py-1 rounded-full bg-orange-50 border border-orange-200/60 shadow-2xs">
+                        <span className="text-xs font-black text-[#00A2E4] px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200 shadow-2xs">
                           {customFogPots === 0 ? 'None' : `${customFogPots} ${customFogPots === 1 ? 'Pot' : 'Pots'} (+₹${customFogPots === 1 ? 399 : customFogPots === 2 ? 750 : customFogPots === 3 ? 1000 : 1500})`}
                         </span>
                       </div>
@@ -1784,7 +1784,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setCustomColdPyro(!customColdPyro)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customColdPyro
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -1795,7 +1795,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Cold Pyro Sparkler Entry (2 Pots)</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Indoor-safe cold golden spark fountains during hero entry</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹799</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹799</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -1811,7 +1811,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setCustomRosePetals(!customRosePetals)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customRosePetals
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -1822,7 +1822,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Romantic Rose Petal &amp; Candle Decor</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Heart-shape setup on celebration table with fairy candles</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹250</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹250</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -1838,7 +1838,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setCustomBouquet(!customBouquet)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customBouquet
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -1849,7 +1849,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Fresh Dutch Red Rose Bouquet</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">15 hand-tied fragrant roses with greeting card</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹399</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹399</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -1865,7 +1865,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setCustomLedName(!customLedName)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customLedName
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -1876,7 +1876,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Personalized LED Name Letters</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">1-foot glowing LED letter display of your partner's name</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹250</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹250</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -1892,7 +1892,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setCustomBubbleEntry(!customBubbleEntry)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customBubbleEntry
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -1903,7 +1903,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Grand Bubble Machine Walk-in</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Thousands of floating celebration bubbles welcoming your entry</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹199</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹199</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -1919,7 +1919,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setCustomPopcornCombo(!customPopcornCombo)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customPopcornCombo
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -1930,7 +1930,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Cinema Popcorn &amp; Cold Drinks Combo</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Large tubs of buttery caramel popcorn with chilled beverages</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹349</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹349</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -1980,7 +1980,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setCustomIphoneReel(!customIphoneReel)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customIphoneReel
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -1991,7 +1991,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">iPhone Cinematic 4K Reel</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">1-minute trending 4K reel edited with your favorite music</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹500</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹500</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -2007,7 +2007,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setCustomTeddyMascot(!customTeddyMascot)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customTeddyMascot
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2018,7 +2018,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Dancing Teddy Mascot Surprise</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">30 mins live dancing giant Teddy mascot surprise</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹500</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹500</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -2041,7 +2041,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setPkgColdPyro(!pkgColdPyro)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgColdPyro
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2052,7 +2052,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Cold Pyro Sparkler Entry (2 Pots)</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Indoor-safe cold golden spark fountains shooting 6ft</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹799</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹799</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -2068,7 +2068,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setPkgExtraFogPot(!pkgExtraFogPot)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgExtraFogPot
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2079,7 +2079,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Extra Fog Pot (Total 2 Pots)</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">1 pot included; add extra pot for ultra-dense billowing clouds</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹399</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹399</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -2095,7 +2095,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setPkgBouquet(!pkgBouquet)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgBouquet
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2106,7 +2106,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Fresh Dutch Red Rose Bouquet</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">15 hand-tied fragrant roses with greeting card</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹399</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹399</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -2122,7 +2122,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setPkgRosePetals(!pkgRosePetals)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgRosePetals
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2133,7 +2133,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Rose Petal Table Decor with Candles</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Heart-shape setup on celebration table with fairy candles</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹250</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹250</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -2149,7 +2149,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setPkgBubbleEntry(!pkgBubbleEntry)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgBubbleEntry
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2160,7 +2160,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Grand Bubble Machine Walk-in</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Floating bubbles welcoming your entry through the doors</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹199</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹199</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -2176,7 +2176,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setPkgPopcornCombo(!pkgPopcornCombo)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgPopcornCombo
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2187,7 +2187,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Cinema Popcorn &amp; Cold Drinks Combo</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Large tubs of buttery caramel popcorn with chilled beverages</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹349</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹349</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -2237,7 +2237,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setPkgIphoneReel(!pkgIphoneReel)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgIphoneReel
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2248,7 +2248,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">iPhone Cinematic 4K Reel</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">1-minute trending 4K reel edited with your song</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹500</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹500</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -2264,7 +2264,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       onClick={() => setPkgTeddyMascot(!pkgTeddyMascot)}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgTeddyMascot
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#fff7f2]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2275,7 +2275,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <div>
                           <span className="text-xs font-black text-slate-900 block">Dancing Teddy Mascot Surprise</span>
                           <p className="text-[11px] text-slate-600 mt-0.5 font-medium">30 mins live dancing giant Teddy mascot surprise</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200/60">+₹500</span>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹500</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -2297,7 +2297,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         Extend Showtime Duration (Max 2 Extra Hours Allowed)
                       </h4>
                     </div>
-                    <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-orange-100 text-[#00A2E4]">
+                    <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-[#E6F3FB] text-[#00A2E4]">
                       Max Limit: 2 Extra Hours
                     </span>
                   </div>

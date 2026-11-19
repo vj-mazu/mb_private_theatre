@@ -4,6 +4,8 @@ import { mockStore, getDb } from '@/lib/db';
 import { formatBookingSlotTime } from '@/lib/slot-engine';
 import ExcelJS from 'exceljs';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   const session = await getAdminSession();
   if (!session) {

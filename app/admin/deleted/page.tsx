@@ -95,7 +95,7 @@ export default function AdminDeletedBookingsPage() {
               <tbody>
                 {bookings.map((b) => (
                   <tr key={b.id} className="even:bg-slate-50/70 hover:bg-sky-50/70 transition-colors">
-                    <td className="py-3 px-3.5 border border-slate-300 font-mono font-bold text-[#ef4a23] whitespace-nowrap align-middle">
+                    <td className="py-3 px-3.5 border border-slate-300 font-mono font-bold text-[#082052] whitespace-nowrap align-middle">
                       <span className="bg-rose-50 border border-rose-300 px-2 py-0.5 rounded">
                         {b.booking_ref}
                       </span>

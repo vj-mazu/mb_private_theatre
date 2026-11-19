@@ -564,8 +564,8 @@ export default function AdminBookingsPage() {
           </div>
 
           {isStaff ? (
-            <div className="flex-1 md:flex-initial px-3.5 py-2 rounded-2xl bg-[#fff0ea] border border-[#ef4a23]/30 text-xs font-black text-[#ef4a23] flex items-center gap-1.5 shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-[#ef4a23]" />
+            <div className="flex-1 md:flex-initial px-3.5 py-2 rounded-2xl bg-[#F8F0E5] border border-[#082052]/30 text-xs font-black text-[#082052] flex items-center gap-1.5 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-[#082052]" />
               <span>{currentUser?.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage'} (Assigned)</span>
             </div>
           ) : (
@@ -1650,7 +1650,7 @@ export default function AdminBookingsPage() {
       {/* RESCHEDULE SLOT MODAL */}
       {showRescheduleModal && rescheduleBooking && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-orange-200 animate-in fade-in zoom-in-95">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
@@ -1699,7 +1699,7 @@ export default function AdminBookingsPage() {
                       theatre_id: defaultTheatre
                     }));
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#ef4a23]"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#082052]"
                 >
                   <option value={1}>Electronic City Branch</option>
                   <option value={2}>BTM 2nd Stage Branch</option>
@@ -1715,7 +1715,7 @@ export default function AdminBookingsPage() {
                     const tId = Number(e.target.value);
                     setRescheduleForm(prev => ({ ...prev, theatre_id: tId }));
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#ef4a23]"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#082052]"
                 >
                   {rescheduleForm.branch_id === 1 ? (
                     <>
@@ -1742,7 +1742,7 @@ export default function AdminBookingsPage() {
                   value={rescheduleForm.booking_date}
                   onChange={(e) => setRescheduleForm(prev => ({ ...prev, booking_date: e.target.value }))}
                   min={getTodayIST()}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#ef4a23]"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#082052]"
                   required
                 />
               </div>
@@ -1781,7 +1781,7 @@ export default function AdminBookingsPage() {
                               ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60'
                               : isSelected
                               ? 'bg-[#141110] text-[#ffd46e] border-[#141110] shadow-sm font-bold scale-[1.02]'
-                              : 'bg-white hover:bg-orange-50/50 border-slate-200 text-slate-800'
+                              : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-800'
                           }`}
                         >
                           <span className="font-mono font-bold">{slot.start_time} - {slot.end_time}</span>
@@ -1813,7 +1813,7 @@ export default function AdminBookingsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl text-xs font-black bg-[#ef4a23] hover:bg-[#ff5d38] text-white shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl text-xs font-black bg-[#082052] hover:bg-[#00A2E4] text-white shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
                 >
                   <Check className="w-4 h-4" />
                   <span>Confirm Reschedule</span>

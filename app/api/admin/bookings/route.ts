@@ -4,6 +4,8 @@ import { mockStore, saveStore, generateBookingRef, getDb } from '@/lib/db';
 import { sendWhatsAppMessage } from '@/lib/twilio';
 import { formatBookingSlotTime, getExtraHourRate } from '@/lib/slot-engine';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   const session = await getAdminSession();
   if (!session) {

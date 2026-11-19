@@ -137,7 +137,7 @@ export default function Navbar() {
             href="https://wa.me/919902923656?text=Hi%20Movie%20Bash%2C%20I%20want%20to%20inquire%20about%20booking%20a%20private%20theatre"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold text-[#0B2238] bg-[#E6F3FB] hover:bg-[#ffeade] border border-[#00A2E4]/25 transition-all hover:scale-105"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold text-[#0B2238] bg-[#E6F3FB] hover:bg-[#F8F0E5] border border-[#00A2E4]/25 transition-all hover:scale-105"
             title="Chat on WhatsApp"
           >
             <Phone className="w-3.5 h-3.5 text-emerald-600" />
@@ -146,7 +146,7 @@ export default function Navbar() {
 
           <Link
             href="/book-now"
-            className="flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-black text-white bg-gradient-to-r from-[#00A2E4] via-[#0072AE] to-[#00A2E4] hover:from-[#d83d17] hover:to-[#00A2E4] shadow-md shadow-orange-500/20 transition-all hover:scale-105"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-black text-white bg-[#082052] hover:bg-[#041224] hover:from-[#082052] hover:to-[#00A2E4] shadow-md shadow-[#00A2E4]/20 transition-all hover:scale-105"
           >
             <CalendarDays className="w-4 h-4 text-white" />
             <span>Book Now</span>
@@ -157,7 +157,7 @@ export default function Navbar() {
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           suppressHydrationWarning
-          className="lg:hidden p-2.5 rounded-xl text-[#0B2238] bg-[#E6F3FB] border border-[#00A2E4]/20 hover:bg-[#ffeade] active:scale-95 transition-all cursor-pointer"
+          className="lg:hidden p-2.5 rounded-xl text-[#0B2238] bg-[#E6F3FB] border border-[#00A2E4]/20 hover:bg-[#F8F0E5] active:scale-95 transition-all cursor-pointer"
           aria-label="Toggle navigation menu"
         >
           {mobileMenuOpen ? <X className="w-6 h-6 text-[#00A2E4]" /> : <Menu className="w-6 h-6 text-[#0B2238]" />}
@@ -229,7 +229,7 @@ export default function Navbar() {
             <Link
               href="/book-now"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-3.5 rounded-full text-sm font-black text-white bg-gradient-to-r from-[#00A2E4] via-[#0072AE] to-[#00A2E4] shadow-lg shadow-orange-500/25 active:scale-98 transition-transform"
+              className="w-full text-center py-3.5 rounded-full text-sm font-black text-white bg-[#082052] hover:bg-[#041224] shadow-lg shadow-[#00A2E4]/25 active:scale-98 transition-transform"
             >
               Book Your Private Screen Now
             </Link>

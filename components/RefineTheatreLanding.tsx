@@ -182,12 +182,12 @@ const occasionsList = [
     badge: 'Nostalgic',
     type: 'farewell',
     image: '/images/celebration_4.webp',
-    borderColor: 'border-orange-300 hover:border-orange-500',
-    bgGradient: 'bg-gradient-to-br from-orange-50/70 via-white to-white',
-    iconBg: 'bg-gradient-to-br from-orange-100 to-orange-200/90 border border-orange-300/80',
+    borderColor: 'border-slate-200 hover:border-[#00A2E4]',
+    bgGradient: 'bg-gradient-to-br from-[#F8F0E5]/40 via-white to-white',
+    iconBg: 'bg-gradient-to-br from-[#F8F0E5] to-[#E6F3FB] border border-slate-200',
     shadow: 'shadow-[0_4px_20px_rgba(249,115,22,0.08)] hover:shadow-[0_12px_32px_rgba(249,115,22,0.22)]',
-    badgeColor: 'bg-orange-100/90 text-orange-800 border-orange-200',
-    arrowColor: 'text-orange-600',
+    badgeColor: 'bg-[#E6F3FB] text-[#082052] border-sky-200',
+    arrowColor: 'text-[#00A2E4]',
   }
 ];
 
@@ -264,11 +264,11 @@ const celebrationAddonsList = [
     desc: 'Enchanting dense ground smoke effect billowing at your feet for a dramatic cinematic walk-in.',
     iconKey: 'fog',
     badge: 'Hero Entry',
-    cardBorder: 'border-orange-300 hover:border-orange-500',
-    bgGradient: 'bg-gradient-to-br from-orange-50/60 via-white to-white',
-    iconBoxBg: 'bg-gradient-to-br from-orange-100 to-orange-200/80 border border-orange-300/80',
+    cardBorder: 'border-slate-200 hover:border-[#00A2E4]',
+    bgGradient: 'bg-gradient-to-br from-[#F8F0E5]/40 via-white to-white',
+    iconBoxBg: 'bg-gradient-to-br from-[#F8F0E5] to-[#E6F3FB] border border-slate-200',
     shadow: 'shadow-[0_4px_16px_rgba(8,32,82,0.08)] hover:shadow-[0_12px_28px_rgba(8,32,82,0.15)]',
-    badgeColor: 'bg-orange-100 text-orange-900 border-orange-200'
+    badgeColor: 'bg-[#E6F3FB] text-[#082052] border-sky-200'
   },
   {
     category: 'Special FX',
@@ -400,7 +400,7 @@ const addonDecks = [
     title: 'Atmospheric Special FX & Walk-ins',
     tagline: 'Cinematic Visuals & Stage Ambience for Grand Unforgettable Entries',
     badge: 'Crowd Favorite',
-    badgeColor: 'bg-orange-100 text-orange-950 border-orange-300',
+    badgeColor: 'bg-[#E6F3FB] text-[#082052] border-sky-200',
     cardBorder: 'border-[#00A2E4]/30',
     topOffset: 'top-24 sm:top-28',
     bgGradient: 'bg-gradient-to-br from-[#F6FAFD] via-[#FFF5EE] to-[#FFE8DA]',
@@ -772,11 +772,13 @@ const gallery = [
   ['/images/couple_5.webp', 'Floral romantic arrangement'],
 ];
 
-const faqs = [
-  ['Can I bring my own movie?', 'Yes. You can bring your preferred movie or stream from your own account. Our team will help you connect and get everything ready.'],
-  ['Is decoration included?', 'Every room includes a simple celebration setup. Premium themes, cakes, fog entry, rose pathways and photography can be added to your booking.'],
-  ['Can I reschedule my booking?', 'Yes. We offer one reschedule when requested at least 24 hours before your reserved slot, subject to availability.'],
-  ['Are outside food and cakes allowed?', 'You may bring a cake and selected snacks or order via Swiggy/Zomato. We provide plates, glasses, and zero corkage fee.'],
+const faqs: [string, string][] = [
+  ['Are there cameras inside the private theatre?', 'Absolutely NOT. We strictly respect your privacy. There are NO cameras inside any of our private theatre screening rooms. You and your guests have 100% complete privacy throughout your booking slot.'],
+  ['How much advance do I have to pay to book a slot?', 'You have to pay only ₹500 advance online to confirm and lock your private theatre slot. The remaining balance amount is paid at the venue upon arrival.'],
+  ['Can we bring outside food and cake?', 'Yes! Outside food from Swiggy, Zomato, or home is 100% welcome with zero corkage. You can also bring your own cake or order from our freshly baked celebration cake menu.'],
+  ['Can I bring my own movie?', 'Yes. You can stream from your Netflix, Prime, Hotstar, or YouTube accounts, or connect your laptop via HDMI cable. Our team sets up everything for you.'],
+  ['Is decoration included?', 'Yes! Every booking includes free celebration decor with balloons, glowing LED neon signs, and personalized on-screen name wishes.'],
+  ['Can I reschedule my booking?', 'Yes. We offer free rescheduling when requested at least 24 hours before your reserved slot, subject to availability.']
 ];
 
 const guestReviews = [
@@ -1844,7 +1846,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
 
             {slotFlashMessage && (
               <div className="mb-6 flex justify-center">
-                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#00A2E4] text-white text-xs sm:text-sm font-black shadow-lg shadow-orange-500/30 animate-pulse">
+                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#00A2E4] text-white text-xs sm:text-sm font-black shadow-lg shadow-[#00A2E4]/25 animate-pulse">
                   <Icon name="check" size={16} />
                   <span>{slotFlashMessage} &bull; {days[activeDay].full}</span>
                 </div>
@@ -2068,13 +2070,13 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                             Experience Includes
                           </span>
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="px-3 py-1.5 rounded-lg bg-[#F6FAFD] text-[#0B2238] text-xs font-bold border border-orange-200/60 shadow-2xs">
+                            <span className="px-3 py-1.5 rounded-lg bg-[#F6FAFD] text-[#0B2238] text-xs font-bold border border-slate-200 shadow-2xs">
                               🎬 4K Screening
                             </span>
-                            <span className="px-3 py-1.5 rounded-lg bg-[#F6FAFD] text-[#0B2238] text-xs font-bold border border-orange-200/60 shadow-2xs">
+                            <span className="px-3 py-1.5 rounded-lg bg-[#F6FAFD] text-[#0B2238] text-xs font-bold border border-slate-200 shadow-2xs">
                               ✨ Custom Décor
                             </span>
-                            <span className="px-3 py-1.5 rounded-lg bg-[#F6FAFD] text-[#0B2238] text-xs font-bold border border-orange-200/60 shadow-2xs">
+                            <span className="px-3 py-1.5 rounded-lg bg-[#F6FAFD] text-[#0B2238] text-xs font-bold border border-slate-200 shadow-2xs">
                               🎂 Cake Entry
                             </span>
                           </div>
@@ -2145,6 +2147,135 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           </div>
         </section>
 
+        
+        {/* ─── WHY CELEBRATE AT MOVIEBASH? (EXACT BINGE TOWN VALUE PROPOSITION SECTION) ─── */}
+        <section className="py-14 sm:py-20 bg-white border-y border-slate-200/80 relative overflow-hidden" id="why-celebrate">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E6F3FB] border border-[#00A2E4]/30 text-[#00A2E4] text-xs font-black uppercase tracking-wider mb-3">
+                <span className="w-2 h-2 rounded-full bg-[#00A2E4] animate-pulse" />
+                <span>The MovieBash Advantage</span>
+              </div>
+              <h2 className="font-['Playfair_Display'] text-3xl sm:text-5xl font-black text-[#082052] tracking-tight">
+                Why Celebrate at MovieBash?
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-slate-600 font-normal max-w-2xl mx-auto">
+                Discover what makes our private cinema celebrations unmatched across Bengaluru.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Feature 1 */}
+              <div className="p-6 rounded-3xl bg-[#F8F0E5]/35 border border-slate-200 hover:border-[#00A2E4] hover:shadow-lg transition-all space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#082052] text-[#00A2E4] flex items-center justify-center text-2xl shadow-md">
+                  🔒
+                </div>
+                <h3 className="text-lg font-black text-[#082052]">100% Privacy &amp; Soundproofing</h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                  Zero strangers, zero disturbances. Enjoy exclusive, soundproof private screening rooms reserved only for your loved ones. Complete privacy guaranteed with strict no-camera policy.
+                </p>
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+                  <span>✓ 100% Private Screening</span>
+                </div>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="p-6 rounded-3xl bg-[#F8F0E5]/35 border border-slate-200 hover:border-[#00A2E4] hover:shadow-lg transition-all space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#082052] text-[#00A2E4] flex items-center justify-center text-2xl shadow-md">
+                  ✨
+                </div>
+                <h3 className="text-lg font-black text-[#082052]">Stunning Free Surprise Decor</h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                  Every booking includes free themed balloon setup, glowing LED neon signs (&ldquo;Happy Birthday&rdquo;, &ldquo;Marry Me&rdquo;, &ldquo;Love&rdquo;), and personalized display screen messages.
+                </p>
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+                  <span>✓ Free Decor Included</span>
+                </div>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="p-6 rounded-3xl bg-[#F8F0E5]/35 border border-slate-200 hover:border-[#00A2E4] hover:shadow-lg transition-all space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#082052] text-[#00A2E4] flex items-center justify-center text-2xl shadow-md">
+                  🎬
+                </div>
+                <h3 className="text-lg font-black text-[#082052]">4K Laser Screen &amp; Dolby Sound</h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                  Huge 135&Prime; to 180&Prime; projection displays paired with 1000W 5.1/7.1 Dolby Atmos and JBL surround sound setups for an authentic blockbuster theater feel.
+                </p>
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+                  <span>✓ 4K Laser + JBL Sound</span>
+                </div>
+              </div>
+
+              {/* Feature 4 */}
+              <div className="p-6 rounded-3xl bg-[#F8F0E5]/35 border border-slate-200 hover:border-[#00A2E4] hover:shadow-lg transition-all space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#082052] text-[#00A2E4] flex items-center justify-center text-2xl shadow-md">
+                  🍕
+                </div>
+                <h3 className="text-lg font-black text-[#082052]">Food &amp; Outside Snacks Welcome</h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                  Order your favorite foods from Swiggy or Zomato directly to your screening suite, bring home-cooked food, or choose from our in-house gourmet snacks menu. Zero corkage!
+                </p>
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+                  <span>✓ Outside Food Allowed</span>
+                </div>
+              </div>
+
+              {/* Feature 5 */}
+              <div className="p-6 rounded-3xl bg-[#F8F0E5]/35 border border-slate-200 hover:border-[#00A2E4] hover:shadow-lg transition-all space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#082052] text-[#00A2E4] flex items-center justify-center text-2xl shadow-md">
+                  💨
+                </div>
+                <h3 className="text-lg font-black text-[#082052]">Fog Entry &amp; Cold Pyro Sparklers</h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                  Make your entrance unforgettable with magical dry-ice fog billowing across the room and safe, smokeless indoor cold fire fireworks for jaw-dropping photo &amp; video moments.
+                </p>
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+                  <span>✓ Cinematic Special FX</span>
+                </div>
+              </div>
+
+              {/* Feature 6 */}
+              <div className="p-6 rounded-3xl bg-[#F8F0E5]/35 border border-slate-200 hover:border-[#00A2E4] hover:shadow-lg transition-all space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#082052] text-[#00A2E4] flex items-center justify-center text-2xl shadow-md">
+                  💳
+                </div>
+                <h3 className="text-lg font-black text-[#082052]">Pay Only ₹500 Advance</h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                  Zero risk booking. Secure your exclusive private theatre date and showtime with just a ₹500 token advance. The remaining balance is easily payable at the venue upon arrival.
+                </p>
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+                  <span>✓ Only ₹500 to Reserve</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Action Bar (Binge Town Style) */}
+            <div className="mt-10 p-5 rounded-2xl bg-[#082052] text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-center sm:text-left">
+                <span className="text-sm font-bold block">Ready to surprise your special someone?</span>
+                <span className="text-xs text-[#F8F0E5]/80">Talk to our celebration planner now or lock your slot online.</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <a
+                  href="tel:+919902923656"
+                  className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-[#082052] font-black text-xs transition-colors flex items-center gap-1.5"
+                >
+                  <Icon name="phone" size={14} />
+                  <span>Call +91 99029 23656</span>
+                </a>
+                <a
+                  href="#slots"
+                  className="px-5 py-2.5 rounded-xl bg-[#00A2E4] hover:bg-[#0072AE] text-white font-black text-xs transition-colors"
+                >
+                  <span>Check Slots →</span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
         {/* 7. SIGNATURE CELEBRATION PACKAGE BANNER (LUXURY BLACK CARD MATCHING FIGMA & USER DESIGN) */}
         <section className="section package-section" id="signature-celebration">
           <div className="package-card">
@@ -2211,7 +2342,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             ))}
           </div>
 
-          {/* Popular Add-ons Soft Orange Row Matching Figma */}
+          {/* Popular Add-ons Row */}
           <div className="add-on-row">
             <strong>Popular add-ons:</strong>
             <span>Fog entry <b>₹499</b></span>
@@ -2249,7 +2380,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             {addonSlides.map((slide, idx) => (
               <div
                 key={slide.number}
-                className="sticky rounded-[24px] sm:rounded-[34px] p-6 sm:p-9 md:p-10 bg-white text-[#0B2238] border border-orange-200/60 shadow-[0_20px_50px_rgba(20,17,16,0.08)] transition-all duration-300 relative overflow-hidden"
+                className="sticky rounded-[24px] sm:rounded-[34px] p-6 sm:p-9 md:p-10 bg-white text-[#0B2238] border border-slate-200 shadow-[0_20px_50px_rgba(20,17,16,0.08)] transition-all duration-300 relative overflow-hidden"
                 style={{
                   top: `calc(85px + ${idx * 28}px)`,
                   zIndex: idx + 1,
@@ -2322,7 +2453,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                       >
                         <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
                           {/* Circular icon disc (matching Image 1) */}
-                          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#F6FAFD] group-hover:bg-[#F8F0E5] text-[#00A2E4] flex items-center justify-center p-1.5 shrink-0 transition-colors shadow-2xs border border-orange-200/60">
+                          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#F6FAFD] group-hover:bg-[#F8F0E5] text-[#00A2E4] flex items-center justify-center p-1.5 shrink-0 transition-colors shadow-2xs border border-slate-200">
                             <GrandAddonIcon name={item.iconKey} className="w-4 h-4 sm:w-5 sm:h-5 text-[#00A2E4]" />
                           </div>
                           <div className="min-w-0">
@@ -2451,31 +2582,72 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                         )}
                       </div>
 
-                      <div className="p-5 text-center flex flex-col items-center justify-between flex-1 space-y-3">
-                        <div>
-                          <h3 className="text-xl font-black text-slate-900 tracking-tight">{theatre.name}</h3>
-                          <p className="text-xs text-slate-500 font-bold mt-1">
-                            📍 {theatre.location || (theatre.branchSlug === 'btm-stage-2' ? 'BTM 2nd Stage, Bengaluru' : 'Electronic City, Bengaluru')}
-                          </p>
-                        </div>
-
-                        {/* Red Ribbon Banner */}
-                        <div className="relative my-1 w-full flex justify-center items-center">
-                          <div className="relative z-10 bg-[#e51e25] text-white font-black text-sm py-1.5 px-6 rounded-full shadow-sm uppercase tracking-wider inline-block">
-                            Starts @ {theatre.dealPrice.replace('₹', '')}/-
+                      <div className="p-5 flex flex-col justify-between flex-1 space-y-3.5 text-left">
+                        {/* Header: Title + Rating */}
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="text-xl font-black text-[#082052] tracking-tight">{theatre.name}</h3>
+                            <p className="text-xs text-slate-500 font-bold mt-0.5">
+                              📍 {theatre.location || (theatre.branchSlug === 'btm-stage-2' ? 'BTM 2nd Stage' : 'Electronic City')}
+                            </p>
                           </div>
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-black">
+                            ★ 5.0
+                          </span>
                         </div>
 
-                        <p className="text-xs text-slate-600 font-medium line-clamp-2 px-1 leading-relaxed">
-                          {theatre.description}
-                        </p>
+                        {/* Quick Transparency Actions (Binge Town Style) */}
+                        <div className="flex items-center gap-2 text-[11px] font-bold">
+                          <a
+                            href={theatre.branchSlug === 'btm-stage-2' ? 'https://maps.google.com/?q=BTM+2nd+Stage+Bengaluru' : 'https://maps.google.com/?q=Electronic+City+Bengaluru'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                          >
+                            <span>📍 MAPS</span>
+                          </a>
+                          <Link
+                            href="/food-menu"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                          >
+                            <span>📋 FOOD MENU</span>
+                          </Link>
+                          <span className="ml-auto text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                            Available Today
+                          </span>
+                        </div>
+
+                        {/* Feature Badges Grid */}
+                        <div className="grid grid-cols-2 gap-1.5 text-[11px] font-semibold text-slate-600 bg-[#F8F0E5]/50 p-2.5 rounded-xl border border-slate-200/80">
+                          <span className="flex items-center gap-1">👥 Max {(theatre as any).capacity || (theatre.theatreId === 1 || theatre.theatreId === 4 ? 4 : theatre.theatreId === 2 || theatre.theatreId === 5 ? 6 : theatre.theatreId === 3 ? 10 : 8)} Guests</span>
+                          <span className="flex items-center gap-1">🎬 4K Laser Screen</span>
+                          <span className="flex items-center gap-1">🔊 Dolby Atmos / JBL</span>
+                          <span className="flex items-center gap-1">❄️ Air Conditioned</span>
+                        </div>
+
+                        {/* Pricing Line */}
+                        <div className="pt-1 flex items-baseline justify-between border-t border-slate-100">
+                          <div>
+                            <span className="text-xs text-slate-500 font-medium">Starts from</span>
+                            <div className="text-xl font-black text-[#082052] leading-none mt-0.5">
+                              {theatre.dealPrice}
+                              <span className="text-xs text-slate-500 font-normal ml-1">/ 3 hrs</span>
+                            </div>
+                          </div>
+                          <span className="text-[11px] text-slate-500 font-medium">+₹150/extra guest</span>
+                        </div>
+
+                        {/* Reassurance Banner (Binge Town Winning Factor) */}
+                        <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl px-3 py-1.5 text-center text-xs font-bold">
+                          ✨ Pay only ₹500 advance to reserve slot
+                        </div>
                         
                         <div className="w-full pt-1 mt-auto">
                           <Link 
                             href={`/book-now/${theatre.branchSlug}?theatre=${theatre.theatreId}`} 
-                            className="w-full py-2.5 px-6 rounded-xl bg-[#00A2E4] hover:bg-[#0072AE] text-white font-black text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                            className="w-full py-3 px-6 rounded-2xl bg-[#082052] hover:bg-[#041224] text-white font-black text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] active:scale-95"
                           >
-                            <span>Book Now →</span>
+                            <span>Select Slot &amp; Book →</span>
                           </Link>
                         </div>
                       </div>
@@ -3019,7 +3191,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     <select
                       value={ctaBranch}
                       onChange={(e) => setCtaBranch(e.target.value)}
-                      className="w-full bg-[#FBF8F5] border border-slate-200 hover:border-[#FF5B35] focus:border-[#FF5B35] focus:ring-2 focus:ring-[#FF5B35]/20 rounded-2xl py-3.5 pl-11 pr-10 text-xs sm:text-sm font-bold text-slate-900 appearance-none transition-all cursor-pointer"
+                      className="w-full bg-[#FBF8F5] border border-slate-200 hover:border-[#00A2E4] focus:border-[#00A2E4] focus:ring-2 focus:ring-[#00A2E4]/20 rounded-2xl py-3.5 pl-11 pr-10 text-xs sm:text-sm font-bold text-slate-900 appearance-none transition-all cursor-pointer"
                     >
                       <option value="electronic-city">Electronic City Branch</option>
                       <option value="btm-stage-2">BTM 2nd Stage Branch (NEW)</option>
@@ -3044,7 +3216,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                       value={ctaDate}
                       min={getTodayIST()}
                       onChange={(e) => setCtaDate(e.target.value)}
-                      className="w-full bg-[#FBF8F5] border border-slate-200 hover:border-[#FF5B35] focus:border-[#FF5B35] focus:ring-2 focus:ring-[#FF5B35]/20 rounded-2xl py-3.5 pl-11 pr-4 text-xs sm:text-sm font-bold text-slate-900 transition-all cursor-pointer"
+                      className="w-full bg-[#FBF8F5] border border-slate-200 hover:border-[#00A2E4] focus:border-[#00A2E4] focus:ring-2 focus:ring-[#00A2E4]/20 rounded-2xl py-3.5 pl-11 pr-4 text-xs sm:text-sm font-bold text-slate-900 transition-all cursor-pointer"
                     />
                   </div>
                 </div>

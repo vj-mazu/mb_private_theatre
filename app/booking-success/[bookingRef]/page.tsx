@@ -96,8 +96,8 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
         <Navbar />
         <div className="flex-1 py-10 sm:py-16 px-4 sm:px-6">
           <div className="max-w-2xl mx-auto bg-white p-7 sm:p-12 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] text-center">
-            <div className="w-16 h-16 rounded-full bg-[#fff0ea] text-[#141110] mx-auto flex items-center justify-center animate-pulse">
-              <div className="w-8 h-8 border-4 border-[#ef4a23] border-t-transparent rounded-full animate-spin" />
+            <div className="w-16 h-16 rounded-full bg-[#F8F0E5] text-[#141110] mx-auto flex items-center justify-center animate-pulse">
+              <div className="w-8 h-8 border-4 border-[#082052] border-t-transparent rounded-full animate-spin" />
             </div>
             <p className="text-sm font-bold text-slate-700 mt-4">Loading your reservation pass...</p>
           </div>
@@ -120,7 +120,7 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
         <div className="max-w-2xl mx-auto space-y-6">
           
           {/* Main Digital Pass Ticket */}
-          <div className="bg-white rounded-3xl border-2 border-orange-200/80 shadow-[0_20px_50px_rgba(239,74,35,0.08)] overflow-hidden">
+          <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-[0_20px_50px_rgba(239,74,35,0.08)] overflow-hidden">
             
             {/* Header Ribbon Banner */}
             <div className="bg-gradient-to-r from-[#141110] via-slate-900 to-[#141110] p-6 text-white text-center space-y-2 relative">
@@ -142,7 +142,7 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
             <div className="p-6 sm:p-8 space-y-6">
               
               {/* Reference ID & Reception Check-in QR */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-orange-50/60 border border-orange-200/80">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
                 <div className="text-center sm:text-left space-y-1">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">
                     Booking Reference Pass ID
@@ -173,7 +173,7 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
               {/* Booking Snapshot Details */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-slate-800 font-semibold">
                 <div className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200">
-                  <MapPin className="w-4 h-4 text-[#ef4a23] shrink-0" />
+                  <MapPin className="w-4 h-4 text-[#082052] shrink-0" />
                   <div>
                     <span className="text-[10px] text-slate-400 font-bold block uppercase">Venue &amp; Branch</span>
                     <span className="font-extrabold text-slate-900">{b?.branch?.name || 'Movie Bash – Electronic City'}</span>
@@ -189,7 +189,7 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
                 </div>
 
                 <div className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200">
-                  <Calendar className="w-4 h-4 text-[#ef4a23] shrink-0" />
+                  <Calendar className="w-4 h-4 text-[#082052] shrink-0" />
                   <div>
                     <span className="text-[10px] text-slate-400 font-bold block uppercase">Event Date</span>
                     <span className="font-extrabold text-slate-900">{b?.booking_date}</span>
@@ -197,7 +197,7 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
                 </div>
 
                 <div className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200">
-                  <Clock className="w-4 h-4 text-[#ef4a23] shrink-0" />
+                  <Clock className="w-4 h-4 text-[#082052] shrink-0" />
                   <div>
                     <span className="text-[10px] text-slate-400 font-bold block uppercase">Showtime Slot</span>
                     <span className="font-extrabold text-slate-900">{b?.slot?.label || 'Scheduled Slot'}</span>
@@ -205,7 +205,7 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
                 </div>
 
                 <div className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200">
-                  <Users className="w-4 h-4 text-[#ef4a23] shrink-0" />
+                  <Users className="w-4 h-4 text-[#082052] shrink-0" />
                   <div>
                     <span className="text-[10px] text-slate-400 font-bold block uppercase">Guest Count</span>
                     <span className="font-extrabold text-slate-900">{b?.guests || 2} People Attending</span>
@@ -230,7 +230,7 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
               )}
 
               {/* Clear Financial Summary with Remaining Balance Notice */}
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/40 border-2 border-orange-100 space-y-2">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-50 to-[#E6F3FB]/40/40 border-2 border-slate-200 space-y-2">
                 <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">
                   Payment Status &amp; Balance Breakdown
                 </span>
@@ -248,12 +248,12 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
                   <span className="font-black">₹{advanceLogged}</span>
                 </div>
 
-                <div className="pt-2 border-t border-orange-200/80 flex items-center justify-between text-xs sm:text-sm">
+                <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-xs sm:text-sm">
                   <div>
                     <span className="font-extrabold text-slate-900 block">Remaining Balance Due:</span>
                     <span className="text-[11px] text-slate-500 font-medium">To be paid at venue counter after your event</span>
                   </div>
-                  <span className="font-black text-lg text-[#ef4a23]">₹{balanceDue}</span>
+                  <span className="font-black text-lg text-[#082052]">₹{balanceDue}</span>
                 </div>
               </div>
 
@@ -295,7 +295,7 @@ export default function BookingSuccessPage({ params }: { params: { bookingRef: s
               {/* Venue Helpline */}
               <div className="pt-3 border-t border-slate-200 text-center text-xs text-slate-500 font-medium">
                 <span>Official Movie Bash Coordinator Desk: </span>
-                <a href="tel:+919902923656" className="font-extrabold text-[#ef4a23] hover:underline">
+                <a href="tel:+919902923656" className="font-extrabold text-[#082052] hover:underline">
                   +91 99029 23656
                 </a>
               </div>

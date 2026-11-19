@@ -232,7 +232,7 @@ export default function AdminSecurityPage() {
       
       {/* Header */}
       <div>
-        <span className="text-xs font-bold uppercase tracking-wider text-[#ef4a23]">Account &amp; Access Control</span>
+        <span className="text-xs font-bold uppercase tracking-wider text-[#082052]">Account &amp; Access Control</span>
         <h1 className="font-playfair text-2xl sm:text-3xl font-black text-ink mt-1">
           Security &amp; Staff Credentials
         </h1>
@@ -318,7 +318,7 @@ export default function AdminSecurityPage() {
             <button
               type="submit"
               disabled={changingPassword}
-              className="w-full py-3 rounded-2xl text-xs font-black text-white bg-[#ef4a23] hover:bg-[#141110] shadow-md transition-all disabled:opacity-50 cursor-pointer"
+              className="w-full py-3 rounded-2xl text-xs font-black text-white bg-[#082052] hover:bg-[#141110] shadow-md transition-all disabled:opacity-50 cursor-pointer"
             >
               {changingPassword ? 'Updating Password...' : 'Save New Password'}
             </button>
@@ -362,7 +362,7 @@ export default function AdminSecurityPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-extrabold text-sm text-royal-950">{user.name}</span>
                       <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
-                        user.role === 'super_admin' ? 'bg-amber-400 text-royal-950' : 'bg-[#fff0ea] text-[#ef4a23] border border-[#ef4a23]/30'
+                        user.role === 'super_admin' ? 'bg-amber-400 text-royal-950' : 'bg-[#F8F0E5] text-[#082052] border border-[#082052]/30'
                       }`}>
                         {user.role === 'super_admin' ? 'Super Admin' : 'Venue Staff'}
                       </span>
@@ -386,10 +386,10 @@ export default function AdminSecurityPage() {
                       <button
                         type="button"
                         onClick={() => openEditStaffModal(user)}
-                        className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-800 bg-white border border-slate-300 hover:border-[#ef4a23] hover:text-[#ef4a23] transition-all flex items-center gap-1 shadow-xs cursor-pointer active:scale-95"
+                        className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-800 bg-white border border-slate-300 hover:border-[#082052] hover:text-[#082052] transition-all flex items-center gap-1 shadow-xs cursor-pointer active:scale-95"
                         title="Edit Username, Name & Branch"
                       >
-                        <UserCog className="w-3.5 h-3.5 text-[#ef4a23]" />
+                        <UserCog className="w-3.5 h-3.5 text-[#082052]" />
                         <span>Edit Username</span>
                       </button>
 
@@ -402,7 +402,7 @@ export default function AdminSecurityPage() {
                           setStaffModalError('');
                           setStaffModalSuccess('');
                         }}
-                        className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#ef4a23] hover:bg-[#ff5d38] transition-all shadow-xs flex items-center gap-1 cursor-pointer active:scale-95"
+                        className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#082052] hover:bg-[#00A2E4] transition-all shadow-xs flex items-center gap-1 cursor-pointer active:scale-95"
                         title="Assign New Password"
                       >
                         <Key className="w-3 h-3" />
@@ -418,7 +418,7 @@ export default function AdminSecurityPage() {
           {/* Role Permissions Explanation Card */}
           <div className="p-4 rounded-2xl bg-royal-50/80 border border-royal-200 text-xs text-ink space-y-1.5">
             <span className="font-extrabold text-xs block text-royal-950 flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-[#ef4a23]" />
+              <ShieldCheck className="w-4 h-4 text-[#082052]" />
               <span>Role Permissions Matrix</span>
             </span>
             <p className="text-[11px] text-slate-700 leading-relaxed">
@@ -438,7 +438,7 @@ export default function AdminSecurityPage() {
           <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-lg w-full border-2 border-slate-300 shadow-2xl space-y-4 animate-in zoom-in-95">
             <div className="flex items-center justify-between pb-3 border-b border-sky-100">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-orange-100 text-[#ef4a23]">
+                <div className="p-2 rounded-xl bg-[#E6F3FB] text-[#082052]">
                   <UserCog className="w-5 h-5" />
                 </div>
                 <div>
@@ -476,7 +476,7 @@ export default function AdminSecurityPage() {
               {/* Username Field */}
               <div>
                 <label className="block font-bold text-slate-900 mb-1">
-                  Login Username <span className="text-[#ef4a23]">*</span>
+                  Login Username <span className="text-[#082052]">*</span>
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-slate-400 font-bold text-sm">@</span>
@@ -486,7 +486,7 @@ export default function AdminSecurityPage() {
                     value={editStaffForm.username}
                     onChange={(e) => setEditStaffForm({ ...editStaffForm, username: e.target.value.toLowerCase().replace(/\s+/g, '_') })}
                     placeholder="e.g. staff_ec, rahul_ec"
-                    className="w-full pl-8 pr-3.5 py-2.5 rounded-xl border-2 border-slate-300 font-mono font-bold text-slate-900 focus:outline-none focus:border-[#ef4a23]"
+                    className="w-full pl-8 pr-3.5 py-2.5 rounded-xl border-2 border-slate-300 font-mono font-bold text-slate-900 focus:outline-none focus:border-[#082052]"
                   />
                 </div>
                 <span className="text-[11px] text-slate-500 mt-1 block">Staff can log in with this username or their email.</span>
@@ -501,7 +501,7 @@ export default function AdminSecurityPage() {
                   value={editStaffForm.name}
                   onChange={(e) => setEditStaffForm({ ...editStaffForm, name: e.target.value })}
                   placeholder="e.g. Staff – Electronic City"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 font-semibold text-slate-900 focus:outline-none focus:border-[#ef4a23]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 font-semibold text-slate-900 focus:outline-none focus:border-[#082052]"
                 />
               </div>
 
@@ -514,7 +514,7 @@ export default function AdminSecurityPage() {
                   value={editStaffForm.email}
                   onChange={(e) => setEditStaffForm({ ...editStaffForm, email: e.target.value })}
                   placeholder="e.g. staff_ec@moviebash.in"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 font-mono text-slate-900 focus:outline-none focus:border-[#ef4a23]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 font-mono text-slate-900 focus:outline-none focus:border-[#082052]"
                 />
               </div>
 
@@ -525,7 +525,7 @@ export default function AdminSecurityPage() {
                   <select
                     value={editStaffForm.branch_id}
                     onChange={(e) => setEditStaffForm({ ...editStaffForm, branch_id: Number(e.target.value) })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 font-bold text-slate-900 focus:outline-none focus:border-[#ef4a23]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 font-bold text-slate-900 focus:outline-none focus:border-[#082052]"
                   >
                     <option value={1}>Electronic City Branch</option>
                     <option value={2}>BTM 2nd Stage Branch</option>
@@ -545,7 +545,7 @@ export default function AdminSecurityPage() {
                   value={editStaffForm.password}
                   onChange={(e) => setEditStaffForm({ ...editStaffForm, password: e.target.value })}
                   placeholder="Enter new password (or leave empty)"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 text-slate-900 focus:outline-none focus:border-[#ef4a23]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 text-slate-900 focus:outline-none focus:border-[#082052]"
                 />
               </div>
 
@@ -561,7 +561,7 @@ export default function AdminSecurityPage() {
                 <button
                   type="submit"
                   disabled={editingStaffLoading}
-                  className="px-6 py-2.5 rounded-xl text-xs font-black text-white bg-[#ef4a23] hover:bg-[#ff5d38] transition-all shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl text-xs font-black text-white bg-[#082052] hover:bg-[#00A2E4] transition-all shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   <Check className="w-4 h-4" />
                   <span>{editingStaffLoading ? 'Saving...' : 'Save Profile & Username'}</span>
@@ -577,7 +577,7 @@ export default function AdminSecurityPage() {
           <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full border-2 border-slate-300 shadow-elevated space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-sky-100">
               <div className="flex items-center gap-2">
-                <Lock className="w-5 h-5 text-[#ef4a23]" />
+                <Lock className="w-5 h-5 text-[#082052]" />
                 <h3 className="font-bold text-sm text-royal-950">
                   Update Password: {targetStaff.name}
                 </h3>
@@ -632,7 +632,7 @@ export default function AdminSecurityPage() {
                 <button
                   type="submit"
                   disabled={updatingStaffPassword}
-                  className="px-5 py-2 rounded-xl text-xs font-black text-white bg-[#ef4a23] hover:bg-[#141110] transition-all disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl text-xs font-black text-white bg-[#082052] hover:bg-[#141110] transition-all disabled:opacity-50"
                 >
                   {updatingStaffPassword ? 'Saving...' : 'Update Password'}
                 </button>
