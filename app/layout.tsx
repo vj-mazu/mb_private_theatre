@@ -4,7 +4,7 @@ import { Inter, Playfair_Display, Poppins } from 'next/font/google';
 import './globals.css';
 
 export const viewport: Viewport = {
-  themeColor: '#141110',
+  themeColor: '#0B2238',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -314,7 +314,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-cream text-ink antialiased selection:bg-[#fff0ea] selection:text-[#ef4a23]">
+      <body className="min-h-screen flex flex-col bg-cream text-ink antialiased selection:bg-[#E6F3FB] selection:text-[#00A2E4]">
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
             <Script

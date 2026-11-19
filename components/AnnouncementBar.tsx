@@ -25,10 +25,10 @@ export default function AnnouncementBar() {
   }, []);
 
   return (
-    <div className="bg-[#141110] text-[#faf3e4] py-2 px-3 sm:px-4 text-[11px] sm:text-xs font-medium border-b border-white/10">
+    <div className="bg-[#0B2238] text-[#F6FAFD] py-2 px-3 sm:px-4 text-[11px] sm:text-xs font-medium border-b border-white/10">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
         <div className="flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto text-center sm:text-left">
-          <span className="inline-flex items-center justify-center px-2 py-0.5 bg-[#ef4a23] text-white rounded-full text-[10px] font-extrabold uppercase tracking-wider shrink-0 shadow-xs">
+          <span className="inline-flex items-center justify-center px-2 py-0.5 bg-[#00A2E4] text-white rounded-full text-[10px] font-extrabold uppercase tracking-wider shrink-0 shadow-xs">
             Opening Offer
           </span>
           <span className="leading-tight sm:leading-normal">

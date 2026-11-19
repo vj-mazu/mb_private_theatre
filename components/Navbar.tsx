@@ -43,8 +43,8 @@ export default function Navbar() {
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${
       scrolled 
-        ? 'bg-white/95 backdrop-blur-xl shadow-md py-2 sm:py-2.5 border-b border-[#ef4a23]/15' 
-        : 'bg-[#FFFDF9]/95 backdrop-blur-md py-2 sm:py-3 border-b border-[#ef4a23]/10'
+        ? 'bg-white/95 backdrop-blur-xl shadow-md py-2 sm:py-2.5 border-b border-[#00A2E4]/15' 
+        : 'bg-[#F6FAFD]/95 backdrop-blur-md py-2 sm:py-3 border-b border-[#00A2E4]/10'
     }`}>
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between">
         
@@ -59,8 +59,8 @@ export default function Navbar() {
         <nav className="hidden lg:flex items-center gap-7">
           <Link
             href="/"
-            className={`text-sm font-semibold transition-colors hover:text-[#ef4a23] ${
-              pathname === '/' ? 'text-[#141110] font-black' : 'text-stone-700'
+            className={`text-sm font-semibold transition-colors hover:text-[#00A2E4] ${
+              pathname === '/' ? 'text-[#0B2238] font-black' : 'text-stone-700'
             }`}
           >
             Home
@@ -72,28 +72,28 @@ export default function Navbar() {
               onClick={() => setVenuesOpen(!venuesOpen)}
               onMouseEnter={() => setVenuesOpen(true)}
               suppressHydrationWarning
-              className="flex items-center gap-1.5 text-sm font-semibold text-stone-700 hover:text-[#ef4a23] transition-colors py-2 cursor-pointer"
+              className="flex items-center gap-1.5 text-sm font-semibold text-stone-700 hover:text-[#00A2E4] transition-colors py-2 cursor-pointer"
             >
               <span>Our Venues</span>
-              <ChevronDown className="w-4 h-4 text-[#ef4a23] transition-transform group-hover:rotate-180" />
+              <ChevronDown className="w-4 h-4 text-[#00A2E4] transition-transform group-hover:rotate-180" />
             </button>
 
             {venuesOpen && (
               <div 
-                className="absolute top-full left-0 w-72 bg-[#FFFDF9] rounded-2xl shadow-xl border border-[#ef4a23]/15 p-3 flex flex-col gap-2 z-50 animate-in fade-in slide-in-from-top-2"
+                className="absolute top-full left-0 w-72 bg-[#F6FAFD] rounded-2xl shadow-xl border border-[#00A2E4]/15 p-3 flex flex-col gap-2 z-50 animate-in fade-in slide-in-from-top-2"
                 onMouseEnter={() => setVenuesOpen(true)}
                 onMouseLeave={() => setVenuesOpen(false)}
               >
                 <Link
                   href="/venues/electronic-city"
                   onClick={() => setVenuesOpen(false)}
-                  className="p-3 rounded-xl hover:bg-[#fff5ee] transition-colors flex items-start gap-3 group/item"
+                  className="p-3 rounded-xl hover:bg-[#E6F3FB] transition-colors flex items-start gap-3 group/item"
                 >
-                  <div className="p-2 rounded-lg bg-[#fff0e6] text-[#ef4a23] group-hover/item:bg-[#141110] group-hover/item:text-white transition-colors">
+                  <div className="p-2 rounded-lg bg-[#E6F3FB] text-[#00A2E4] group-hover/item:bg-[#0B2238] group-hover/item:text-white transition-colors">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-[#141110]">Electronic City</h4>
+                    <h4 className="text-sm font-bold text-[#0B2238]">Electronic City</h4>
                     <p className="text-xs text-stone-500 mt-0.5">3 Theatres • Couple, Party &amp; Family</p>
                   </div>
                 </Link>
@@ -101,15 +101,15 @@ export default function Navbar() {
                 <Link
                   href="/venues/btm-stage-2"
                   onClick={() => setVenuesOpen(false)}
-                  className="p-3 rounded-xl hover:bg-[#fff5ee] transition-colors flex items-start gap-3 group/item"
+                  className="p-3 rounded-xl hover:bg-[#E6F3FB] transition-colors flex items-start gap-3 group/item"
                 >
-                  <div className="p-2 rounded-lg bg-[#fff0e6] text-[#ef4a23] group-hover/item:bg-[#141110] group-hover/item:text-white transition-colors">
+                  <div className="p-2 rounded-lg bg-[#E6F3FB] text-[#00A2E4] group-hover/item:bg-[#0B2238] group-hover/item:text-white transition-colors">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="text-sm font-bold text-[#141110]">BTM 2nd Stage</h4>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#ef4a23] text-white">4 SCREENS</span>
+                      <h4 className="text-sm font-bold text-[#0B2238]">BTM 2nd Stage</h4>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#00A2E4] text-white">4 SCREENS</span>
                     </div>
                     <p className="text-xs text-stone-500 mt-0.5">4 Theatres • Near Udupi Garden</p>
                   </div>
@@ -122,8 +122,8 @@ export default function Navbar() {
             <Link
               key={item.name}
               href={item.href}
-              className={`text-sm font-semibold transition-colors hover:text-[#ef4a23] ${
-                pathname === item.href ? 'text-[#141110] font-bold' : 'text-stone-700'
+              className={`text-sm font-semibold transition-colors hover:text-[#00A2E4] ${
+                pathname === item.href ? 'text-[#0B2238] font-bold' : 'text-stone-700'
               }`}
             >
               {item.name}
@@ -137,7 +137,7 @@ export default function Navbar() {
             href="https://wa.me/919902923656?text=Hi%20Movie%20Bash%2C%20I%20want%20to%20inquire%20about%20booking%20a%20private%20theatre"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold text-[#141110] bg-[#fff5ee] hover:bg-[#ffeade] border border-[#ef4a23]/25 transition-all hover:scale-105"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold text-[#0B2238] bg-[#E6F3FB] hover:bg-[#ffeade] border border-[#00A2E4]/25 transition-all hover:scale-105"
             title="Chat on WhatsApp"
           >
             <Phone className="w-3.5 h-3.5 text-emerald-600" />
@@ -146,7 +146,7 @@ export default function Navbar() {
 
           <Link
             href="/book-now"
-            className="flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-black text-white bg-gradient-to-r from-[#ef4a23] via-[#ff5b35] to-[#ef4a23] hover:from-[#d83d17] hover:to-[#ef4a23] shadow-md shadow-orange-500/20 transition-all hover:scale-105"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-black text-white bg-gradient-to-r from-[#00A2E4] via-[#0072AE] to-[#00A2E4] hover:from-[#d83d17] hover:to-[#00A2E4] shadow-md shadow-orange-500/20 transition-all hover:scale-105"
           >
             <CalendarDays className="w-4 h-4 text-white" />
             <span>Book Now</span>
@@ -157,10 +157,10 @@ export default function Navbar() {
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           suppressHydrationWarning
-          className="lg:hidden p-2.5 rounded-xl text-[#141110] bg-[#fff5ee] border border-[#ef4a23]/20 hover:bg-[#ffeade] active:scale-95 transition-all cursor-pointer"
+          className="lg:hidden p-2.5 rounded-xl text-[#0B2238] bg-[#E6F3FB] border border-[#00A2E4]/20 hover:bg-[#ffeade] active:scale-95 transition-all cursor-pointer"
           aria-label="Toggle navigation menu"
         >
-          {mobileMenuOpen ? <X className="w-6 h-6 text-[#ef4a23]" /> : <Menu className="w-6 h-6 text-[#141110]" />}
+          {mobileMenuOpen ? <X className="w-6 h-6 text-[#00A2E4]" /> : <Menu className="w-6 h-6 text-[#0B2238]" />}
         </button>
       </div>
 
@@ -174,31 +174,31 @@ export default function Navbar() {
 
       {/* Mobile Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden absolute top-full inset-x-0 bg-[#FFFDF9] border-b-2 border-[#ef4a23]/25 shadow-2xl p-5 flex flex-col gap-4 max-h-[85vh] overflow-y-auto z-50 animate-in slide-in-from-top-2 duration-200">
+        <div className="lg:hidden absolute top-full inset-x-0 bg-[#F6FAFD] border-b-2 border-[#00A2E4]/25 shadow-2xl p-5 flex flex-col gap-4 max-h-[85vh] overflow-y-auto z-50 animate-in slide-in-from-top-2 duration-200">
           
           {/* Venues Selector Pill */}
-          <div className="bg-[#fff8f5] p-3 rounded-2xl border border-[#ef4a23]/20 space-y-2">
-            <span className="text-[11px] font-black uppercase tracking-wider text-[#ef4a23] block px-1">
+          <div className="bg-[#F6FAFD] p-3 rounded-2xl border border-[#00A2E4]/20 space-y-2">
+            <span className="text-[11px] font-black uppercase tracking-wider text-[#00A2E4] block px-1">
               Select Your Venue:
             </span>
             <div className="grid grid-cols-1 gap-1.5">
               <Link
                 href="/venues/electronic-city"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#ef4a23]/15 text-sm font-bold text-[#141110] hover:bg-[#ef4a23] hover:text-white transition-colors"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#00A2E4]/15 text-sm font-bold text-[#0B2238] hover:bg-[#00A2E4] hover:text-white transition-colors"
               >
                 <span className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-[#ef4a23]" /> Electronic City Branch
+                  <MapPin className="w-4 h-4 text-[#00A2E4]" /> Electronic City Branch
                 </span>
                 <span className="text-xs opacity-60">&rarr;</span>
               </Link>
               <Link
                 href="/venues/btm-stage-2"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#ef4a23]/15 text-sm font-bold text-[#141110] hover:bg-[#ef4a23] hover:text-white transition-colors"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#00A2E4]/15 text-sm font-bold text-[#0B2238] hover:bg-[#00A2E4] hover:text-white transition-colors"
               >
                 <span className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-[#ef4a23]" /> BTM 2nd Stage Branch
+                  <MapPin className="w-4 h-4 text-[#00A2E4]" /> BTM 2nd Stage Branch
                 </span>
                 <span className="text-xs opacity-60">&rarr;</span>
               </Link>
@@ -214,8 +214,8 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`px-3 py-2.5 rounded-xl text-base font-bold transition-all flex items-center justify-between ${
                   pathname === item.href 
-                    ? 'text-[#ef4a23] bg-[#fff0ea] font-black' 
-                    : 'text-[#141110] hover:bg-[#fff5ee] hover:text-[#ef4a23]'
+                    ? 'text-[#00A2E4] bg-[#E6F3FB] font-black' 
+                    : 'text-[#0B2238] hover:bg-[#E6F3FB] hover:text-[#00A2E4]'
                 }`}
               >
                 <span>{item.name}</span>
@@ -225,11 +225,11 @@ export default function Navbar() {
           </div>
 
           {/* Action CTAs */}
-          <div className="pt-3 border-t border-[#ef4a23]/15 flex flex-col gap-2.5">
+          <div className="pt-3 border-t border-[#00A2E4]/15 flex flex-col gap-2.5">
             <Link
               href="/book-now"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-3.5 rounded-full text-sm font-black text-white bg-gradient-to-r from-[#ef4a23] via-[#ff5b35] to-[#ef4a23] shadow-lg shadow-orange-500/25 active:scale-98 transition-transform"
+              className="w-full text-center py-3.5 rounded-full text-sm font-black text-white bg-gradient-to-r from-[#00A2E4] via-[#0072AE] to-[#00A2E4] shadow-lg shadow-orange-500/25 active:scale-98 transition-transform"
             >
               Book Your Private Screen Now
             </Link>
@@ -238,7 +238,7 @@ export default function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-3 rounded-full text-xs sm:text-sm font-bold text-[#141110] bg-[#fff5ee] border border-[#ef4a23]/25 flex items-center justify-center gap-2 active:scale-98 transition-transform"
+              className="w-full text-center py-3 rounded-full text-xs sm:text-sm font-bold text-[#0B2238] bg-[#E6F3FB] border border-[#00A2E4]/25 flex items-center justify-center gap-2 active:scale-98 transition-transform"
             >
               <Phone className="w-4 h-4 text-emerald-600" />
               <span>WhatsApp Us (+91 99029 23656)</span>

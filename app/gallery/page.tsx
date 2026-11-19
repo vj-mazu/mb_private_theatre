@@ -90,7 +90,7 @@ function GalleryContent() {
   return (
     <>
       {/* Header */}
-      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#fff8f5] via-cream to-cream text-ink text-center relative overflow-hidden border-b border-sky-100">
+      <section className="py-16 sm:py-24 bg-gradient-to-b from-[#F6FAFD] via-cream to-cream text-ink text-center relative overflow-hidden border-b border-sky-100">
         <div className="hero-orb orb-one" />
         <div className="hero-orb orb-two" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-4 relative z-10">
@@ -116,11 +116,11 @@ function GalleryContent() {
                   onClick={() => setActiveCategory(cat.value)}
                   className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                     isSelected
-                      ? 'bg-[#ef4a23] text-white font-black shadow-md scale-105 ring-2 ring-sky-300'
-                      : 'bg-white text-ink hover:text-[#ef4a23] hover:bg-sky-50 border border-sky-100'
+                      ? 'bg-[#00A2E4] text-white font-black shadow-md scale-105 ring-2 ring-sky-300'
+                      : 'bg-white text-ink hover:text-[#00A2E4] hover:bg-sky-50 border border-sky-100'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-[#ef4a23]'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-[#00A2E4]'}`} />
                   <span>{cat.label}</span>
                 </button>
               );
@@ -135,12 +135,12 @@ function GalleryContent() {
           
           <div className="mb-6 flex items-center justify-between">
             <div className="text-xs sm:text-sm font-bold text-slate-700">
-              Showing <span className="text-[#ef4a23] font-black">{filteredItems.length} photos</span> in {activeCategory === 'All' ? 'All Galleries' : `${activeCategory} Category`}
+              Showing <span className="text-[#00A2E4] font-black">{filteredItems.length} photos</span> in {activeCategory === 'All' ? 'All Galleries' : `${activeCategory} Category`}
             </div>
             {activeCategory !== 'All' && (
               <button
                 onClick={() => setActiveCategory('All')}
-                className="text-xs font-bold text-[#ef4a23] hover:underline cursor-pointer"
+                className="text-xs font-bold text-[#00A2E4] hover:underline cursor-pointer"
               >
                 Show All Photos &rarr;
               </button>
@@ -167,7 +167,7 @@ function GalleryContent() {
                   {item.branch && (
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider backdrop-blur-md border ${
                       item.branch === 'BTM 2nd Stage'
-                        ? 'bg-[#ef4a23]/90 text-white border-amber-300/40 shadow-xs'
+                        ? 'bg-[#00A2E4]/90 text-white border-amber-300/40 shadow-xs'
                         : 'bg-black/60 text-slate-200 border-white/20'
                     }`}>
                       {item.branch}
@@ -229,7 +229,7 @@ function GalleryContent() {
             <div className="mt-4 text-center text-white space-y-1">
               <div className="flex items-center justify-center gap-2">
                 {lightboxImage.branch && (
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#ef4a23] text-white">
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#00A2E4] text-white">
                     {lightboxImage.branch}
                   </span>
                 )}

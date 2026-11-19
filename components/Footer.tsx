@@ -43,7 +43,7 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
   };
 
   return (
-    <footer className="w-full bg-[#141110] text-[#faf3e4] border-t border-white/10 relative z-10 overflow-hidden">
+    <footer className="w-full bg-[#0B2238] text-[#F6FAFD] border-t border-white/10 relative z-10 overflow-hidden">
       
       {/* Optional Top CTA Strip (only rendered on subpages that do not already have .final-cta) */}
       {showCtaStrip && (
@@ -52,7 +52,7 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
               <Link
                 href="/book-now"
-                className="px-7 py-3.5 rounded-full bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-600/30 hover:scale-105 transition-all"
+                className="px-7 py-3.5 rounded-full bg-[#00A2E4] hover:bg-[#0072AE] text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-600/30 hover:scale-105 transition-all"
               >
                 <CalendarDays className="w-4 h-4 text-white" />
                 <span>Book Private Screen</span>
@@ -67,7 +67,7 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
               </a>
             </div>
 
-            <p className="text-xs text-[#faf3e4]/80 font-medium tracking-wide">
+            <p className="text-xs text-[#F6FAFD]/80 font-medium tracking-wide">
               Electronic City &bull; BTM 2nd Stage &bull; 100% Privacy Guaranteed
             </p>
           </div>
@@ -86,7 +86,7 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
               </div>
             </Link>
 
-            <p className="text-xs sm:text-sm text-[#faf3e4]/75 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#F6FAFD]/75 leading-relaxed">
               Movie Bash is Bengaluru&apos;s premier luxury private theatre destination. Offering fully private 4K cinema screenings, custom celebration decorations, fog entries, and personalized surprises for couples, families, and friends.
             </p>
 
@@ -95,7 +95,7 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
                 href="https://facebook.com/moviebashprivatetheatre"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#faf3e4]/80 hover:text-white hover:bg-[#ef4a23] transition-colors"
+                className="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#F6FAFD]/80 hover:text-white hover:bg-[#00A2E4] transition-colors"
                 aria-label="Facebook"
               >
                 <Facebook className="w-4 h-4" />
@@ -104,7 +104,7 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
                 href="https://x.com/Moviebashblr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#faf3e4]/80 hover:text-white hover:bg-[#ef4a23] transition-colors"
+                className="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#F6FAFD]/80 hover:text-white hover:bg-[#00A2E4] transition-colors"
                 aria-label="X"
               >
                 <Twitter className="w-4 h-4" />
@@ -113,7 +113,7 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
                 href="https://www.instagram.com/moviebash_privatetheatre?bqrl=dHBiYjgwcXduNmo2"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#faf3e4]/80 hover:text-white hover:bg-[#ef4a23] transition-colors"
+                className="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#F6FAFD]/80 hover:text-white hover:bg-[#00A2E4] transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram className="w-4 h-4" />
@@ -122,7 +122,7 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
                 href="https://youtube.com/@MovieBashPrivateTheatre"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#faf3e4]/80 hover:text-white hover:bg-[#ef4a23] transition-colors"
+                className="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#F6FAFD]/80 hover:text-white hover:bg-[#00A2E4] transition-colors"
                 aria-label="YouTube"
               >
                 <Youtube className="w-4 h-4" />
@@ -132,42 +132,42 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
 
           {/* Col 2: Quick Links */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#ef4a23]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#00A2E4]">
               QUICK LINKS
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm">
               <li>
-                <Link href="/" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/" className="text-[#F6FAFD]/80 hover:text-[#00A2E4] transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/about" className="text-[#F6FAFD]/80 hover:text-[#00A2E4] transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/gallery" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/gallery" className="text-[#F6FAFD]/80 hover:text-[#00A2E4] transition-colors">
                   Celebration Gallery
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/blog" className="text-[#F6FAFD]/80 hover:text-[#00A2E4] transition-colors">
                   Party &amp; Movie Blog
                 </Link>
               </li>
               <li>
-                <Link href="/testimonials" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/testimonials" className="text-[#F6FAFD]/80 hover:text-[#00A2E4] transition-colors">
                   Reviews &amp; Ratings
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/faq" className="text-[#F6FAFD]/80 hover:text-[#00A2E4] transition-colors">
                   FAQs
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-[#faf3e4]/80 hover:text-[#ef4a23] transition-colors">
+                <Link href="/contact" className="text-[#F6FAFD]/80 hover:text-[#00A2E4] transition-colors">
                   Contact Us
                 </Link>
               </li>
@@ -176,13 +176,13 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
 
           {/* Col 3: Bengaluru Venues */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#ef4a23]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#00A2E4]">
               OUR BENGALURU VENUES
             </h4>
             <div className="space-y-3 text-xs">
-              <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#ef4a23]/40 transition-colors">
+              <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#00A2E4]/40 transition-colors">
                 <span className="font-bold text-white block text-sm">Electronic City Branch</span>
-                <p className="text-[#faf3e4]/75 mt-1 leading-snug">
+                <p className="text-[#F6FAFD]/75 mt-1 leading-snug">
                   MovieBash, 4th Floor, Srinivasam, Nagananthapura Main Road, Beside Sri Vishnu Grand, Bengaluru 560100
                 </p>
                 <a href="tel:+919902923656" className="text-[#ffd46e] hover:text-white mt-2 block font-bold transition-colors">
@@ -190,9 +190,9 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
                 </a>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#ef4a23]/40 transition-colors">
+              <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#00A2E4]/40 transition-colors">
                 <span className="font-bold text-white block text-sm">BTM 2nd Stage Branch (NEW)</span>
-                <p className="text-[#faf3e4]/75 mt-1 leading-snug">
+                <p className="text-[#F6FAFD]/75 mt-1 leading-snug">
                   MovieBash, 2nd Floor, 16th Main Road, Near Udupi Garden Signal, BTM 2nd Stage, Bengaluru 560076
                 </p>
                 <a href="tel:+919902923656" className="text-[#ffd46e] hover:text-white mt-2 block font-bold transition-colors">
@@ -204,10 +204,10 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
 
           {/* Col 4: VIP Offers on WhatsApp & Support */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#ef4a23]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#00A2E4]">
               VIP OFFERS ON WHATSAPP
             </h4>
-            <p className="text-xs text-[#faf3e4]/75 leading-relaxed">
+            <p className="text-xs text-[#F6FAFD]/75 leading-relaxed">
               Subscribe to get secret discount codes and priority weekend slot drops before anyone else.
             </p>
 
@@ -225,19 +225,19 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
                     value={subscriberInput}
                     onChange={(e) => setSubscriberInput(e.target.value)}
                     placeholder="Enter phone or email"
-                    className="w-full pl-4 pr-11 py-2.5 rounded-full bg-white/10 border border-white/15 text-xs text-white placeholder:text-[#faf3e4]/50 focus:outline-none focus:border-[#ef4a23] transition-all"
+                    className="w-full pl-4 pr-11 py-2.5 rounded-full bg-white/10 border border-white/15 text-xs text-white placeholder:text-[#F6FAFD]/50 focus:outline-none focus:border-[#00A2E4] transition-all"
                     required
                   />
                   <button
                     type="submit"
                     suppressHydrationWarning
-                    className="absolute right-1 top-1 w-8 h-8 rounded-full bg-[#ef4a23] text-white hover:bg-[#ff5d38] flex items-center justify-center font-bold transition-colors shadow"
+                    className="absolute right-1 top-1 w-8 h-8 rounded-full bg-[#00A2E4] text-white hover:bg-[#0072AE] flex items-center justify-center font-bold transition-colors shadow"
                     aria-label="Subscribe"
                   >
                     <Send className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <span className="text-[10px] text-[#faf3e4]/50 block">
+                <span className="text-[10px] text-[#F6FAFD]/50 block">
                   Zero spam. Unsubscribe anytime.
                 </span>
               </form>
@@ -256,9 +256,9 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
 
               <a
                 href="mailto:bookmoviebash@gmail.com"
-                className="flex items-center gap-2 text-xs text-[#faf3e4]/75 hover:text-white transition-colors pt-1"
+                className="flex items-center gap-2 text-xs text-[#F6FAFD]/75 hover:text-white transition-colors pt-1"
               >
-                <Mail className="w-3.5 h-3.5 text-[#ef4a23]" />
+                <Mail className="w-3.5 h-3.5 text-[#00A2E4]" />
                 <span>bookmoviebash@gmail.com</span>
               </a>
             </div>
@@ -267,7 +267,7 @@ export default function Footer({ showCtaStrip = false }: FooterProps) {
         </div>
 
         {/* Bottom Bar: Copyright & Legal (STRICTLY NO ADMIN LINKS) */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#faf3e4]/60">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#F6FAFD]/60">
           <div>
             &copy; {new Date().getFullYear()} Movie Bash Private Theatre (Bengaluru). All rights reserved.
           </div>

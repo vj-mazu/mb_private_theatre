@@ -87,7 +87,7 @@ export default function UpiPaymentCard({
       width: 280,
       margin: 1.5,
       color: {
-        dark: '#141110',
+        dark: '#0B2238',
         light: '#FFFFFF'
       },
       errorCorrectionLevel: 'H'
@@ -109,12 +109,12 @@ export default function UpiPaymentCard({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl backdrop-blur-xl bg-white/80 border-2 border-[#ef4a23]/30 shadow-[0_16px_40px_rgba(239,74,35,0.08)] p-5 sm:p-6 space-y-5">
+    <div className="relative overflow-hidden rounded-3xl backdrop-blur-xl bg-white/80 border-2 border-[#00A2E4]/30 shadow-[0_16px_40px_rgba(239,74,35,0.08)] p-5 sm:p-6 space-y-5">
       
       {/* Top Header Badge */}
       <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-orange-100">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#ef4a23] to-[#ff7a59] text-white flex items-center justify-center font-black shadow-md shadow-orange-500/20">
+          <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#00A2E4] to-[#ff7a59] text-white flex items-center justify-center font-black shadow-md shadow-orange-500/20">
             <IndianRupee className="w-5 h-5" />
           </div>
           <div>
@@ -134,20 +134,20 @@ export default function UpiPaymentCard({
       </div>
 
       {/* Official Mandatory Terms & Conditions Banner */}
-      <div className="p-4 rounded-2xl bg-gradient-to-br from-[#fff7f2] via-white to-[#fff0ea] border-2 border-orange-200/80 shadow-xs space-y-2">
-        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#ef4a23]">
-          <Sparkles className="w-4 h-4 text-[#ef4a23]" />
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-[#fff7f2] via-white to-[#E6F3FB] border-2 border-orange-200/80 shadow-xs space-y-2">
+        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#00A2E4]">
+          <Sparkles className="w-4 h-4 text-[#00A2E4]" />
           <span>Booking Terms &amp; Conditions</span>
         </div>
         <ul className="space-y-1.5 text-xs text-slate-800 font-semibold pl-1">
           <li className="flex items-start gap-2">
-            <span className="text-[#ef4a23] font-black text-sm leading-none mt-0.5">•</span>
+            <span className="text-[#00A2E4] font-black text-sm leading-none mt-0.5">•</span>
             <span>
               <strong>Kindly send an advance of ₹{advanceAmount} to book the slot.</strong> The remaining amount can be paid after the event.
             </span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-[#ef4a23] font-black text-sm leading-none mt-0.5">•</span>
+            <span className="text-[#00A2E4] font-black text-sm leading-none mt-0.5">•</span>
             <span>
               <strong>Please share a screenshot once the advance payment is completed</strong> on our official Movie Bash WhatsApp (+91 99029 23656).
             </span>
@@ -162,7 +162,7 @@ export default function UpiPaymentCard({
           onClick={() => setActiveTab('mobile')}
           className={`flex-1 py-2 px-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer ${
             activeTab === 'mobile'
-              ? 'bg-[#ef4a23] text-white shadow-sm'
+              ? 'bg-[#00A2E4] text-white shadow-sm'
               : 'text-slate-700 hover:text-slate-900'
           }`}
         >
@@ -175,7 +175,7 @@ export default function UpiPaymentCard({
           onClick={() => setActiveTab('qr')}
           className={`flex-1 py-2 px-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer ${
             activeTab === 'qr'
-              ? 'bg-[#ef4a23] text-white shadow-sm'
+              ? 'bg-[#00A2E4] text-white shadow-sm'
               : 'text-slate-700 hover:text-slate-900'
           }`}
         >
@@ -199,7 +199,7 @@ export default function UpiPaymentCard({
             {/* Google Pay */}
             <a
               href={gpayUrl}
-              className="p-3 rounded-2xl bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-[#ef4a23] shadow-xs flex flex-col items-center justify-center text-center transition-all group active:scale-95 cursor-pointer"
+              className="p-3 rounded-2xl bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-[#00A2E4] shadow-xs flex flex-col items-center justify-center text-center transition-all group active:scale-95 cursor-pointer"
             >
               <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-lg font-black text-blue-600 mb-1 group-hover:scale-110 transition-transform">
                 G
@@ -211,7 +211,7 @@ export default function UpiPaymentCard({
             {/* PhonePe */}
             <a
               href={phonepeUrl}
-              className="p-3 rounded-2xl bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-[#ef4a23] shadow-xs flex flex-col items-center justify-center text-center transition-all group active:scale-95 cursor-pointer"
+              className="p-3 rounded-2xl bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-[#00A2E4] shadow-xs flex flex-col items-center justify-center text-center transition-all group active:scale-95 cursor-pointer"
             >
               <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-lg font-black text-purple-600 mb-1 group-hover:scale-110 transition-transform">
                 Pe
@@ -223,7 +223,7 @@ export default function UpiPaymentCard({
             {/* Paytm */}
             <a
               href={paytmUrl}
-              className="p-3 rounded-2xl bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-[#ef4a23] shadow-xs flex flex-col items-center justify-center text-center transition-all group active:scale-95 cursor-pointer"
+              className="p-3 rounded-2xl bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-[#00A2E4] shadow-xs flex flex-col items-center justify-center text-center transition-all group active:scale-95 cursor-pointer"
             >
               <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-lg font-black text-sky-600 mb-1 group-hover:scale-110 transition-transform">
                 Pay
@@ -235,12 +235,12 @@ export default function UpiPaymentCard({
             {/* Any UPI App */}
             <a
               href={upiUrl}
-              className="p-3 rounded-2xl bg-gradient-to-br from-[#fff0ea] to-white hover:bg-[#ffe6db] border-2 border-[#ef4a23]/40 shadow-xs flex flex-col items-center justify-center text-center transition-all group active:scale-95 cursor-pointer"
+              className="p-3 rounded-2xl bg-gradient-to-br from-[#E6F3FB] to-white hover:bg-[#ffe6db] border-2 border-[#00A2E4]/40 shadow-xs flex flex-col items-center justify-center text-center transition-all group active:scale-95 cursor-pointer"
             >
-              <div className="w-10 h-10 rounded-xl bg-[#ef4a23] text-white flex items-center justify-center text-lg font-black mb-1 group-hover:scale-110 transition-transform shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-[#00A2E4] text-white flex items-center justify-center text-lg font-black mb-1 group-hover:scale-110 transition-transform shadow-xs">
                 UPI
               </div>
-              <span className="text-xs font-black text-[#ef4a23]">Any UPI App</span>
+              <span className="text-xs font-black text-[#00A2E4]">Any UPI App</span>
               <span className="text-[10px] text-slate-600 font-medium">BHIM / Cred</span>
             </a>
 
@@ -288,7 +288,7 @@ export default function UpiPaymentCard({
                   : 'bg-gradient-to-r from-orange-50 via-white to-amber-50 border-orange-200/90 text-orange-950 shadow-xs'
             }`}>
               <div className="flex items-center gap-2 text-left">
-                <Clock className={`w-4 h-4 shrink-0 ${isExpired ? 'text-red-600' : 'text-[#ef4a23]'}`} />
+                <Clock className={`w-4 h-4 shrink-0 ${isExpired ? 'text-red-600' : 'text-[#00A2E4]'}`} />
                 <div>
                   <span className="text-xs font-black block leading-tight">
                     {isExpired ? 'QR Code Expired for Security' : 'Active Scanner Session'}
@@ -303,7 +303,7 @@ export default function UpiPaymentCard({
                 <span className={`font-mono font-black text-sm px-2.5 py-1 rounded-xl shadow-2xs border ${
                   isExpired 
                     ? 'bg-red-100 text-red-700 border-red-200' 
-                    : 'bg-white text-[#ef4a23] border-orange-200'
+                    : 'bg-white text-[#00A2E4] border-orange-200'
                 }`}>
                   {formattedTime}
                 </span>
@@ -311,7 +311,7 @@ export default function UpiPaymentCard({
                   <button
                     type="button"
                     onClick={handleRefreshTimer}
-                    className="p-1.5 rounded-xl bg-[#ef4a23] text-white hover:bg-[#d63b15] shadow-xs cursor-pointer transition-all active:scale-95 flex items-center gap-1 text-[11px] font-black"
+                    className="p-1.5 rounded-xl bg-[#00A2E4] text-white hover:bg-[#0072AE] shadow-xs cursor-pointer transition-all active:scale-95 flex items-center gap-1 text-[11px] font-black"
                   >
                     <RotateCw className="w-3.5 h-3.5" />
                     <span>Reset</span>
@@ -328,7 +328,7 @@ export default function UpiPaymentCard({
                     ? 'bg-red-500 w-0' 
                     : secondsLeft <= 25 
                       ? 'bg-amber-500' 
-                      : 'bg-gradient-to-r from-[#ef4a23] to-[#ff7a59]'
+                      : 'bg-gradient-to-r from-[#00A2E4] to-[#ff7a59]'
                 }`}
                 style={{ width: `${(secondsLeft / 90) * 100}%` }}
               />
@@ -364,7 +364,7 @@ export default function UpiPaymentCard({
                 <button
                   type="button"
                   onClick={handleRefreshTimer}
-                  className="mt-2 px-4 py-2 rounded-xl bg-[#ef4a23] hover:bg-[#d63b15] text-white font-black text-xs shadow-lg flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+                  className="mt-2 px-4 py-2 rounded-xl bg-[#00A2E4] hover:bg-[#0072AE] text-white font-black text-xs shadow-lg flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
                 >
                   <RotateCw className="w-3.5 h-3.5" />
                   <span>Refresh QR Scanner</span>
@@ -418,7 +418,7 @@ export default function UpiPaymentCard({
                 onChange={(e) => onUtrChange(e.target.value.replace(/[^0-9a-zA-Z]/g, ''))}
                 placeholder="e.g. 431289123456 (from your payment receipt)"
                 maxLength={20}
-                className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#ef4a23] focus:bg-white transition-colors"
+                className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00A2E4] focus:bg-white transition-colors"
               />
             </div>
             <span className="text-[10px] text-slate-500 font-medium block mt-1">

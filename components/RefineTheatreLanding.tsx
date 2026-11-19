@@ -401,9 +401,9 @@ const addonDecks = [
     tagline: 'Cinematic Visuals & Stage Ambience for Grand Unforgettable Entries',
     badge: 'Crowd Favorite',
     badgeColor: 'bg-orange-100 text-orange-950 border-orange-300',
-    cardBorder: 'border-[#ef4a23]/30',
+    cardBorder: 'border-[#00A2E4]/30',
     topOffset: 'top-24 sm:top-28',
-    bgGradient: 'bg-gradient-to-br from-[#FFFDF9] via-[#FFF5EE] to-[#FFE8DA]',
+    bgGradient: 'bg-gradient-to-br from-[#F6FAFD] via-[#FFF5EE] to-[#FFE8DA]',
     shadow: 'shadow-[0_20px_50px_rgba(239,74,35,0.12)]',
     items: celebrationAddonsList.filter(item => item.category === 'Special FX')
   },
@@ -838,10 +838,10 @@ const addonSlides = [
     price: '₹499 (0.5 Kg) · ₹899 (1 Kg)',
     desc: 'Pure Dutch chocolate ganache, tropical pineapple cream, and ruby red velvet hearts freshly prepared for your screening.',
     badge: 'Included in Packages (₹0)',
-    bg: 'from-[#FFFDF9] via-[#FFF8EF] to-[#FFEED9]',
-    cardBorder: 'border-[#ef4a23]/30 hover:border-[#ef4a23]',
-    tagColor: 'bg-[#ef4a23]/10 text-[#ef4a23] border-[#ef4a23]/30',
-    accent: '#ef4a23',
+    bg: 'from-[#F6FAFD] via-[#FFF8EF] to-[#FFEED9]',
+    cardBorder: 'border-[#00A2E4]/30 hover:border-[#00A2E4]',
+    tagColor: 'bg-[#00A2E4]/10 text-[#00A2E4] border-[#00A2E4]/30',
+    accent: '#00A2E4',
     items: [
       {
         iconKey: 'pineapple',
@@ -876,10 +876,10 @@ const addonSlides = [
     price: 'From ₹199 to ₹799',
     desc: 'Dense cold mist billowing at your feet, indoor smokeless golden fountain sparklers, and floating rainbow bubbles.',
     badge: 'Hero Entry FX',
-    bg: 'from-[#FFFDF9] via-[#FFF5EE] to-[#FFE8DA]',
-    cardBorder: 'border-[#ef4a23]/30 hover:border-[#ef4a23]',
-    tagColor: 'bg-[#ef4a23]/10 text-[#ef4a23] border-[#ef4a23]/30',
-    accent: '#ef4a23',
+    bg: 'from-[#F6FAFD] via-[#FFF5EE] to-[#FFE8DA]',
+    cardBorder: 'border-[#00A2E4]/30 hover:border-[#00A2E4]',
+    tagColor: 'bg-[#00A2E4]/10 text-[#00A2E4] border-[#00A2E4]/30',
+    accent: '#00A2E4',
     items: [
       {
         iconKey: 'fog',
@@ -908,7 +908,7 @@ const addonSlides = [
     price: 'From ₹250 to ₹899',
     desc: 'Hand-tied Dutch red roses, glowing Will-You-Marry-Me LED neon, candlelit petal carpet & romantic heart arch.',
     badge: 'Couples & Proposals',
-    bg: 'from-[#FFFDF9] via-[#FFF1F5] to-[#FFE2EB]',
+    bg: 'from-[#F6FAFD] via-[#FFF1F5] to-[#FFE2EB]',
     cardBorder: 'border-rose-300/80 hover:border-rose-500',
     tagColor: 'bg-rose-500/10 text-rose-900 border-rose-300',
     accent: '#db2777',
@@ -946,7 +946,7 @@ const addonSlides = [
     price: 'From ₹599 to ₹1,499',
     desc: 'Turn personal childhood photos and couple videos into a dramatic 4K cinema memory montage on the 150″ screen.',
     badge: 'Insta Ready',
-    bg: 'from-[#FFFDF9] via-[#F7F2FE] to-[#ECE2FD]',
+    bg: 'from-[#F6FAFD] via-[#F7F2FE] to-[#ECE2FD]',
     cardBorder: 'border-purple-300/80 hover:border-purple-500',
     tagColor: 'bg-purple-500/10 text-purple-900 border-purple-300',
     accent: '#7c3aed',
@@ -978,7 +978,7 @@ const addonSlides = [
     price: 'From ₹149 · Zero Corkage',
     desc: 'Piping hot golden butter popcorn, loaded Mexican cheese nachos with jalapeños, and chilled fruit mocktails.',
     badge: 'Party Binge',
-    bg: 'from-[#FFFDF9] via-[#FFF9EA] to-[#FFF1CD]',
+    bg: 'from-[#F6FAFD] via-[#FFF9EA] to-[#FFF1CD]',
     cardBorder: 'border-amber-300/80 hover:border-amber-500',
     tagColor: 'bg-amber-500/10 text-amber-900 border-amber-300',
     accent: '#d97706',
@@ -1483,12 +1483,12 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
         {/* 3. SPLIT-LAYOUT HERO SECTION — TEXT LEFT, GALLERY RIGHT (swadesiruchulu.com STYLE) */}
         <section 
           ref={heroRef}
-          className="relative overflow-x-clip bg-[#FAF3E4] w-full" 
+          className="relative overflow-x-clip bg-[#F6FAFD] w-full" 
           id="home"
         >
           {/* Warm Luxury Glow Backdrop */}
           <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[750px] h-[350px] bg-gradient-to-b from-[#ef4a23]/12 to-transparent blur-3xl rounded-full" />
+            <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[750px] h-[350px] bg-gradient-to-b from-[#00A2E4]/12 to-transparent blur-3xl rounded-full" />
             <div className="absolute top-1/4 left-0 w-[350px] h-[350px] bg-gradient-to-br from-amber-200/15 to-transparent blur-3xl rounded-full" />
             <div className="absolute top-1/3 right-0 w-[350px] h-[350px] bg-gradient-to-bl from-orange-200/15 to-transparent blur-3xl rounded-full" />
           </div>
@@ -1500,15 +1500,15 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             <div className="flex flex-col justify-center space-y-3 sm:space-y-4 lg:space-y-5 order-1 max-w-xl lg:max-w-none mx-auto lg:mx-0 w-full">
               
               {/* Eyebrow Badge */}
-              <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[#ef4a23]/10 border border-[#ef4a23]/30 text-[#ef4a23] text-[9px] sm:text-xs font-black uppercase tracking-wider sm:tracking-widest shadow-2xs w-fit">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#ef4a23] animate-pulse" />
+              <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[#00A2E4]/10 border border-[#00A2E4]/30 text-[#00A2E4] text-[9px] sm:text-xs font-black uppercase tracking-wider sm:tracking-widest shadow-2xs w-fit">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00A2E4] animate-pulse" />
                 <span>Bengaluru&apos;s #1 Private Cinema</span>
               </div>
 
               {/* Dynamic Font-Weight Headline */}
               <h1 
                 ref={heroHeadlineRef}
-                className="text-[#141110] font-['Archivo'] uppercase tracking-tight leading-[1.05] text-xl sm:text-3xl md:text-5xl lg:text-[56px] cursor-default select-none"
+                className="text-[#0B2238] font-['Archivo'] uppercase tracking-tight leading-[1.05] text-xl sm:text-3xl md:text-5xl lg:text-[56px] cursor-default select-none"
               >
                 <div className="block">
                   {"YOUR MOMENT.".split('').map((c, i) => (
@@ -1517,7 +1517,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     </span>
                   ))}
                 </div>
-                <div className="block text-[#ef4a23] font-['Playfair'] italic normal-case tracking-normal my-0.5 sm:my-1.5 font-normal">
+                <div className="block text-[#00A2E4] font-['Playfair'] italic normal-case tracking-normal my-0.5 sm:my-1.5 font-normal">
                   {"*Your Movie.*".split('').map((c, i) => (
                     <span key={`l2-${i}`} className="hero-headline-char" data-serif="true">
                       {c === ' ' ? '\u00A0' : c}
@@ -1542,14 +1542,14 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-0.5 sm:pt-1">
                 <a 
                   href="#slots" 
-                  className="inline-flex items-center gap-1.5 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-['Archivo'] font-black text-[11px] sm:text-xs md:text-sm uppercase tracking-wider shadow-md shadow-orange-600/25 hover:scale-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+                  className="inline-flex items-center gap-1.5 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-[#00A2E4] hover:bg-[#0072AE] text-white font-['Archivo'] font-black text-[11px] sm:text-xs md:text-sm uppercase tracking-wider shadow-md shadow-orange-600/25 hover:scale-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
                 >
                   <span>Plan Celebration</span>
                   <Icon name="arrow" size={14} />
                 </a>
                 <a 
                   href="#theatres" 
-                  className="inline-flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-3 rounded-full bg-white hover:bg-orange-50 text-[#141110] font-bold text-[11px] sm:text-xs md:text-sm border border-[#ef4a23]/30 shadow-2xs transition-all whitespace-nowrap"
+                  className="inline-flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-3 rounded-full bg-white hover:bg-orange-50 text-[#0B2238] font-bold text-[11px] sm:text-xs md:text-sm border border-[#00A2E4]/30 shadow-2xs transition-all whitespace-nowrap"
                 >
                   <Icon name="play" size={12} />
                   <span>Explore Theatres</span>
@@ -1560,10 +1560,10 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               <div className="hidden lg:flex flex-col space-y-3 sm:space-y-4">
                 <div 
                   ref={slotBarRef}
-                  className="w-full max-w-md bg-white/95 rounded-2xl sm:rounded-full p-1.5 sm:p-2 flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2 shadow-[0_12px_36px_rgba(239,74,35,0.09)] border border-[#ef4a23]/25 mt-1 sm:mt-2"
+                  className="w-full max-w-md bg-white/95 rounded-2xl sm:rounded-full p-1.5 sm:p-2 flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2 shadow-[0_12px_36px_rgba(239,74,35,0.09)] border border-[#00A2E4]/25 mt-1 sm:mt-2"
                 >
                   <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 w-full sm:w-auto">
-                    <span className="text-[#ef4a23]"><Icon name="location" size={14} /></span>
+                    <span className="text-[#00A2E4]"><Icon name="location" size={14} /></span>
                     <select 
                       value={branch} 
                       onChange={(e) => {
@@ -1573,7 +1573,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                           setSlotBranch(target);
                         }
                       }}
-                      className="bg-transparent text-[#141110] font-bold text-[11px] sm:text-xs focus:outline-none cursor-pointer w-full"
+                      className="bg-transparent text-[#0B2238] font-bold text-[11px] sm:text-xs focus:outline-none cursor-pointer w-full"
                     >
                       <option value="Electronic City">Electronic City</option>
                       <option value="BTM 2nd Stage">BTM 2nd Stage</option>
@@ -1581,19 +1581,19 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                   </div>
                   <div className="hidden sm:block w-px h-6 bg-slate-200" />
                   <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 w-full sm:w-auto">
-                    <span className="text-[#ef4a23]"><Icon name="calendar" size={14} /></span>
+                    <span className="text-[#00A2E4]"><Icon name="calendar" size={14} /></span>
                     <input 
                       type="date" 
                       value={date} 
                       onChange={(e) => setDate(e.target.value)}
                       min={getTodayIST()}
-                      className="bg-transparent text-[#141110] font-bold text-[11px] sm:text-xs focus:outline-none cursor-pointer w-full"
+                      className="bg-transparent text-[#0B2238] font-bold text-[11px] sm:text-xs focus:outline-none cursor-pointer w-full"
                     />
                   </div>
                   <button 
                     type="button" 
                     onClick={checkAvailability}
-                    className="w-full sm:w-auto px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-black text-[11px] sm:text-xs shadow-md shadow-orange-600/30 hover:scale-105 transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0"
+                    className="w-full sm:w-auto px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#00A2E4] hover:bg-[#0072AE] text-white font-black text-[11px] sm:text-xs shadow-md shadow-orange-600/30 hover:scale-105 transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0"
                   >
                     <span>Check Slots</span>
                     <Icon name="arrow" size={12} />
@@ -1608,7 +1608,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-rose-400 text-white font-black text-[8px] sm:text-[9px] flex items-center justify-center border border-white">NM</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <span className="text-[#ef4a23] font-bold">★★★★★</span>
+                    <span className="text-[#00A2E4] font-bold">★★★★★</span>
                     <span className="truncate">Loved by 3,500+ guests in Bengaluru</span>
                   </div>
                 </div>
@@ -1626,13 +1626,13 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                 {/* Header: Title + Counter + Controls */}
                 <div className="flex items-center justify-between px-1 pb-2 mb-2 border-b border-orange-200/60">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#ef4a23] animate-pulse" />
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#141110]">
+                    <span className="w-2 h-2 rounded-full bg-[#00A2E4] animate-pulse" />
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#0B2238]">
                       Cinematic Arch Gallery
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-black tracking-wider text-[#ef4a23]">
+                    <span className="text-xs font-black tracking-wider text-[#00A2E4]">
                       0{heroBgIndex + 1} <span className="text-slate-400 font-normal">/ 0{heroBgPhotos.length}</span>
                     </span>
                     <div className="flex items-center gap-1">
@@ -1640,7 +1640,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                         type="button"
                         onClick={prevHeroSlide}
                         aria-label="Previous suite"
-                        className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white hover:bg-[#ef4a23] text-slate-700 hover:text-white border border-slate-200 shadow-2xs flex items-center justify-center transition-all cursor-pointer font-bold active:scale-90 text-xs"
+                        className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white hover:bg-[#00A2E4] text-slate-700 hover:text-white border border-slate-200 shadow-2xs flex items-center justify-center transition-all cursor-pointer font-bold active:scale-90 text-xs"
                       >
                         ←
                       </button>
@@ -1648,7 +1648,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                         type="button"
                         onClick={nextHeroSlide}
                         aria-label="Next suite"
-                        className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white hover:bg-[#ef4a23] text-slate-700 hover:text-white border border-slate-200 shadow-2xs flex items-center justify-center transition-all cursor-pointer font-bold active:scale-90 text-xs"
+                        className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white hover:bg-[#00A2E4] text-slate-700 hover:text-white border border-slate-200 shadow-2xs flex items-center justify-center transition-all cursor-pointer font-bold active:scale-90 text-xs"
                       >
                         →
                       </button>
@@ -1689,7 +1689,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                       widthClass = 'w-[32%] sm:w-[32%]';
                       heightClass = 'h-full';
                       roundClass = 'rounded-t-[44px] sm:rounded-t-[80px] md:rounded-t-[110px] rounded-b-lg sm:rounded-b-xl';
-                      containerStyle = 'ring-2 sm:ring-3 ring-[#ef4a23] shadow-2xl cursor-default z-10';
+                      containerStyle = 'ring-2 sm:ring-3 ring-[#00A2E4] shadow-2xl cursor-default z-10';
                     } else if (isInner) {
                       widthClass = 'w-[19%] sm:w-[19%]';
                       heightClass = 'h-[84%] sm:h-[86%]';
@@ -1722,7 +1722,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                             <span className="inline-block max-w-[85%] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/90 backdrop-blur-md border border-white/30 text-[#ffd46e] text-[8px] sm:text-[10px] md:text-[11px] font-black uppercase tracking-normal sm:tracking-wider shadow-lg truncate text-center">
                               {photo.badge}
                             </span>
-                            <span className="inline-block max-w-[85%] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[#ef4a23] text-white text-[8px] sm:text-[10px] md:text-[11px] font-black shadow-lg truncate text-center">
+                            <span className="inline-block max-w-[85%] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[#00A2E4] text-white text-[8px] sm:text-[10px] md:text-[11px] font-black shadow-lg truncate text-center">
                               {photo.price}
                             </span>
                           </div>
@@ -1770,15 +1770,15 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                           onClick={() => setHeroBgIndex(idx)}
                           className={`w-full py-1.5 px-0.5 sm:px-1.5 rounded-lg text-[8.5px] sm:text-[10px] md:text-[11px] font-black transition-all cursor-pointer flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 shadow-2xs text-center leading-tight ${
                             isActive
-                              ? 'bg-[#141110] text-[#ffd46e] border border-[#141110] shadow-sm ring-1 ring-[#ef4a23]'
-                              : 'bg-white hover:bg-orange-50 text-slate-700 border border-slate-200 hover:border-[#ef4a23]'
+                              ? 'bg-[#0B2238] text-[#ffd46e] border border-[#0B2238] shadow-sm ring-1 ring-[#00A2E4]'
+                              : 'bg-white hover:bg-orange-50 text-slate-700 border border-slate-200 hover:border-[#00A2E4]'
                           }`}
                           title={photo.title}
                         >
                           <span className="text-xs sm:text-sm">{photo.icon}</span>
                           <span className="truncate">{photo.shortLabel || photo.tabTitle}</span>
                           {isActive && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#ef4a23] animate-pulse hidden sm:inline-block ml-0.5" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#00A2E4] animate-pulse hidden sm:inline-block ml-0.5" />
                           )}
                         </button>
                       );
@@ -1792,10 +1792,10 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           {/* Mobile Quick Slot Booking Bar & Trust Reviews (Positioned cleanly below Cinematic Arch Gallery on mobile) */}
           <div className="block lg:hidden w-full max-w-xl mx-auto mt-4 px-1 space-y-3">
             <div 
-              className="w-full bg-white/95 rounded-2xl p-2.5 flex flex-col items-center justify-between gap-2 shadow-[0_12px_36px_rgba(239,74,35,0.09)] border border-[#ef4a23]/25"
+              className="w-full bg-white/95 rounded-2xl p-2.5 flex flex-col items-center justify-between gap-2 shadow-[0_12px_36px_rgba(239,74,35,0.09)] border border-[#00A2E4]/25"
             >
               <div className="flex items-center gap-2 px-2 w-full">
-                <span className="text-[#ef4a23]"><Icon name="location" size={16} /></span>
+                <span className="text-[#00A2E4]"><Icon name="location" size={16} /></span>
                 <select 
                   value={branch} 
                   onChange={(e) => {
@@ -1805,7 +1805,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                       setSlotBranch(target);
                     }
                   }}
-                  className="bg-transparent text-[#141110] font-bold text-xs focus:outline-none cursor-pointer w-full py-1"
+                  className="bg-transparent text-[#0B2238] font-bold text-xs focus:outline-none cursor-pointer w-full py-1"
                 >
                   <option value="Electronic City">Electronic City</option>
                   <option value="BTM 2nd Stage">BTM 2nd Stage</option>
@@ -1815,20 +1815,20 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               <div className="w-full h-px bg-slate-100" />
 
               <div className="flex items-center gap-2 px-2 w-full">
-                <span className="text-[#ef4a23]"><Icon name="calendar" size={16} /></span>
+                <span className="text-[#00A2E4]"><Icon name="calendar" size={16} /></span>
                 <input 
                   type="date" 
                   value={date} 
                   onChange={(e) => setDate(e.target.value)}
                   min={getTodayIST()}
-                  className="bg-transparent text-[#141110] font-bold text-xs focus:outline-none cursor-pointer w-full py-1"
+                  className="bg-transparent text-[#0B2238] font-bold text-xs focus:outline-none cursor-pointer w-full py-1"
                 />
               </div>
 
               <button 
                 type="button" 
                 onClick={checkAvailability}
-                className="w-full px-5 py-2.5 rounded-full bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-black text-xs shadow-md shadow-orange-600/30 active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full px-5 py-2.5 rounded-full bg-[#00A2E4] hover:bg-[#0072AE] text-white font-black text-xs shadow-md shadow-orange-600/30 active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <span>Check Slots</span>
                 <Icon name="arrow" size={14} />
@@ -1843,7 +1843,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                 <span className="w-5 h-5 rounded-full bg-rose-400 text-white font-black text-[9px] flex items-center justify-center border border-white">NM</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-[#ef4a23] font-bold">★★★★★</span>
+                <span className="text-[#00A2E4] font-bold">★★★★★</span>
                 <span className="truncate">Loved by 3,500+ guests in Bengaluru</span>
               </div>
             </div>
@@ -1854,16 +1854,16 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             <div className="relative z-30 max-w-6xl mx-auto px-4 sm:px-6 pb-6">
               <div 
                 ref={heroSlotsModalRef}
-                className="w-full bg-white rounded-3xl p-5 sm:p-7 shadow-[0_25px_60px_rgba(20,17,16,0.14)] border-2 border-[#ef4a23]/30 text-left animate-in fade-in slide-in-from-top-4 duration-300"
+                className="w-full bg-white rounded-3xl p-5 sm:p-7 shadow-[0_25px_60px_rgba(20,17,16,0.14)] border-2 border-[#00A2E4]/30 text-left animate-in fade-in slide-in-from-top-4 duration-300"
               >
                 {/* Header */}
                 <div className="flex items-start justify-between pb-4 border-b border-orange-100 mb-5">
                   <div>
-                    <h3 className="font-playfair text-xl sm:text-2xl font-black text-[#141110]">
+                    <h3 className="font-playfair text-xl sm:text-2xl font-black text-[#0B2238]">
                       Available Showtime Slots &bull; {branch}
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
-                      Showing live schedule for <strong className="text-[#ef4a23]">{date}</strong>
+                      Showing live schedule for <strong className="text-[#00A2E4]">{date}</strong>
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -1903,21 +1903,21 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                       return (
                         <div
                           key={room.name}
-                          className="bg-[#FFFDF9] rounded-2xl border border-orange-200/80 p-4 sm:p-5 shadow-xs hover:border-[#ef4a23]/60 transition-all flex flex-col justify-between"
+                          className="bg-[#F6FAFD] rounded-2xl border border-orange-200/80 p-4 sm:p-5 shadow-xs hover:border-[#00A2E4]/60 transition-all flex flex-col justify-between"
                         >
                           <div>
                             {/* Card Top: Emoji + Price */}
                             <div className="flex items-start justify-between mb-2">
                               <span className="text-3xl p-1.5 rounded-xl bg-white border border-orange-100 shadow-2xs">{emoji}</span>
                               <div className="text-right">
-                                <span className="font-playfair text-xl sm:text-2xl font-black text-[#141110] block">
+                                <span className="font-playfair text-xl sm:text-2xl font-black text-[#0B2238] block">
                                   {room.custom || room.price}
                                 </span>
                               </div>
                             </div>
 
                             {/* Title & Capacity */}
-                            <h4 className="font-playfair text-lg sm:text-xl font-black text-[#141110]">
+                            <h4 className="font-playfair text-lg sm:text-xl font-black text-[#0B2238]">
                               {room.name}
                             </h4>
                             <div className="flex items-center justify-between text-xs text-slate-600 font-bold mt-1 mb-3">
@@ -1965,10 +1965,10 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                                       const slotParam = slotItem.id ? `&slot=${slotItem.id}` : '';
                                       router.push(`/book-now/${room.branchSlug}?date=${date}&theatre=${room.theatreId}${slotParam}`);
                                     }}
-                                    className="p-2 sm:p-2.5 rounded-xl border border-emerald-300/80 bg-white hover:border-[#ef4a23] hover:bg-[#fff9f4] text-center transition-all cursor-pointer shadow-2xs group flex flex-col items-center justify-center active:scale-95"
+                                    className="p-2 sm:p-2.5 rounded-xl border border-emerald-300/80 bg-white hover:border-[#00A2E4] hover:bg-[#fff9f4] text-center transition-all cursor-pointer shadow-2xs group flex flex-col items-center justify-center active:scale-95"
                                     title={`Reserve ${room.name} at ${displayTime}`}
                                   >
-                                    <strong className="text-[11px] sm:text-xs font-black text-[#141110] group-hover:text-[#ef4a23] truncate w-full">
+                                    <strong className="text-[11px] sm:text-xs font-black text-[#0B2238] group-hover:text-[#00A2E4] truncate w-full">
                                       {displayTime}
                                     </strong>
                                     <span className="text-[10px] font-extrabold text-[#059669] flex items-center justify-center gap-0.5 mt-0.5">
@@ -1986,7 +1986,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                             onClick={() => {
                               router.push(`/book-now/${room.branchSlug}?date=${date}&theatre=${room.theatreId}`);
                             }}
-                            className="w-full py-2.5 px-4 rounded-xl text-center text-xs font-black text-white bg-[#ef4a23] hover:bg-[#d83f1a] shadow-md transition-all block mt-4 cursor-pointer"
+                            className="w-full py-2.5 px-4 rounded-xl text-center text-xs font-black text-white bg-[#00A2E4] hover:bg-[#d83f1a] shadow-md transition-all block mt-4 cursor-pointer"
                           >
                             Book {room.name} &rarr;
                           </button>
@@ -1997,7 +1997,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
 
                 {/* Footer Links */}
                 <div className="mt-5 pt-3.5 border-t border-orange-100 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
-                  <a href="#slots" className="flex items-center gap-1.5 font-bold text-slate-700 hover:text-[#ef4a23]">
+                  <a href="#slots" className="flex items-center gap-1.5 font-bold text-slate-700 hover:text-[#00A2E4]">
                     Explore Hall Amenities &amp; Room Photos Below &darr;
                   </a>
                   <button
@@ -2006,7 +2006,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                       const targetBranch = branch.includes('BTM') ? 'btm-stage-2' : 'electronic-city';
                       router.push(`/book-now/${targetBranch}?date=${date}`);
                     }}
-                    className="font-bold text-[#ef4a23] hover:underline cursor-pointer"
+                    className="font-bold text-[#00A2E4] hover:underline cursor-pointer"
                   >
                     Go to Full Booking Page &rarr;
                   </button>
@@ -2018,23 +2018,23 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           {/* Reversible Feature Marquee */}
           <div 
             ref={heroMarqueeRef}
-            className="w-full overflow-hidden flex relative z-10 py-4 border-t border-[#ef4a23]/15 bg-[#FAF3E4]"
+            className="w-full overflow-hidden flex relative z-10 py-4 border-t border-[#00A2E4]/15 bg-[#F6FAFD]"
           >
-            <div className="hero-marquee-track flex items-center gap-8 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wider text-[#ef4a23]">
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">⭐ 5.0★ RATED (3,500+ GUESTS)</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🎬 4K LASER SCREENING</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🔊 DOLBY ATMOS 7.1.2 SURROUND</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🔒 100% PRIVATE & SOUNDPROOF</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">✨ DRAMATIC FOG & PYRO ENTRY</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🎂 HANDCRAFTED GOURMET CAKES</span>
+            <div className="hero-marquee-track flex items-center gap-8 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wider text-[#00A2E4]">
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">⭐ 5.0★ RATED (3,500+ GUESTS)</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">🎬 4K LASER SCREENING</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">🔊 DOLBY ATMOS 7.1.2 SURROUND</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">🔒 100% PRIVATE & SOUNDPROOF</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">✨ DRAMATIC FOG & PYRO ENTRY</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">🎂 HANDCRAFTED GOURMET CAKES</span>
             </div>
-            <div className="hero-marquee-track flex items-center gap-8 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wider text-[#ef4a23]">
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">⭐ 5.0★ RATED (3,500+ GUESTS)</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🎬 4K LASER SCREENING</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🔊 DOLBY ATMOS 7.1.2 SURROUND</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🔒 100% PRIVATE & SOUNDPROOF</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">✨ DRAMATIC FOG & PYRO ENTRY</span>
-              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#ef4a23]/30 shadow-2xs">🎂 HANDCRAFTED GOURMET CAKES</span>
+            <div className="hero-marquee-track flex items-center gap-8 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wider text-[#00A2E4]">
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">⭐ 5.0★ RATED (3,500+ GUESTS)</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">🎬 4K LASER SCREENING</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">🔊 DOLBY ATMOS 7.1.2 SURROUND</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">🔒 100% PRIVATE & SOUNDPROOF</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">✨ DRAMATIC FOG & PYRO ENTRY</span>
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">🎂 HANDCRAFTED GOURMET CAKES</span>
             </div>
           </div>
         </section>
@@ -2058,7 +2058,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
 
             {slotFlashMessage && (
               <div className="mb-6 flex justify-center">
-                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#ef4a23] text-white text-xs sm:text-sm font-black shadow-lg shadow-orange-500/30 animate-pulse">
+                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#00A2E4] text-white text-xs sm:text-sm font-black shadow-lg shadow-orange-500/30 animate-pulse">
                   <Icon name="check" size={16} />
                   <span>{slotFlashMessage} &bull; {days[activeDay].full}</span>
                 </div>
@@ -2158,7 +2158,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                           <button
                             key={slotItem.id || displayTime}
                             onClick={() => handleSlotClick(room, displayTime, false, slotItem.id)}
-                            className="slot cursor-pointer hover:border-[#ef4a23] flex flex-col items-center justify-center text-center"
+                            className="slot cursor-pointer hover:border-[#00A2E4] flex flex-col items-center justify-center text-center"
                             title={`Reserve ${room.name} at ${displayTime}`}
                           >
                             <strong className="text-center">{displayTime}</strong>
@@ -2202,7 +2202,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                 <div className="relative mb-8 sm:mb-10 select-none">
                   {/* Main Feature Card (Full-Width with Split Layout) */}
                   <div 
-                    className="relative rounded-[24px] sm:rounded-[32px] bg-white border-2 border-[#ef4a23]/20 shadow-[0_16px_40px_rgba(239,74,35,0.08)] overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(239,74,35,0.12)]"
+                    className="relative rounded-[24px] sm:rounded-[32px] bg-white border-2 border-[#00A2E4]/20 shadow-[0_16px_40px_rgba(239,74,35,0.08)] overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(239,74,35,0.12)]"
                     onTouchStart={handleOccTouchStart}
                     onTouchMove={handleOccTouchMove}
                     onTouchEnd={handleOccTouchEnd}
@@ -2229,7 +2229,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                             type="button"
                             onClick={prevOcc}
                             aria-label="Previous celebration"
-                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-[#141110] shadow-lg flex items-center justify-center transition-all cursor-pointer active:scale-90 backdrop-blur-sm"
+                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-[#0B2238] shadow-lg flex items-center justify-center transition-all cursor-pointer active:scale-90 backdrop-blur-sm"
                           >
                             <span className="text-lg font-bold">←</span>
                           </button>
@@ -2237,7 +2237,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                             type="button"
                             onClick={nextOcc}
                             aria-label="Next celebration"
-                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-[#141110] shadow-lg flex items-center justify-center transition-all cursor-pointer active:scale-90 backdrop-blur-sm"
+                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-[#0B2238] shadow-lg flex items-center justify-center transition-all cursor-pointer active:scale-90 backdrop-blur-sm"
                           >
                             <span className="text-lg font-bold">→</span>
                           </button>
@@ -2248,7 +2248,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                           <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] sm:text-xs font-black uppercase tracking-wider border border-white/20">
                             {currentOcc.badge}
                           </span>
-                          <span className="px-3 py-1 rounded-full bg-[#ef4a23] text-white text-[10px] sm:text-xs font-black shadow-sm">
+                          <span className="px-3 py-1 rounded-full bg-[#00A2E4] text-white text-[10px] sm:text-xs font-black shadow-sm">
                             {activeOccasion + 1} of {occasionsList.length}
                           </span>
                         </div>
@@ -2261,13 +2261,13 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                           <div className={`w-9 h-9 rounded-xl ${currentOcc.iconBg} flex items-center justify-center p-1.5 shrink-0 shadow-2xs`}>
                             <GrandOccasionIcon type={currentOcc.type} className="w-5 h-5" />
                           </div>
-                          <span className="px-2.5 py-0.5 rounded-full bg-[#ef4a23]/10 text-[#ef4a23] text-[10px] sm:text-xs font-black uppercase border border-[#ef4a23]/20">
+                          <span className="px-2.5 py-0.5 rounded-full bg-[#00A2E4]/10 text-[#00A2E4] text-[10px] sm:text-xs font-black uppercase border border-[#00A2E4]/20">
                             100% Private
                           </span>
                         </div>
 
                         {/* Title */}
-                        <h3 className="font-['Playfair'] font-bold text-2xl sm:text-3xl md:text-4xl text-[#141110] leading-tight tracking-tight">
+                        <h3 className="font-['Playfair'] font-bold text-2xl sm:text-3xl md:text-4xl text-[#0B2238] leading-tight tracking-tight">
                           {currentOcc.title}
                         </h3>
 
@@ -2282,13 +2282,13 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                             Experience Includes
                           </span>
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="px-3 py-1.5 rounded-lg bg-[#FAF3E4] text-[#141110] text-xs font-bold border border-orange-200/60 shadow-2xs">
+                            <span className="px-3 py-1.5 rounded-lg bg-[#F6FAFD] text-[#0B2238] text-xs font-bold border border-orange-200/60 shadow-2xs">
                               🎬 4K Screening
                             </span>
-                            <span className="px-3 py-1.5 rounded-lg bg-[#FAF3E4] text-[#141110] text-xs font-bold border border-orange-200/60 shadow-2xs">
+                            <span className="px-3 py-1.5 rounded-lg bg-[#F6FAFD] text-[#0B2238] text-xs font-bold border border-orange-200/60 shadow-2xs">
                               ✨ Custom Décor
                             </span>
-                            <span className="px-3 py-1.5 rounded-lg bg-[#FAF3E4] text-[#141110] text-xs font-bold border border-orange-200/60 shadow-2xs">
+                            <span className="px-3 py-1.5 rounded-lg bg-[#F6FAFD] text-[#0B2238] text-xs font-bold border border-orange-200/60 shadow-2xs">
                               🎂 Cake Entry
                             </span>
                           </div>
@@ -2298,7 +2298,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                         <div className="flex items-center gap-4 pt-2">
                           <Link
                             href={`/book-now?occasion=${currentOcc.slug}`}
-                            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#141110] hover:bg-[#ef4a23] text-white font-['Archivo'] font-black text-xs sm:text-sm uppercase tracking-wider shadow-md hover:scale-105 active:scale-95 transition-all"
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#0B2238] hover:bg-[#00A2E4] text-white font-['Archivo'] font-black text-xs sm:text-sm uppercase tracking-wider shadow-md hover:scale-105 active:scale-95 transition-all"
                           >
                             <span>Book This Experience</span>
                             <span>&rarr;</span>
@@ -2313,7 +2313,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                               type="button"
                               onClick={() => setActiveOccasion(dotIdx)}
                               className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                                dotIdx === activeOccasion ? 'w-6 bg-[#ef4a23]' : 'w-1.5 bg-slate-300 hover:bg-slate-400'
+                                dotIdx === activeOccasion ? 'w-6 bg-[#00A2E4]' : 'w-1.5 bg-slate-300 hover:bg-slate-400'
                               }`}
                               aria-label={`Go to ${occasionsList[dotIdx].title}`}
                             />
@@ -2337,15 +2337,15 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     onClick={() => setActiveOccasion(idx)}
                     className={`p-4 rounded-2xl border-2 text-left transition-all duration-300 flex items-center gap-3 cursor-pointer ${
                       isActive
-                        ? 'border-[#ef4a23] bg-white ring-4 ring-[#ef4a23]/20 shadow-md scale-102'
-                        : 'border-slate-200/80 bg-white/70 hover:bg-white hover:border-[#ef4a23]/40 shadow-xs'
+                        ? 'border-[#00A2E4] bg-white ring-4 ring-[#00A2E4]/20 shadow-md scale-102'
+                        : 'border-slate-200/80 bg-white/70 hover:bg-white hover:border-[#00A2E4]/40 shadow-xs'
                     }`}
                   >
                     <div className={`w-10 h-10 rounded-xl ${occ.iconBg} flex items-center justify-center p-1.5 shrink-0 shadow-2xs`}>
                       <GrandOccasionIcon type={occ.type} className="w-6 h-6" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className={`text-xs font-black truncate leading-tight ${isActive ? 'text-[#ef4a23]' : 'text-[#141110]'}`}>
+                      <h4 className={`text-xs font-black truncate leading-tight ${isActive ? 'text-[#00A2E4]' : 'text-[#0B2238]'}`}>
                         {occ.title}
                       </h4>
                       <p className="text-[10px] text-slate-500 font-medium truncate mt-0.5">
@@ -2438,22 +2438,22 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
 
         {/* 8B. SCROLL-TRIGGERED STACKED CARDS ANIMATION (ADD-ONS & ATMOSPHERE - DESKTOP & MOBILE) */}
         <section 
-          className="relative bg-[#FAF3E4] text-[#141110] border-y border-[#141110]/10 pt-16 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-6" 
+          className="relative bg-[#F6FAFD] text-[#0B2238] border-y border-[#0B2238]/10 pt-16 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-6" 
           id="addons"
         >
           {/* Section Header: Explicitly Branding Celebration Add-Ons */}
           <div className="text-center max-w-2xl mx-auto space-y-3 mb-10 sm:mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ef4a23]/10 border border-[#ef4a23]/30 text-[#ef4a23] text-xs font-black uppercase tracking-wider shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-[#ef4a23] animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#00A2E4]/10 border border-[#00A2E4]/30 text-[#00A2E4] text-xs font-black uppercase tracking-wider shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[#00A2E4] animate-pulse" />
               <span>Celebration Add-Ons · Signature Atmosphere</span>
             </div>
-            <h2 className="font-['Archivo'] text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-[#141110] leading-tight">
-              Celebration Add-Ons, <span className="font-['Playfair'] italic font-normal text-[#ef4a23] normal-case">made to delight.</span>
+            <h2 className="font-['Archivo'] text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-[#0B2238] leading-tight">
+              Celebration Add-Ons, <span className="font-['Playfair'] italic font-normal text-[#00A2E4] normal-case">made to delight.</span>
             </h2>
             <p className="text-sm sm:text-base text-slate-700 font-medium leading-relaxed">
               Scroll down through all 5 handcrafted Add-on collections: Gourmet Cakes, Fog &amp; Pyro FX, Romantic Décor, Photoshoots &amp; Popcorn Bar.
             </p>
-            <div className="flex items-center justify-center gap-2 pt-1 text-xs font-black text-[#ef4a23]">
+            <div className="flex items-center justify-center gap-2 pt-1 text-xs font-black text-[#00A2E4]">
               <span>↓ Scroll to stack celebration add-on cards</span>
             </div>
           </div>
@@ -2463,7 +2463,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             {addonSlides.map((slide, idx) => (
               <div
                 key={slide.number}
-                className="sticky rounded-[24px] sm:rounded-[34px] p-6 sm:p-9 md:p-10 bg-white text-[#141110] border border-orange-200/60 shadow-[0_20px_50px_rgba(20,17,16,0.08)] transition-all duration-300 relative overflow-hidden"
+                className="sticky rounded-[24px] sm:rounded-[34px] p-6 sm:p-9 md:p-10 bg-white text-[#0B2238] border border-orange-200/60 shadow-[0_20px_50px_rgba(20,17,16,0.08)] transition-all duration-300 relative overflow-hidden"
                 style={{
                   top: `calc(85px + ${idx * 28}px)`,
                   zIndex: idx + 1,
@@ -2472,7 +2472,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               >
                 {/* Subtle Luxury Curved Highlight Arc in Top-Left (Matching Image 1) */}
                 <div 
-                  className="absolute -top-32 -left-32 w-80 h-80 rounded-full border border-[#ef4a23]/[0.06] pointer-events-none" 
+                  className="absolute -top-32 -left-32 w-80 h-80 rounded-full border border-[#00A2E4]/[0.06] pointer-events-none" 
                   aria-hidden="true"
                 />
 
@@ -2482,18 +2482,18 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     <div>
                       {/* Eyebrow with horizontal dash */}
                       <div className="flex items-center gap-2 mb-3 sm:mb-4">
-                        <span className="w-5 h-[1.5px] bg-[#ef4a23]/40" />
-                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-[#ef4a23]">
+                        <span className="w-5 h-[1.5px] bg-[#00A2E4]/40" />
+                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-[#00A2E4]">
                           Celebration Add-On · {slide.category} · {slide.number}
                         </span>
                       </div>
 
                       {/* Headline in Playfair Serif with Italic emphasis */}
-                      <h3 className="font-['Playfair'] text-2xl sm:text-3xl md:text-4xl font-bold text-[#141110] leading-[1.15] tracking-tight">
+                      <h3 className="font-['Playfair'] text-2xl sm:text-3xl md:text-4xl font-bold text-[#0B2238] leading-[1.15] tracking-tight">
                         {slide.title.includes('&') ? (
                           <>
                             {slide.title.split('&')[0]}&amp; <br />
-                            <em className="italic font-normal text-[#ef4a23]/80">{slide.title.split('&')[1]}</em>
+                            <em className="italic font-normal text-[#00A2E4]/80">{slide.title.split('&')[1]}</em>
                           </>
                         ) : (
                           slide.title
@@ -2512,14 +2512,14 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                         <span className="block text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-1">
                           Complete Extras From
                         </span>
-                        <div className="font-['Playfair'] text-2xl sm:text-3xl font-bold text-[#141110]">
+                        <div className="font-['Playfair'] text-2xl sm:text-3xl font-bold text-[#0B2238]">
                           {slide.price.split('·')[0].trim()}
                         </div>
                       </div>
 
                       <Link
                         href="/book-now"
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-[#ef4a23] hover:bg-[#ff5d38] text-white font-['Archivo'] font-black text-xs uppercase tracking-wider transition-all shadow-md hover:shadow-lg hover:scale-[1.02] cursor-pointer"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-[#00A2E4] hover:bg-[#0072AE] text-white font-['Archivo'] font-black text-xs uppercase tracking-wider transition-all shadow-md hover:shadow-lg hover:scale-[1.02] cursor-pointer"
                       >
                         <span>Explore the package</span>
                         <span className="text-base font-bold">&rarr;</span>
@@ -2536,11 +2536,11 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                       >
                         <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
                           {/* Circular icon disc (matching Image 1) */}
-                          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FAF3E4] group-hover:bg-orange-100 text-[#ef4a23] flex items-center justify-center p-1.5 shrink-0 transition-colors shadow-2xs border border-orange-200/60">
-                            <GrandAddonIcon name={item.iconKey} className="w-4 h-4 sm:w-5 sm:h-5 text-[#ef4a23]" />
+                          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#F6FAFD] group-hover:bg-orange-100 text-[#00A2E4] flex items-center justify-center p-1.5 shrink-0 transition-colors shadow-2xs border border-orange-200/60">
+                            <GrandAddonIcon name={item.iconKey} className="w-4 h-4 sm:w-5 sm:h-5 text-[#00A2E4]" />
                           </div>
                           <div className="min-w-0">
-                            <h4 className="text-xs sm:text-sm font-semibold text-[#141110] truncate leading-tight group-hover:text-[#ef4a23]">
+                            <h4 className="text-xs sm:text-sm font-semibold text-[#0B2238] truncate leading-tight group-hover:text-[#00A2E4]">
                               {item.title}
                             </h4>
                             <p className="text-[10px] sm:text-xs text-slate-500 font-normal truncate mt-0.5">
@@ -2550,7 +2550,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                         </div>
 
                         <div className="flex items-center gap-3 shrink-0">
-                          <span className="text-xs sm:text-sm font-bold text-[#ef4a23]">
+                          <span className="text-xs sm:text-sm font-bold text-[#00A2E4]">
                             {item.price}
                           </span>
                           <span className="w-5 h-5 rounded-full flex items-center justify-center text-emerald-500 group-hover:text-emerald-600 transition-colors">
@@ -2571,7 +2571,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           <div className="text-center mt-6">
             <Link
               href="/book-now"
-              className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#141110] hover:bg-[#ef4a23] text-white font-['Archivo'] font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:shadow-xl transition-all hover:scale-105"
+              className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#0B2238] hover:bg-[#00A2E4] text-white font-['Archivo'] font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:shadow-xl transition-all hover:scale-105"
             >
               <span>Build Complete Celebration in Booking Wizard</span>
               <span className="text-base">&rarr;</span>
@@ -2599,7 +2599,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               }}
               className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5 shadow-xs ${
                 branch === 'Electronic City'
-                  ? 'bg-[#ef4a23] text-white shadow-md shadow-orange-500/25 ring-2 ring-[#ef4a23]/30 scale-[1.02]'
+                  ? 'bg-[#00A2E4] text-white shadow-md shadow-orange-500/25 ring-2 ring-[#00A2E4]/30 scale-[1.02]'
                   : 'bg-white hover:bg-orange-50 text-stone-700 border border-stone-200'
               }`}
             >
@@ -2613,7 +2613,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               }}
               className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5 shadow-xs ${
                 branch === 'BTM 2nd Stage'
-                  ? 'bg-[#ef4a23] text-white shadow-md shadow-orange-500/25 ring-2 ring-[#ef4a23]/30 scale-[1.02]'
+                  ? 'bg-[#00A2E4] text-white shadow-md shadow-orange-500/25 ring-2 ring-[#00A2E4]/30 scale-[1.02]'
                   : 'bg-white hover:bg-orange-50 text-stone-700 border border-stone-200'
               }`}
             >
@@ -2658,7 +2658,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                         )}
                         {i === 1 && (
                           <div className="absolute top-2.5 right-2.5 z-10">
-                            <span className="px-2.5 py-1 rounded-full bg-[#ef4a23] text-white text-[9.5px] font-black uppercase tracking-wider shadow-sm">
+                            <span className="px-2.5 py-1 rounded-full bg-[#00A2E4] text-white text-[9.5px] font-black uppercase tracking-wider shadow-sm">
                               Most Loved
                             </span>
                           </div>
@@ -2687,7 +2687,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                         <div className="w-full pt-1 mt-auto">
                           <Link 
                             href={`/book-now/${theatre.branchSlug}?theatre=${theatre.theatreId}`} 
-                            className="w-full py-2.5 px-6 rounded-xl bg-[#ef4a23] hover:bg-[#d63b15] text-white font-black text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                            className="w-full py-2.5 px-6 rounded-xl bg-[#00A2E4] hover:bg-[#0072AE] text-white font-black text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                           >
                             <span>Book Now →</span>
                           </Link>
@@ -2921,11 +2921,11 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           <div className="section max-w-7xl mx-auto px-4 sm:px-6">
             <div className="section-heading heading-row mb-6 sm:mb-10">
               <div>
-                <div className="eyebrow flex items-center gap-1.5 text-xs font-bold text-[#ef4a23] uppercase tracking-wider mb-2">
-                  <span className="w-2 h-2 rounded-full bg-[#ef4a23] animate-pulse" /> Real Movie Bash celebrations
+                <div className="eyebrow flex items-center gap-1.5 text-xs font-bold text-[#00A2E4] uppercase tracking-wider mb-2">
+                  <span className="w-2 h-2 rounded-full bg-[#00A2E4] animate-pulse" /> Real Movie Bash celebrations
                 </div>
-                <h2 className="text-2xl sm:text-4xl md:text-5xl font-['Playfair_Display'] font-bold text-[#141110]">
-                  See how moments<br /><em className="italic text-[#ef4a23]">come to life.</em>
+                <h2 className="text-2xl sm:text-4xl md:text-5xl font-['Playfair_Display'] font-bold text-[#0B2238]">
+                  See how moments<br /><em className="italic text-[#00A2E4]">come to life.</em>
                 </h2>
               </div>
               <p className="text-xs sm:text-sm text-stone-600 max-w-md mt-2 sm:mt-0 leading-relaxed">
@@ -2998,7 +2998,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                       style={{ transform: transformStyle }}
                       className={`absolute w-[82vw] max-w-[320px] h-[220px] rounded-3xl overflow-hidden transition-all duration-500 ease-out cursor-pointer ${
                         isActive
-                          ? 'ring-2 ring-[#ef4a23] shadow-[0_20px_45px_rgba(239,74,35,0.22)]'
+                          ? 'ring-2 ring-[#00A2E4] shadow-[0_20px_45px_rgba(239,74,35,0.22)]'
                           : 'border border-stone-200/80 shadow-md'
                       } ${opacity}`}
                     >
@@ -3017,7 +3017,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                       {/* Top Badge: Counter + Live Celebration Label */}
                       <div className="absolute top-3 inset-x-3 z-10 flex items-center justify-between pointer-events-none">
                         <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[#ffd46e] text-[9.5px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#ef4a23] animate-pulse" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#00A2E4] animate-pulse" />
                           <span>Real Celebration</span>
                         </span>
                         <span className="px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[10px] font-black tracking-widest">
@@ -3042,7 +3042,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                   type="button"
                   onClick={prevMoment}
                   aria-label="Previous moment"
-                  className="w-8 h-8 rounded-full bg-white hover:bg-[#ef4a23] text-stone-700 hover:text-white border border-stone-200 shadow-sm flex items-center justify-center transition-all cursor-pointer font-bold active:scale-90 text-sm"
+                  className="w-8 h-8 rounded-full bg-white hover:bg-[#00A2E4] text-stone-700 hover:text-white border border-stone-200 shadow-sm flex items-center justify-center transition-all cursor-pointer font-bold active:scale-90 text-sm"
                 >
                   ←
                 </button>
@@ -3057,7 +3057,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                       aria-label={`Go to moment ${i + 1}`}
                       className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                         i === activeMomentIdx
-                          ? 'w-7 bg-[#ef4a23] shadow-xs'
+                          ? 'w-7 bg-[#00A2E4] shadow-xs'
                           : 'w-2 bg-stone-300 hover:bg-stone-400'
                       }`}
                     />
@@ -3068,7 +3068,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                   type="button"
                   onClick={nextMoment}
                   aria-label="Next moment"
-                  className="w-8 h-8 rounded-full bg-white hover:bg-[#ef4a23] text-stone-700 hover:text-white border border-stone-200 shadow-sm flex items-center justify-center transition-all cursor-pointer font-bold active:scale-90 text-sm"
+                  className="w-8 h-8 rounded-full bg-white hover:bg-[#00A2E4] text-stone-700 hover:text-white border border-stone-200 shadow-sm flex items-center justify-center transition-all cursor-pointer font-bold active:scale-90 text-sm"
                 >
                   →
                 </button>
@@ -3091,7 +3091,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             type="button"
             onClick={prevReview}
             aria-label="Previous review"
-            className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-[#ef4a23]/25 bg-white/95 hover:bg-[#ef4a23] hover:text-white hover:border-[#ef4a23] text-stone-700 shadow-md flex items-center justify-center transition-all cursor-pointer z-10 opacity-70 group-hover:opacity-100"
+            className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-[#00A2E4]/25 bg-white/95 hover:bg-[#00A2E4] hover:text-white hover:border-[#00A2E4] text-stone-700 shadow-md flex items-center justify-center transition-all cursor-pointer z-10 opacity-70 group-hover:opacity-100"
           >
             <span className="text-xl font-bold leading-none -mt-0.5">&lsaquo;</span>
           </button>
@@ -3100,7 +3100,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             type="button"
             onClick={nextReview}
             aria-label="Next review"
-            className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-[#ef4a23]/25 bg-white/95 hover:bg-[#ef4a23] hover:text-white hover:border-[#ef4a23] text-stone-700 shadow-md flex items-center justify-center transition-all cursor-pointer z-10 opacity-70 group-hover:opacity-100"
+            className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-[#00A2E4]/25 bg-white/95 hover:bg-[#00A2E4] hover:text-white hover:border-[#00A2E4] text-stone-700 shadow-md flex items-center justify-center transition-all cursor-pointer z-10 opacity-70 group-hover:opacity-100"
           >
             <span className="text-xl font-bold leading-none -mt-0.5">&rsaquo;</span>
           </button>
@@ -3119,7 +3119,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
 
             <p className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm">
               <strong className="text-ink font-bold">{guestReviews[reviewIndex].author}</strong>
-              <span className="w-4 h-0.5 bg-[#ef4a23] rounded-full inline-block" />
+              <span className="w-4 h-0.5 bg-[#00A2E4] rounded-full inline-block" />
               <span className="text-slate-600 font-medium">{guestReviews[reviewIndex].occasion}</span>
             </p>
 
@@ -3132,7 +3132,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                   onClick={() => setReviewIndex(i)}
                   aria-label={`Go to review ${i + 1}`}
                   className={`h-2 rounded-full transition-all cursor-pointer ${
-                    i === reviewIndex ? 'w-7 bg-[#ef4a23]' : 'w-2 bg-stone-300 hover:bg-stone-400'
+                    i === reviewIndex ? 'w-7 bg-[#00A2E4]' : 'w-2 bg-stone-300 hover:bg-stone-400'
                   }`}
                 />
               ))}
@@ -3267,7 +3267,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                 <button
                   type="button"
                   onClick={handleCtaSubmit}
-                  className="w-full py-4 rounded-2xl bg-[#141110] hover:bg-black text-white font-black text-sm flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                  className="w-full py-4 rounded-2xl bg-[#0B2238] hover:bg-black text-white font-black text-sm flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                 >
                   <span>Show me the slots</span>
                   <span className="text-base">&rarr;</span>

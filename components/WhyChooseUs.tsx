@@ -59,13 +59,13 @@ export default function WhyChooseUs() {
             return (
               <div
                 key={item.num}
-                className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-[0_12px_40px_rgba(20,17,16,0.06)] hover:shadow-[0_16px_50px_rgba(239,74,35,0.12)] hover:border-[#ef4a23] transition-all hover:-translate-y-1 group"
+                className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-[0_12px_40px_rgba(20,17,16,0.06)] hover:shadow-[0_16px_50px_rgba(239,74,35,0.12)] hover:border-[#00A2E4] transition-all hover:-translate-y-1 group"
               >
                 <div className="flex items-center justify-between mb-4 sm:mb-6">
-                  <span className="font-playfair text-2xl sm:text-3xl font-black text-[#ef4a23]">
+                  <span className="font-playfair text-2xl sm:text-3xl font-black text-[#00A2E4]">
                     {item.num}
                   </span>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#fff0ea] text-[#ef4a23] flex items-center justify-center group-hover:bg-[#ef4a23] group-hover:text-white transition-colors">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#E6F3FB] text-[#00A2E4] flex items-center justify-center group-hover:bg-[#00A2E4] group-hover:text-white transition-colors">
                     <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                 </div>
@@ -84,13 +84,13 @@ export default function WhyChooseUs() {
             return (
               <div
                 key={item.num}
-                className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-[0_12px_40px_rgba(20,17,16,0.06)] hover:shadow-[0_16px_50px_rgba(239,74,35,0.12)] hover:border-[#ef4a23] transition-all hover:-translate-y-1 group"
+                className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-[0_12px_40px_rgba(20,17,16,0.06)] hover:shadow-[0_16px_50px_rgba(239,74,35,0.12)] hover:border-[#00A2E4] transition-all hover:-translate-y-1 group"
               >
                 <div className="flex items-center justify-between mb-4 sm:mb-6">
-                  <span className="font-playfair text-2xl sm:text-3xl font-black text-[#ef4a23]">
+                  <span className="font-playfair text-2xl sm:text-3xl font-black text-[#00A2E4]">
                     {item.num}
                   </span>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#fff0ea] text-[#ef4a23] flex items-center justify-center group-hover:bg-[#ef4a23] group-hover:text-white transition-colors">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#E6F3FB] text-[#00A2E4] flex items-center justify-center group-hover:bg-[#00A2E4] group-hover:text-white transition-colors">
                     <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                 </div>
@@ -105,7 +105,7 @@ export default function WhyChooseUs() {
           })}
 
           {/* Bonus 6th highlight card */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#141110] to-[#2a2220] text-white shadow-[0_16px_50px_rgba(0,0,0,0.3)] flex flex-col justify-between border border-white/10">
+          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#0B2238] to-[#2a2220] text-white shadow-[0_16px_50px_rgba(0,0,0,0.3)] flex flex-col justify-between border border-white/10">
             <div>
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#ffd46e]">Opening Special</span>
               <h3 className="font-playfair text-2xl sm:text-3xl font-bold mt-2 text-white">
@@ -119,7 +119,7 @@ export default function WhyChooseUs() {
             <div className="mt-6 pt-4 border-t border-white/20">
               <a
                 href="/book-now"
-                className="w-full py-3 rounded-full text-center text-xs sm:text-sm font-bold text-[#141110] bg-[#FAF3E4] hover:bg-[#ef4a23] hover:text-white shadow-md block transition-all hover:scale-105"
+                className="w-full py-3 rounded-full text-center text-xs sm:text-sm font-bold text-[#0B2238] bg-[#F6FAFD] hover:bg-[#00A2E4] hover:text-white shadow-md block transition-all hover:scale-105"
               >
                 Claim ₹300 Voucher &rarr;
               </a>
