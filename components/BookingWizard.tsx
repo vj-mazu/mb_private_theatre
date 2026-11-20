@@ -1394,22 +1394,19 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                         <span>🌫️</span> <span>1 Fog Entry (1 Pot)</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span>🔢</span> <span>LED Number (Age / Year)</span>
+                        <span>🎈</span> <span>Celebration Hall Decoration</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span>🎈</span> <span>Premium Hall Decoration</span>
+                        <span>🔢</span> <span>LED Number &amp; Name Board</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span>📽️</span> <span>JBL Dolby Sound &amp; Projector</span>
+                        <span>💡</span> <span>Happy Birthday / Love Neon Light</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span>🪧</span> <span>Personalized Name Board</span>
+                        <span>📽️</span> <span>JBL Dolby Sound &amp; 4K Projector</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span>💡</span> <span>Happy Birthday Neon Light</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span>🛋️</span> <span>Luxury Sofas &amp; AC Screening</span>
+                        <span>🛋️</span> <span>Luxury Sofas &amp; Soundproof AC Lounge</span>
                       </div>
                     </div>
                   </div>
@@ -1463,11 +1460,14 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     </div>
 
                     <div className="mt-4 pt-3 border-t border-slate-200 space-y-1.5 text-xs text-slate-800 font-semibold">
-                      <div className="text-[11px] font-black text-amber-800 uppercase tracking-tight">
-                        ✨ Everything in Standard PLUS:
+                      <div className="flex items-center gap-2 text-amber-950 font-black">
+                        <span>🎂</span> <span><strong>500g Cake Included</strong> (Pick flavor)</span>
                       </div>
                       <div className="flex items-center gap-2 text-amber-950 font-bold">
                         <span>🌫️</span> <span>Extra Fog Entry (2 Pots Total)</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-amber-950 font-bold">
+                        <span>🎈</span> <span>Grand Themed VIP Decoration</span>
                       </div>
                       <div className="flex items-center gap-2 text-amber-950 font-bold">
                         <span>✨</span> <span>Cold Pyro Sparkle Entry</span>
@@ -1481,8 +1481,8 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       <div className="flex items-center gap-2 text-amber-950 font-bold">
                         <span>🫧</span> <span>Celebration Bubbles Machine</span>
                       </div>
-                      <div className="flex items-center gap-2 text-slate-600">
-                        <span>🎂</span> <span>500g Cake Included</span>
+                      <div className="flex items-center gap-2 text-amber-950 font-bold">
+                        <span>📽️</span> <span>4K Laser Cinema &amp; Dolby Sound</span>
                       </div>
                     </div>
                   </div>
@@ -1534,16 +1534,24 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       <span className="text-[11px] text-slate-600 font-semibold block">Private Screening &amp; Hall Setup</span>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-slate-200 space-y-2 text-xs text-slate-700 font-medium">
-                      <p className="leading-snug">
-                        Reserve the private theatre hall only. You can choose any add-ons a-la-carte in the next step:
-                      </p>
-                      <div className="p-2.5 rounded-xl bg-white border border-indigo-200 space-y-1 text-[11px] font-bold text-indigo-950">
-                        <div>&bull; Cake as per prices (₹499)</div>
-                        <div>&bull; Fog Entry (1 Pot ₹399 / 2 Pots ₹750)</div>
-                        <div>&bull; Cold Pyro Entry (₹799)</div>
-                        <div>&bull; Rose Petals Decor (₹250)</div>
-                        <div>&bull; LED Name (₹250) &bull; Photography</div>
+                    <div className="mt-4 pt-3 border-t border-slate-200 space-y-1.5 text-xs text-slate-700 font-medium">
+                      <div className="flex items-center gap-2">
+                        <span>🎂</span> <span>Cake: Choose flavor &amp; size in next step</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span>🌫️</span> <span>Fog Entry: Optional add-on</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span>🎈</span> <span>Hall Décor: Optional custom add-on</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span>✨</span> <span>Cold Pyro: Optional add-on</span>
+                      </div>
+                      <div className="flex items-center gap-2 font-bold text-indigo-950">
+                        <span>📽️</span> <span>4K Laser Cinema &amp; Dolby Sound: Included</span>
+                      </div>
+                      <div className="flex items-center gap-2 font-bold text-indigo-950">
+                        <span>🛋️</span> <span>Private Soundproof Theatre: Included</span>
                       </div>
                     </div>
                   </div>

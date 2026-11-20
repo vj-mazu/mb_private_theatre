@@ -612,6 +612,7 @@ const defaultSlotRooms = [
     price: '₹1,499',
     custom: '₹899',
     image: '/images/couple_1.webp',
+    video: '/videos/btm-butterfly-blush.mp4',
     slots: [
       '10:00 AM – 12:00 PM',
       '12:15 PM – 02:15 PM',
@@ -632,6 +633,7 @@ const defaultSlotRooms = [
     price: '₹2,200',
     custom: '₹1,499',
     image: '/images/celebration_2.webp',
+    video: '/videos/btm-lavender-mist.mp4',
     slots: [
       '09:30 AM – 11:30 AM',
       '12:00 PM – 02:00 PM',
@@ -652,6 +654,7 @@ const defaultSlotRooms = [
     price: '₹2,200',
     custom: '₹1,699',
     image: '/images/celebration_1.webp',
+    video: '/videos/btm-scarlet-red.mp4',
     slots: [
       '10:00 AM – 12:00 PM',
       '12:30 PM – 02:30 PM',
@@ -671,6 +674,7 @@ const defaultSlotRooms = [
     price: '₹1,499',
     custom: '₹899',
     image: '/images/rooms/btm-butterfly-blush.webp',
+    video: '/videos/btm-butterfly-blush.mp4',
     slots: [
       '10:00 AM – 12:00 PM',
       '12:30 PM – 02:30 PM',
@@ -690,6 +694,7 @@ const defaultSlotRooms = [
     price: '₹2,200',
     custom: '₹1,499',
     image: '/images/rooms/btm-lavender-mist.webp',
+    video: '/videos/btm-lavender-mist.mp4',
     slots: [
       '10:30 AM – 12:30 PM',
       '01:00 PM – 03:00 PM',
@@ -709,6 +714,7 @@ const defaultSlotRooms = [
     price: '₹2,600',
     custom: '₹1,699',
     image: '/images/rooms/btm-scarlet-red.webp',
+    video: '/videos/btm-scarlet-red.mp4',
     slots: [
       '10:30 AM – 12:30 PM',
       '01:00 PM – 03:00 PM',
@@ -728,6 +734,7 @@ const defaultSlotRooms = [
     price: '₹2,400',
     custom: '₹1,599',
     image: '/images/rooms/btm-shadow-suit.webp',
+    video: '/videos/btm-scarlet-red.mp4',
     slots: [
       '10:00 AM – 12:00 PM',
       '12:30 PM – 02:30 PM',
@@ -925,6 +932,9 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
   const heroMarqueeRef = useRef<HTMLDivElement>(null);
 
   const [showHeroSlots, setShowHeroSlots] = useState(false);
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState('/videos/btm-butterfly-blush.mp4');
+  const [selectedVideoTitle, setSelectedVideoTitle] = useState('Butterfly Blush • BTM 2nd Stage');
   const [heroBgIndex, setHeroBgIndex] = useState(0);
   const [isHeroCarouselPaused, setIsHeroCarouselPaused] = useState(false);
   const heroTouchStartX = useRef<number | null>(null);
@@ -1600,12 +1610,25 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                 </a>
               </div>
 
-              {/* Trust badges */}
-              <div className="mt-4 pt-3 border-t border-slate-100 flex justify-center text-xs">
+              {/* Trust badges & Video Tour Link */}
+              <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 font-bold">
                   <span>✨ 3,500+ celebrations completed</span>
                   <span className="text-amber-500 font-black">★ 5.0 Rating</span>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedVideo('/videos/btm-butterfly-blush.mp4');
+                    setSelectedVideoTitle('Butterfly Blush • BTM 2nd Stage');
+                    setVideoModalOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#082052]/5 hover:bg-[#00A2E4]/10 text-[#082052] hover:text-[#00A2E4] font-black border border-slate-200 hover:border-[#00A2E4] transition-all cursor-pointer"
+                >
+                  <span className="w-4 h-4 rounded-full bg-[#00A2E4] text-white flex items-center justify-center text-[8px] font-black">▶</span>
+                  <span>Watch Video Tour (BTM)</span>
+                </button>
               </div>
 
             </div>
@@ -1656,47 +1679,72 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                         ? roomSlots.filter((s: any) => !s.is_booked).length 
                         : room.slots.length;
 
-                      const emoji = room.theatreId === 1 || room.theatreId === 4 
-                        ? '🎬' 
-                        : room.theatreId === 2 || room.theatreId === 5 
-                        ? '🎉' 
-                        : room.theatreId === 3 || room.theatreId === 6 
-                        ? '🧑‍🧑‍🧒‍🧒' 
-                        : '✨';
-
                       return (
                         <div
                           key={room.name}
                           className="bg-[#F6FAFD] rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs hover:border-[#00A2E4]/60 transition-all flex flex-col justify-between"
                         >
                           <div>
-                            {/* Card Top: Emoji + Price */}
-                            <div className="flex items-start justify-between mb-2">
-                              <span className="text-3xl p-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs">{emoji}</span>
-                              <div className="text-right">
-                                <span className="font-playfair text-xl sm:text-2xl font-black text-[#0B2238] block">
-                                  {room.custom || room.price}
+                            {/* Real Room Photo Banner + Play Video Overlay */}
+                            <div className="relative w-full h-36 rounded-xl overflow-hidden mb-3.5 border border-slate-200 group bg-slate-900 shadow-xs">
+                              <Image
+                                src={room.image}
+                                alt={room.name}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                sizes="(max-width: 768px) 100vw, 320px"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none" />
+                              
+                              {/* Top Badge: Capacity */}
+                              <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5 pointer-events-none">
+                                <span className="px-2 py-0.5 rounded-full bg-white/95 text-[#082052] font-black text-[10px] shadow-sm flex items-center gap-1">
+                                  <Icon name="users" size={11} />
+                                  {room.capacity}
                                 </span>
+                              </div>
+
+                              {/* Watch Room Video Button */}
+                              {room.video && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedVideo(room.video);
+                                    setSelectedVideoTitle(`${room.name} • ${room.branch}`);
+                                    setVideoModalOpen(true);
+                                  }}
+                                  className="absolute top-2 right-2 z-10 px-2.5 py-1 rounded-full bg-black/70 hover:bg-[#00A2E4] text-white text-[10px] font-black tracking-wide flex items-center gap-1 border border-white/20 transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95"
+                                >
+                                  <span>▶</span> Watch Video
+                                </button>
+                              )}
+
+                              {/* Bottom Info: Spec + Room Name + Price */}
+                              <div className="absolute bottom-2 left-2.5 right-2.5 z-10 flex items-end justify-between text-white pointer-events-none">
+                                <div>
+                                  <span className="text-[10px] font-semibold text-white/80 block uppercase tracking-wider">{room.spec}</span>
+                                  <h4 className="font-playfair text-lg font-black text-white leading-tight drop-shadow-sm">
+                                    {room.name}
+                                  </h4>
+                                </div>
+                                <div className="text-right">
+                                  <span className="text-[9px] text-white/70 block uppercase font-bold">Starts from</span>
+                                  <span className="font-playfair text-xl font-black text-amber-300 drop-shadow-sm block">
+                                    {room.custom || room.price}
+                                  </span>
+                                </div>
                               </div>
                             </div>
 
-                            {/* Title & Capacity */}
-                            <h4 className="font-playfair text-lg sm:text-xl font-black text-[#0B2238]">
-                              {room.name}
-                            </h4>
-                            <div className="flex items-center justify-between text-xs text-slate-600 font-bold mt-1 mb-3">
-                              <span className="flex items-center gap-1 text-slate-500">
-                                <Icon name="users" size={13} />
-                                {room.capacity}
+                            {/* Live Slot Status Bar */}
+                            <div className="flex items-center justify-between text-xs text-slate-600 font-bold mb-3">
+                              <span className="text-[10px] font-extrabold tracking-wider uppercase text-slate-400">
+                                SELECT SHOWTIME:
                               </span>
                               <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                                 {openCount} Open Slots
                               </span>
-                            </div>
-
-                            {/* Divider Title */}
-                            <div className="text-[10px] font-extrabold tracking-wider uppercase text-slate-400 mb-2">
-                              CLICK A SLOT TO RESERVE:
                             </div>
 
                             {/* 2-Column Slot Grid */}
@@ -1729,7 +1777,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                                       const slotParam = slotItem.id ? `&slot=${slotItem.id}` : '';
                                       router.push(`/book-now/${room.branchSlug}?date=${date}&theatre=${room.theatreId}${slotParam}`);
                                     }}
-                                    className="p-2 sm:p-2.5 rounded-xl border border-emerald-300/80 bg-white hover:border-[#00A2E4] hover:bg-[#fff9f4] text-center transition-all cursor-pointer shadow-2xs group flex flex-col items-center justify-center active:scale-95"
+                                    className="p-2 sm:p-2.5 rounded-xl border border-emerald-300/80 bg-white hover:border-[#00A2E4] hover:bg-[#F6FAFD] text-center transition-all cursor-pointer shadow-2xs group flex flex-col items-center justify-center active:scale-95"
                                     title={`Reserve ${room.name} at ${displayTime}`}
                                   >
                                     <strong className="text-[11px] sm:text-xs font-black text-[#0B2238] group-hover:text-[#00A2E4] truncate w-full">
@@ -1750,7 +1798,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                             onClick={() => {
                               router.push(`/book-now/${room.branchSlug}?date=${date}&theatre=${room.theatreId}`);
                             }}
-                            className="w-full py-2.5 px-4 rounded-xl text-center text-xs font-black text-white bg-[#00A2E4] hover:bg-[#d83f1a] shadow-md transition-all block mt-4 cursor-pointer"
+                            className="w-full py-2.5 px-4 rounded-xl text-center text-xs font-black text-white bg-[#082052] hover:bg-[#00A2E4] shadow-md transition-all block mt-4 cursor-pointer"
                           >
                             Book {room.name} &rarr;
                           </button>
@@ -1942,183 +1990,172 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           </div>
         </section>
 
-        {/* 6. WHAT ARE YOU CELEBRATING? (DYNAMIC SPOTLIGHT STAGE + ANIMATED OCCASIONS DECK) */}
-        <section className="section occasions" id="experiences">
-          <div className="section-heading centered">
-            <div className="eyebrow"><span /> Moments worth making special <span /></div>
-            <h2>What are you <em>celebrating?</em></h2>
-            <p>Whatever the occasion, we set the stage with magical lighting, romantic setups, and 4K cinema. You simply walk in and enjoy your moment.</p>
-          </div>
+        {/* 6. WHAT ARE YOU CELEBRATING? (4 PRIMARY CELEBRATIONS WITH SCROLL-CONNECTED CONTINUATION LINE) */}
+        <section className="section occasions relative py-16 sm:py-24 bg-[#FAFAF8] overflow-hidden" id="experiences">
+          {/* Subtle Background Ambience */}
+          <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-white to-transparent pointer-events-none" />
+          <div className="absolute -top-24 right-1/4 w-96 h-96 rounded-full bg-[#00A2E4]/5 blur-3xl pointer-events-none" />
 
-          <div 
-            className="max-w-6xl mx-auto px-4 mt-8"
-            onMouseEnter={() => setIsOccasionPaused(true)}
-            onMouseLeave={() => setIsOccasionPaused(false)}
-          >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+            {/* Section Heading */}
+            <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#082052]/5 border border-[#082052]/15 text-[#082052] text-xs font-black uppercase tracking-wider mb-3">
+                <span className="w-2 h-2 rounded-full bg-[#00A2E4] animate-pulse" />
+                <span>Moments Worth Making Special</span>
+              </div>
+              <h2 className="font-playfair text-3xl sm:text-5xl font-black text-[#082052] tracking-tight">
+                What are you <em className="italic text-[#00A2E4] font-normal">celebrating?</em>
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
+                Step into a handcrafted cinema setting designed exclusively for your special milestone. We take care of décor, screening, lighting, and surprise cakes.
+              </p>
+            </div>
 
-            {/* CELEBRATIONS HORIZONTAL CARD CAROUSEL WITH SMOOTH ANIMATIONS */}
-            {(() => {
-              const prevOcc = () => setActiveOccasion((prev) => (prev - 1 + occasionsList.length) % occasionsList.length);
-              const nextOcc = () => setActiveOccasion((prev) => (prev + 1) % occasionsList.length);
-              const currentOcc = occasionsList[activeOccasion];
+            {/* Vertical Scroll-Connected Timeline */}
+            <div className="relative">
+              {/* Continuous Glowing Joining Line */}
+              <div className="hidden md:block absolute left-1/2 top-10 bottom-10 w-0.5 -translate-x-1/2 bg-gradient-to-b from-[#00A2E4] via-[#082052] to-[#00A2E4] opacity-30 pointer-events-none shadow-[0_0_12px_rgba(0,162,228,0.5)]" />
+              <div className="md:hidden absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-[#00A2E4] via-[#082052] to-[#00A2E4] opacity-30 pointer-events-none" />
 
-              return (
-                <div className="relative mb-8 sm:mb-10 select-none">
-                  {/* Main Feature Card (Full-Width with Split Layout) */}
-                  <div 
-                    className="relative rounded-[24px] sm:rounded-[32px] bg-white border-2 border-[#00A2E4]/20 shadow-[0_16px_40px_rgba(8,32,82,0.08)] overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(8,32,82,0.12)]"
-                    onTouchStart={handleOccTouchStart}
-                    onTouchMove={handleOccTouchMove}
-                    onTouchEnd={handleOccTouchEnd}
-                    onWheel={handleTheatreScreenWheel}
-                  >
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                      
-                      {/* Left: Large Image */}
-                      <div className="relative w-full h-[220px] sm:h-[280px] lg:h-[380px] overflow-hidden group transition-all duration-500">
-                        <Image
-                          key={currentOcc.slug}
-                          src={currentOcc.image}
-                          alt={currentOcc.title}
-                          fill
-                          loading="lazy"
-                          className="object-cover object-center transition-transform duration-700 group-hover:scale-105 animate-[fadeIn_0.6s_ease-out]"
-                          sizes="(max-width: 1024px) 100vw, 50vw"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
-                        
-                        {/* Navigation Arrows on Image */}
-                        <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-3 sm:px-5 z-20">
-                          <button
-                            type="button"
-                            onClick={prevOcc}
-                            aria-label="Previous celebration"
-                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-[#0B2238] shadow-lg flex items-center justify-center transition-all cursor-pointer active:scale-90 backdrop-blur-sm"
-                          >
-                            <span className="text-lg font-bold">←</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={nextOcc}
-                            aria-label="Next celebration"
-                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-[#0B2238] shadow-lg flex items-center justify-center transition-all cursor-pointer active:scale-90 backdrop-blur-sm"
-                          >
-                            <span className="text-lg font-bold">→</span>
-                          </button>
-                        </div>
-                        
-                        {/* Bottom Image Overlay Info */}
-                        <div className="absolute bottom-3 left-3 right-3 z-20 flex items-end justify-between pointer-events-none">
-                          <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] sm:text-xs font-black uppercase tracking-wider border border-white/20">
-                            {currentOcc.badge}
-                          </span>
-                          <span className="px-3 py-1 rounded-full bg-[#00A2E4] text-white text-[10px] sm:text-xs font-black shadow-sm">
-                            {activeOccasion + 1} of {occasionsList.length}
-                          </span>
+              {/* 4 Primary Occasions */}
+              <div className="space-y-12 sm:space-y-20">
+                {[
+                  {
+                    step: '01',
+                    slug: 'birthday-party',
+                    title: 'Grand Birthday Party',
+                    tagline: 'Golden balloon arch backdrop, custom name neon lights, fog entry, and special cake-cutting moment with Dolby sound.',
+                    badge: 'Top Pick for Birthdays',
+                    image: '/images/celebration_2.webp',
+                    inclusions: ['🎂 500g Cake Included', '🌫️ Dry Ice Fog Entry', '🎈 Signature Balloon Décor', '✨ Personalized Neon LED Name', '🎬 4K Laser Screening'],
+                    alt: 'Birthday celebration at Movie Bash private theatre'
+                  },
+                  {
+                    step: '02',
+                    slug: 'date-and-proposal',
+                    title: 'Romantic Proposal & Date Night',
+                    tagline: 'An intimate candlelit ambience with rose petals, private couple recliners, heart pathway, and cold pyros for a proposal they will remember forever.',
+                    badge: 'Most Popular for Couples',
+                    image: '/images/couple_1.webp',
+                    inclusions: ['🌹 Rose Petal Heart Pathway', '🕯️ Ambient Candle Décor', '🎆 Cold Spark Pyros', '💑 Cozy Couple Recliners', '🍿 Gourmet Popcorn & Drinks'],
+                    alt: 'Romantic proposal setup at Movie Bash'
+                  },
+                  {
+                    step: '03',
+                    slug: 'anniversary',
+                    title: 'Milestone Anniversary Celebration',
+                    tagline: 'Celebrate years of togetherness with nostalgic photo slideshow on 150″ 4K cinema screen, fairy lights, and your couple song on Dolby Atmos.',
+                    badge: 'Memories to Cherish',
+                    image: '/images/couple_6.webp',
+                    inclusions: ['🎞️ Memory Slideshow on 150″', '🥂 Anniversary Special Setup', '🎂 Celebration Cake', '🎶 Custom Spotify Playlist', '📸 Photo & Video Assist'],
+                    alt: 'Anniversary celebration at Movie Bash private theatre'
+                  },
+                  {
+                    step: '04',
+                    slug: 'bachelorette-party',
+                    title: 'Bride-to-Be & Bachelorette Party',
+                    tagline: 'The ultimate girl squad private bash with bridal photo booth, party props, music dance floor, signature sash, and full private cinema.',
+                    badge: 'Girls Night Out',
+                    image: '/images/celebration_5.webp',
+                    inclusions: ['👰 Bride-to-Be Sash & Tiara', '📸 Insta-Worthy Photo Booth', '🎉 Party Props & Poppers', '🔊 Dance Playlist Sound', '✨ Custom Neon Backdrop'],
+                    alt: 'Bachelorette party at Movie Bash'
+                  }
+                ].map((item, index) => {
+                  const isEven = index % 2 === 1;
+
+                  return (
+                    <div 
+                      key={item.slug} 
+                      className="relative grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-14 items-center group pl-12 md:pl-0"
+                    >
+                      {/* Milestone Number Badge (Timeline Node) */}
+                      <div className="absolute left-0 md:left-1/2 top-4 md:top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border-2 border-[#00A2E4] shadow-lg shadow-[#00A2E4]/20 flex items-center justify-center font-playfair font-black text-sm sm:text-base text-[#082052] group-hover:bg-[#00A2E4] group-hover:text-white transition-all duration-300">
+                        {item.step}
+                      </div>
+
+                      {/* Photo Card */}
+                      <div className={`w-full ${isEven ? 'md:order-2' : 'md:order-1'}`}>
+                        <div className="relative w-full h-[240px] sm:h-[320px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 group-hover:border-[#00A2E4]/50 group-hover:shadow-2xl transition-all duration-500 bg-slate-900">
+                          <Image
+                            src={item.image}
+                            alt={item.alt}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-700"
+                            sizes="(max-width: 768px) 100vw, 500px"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent pointer-events-none" />
+                          <div className="absolute top-3 left-3 z-10">
+                            <span className="px-3 py-1 rounded-full bg-white/95 backdrop-blur-xs text-[#082052] text-[11px] font-black shadow-md border border-slate-200">
+                              {item.badge}
+                            </span>
+                          </div>
+                          <div className="absolute bottom-3 right-3 z-10">
+                            <span className="px-3 py-1 rounded-full bg-[#00A2E4] text-white text-[11px] font-black shadow-md">
+                              100% Private Theatre
+                            </span>
+                          </div>
                         </div>
                       </div>
-                      
-                      {/* Right: Info, Inclusions, CTA */}
-                      <div className="p-5 sm:p-7 md:p-8 flex flex-col justify-center space-y-4 animate-[slideInRight_0.5s_ease-out]" key={currentOcc.slug + '-info'}>
-                        {/* Badges */}
-                        <div className="flex flex-wrap items-center gap-2">
-                          <div className={`w-9 h-9 rounded-xl ${currentOcc.iconBg} flex items-center justify-center p-1.5 shrink-0 shadow-2xs`}>
-                            <GrandOccasionIcon type={currentOcc.type} className="w-5 h-5" />
-                          </div>
-                          <span className="px-2.5 py-0.5 rounded-full bg-[#00A2E4]/10 text-[#00A2E4] text-[10px] sm:text-xs font-black uppercase border border-[#00A2E4]/20">
-                            100% Private
+
+                      {/* Content Card */}
+                      <div className={`space-y-4 ${isEven ? 'md:order-1 md:text-right' : 'md:order-2 md:text-left'}`}>
+                        <div className={`flex items-center gap-2 ${isEven ? 'md:justify-end' : 'md:justify-start'}`}>
+                          <span className="text-xs font-black uppercase tracking-widest text-[#00A2E4]">
+                            Celebration Option {item.step}
                           </span>
                         </div>
 
-                        {/* Title */}
-                        <h3 className="font-['Playfair'] font-bold text-2xl sm:text-3xl md:text-4xl text-[#0B2238] leading-tight tracking-tight">
-                          {currentOcc.title}
+                        <h3 className="font-playfair text-2xl sm:text-3xl font-black text-[#082052] leading-tight">
+                          {item.title}
                         </h3>
 
-                        {/* Tagline */}
                         <p className="text-slate-600 text-sm sm:text-base font-medium leading-relaxed">
-                          {currentOcc.tagline}
+                          {item.tagline}
                         </p>
 
-                        {/* Experience Inclusions */}
-                        <div>
-                          <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2">
-                            Experience Includes
-                          </span>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="px-3 py-1.5 rounded-lg bg-[#F6FAFD] text-[#0B2238] text-xs font-bold border border-slate-200 shadow-2xs">
-                              🎬 4K Screening
+                        {/* Inclusions Chips */}
+                        <div className={`flex flex-wrap gap-2 pt-1 ${isEven ? 'md:justify-end' : 'md:justify-start'}`}>
+                          {item.inclusions.map((inc) => (
+                            <span 
+                              key={inc} 
+                              className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold shadow-2xs group-hover:border-[#00A2E4]/30 transition-colors"
+                            >
+                              {inc}
                             </span>
-                            <span className="px-3 py-1.5 rounded-lg bg-[#F6FAFD] text-[#0B2238] text-xs font-bold border border-slate-200 shadow-2xs">
-                              ✨ Custom Décor
-                            </span>
-                            <span className="px-3 py-1.5 rounded-lg bg-[#F6FAFD] text-[#0B2238] text-xs font-bold border border-slate-200 shadow-2xs">
-                              🎂 Cake Entry
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* CTA */}
-                        <div className="flex items-center gap-4 pt-2">
-                          <Link
-                            href={`/book-now?occasion=${currentOcc.slug}`}
-                            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#0B2238] hover:bg-[#00A2E4] text-white font-['Archivo'] font-black text-xs sm:text-sm uppercase tracking-wider shadow-md hover:scale-105 active:scale-95 transition-all"
-                          >
-                            <span>Book This Experience</span>
-                            <span>&rarr;</span>
-                          </Link>
-                        </div>
-
-                        {/* Progress Dots */}
-                        <div className="flex items-center gap-1.5 pt-2">
-                          {occasionsList.map((_, dotIdx) => (
-                            <button
-                              key={dotIdx}
-                              type="button"
-                              onClick={() => setActiveOccasion(dotIdx)}
-                              className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                                dotIdx === activeOccasion ? 'w-6 bg-[#00A2E4]' : 'w-1.5 bg-slate-300 hover:bg-slate-400'
-                              }`}
-                              aria-label={`Go to ${occasionsList[dotIdx].title}`}
-                            />
                           ))}
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
 
-            {/* 9-OCCASION SELECTION TILES */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4">
-              {occasionsList.map((occ, idx) => {
-                const isActive = idx === activeOccasion;
-                return (
-                  <button
-                    key={occ.slug}
-                    type="button"
-                    onClick={() => setActiveOccasion(idx)}
-                    className={`p-4 rounded-2xl border-2 text-left transition-all duration-300 flex items-center gap-3 cursor-pointer ${
-                      isActive
-                        ? 'border-[#00A2E4] bg-white ring-4 ring-[#00A2E4]/20 shadow-md scale-102'
-                        : 'border-slate-200/80 bg-white/70 hover:bg-white hover:border-[#00A2E4]/40 shadow-xs'
-                    }`}
-                  >
-                    <div className={`w-10 h-10 rounded-xl ${occ.iconBg} flex items-center justify-center p-1.5 shrink-0 shadow-2xs`}>
-                      <GrandOccasionIcon type={occ.type} className="w-6 h-6" />
+                        {/* CTA Button */}
+                        <div className={`pt-2 flex ${isEven ? 'md:justify-end' : 'md:justify-start'}`}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const occasionParam = encodeURIComponent(item.title);
+                              router.push(`/book-now/btm-stage-2?occasion=${occasionParam}`);
+                            }}
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#082052] hover:bg-[#00A2E4] text-white font-bold text-xs sm:text-sm tracking-wide shadow-lg shadow-[#082052]/20 hover:shadow-[#00A2E4]/25 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+                          >
+                            <span>Book {item.title}</span>
+                            <span>&rarr;</span>
+                          </button>
+                        </div>
+                      </div>
+
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <h4 className={`text-xs font-black truncate leading-tight ${isActive ? 'text-[#00A2E4]' : 'text-[#0B2238]'}`}>
-                        {occ.title}
-                      </h4>
-                      <p className="text-[10px] text-slate-500 font-medium truncate mt-0.5">
-                        {occ.badge}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Bottom Section Reassurance */}
+            <div className="mt-16 text-center">
+              <div className="inline-flex flex-wrap items-center justify-center gap-3 px-6 py-3 rounded-2xl bg-white border border-slate-200 shadow-xs text-xs font-bold text-slate-700">
+                <span className="text-emerald-600 flex items-center gap-1 font-black">✓ No Advance Loss on Rescheduling</span>
+                <span className="text-slate-300">•</span>
+                <span>🎂 Custom Flavors Available</span>
+                <span className="text-slate-300">•</span>
+                <span>✨ 100% Private Venue For Your Group</span>
+              </div>
             </div>
           </div>
         </section>
@@ -2549,83 +2586,150 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           </div>
         </section>
 
-        {/* ─── HOW CONTENT STREAMING WORKS (BINGE TOWN CLARITY + LABAN SPOT ELEGANCE) ─── */}
-        <section className="py-12 sm:py-20 bg-white border-t border-sky-100/80 relative overflow-hidden" id="how-streaming-works">
+        {/* ─── HOW CONTENT STREAMING WORKS (OFFICIAL OTT LOGOS & ENTERTAINMENT HUB) ─── */}
+        <section className="py-14 sm:py-20 bg-white border-t border-sky-100/80 relative overflow-hidden" id="how-streaming-works">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C68A4E]/10 border border-[#C68A4E]/30 text-[#C68A4E] text-xs font-black uppercase tracking-wider mb-3">
-                <span className="w-2 h-2 rounded-full bg-[#C68A4E] animate-pulse" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#00A2E4]/10 border border-[#00A2E4]/30 text-[#0072AE] text-xs font-black uppercase tracking-wider mb-3">
+                <span className="w-2 h-2 rounded-full bg-[#00A2E4] animate-pulse" />
                 <span>Unlimited Entertainment Freedom</span>
               </div>
-              <h2 className="font-['Playfair_Display'] text-3xl sm:text-5xl font-black text-[#0B2238] tracking-tight">
+              <h2 className="font-playfair text-3xl sm:text-5xl font-black text-[#082052] tracking-tight">
                 Stream Anything You Love.<br />
                 <em className="italic text-[#00A2E4] font-normal">On a giant 150-inch 4K laser cinema screen.</em>
               </h2>
               <p className="mt-3 text-xs sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
-                You control the screen! Watch movies, binge favorite series, show personal surprise videos, or play games.
+                You control the screen! Watch movies, binge favorite series, show personal surprise videos, or play games with full privacy.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               
-              {/* Card 1: OTT Streaming Apps */}
-              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all">
-                <div className="w-16 h-16 rounded-2xl bg-white border border-sky-100 shadow-sm flex flex-col items-center justify-center gap-1.5 mb-5 px-2">
-                  <Image src="/images/ott/netflix.png" alt="Netflix" width={44} height={12} className="h-3 w-auto" />
-                  <Image src="/images/ott/youtube.png" alt="YouTube" width={26} height={18} className="h-4 w-auto" />
+              {/* Card 1: Official OTT Streaming Apps */}
+              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between">
+                <div>
+                  <div className="w-14 h-14 rounded-2xl bg-white border border-sky-100 shadow-sm flex items-center justify-center mb-5">
+                    <span className="text-2xl">🍿</span>
+                  </div>
+                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-2">
+                    All OTT Apps Ready
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5">
+                    Log in directly to your personal accounts on our 4K Smart Cinema setup with 150″ laser display:
+                  </p>
                 </div>
-                <h3 className="font-['Playfair_Display'] text-xl font-bold text-[#0B2238] mb-2">
-                  All OTT Apps Ready
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
-                  Log in directly to your personal accounts on our 4K Smart Cinema setup:
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {['Netflix', 'Prime Video', 'Disney+ Hotstar', 'YouTube 4K', 'Aha', 'Zee5', 'SonyLIV'].map((app) => (
-                    <span key={app} className="px-2.5 py-1 rounded-full bg-white text-[11px] font-bold text-slate-800 border border-slate-200">
-                      {app}
-                    </span>
-                  ))}
+
+                {/* Official Brand Logos Grid In Bottom */}
+                <div className="pt-4 border-t border-slate-200/60">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2.5">
+                    Official Streaming Brands
+                  </span>
+                  <div className="grid grid-cols-4 gap-2">
+                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Netflix">
+                      <Image src="/images/ott/netflix.png" alt="Netflix" width={56} height={16} className="max-h-3.5 w-auto object-contain" />
+                    </div>
+                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Prime Video">
+                      <Image src="/images/ott/prime-video.png" alt="Prime Video" width={56} height={16} className="max-h-4 w-auto object-contain" />
+                    </div>
+                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Disney+ Hotstar">
+                      <Image src="/images/ott/disney-hotstar.svg" alt="Disney+ Hotstar" width={56} height={16} className="max-h-4 w-auto object-contain" />
+                    </div>
+                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="YouTube 4K">
+                      <Image src="/images/ott/youtube.png" alt="YouTube" width={56} height={16} className="max-h-4 w-auto object-contain" />
+                    </div>
+                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Apple TV+">
+                      <Image src="/images/ott/apple-tv.svg" alt="Apple TV" width={56} height={16} className="max-h-4 w-auto object-contain" />
+                    </div>
+                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="SonyLIV">
+                      <Image src="/images/ott/sonyliv.svg" alt="SonyLIV" width={56} height={16} className="max-h-4 w-auto object-contain" />
+                    </div>
+                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Zee5">
+                      <Image src="/images/ott/zee5.svg" alt="Zee5" width={56} height={16} className="max-h-4 w-auto object-contain" />
+                    </div>
+                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Aha">
+                      <Image src="/images/ott/aha.svg" alt="Aha" width={56} height={16} className="max-h-4 w-auto object-contain" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Card 2: Plug & Play Personal Videos (HDMI) */}
-              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-700 flex items-center justify-center text-2xl mb-5">
-                  💻
+              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between">
+                <div>
+                  <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-700 flex items-center justify-center text-2xl mb-5">
+                    💻
+                  </div>
+                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-2">
+                    Plug &amp; Play HDMI / Phone
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5">
+                    Connect your Laptop, iPhone, Android, or Pen Drive via our high-speed 4K HDMI &amp; Type-C cables:
+                  </p>
                 </div>
-                <h3 className="font-['Playfair_Display'] text-xl font-bold text-[#0B2238] mb-2">
-                  Plug &amp; Play HDMI / Phone
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
-                  Connect your Laptop, iPhone, Android, or Pen Drive via our high-speed HDMI &amp; Type-C cables:
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {['Photo Slideshows', 'Personal Video Montage', 'Private Movies', 'Corporate Pitch', 'Family Videos'].map((item) => (
-                    <span key={item} className="px-2.5 py-1 rounded-full bg-white text-[11px] font-bold text-slate-800 border border-slate-200">
-                      {item}
+
+                {/* Compatibility Badges In Bottom */}
+                <div className="pt-4 border-t border-slate-200/60">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2.5">
+                    Supported Connections
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-800 border border-slate-200 shadow-2xs flex items-center gap-1.5">
+                      💻 MacBook &amp; Windows HDMI
                     </span>
-                  ))}
+                    <span className="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-800 border border-slate-200 shadow-2xs flex items-center gap-1.5">
+                      📱 iPhone 15/16 Type-C / Lightning
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-800 border border-slate-200 shadow-2xs flex items-center gap-1.5">
+                      ⚡ Android Screen Mirroring
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-800 border border-slate-200 shadow-2xs flex items-center gap-1.5">
+                      💾 USB Pen Drive Videos
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-800 border border-slate-200 shadow-2xs flex items-center gap-1.5">
+                      🎞️ Custom Photo Slideshows
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* Card 3: Bluetooth Music & Console Gaming */}
-              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all">
-                <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-700 flex items-center justify-center text-2xl mb-5">
-                  🎵
+              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between">
+                <div>
+                  <div className="w-14 h-14 rounded-2xl bg-rose-500/10 text-rose-700 flex items-center justify-center text-2xl mb-5">
+                    🎵
+                  </div>
+                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-2">
+                    Bluetooth Music &amp; Gaming
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5">
+                    Stream your favorite Spotify playlist during cake cutting, or hook up your gaming console:
+                  </p>
                 </div>
-                <h3 className="font-['Playfair_Display'] text-xl font-bold text-[#0B2238] mb-2">
-                  Bluetooth Music &amp; Gaming
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
-                  Stream your favorite Spotify playlist during cake cutting, or hook up your gaming console:
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {['Spotify Bluetooth', 'Cake Cutting Songs', 'PS5 & Xbox Ready', 'Surround Sound Audio'].map((item) => (
-                    <span key={item} className="px-2.5 py-1 rounded-full bg-white text-[11px] font-bold text-slate-800 border border-slate-200">
-                      {item}
+
+                {/* Badges In Bottom */}
+                <div className="pt-4 border-t border-slate-200/60">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2.5">
+                    Audio &amp; Console Features
+                  </span>
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Spotify">
+                      <Image src="/images/ott/spotify.svg" alt="Spotify" width={70} height={20} className="max-h-4.5 w-auto object-contain" />
+                    </div>
+                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="PS5 & Xbox">
+                      <Image src="/images/ott/ps5-xbox.svg" alt="PS5 & Xbox" width={70} height={20} className="max-h-4.5 w-auto object-contain" />
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-800 border border-slate-200 shadow-2xs">
+                      🔊 Dolby 7.1 Surround
                     </span>
-                  ))}
+                    <span className="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-800 border border-slate-200 shadow-2xs">
+                      🎂 Cake-Cutting Playlists
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-800 border border-slate-200 shadow-2xs">
+                      🎮 Low Latency Gaming
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -3074,6 +3178,93 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
       >
         <Icon name="whatsapp" size={24} />
       </a>
+
+      {/* 17. REAL THEATRES HD VIDEO TOUR MODAL */}
+      {videoModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={() => setVideoModalOpen(false)}
+        >
+          <div 
+            className="relative w-full max-w-4xl bg-[#082052] rounded-3xl overflow-hidden shadow-2xl border border-white/20 text-white"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 sm:px-6 py-4 bg-[#05173B] border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse" />
+                <h3 className="font-playfair text-base sm:text-lg font-black text-white">
+                  {selectedVideoTitle}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setVideoModalOpen(false)}
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold flex items-center justify-center transition-all cursor-pointer"
+                title="Close video"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Room Video Switcher Tabs */}
+            <div className="flex items-center gap-2 px-5 sm:px-6 py-3 bg-[#082052] border-b border-white/10 overflow-x-auto text-xs font-bold">
+              {[
+                { name: 'Butterfly Blush', branch: 'BTM 2nd Stage', file: '/videos/btm-butterfly-blush.mp4' },
+                { name: 'Lavender Mist', branch: 'BTM 2nd Stage', file: '/videos/btm-lavender-mist.mp4' },
+                { name: 'Scarlet Red', branch: 'BTM 2nd Stage', file: '/videos/btm-scarlet-red.mp4' }
+              ].map((v) => (
+                <button
+                  key={v.file}
+                  type="button"
+                  onClick={() => {
+                    setSelectedVideo(v.file);
+                    setSelectedVideoTitle(`${v.name} • ${v.branch}`);
+                  }}
+                  className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                    selectedVideo === v.file
+                      ? 'bg-[#00A2E4] text-white shadow-md'
+                      : 'bg-white/10 text-white/80 hover:bg-white/15'
+                  }`}
+                >
+                  <span>▶</span>
+                  <span>{v.name}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Video Player (100% Unobstructed, Crystal Clear, Native Controls) */}
+            <div className="relative w-full aspect-video bg-black flex items-center justify-center">
+              <video
+                key={selectedVideo}
+                src={selectedVideo}
+                autoPlay
+                controls
+                loop
+                playsInline
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 sm:px-6 py-4 bg-[#05173B] border-t border-white/10">
+              <div className="text-xs text-white/70">
+                ✨ 100% authentic video tour of Movie Bash private screening theatres.
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setVideoModalOpen(false);
+                  router.push('/book-now/btm-stage-2');
+                }}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#00A2E4] hover:bg-[#008bc4] text-white font-black text-xs uppercase tracking-wider transition-all shadow-md cursor-pointer"
+              >
+                Book This Theatre &rarr;
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
