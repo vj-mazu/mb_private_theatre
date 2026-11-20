@@ -155,3 +155,6 @@ Import trace for requested module:
  ✓ Compiled in 1344ms (627 modules)
 <w> [webpack.cache.PackFileCacheStrategy] Restoring pack failed from C:\Users\maju\Desktop\movie_bash\.next\cache\webpack\client-development.pack.gz: Error: incorrect header check
  ✓ Compiled in 1229ms (627 modules)
+ ✓ Compiled in 1841ms (312 modules)
+ ✓ Compiled in 162ms (312 modules)
+ ✓ Compiled in 843ms (315 modules)

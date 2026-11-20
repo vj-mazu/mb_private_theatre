@@ -6,8 +6,15 @@ import FloatingContact from '@/components/FloatingContact';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import { mockStore } from '@/lib/db';
 
+export function generateStaticParams() {
+  return [
+    { 'branch-slug': 'electronic-city' },
+    { 'branch-slug': 'btm-stage-2' },
+  ];
+}
+
 export default function BranchBookNowPage({ params }: { params: { 'branch-slug': string } }) {
-  const slug = params['branch-slug'];
+  const slug = params?.['branch-slug'] || 'electronic-city';
   return (
     <main className="min-h-screen flex flex-col bg-cream text-ink">
       <AnnouncementBar />

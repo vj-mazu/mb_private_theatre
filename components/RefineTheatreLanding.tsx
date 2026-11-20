@@ -472,7 +472,7 @@ const heroBgPhotos = [
     badge: '150″ 4K Laser',
     icon: '🔊',
     subtitle: 'Massive 150″ wide screen with stadium recliners and Dolby Atmos surround acoustics',
-    specs: ['150″ Laser', 'Dolby Atmos', 'Up to 12 Guests'],
+    specs: ['150″ Laser', 'Dolby Atmos', 'Up to 6 Guests'],
     price: 'From ₹2,200',
     ctaText: 'View Family Slots',
     theatreId: 3
@@ -537,7 +537,7 @@ const defaultTheatres = [
     branch: 'Electronic City',
     branchId: 1,
     name: 'Family Theatre',
-    meta: 'Up to 12 guests · Private Cinema',
+    meta: 'Up to 6 guests · Private Cinema',
     price: '₹2,200',
     dealPrice: '₹1,699',
     image: '/images/celebration_1.webp',
@@ -577,7 +577,7 @@ const defaultTheatres = [
     branch: 'BTM 2nd Stage',
     branchId: 2,
     name: 'Scarlet Red',
-    meta: 'Up to 12 guests · Private Cinema',
+    meta: 'Up to 6 guests · Private Cinema',
     price: '₹2,400',
     dealPrice: '₹1,699',
     image: '/images/rooms/btm-scarlet-red.webp',
@@ -590,7 +590,7 @@ const defaultTheatres = [
     branch: 'BTM 2nd Stage',
     branchId: 2,
     name: 'Shadow Suit',
-    meta: 'Up to 8 guests · Private Cinema',
+    meta: 'Up to 6 guests · Private Cinema',
     price: '₹2,400',
     dealPrice: '₹1,599',
     image: '/images/rooms/btm-shadow-suit.webp',
@@ -649,7 +649,7 @@ const defaultSlotRooms = [
     branchSlug: 'electronic-city',
     theatreId: 3,
     name: 'Family Room',
-    capacity: 'Up to 12 guests',
+    capacity: 'Up to 6 guests',
     spec: '150″ Screen · Dolby 7.1.2',
     price: '₹2,200',
     custom: '₹1,699',
@@ -709,7 +709,7 @@ const defaultSlotRooms = [
     branchSlug: 'btm-stage-2',
     theatreId: 6,
     name: 'Scarlet Red',
-    capacity: '12–20 guests',
+    capacity: 'Up to 6 guests',
     spec: 'Scarlet Glow · 150" 4K Screen',
     price: '₹2,600',
     custom: '₹1,699',
@@ -729,7 +729,7 @@ const defaultSlotRooms = [
     branchSlug: 'btm-stage-2',
     theatreId: 7,
     name: 'Shadow Suit',
-    capacity: 'Up to 8 guests',
+    capacity: 'Up to 6 guests',
     spec: 'Stealth Cinema · 140" Laser Screen',
     price: '₹2,400',
     custom: '₹1,599',
@@ -773,10 +773,10 @@ const packageTiers = [
 const gallery = [
   ['/images/hero_8441.webp', 'Golden butterfly arch hall • BTM 2nd Stage'],
   ['/images/hero_8388.webp', 'Romantic rose heart suite • Electronic City'],
-  ['/images/btm_wings_arch.webp', 'Grand illuminated celebration stage • BTM'],
-  ['/images/btm_celebration_stage.webp', 'Private balloon canopy & 150″ cinema • BTM'],
-  ['/images/ecity_rose_heart.webp', 'Floral welcome walkway & romantic décor'],
-  ['/images/btm_golden_arch.webp', 'MOVIE BASH celebration hall • BTM 2nd Stage'],
+  ['/images/celebration_6.webp', 'Dramatic dry ice fog & cold pyro entry fx'],
+  ['/images/celebration_1.webp', 'Grand 150″ laser cinema & multi-tier seating'],
+  ['/images/btm_golden_arch.webp', 'Candlelit rose petal proposal setup'],
+  ['/images/celebration_2.webp', 'VIP birthday celebration lounge with neon lights'],
 ];
 
 // Official Movie Bash FAQ (copied from moviebash.in)
@@ -1481,7 +1481,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
         {/* 3. HERO SECTION (THE BINGE TOWN ARCHITECTURE & ALIGNMENT + OUR ETOILE LUXURY COLOR PALETTE) */}
         <section 
           ref={heroRef}
-          className="relative flex flex-col justify-between items-center overflow-hidden w-full pt-6 sm:pt-14 pb-0 bg-[#082052]" 
+          className="relative flex flex-col justify-between items-center overflow-hidden w-full pt-20 sm:pt-28 pb-0 bg-[#082052] -mt-[64px] sm:-mt-[74px]" 
           id="home"
         >
           {/* Ambient Real BTM Celebration Hall Background - Crisp, Vibrant & Natural */}
@@ -1492,13 +1492,13 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                 alt="Movie Bash BTM 2nd Stage Celebration Hall"
                 fill
                 priority
-                className="object-cover object-[center_20%]"
+                className="object-cover object-[center_12%]"
                 sizes="100vw"
               />
             </div>
             {/* Subtle soft transparent scrim only for text contrast without muting photo colors */}
             <div className="absolute inset-0 bg-black/15 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/35 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/35 pointer-events-none" />
           </div>
 
           <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
@@ -2484,7 +2484,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                         </div>
 
                         <p className="text-[12px] font-semibold text-slate-600 leading-relaxed">
-                          {(theatre as any).capacity || (theatre.theatreId === 1 || theatre.theatreId === 4 ? 'Up to 4 guests' : theatre.theatreId === 2 || theatre.theatreId === 5 ? 'Up to 6 guests' : theatre.theatreId === 3 ? 'Up to 10 guests' : 'Up to 8 guests')}
+                          {(theatre as any).capacity || (theatre.theatreId === 1 || theatre.theatreId === 4 ? 'Up to 2 guests' : 'Up to 6 guests')}
                           <span className="text-slate-300 mx-1">·</span> 4K laser screen
                           <span className="text-slate-300 mx-1">·</span> Dolby Atmos
                           <span className="text-slate-300 mx-1">·</span> soundproof
@@ -2609,21 +2609,21 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
               
               {/* Card 1: Official OTT Streaming Apps */}
-              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-7 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between">
-                <div>
-                  <div className="w-12 h-12 rounded-2xl bg-white border border-sky-100 shadow-xs flex items-center justify-center text-xl mb-4">
+              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-7 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between h-full">
+                <div className="h-[140px] flex flex-col justify-start">
+                  <div className="w-12 h-12 rounded-2xl bg-white border border-sky-100 shadow-xs flex items-center justify-center text-xl mb-3 shrink-0">
                     <span>🍿</span>
                   </div>
-                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-2 min-h-[28px] flex items-center">
+                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-1.5 min-h-[28px] flex items-center">
                     All OTT Apps Ready
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4 min-h-[42px]">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                     Log in directly to your personal accounts on our 4K Smart Cinema setup with 150″ laser display:
                   </p>
                 </div>
 
                 {/* Official Brand Badges In Bottom (Clean, Bold, Aesthetic Badges) */}
-                <div className="pt-4 border-t border-slate-200/60 mt-auto">
+                <div className="pt-4 border-t border-slate-200/60 mt-auto min-h-[195px] flex flex-col justify-start">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2.5">
                     Official Streaming Supported
                   </span>
@@ -2665,21 +2665,21 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               </div>
 
               {/* Card 2: Plug & Play Personal Videos (HDMI) */}
-              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-7 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between">
-                <div>
-                  <div className="w-12 h-12 rounded-2xl bg-white border border-sky-100 shadow-xs flex items-center justify-center text-xl mb-4">
+              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-7 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between h-full">
+                <div className="h-[140px] flex flex-col justify-start">
+                  <div className="w-12 h-12 rounded-2xl bg-white border border-sky-100 shadow-xs flex items-center justify-center text-xl mb-3 shrink-0">
                     <span>💻</span>
                   </div>
-                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-2 min-h-[28px] flex items-center">
+                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-1.5 min-h-[28px] flex items-center">
                     Plug &amp; Play HDMI / Phone
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4 min-h-[42px]">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                     Connect your Laptop, iPhone, Android, or Pen Drive via our high-speed 4K HDMI &amp; Type-C cables:
                   </p>
                 </div>
 
                 {/* Compatibility Badges In Bottom */}
-                <div className="pt-4 border-t border-slate-200/60 mt-auto">
+                <div className="pt-4 border-t border-slate-200/60 mt-auto min-h-[195px] flex flex-col justify-start">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2.5">
                     Supported Connections
                   </span>
@@ -2704,21 +2704,21 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               </div>
 
               {/* Card 3: Bluetooth Music & Console Gaming */}
-              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-7 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between">
-                <div>
-                  <div className="w-12 h-12 rounded-2xl bg-white border border-sky-100 shadow-xs flex items-center justify-center text-xl mb-4">
+              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-7 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between h-full">
+                <div className="h-[140px] flex flex-col justify-start">
+                  <div className="w-12 h-12 rounded-2xl bg-white border border-sky-100 shadow-xs flex items-center justify-center text-xl mb-3 shrink-0">
                     <span>🎵</span>
                   </div>
-                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-2 min-h-[28px] flex items-center">
+                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-1.5 min-h-[28px] flex items-center">
                     Bluetooth Music &amp; Gaming
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4 min-h-[42px]">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                     Stream your favorite Spotify playlist during cake cutting, or hook up your gaming console:
                   </p>
                 </div>
 
                 {/* Badges In Bottom */}
-                <div className="pt-4 border-t border-slate-200/60 mt-auto">
+                <div className="pt-4 border-t border-slate-200/60 mt-auto min-h-[195px] flex flex-col justify-start">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2.5">
                     Audio &amp; Console Features
                   </span>

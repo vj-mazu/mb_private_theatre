@@ -215,9 +215,9 @@ export default function AdminBookingsPage() {
     // 1. Base Theatre Cost
     let base = 899;
     if (draft.theatre_id === 1 || draft.theatre_id === 4) base = 899;
-    else if (draft.theatre_id === 2 || draft.theatre_id === 5) base = 1499;
-    else if (draft.theatre_id === 3 || draft.theatre_id === 6) base = 1699;
+    else if (draft.theatre_id === 2 || draft.theatre_id === 3 || draft.theatre_id === 6) base = 1699;
     else if (draft.theatre_id === 7) base = 1599;
+    else if (draft.theatre_id === 5) base = 1499;
 
     // 2. Package Additions (Standard: +₹600 for Décor+Cake+Fog, Premium: +₹1,500 VIP, Custom: ₹0)
     let pkgAdd = 600;
@@ -286,9 +286,7 @@ export default function AdminBookingsPage() {
   const handleTheatreChange = (theatreId: number) => {
     let defaultGuests = 2;
     if (theatreId === 1 || theatreId === 4) defaultGuests = 2;
-    else if (theatreId === 2 || theatreId === 5) defaultGuests = 6;
-    else if (theatreId === 3 || theatreId === 6) defaultGuests = 12;
-    else if (theatreId === 7) defaultGuests = 8;
+    else defaultGuests = 6; // All Celebration & Family rooms are base 6 guests
 
     setManualForm(prev => {
       const next = {
@@ -1135,15 +1133,15 @@ export default function AdminBookingsPage() {
                       {manualForm.branch_id === 1 ? (
                         <>
                           <option value={1}>🎬 Couple Theater (₹899 • 2 Guests)</option>
-                          <option value={2}>🎉 Celebration Theater (₹1499 • 6 Guests)</option>
-                          <option value={3}>👨‍👩‍👧‍👦 Family Theater (₹1699 • 12-20 Guests)</option>
+                          <option value={2}>🎉 Celebration Theater (₹1699 • 6 Guests)</option>
+                          <option value={3}>👨‍👩‍👧‍👦 Family Theater (₹1699 • 6 Guests)</option>
                         </>
                       ) : (
                         <>
                           <option value={4}>🦋 Butterfly Blush (₹899 • 2 Guests)</option>
                           <option value={5}>🪻 Lavender Mist (₹1499 • 6 Guests)</option>
-                          <option value={6}>🌹 Scarlet Red (₹1699 • 12 Guests)</option>
-                          <option value={7}>🖤 Shadow Suit (₹1599 • 8 Guests)</option>
+                          <option value={6}>🌹 Scarlet Red (₹1699 • 6 Guests)</option>
+                          <option value={7}>🖤 Shadow Suit (₹1599 • 6 Guests)</option>
                         </>
                       )}
                     </select>

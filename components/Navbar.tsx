@@ -40,17 +40,21 @@ export default function Navbar() {
     { name: 'Contact', href: '/contact' },
   ];
 
+  const isHome = pathname === '/';
+
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${
       scrolled 
-        ? 'bg-white/95 backdrop-blur-xl shadow-md py-2 sm:py-2.5 border-b border-[#00A2E4]/15' 
-        : 'bg-[#F6FAFD]/95 backdrop-blur-md py-2 sm:py-3 border-b border-[#00A2E4]/10'
+        ? 'bg-[#082052]/95 backdrop-blur-xl shadow-xl py-2 sm:py-2.5 border-b border-white/10 text-white' 
+        : isHome
+        ? 'bg-gradient-to-b from-[#082052]/80 via-[#082052]/40 to-transparent backdrop-blur-xs py-2.5 sm:py-3.5 border-b border-white/10 text-white'
+        : 'bg-[#082052]/95 backdrop-blur-xl shadow-md py-2 sm:py-3 border-b border-white/10 text-white'
     }`}>
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between">
         
         {/* Brand Logo - Authentic Vector Emblem (Zoomed, High-Contrast & Crisp) */}
         <Link href="/" className="flex items-center gap-2 group shrink-0">
-          <div className="h-10 sm:h-12 md:h-14 w-[96px] sm:w-[124px] md:w-[145px] flex items-center group-hover:scale-105 transition-transform drop-shadow-[0_2px_6px_rgba(20,17,16,0.10)]" style={{ aspectRatio: '370 / 160' }}>
+          <div className="h-10 sm:h-12 md:h-14 w-[96px] sm:w-[124px] md:w-[145px] flex items-center group-hover:scale-105 transition-transform drop-shadow-[0_2px_8px_rgba(0,0,0,0.30)]" style={{ aspectRatio: '370 / 160' }}>
             <MovieBashLogo className="h-full w-full block" />
           </div>
         </Link>
@@ -59,8 +63,8 @@ export default function Navbar() {
         <nav className="hidden lg:flex items-center gap-7">
           <Link
             href="/"
-            className={`text-sm font-semibold transition-colors hover:text-[#00A2E4] ${
-              pathname === '/' ? 'text-[#0B2238] font-black' : 'text-stone-700'
+            className={`text-sm font-bold transition-colors hover:text-[#00A2E4] drop-shadow-sm ${
+              pathname === '/' ? 'text-white underline decoration-[#00A2E4] decoration-2 underline-offset-8' : 'text-white/80'
             }`}
           >
             Home
@@ -72,7 +76,7 @@ export default function Navbar() {
               onClick={() => setVenuesOpen(!venuesOpen)}
               onMouseEnter={() => setVenuesOpen(true)}
               suppressHydrationWarning
-              className="flex items-center gap-1.5 text-sm font-semibold text-stone-700 hover:text-[#00A2E4] transition-colors py-2 cursor-pointer"
+              className="flex items-center gap-1.5 text-sm font-bold text-white/80 hover:text-[#00A2E4] transition-colors py-2 cursor-pointer drop-shadow-sm"
             >
               <span>Our Venues</span>
               <ChevronDown className="w-4 h-4 text-[#00A2E4] transition-transform group-hover:rotate-180" />
@@ -80,38 +84,38 @@ export default function Navbar() {
 
             {venuesOpen && (
               <div 
-                className="absolute top-full left-0 w-72 bg-[#F6FAFD] rounded-2xl shadow-xl border border-[#00A2E4]/15 p-3 flex flex-col gap-2 z-50 animate-in fade-in slide-in-from-top-2"
+                className="absolute top-full left-0 w-72 bg-[#082052]/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/15 p-3 flex flex-col gap-2 z-50 animate-in fade-in slide-in-from-top-2 text-white"
                 onMouseEnter={() => setVenuesOpen(true)}
                 onMouseLeave={() => setVenuesOpen(false)}
               >
                 <Link
                   href="/venues/electronic-city"
                   onClick={() => setVenuesOpen(false)}
-                  className="p-3 rounded-xl hover:bg-[#E6F3FB] transition-colors flex items-start gap-3 group/item"
+                  className="p-3 rounded-xl hover:bg-white/10 transition-colors flex items-start gap-3 group/item"
                 >
-                  <div className="p-2 rounded-lg bg-[#E6F3FB] text-[#00A2E4] group-hover/item:bg-[#0B2238] group-hover/item:text-white transition-colors">
+                  <div className="p-2 rounded-lg bg-white/10 text-[#00A2E4] group-hover/item:bg-[#00A2E4] group-hover/item:text-white transition-colors">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-[#0B2238]">Electronic City</h4>
-                    <p className="text-xs text-stone-500 mt-0.5">3 Theatres • Couple, Party &amp; Family</p>
+                    <h4 className="text-sm font-bold text-white">Electronic City</h4>
+                    <p className="text-xs text-white/70 mt-0.5">3 Theatres • Couple, Party &amp; Family</p>
                   </div>
                 </Link>
 
                 <Link
                   href="/venues/btm-stage-2"
                   onClick={() => setVenuesOpen(false)}
-                  className="p-3 rounded-xl hover:bg-[#E6F3FB] transition-colors flex items-start gap-3 group/item"
+                  className="p-3 rounded-xl hover:bg-white/10 transition-colors flex items-start gap-3 group/item"
                 >
-                  <div className="p-2 rounded-lg bg-[#E6F3FB] text-[#00A2E4] group-hover/item:bg-[#0B2238] group-hover/item:text-white transition-colors">
+                  <div className="p-2 rounded-lg bg-white/10 text-[#00A2E4] group-hover/item:bg-[#00A2E4] group-hover/item:text-white transition-colors">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="text-sm font-bold text-[#0B2238]">BTM 2nd Stage</h4>
+                      <h4 className="text-sm font-bold text-white">BTM 2nd Stage</h4>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#00A2E4] text-white">4 SCREENS</span>
                     </div>
-                    <p className="text-xs text-stone-500 mt-0.5">4 Theatres • Near Udupi Garden</p>
+                    <p className="text-xs text-white/70 mt-0.5">4 Theatres • Near Udupi Garden</p>
                   </div>
                 </Link>
               </div>
@@ -122,8 +126,8 @@ export default function Navbar() {
             <Link
               key={item.name}
               href={item.href}
-              className={`text-sm font-semibold transition-colors hover:text-[#00A2E4] ${
-                pathname === item.href ? 'text-[#0B2238] font-bold' : 'text-stone-700'
+              className={`text-sm font-bold transition-colors hover:text-[#00A2E4] drop-shadow-sm ${
+                pathname === item.href ? 'text-white underline decoration-[#00A2E4] decoration-2 underline-offset-8' : 'text-white/80'
               }`}
             >
               {item.name}
@@ -137,16 +141,16 @@ export default function Navbar() {
             href="https://wa.me/919902923656?text=Hi%20Movie%20Bash%2C%20I%20want%20to%20inquire%20about%20booking%20a%20private%20theatre"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold text-[#0B2238] bg-[#E6F3FB] hover:bg-[#F8F0E5] border border-[#00A2E4]/25 transition-all hover:scale-105"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold text-white bg-white/15 hover:bg-white/25 border border-white/20 backdrop-blur-md transition-all hover:scale-105"
             title="Chat on WhatsApp"
           >
-            <Phone className="w-3.5 h-3.5 text-emerald-600" />
+            <Phone className="w-3.5 h-3.5 text-emerald-400" />
             <span>WhatsApp</span>
           </a>
 
           <Link
             href="/book-now"
-            className="flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-black text-white bg-[#082052] hover:bg-[#041224] hover:from-[#082052] hover:to-[#00A2E4] shadow-md shadow-[#00A2E4]/20 transition-all hover:scale-105"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-black text-white bg-[#00A2E4] hover:bg-[#0072AE] shadow-lg shadow-[#00A2E4]/25 transition-all hover:scale-105"
           >
             <CalendarDays className="w-4 h-4 text-white" />
             <span>Book Now</span>
@@ -157,10 +161,10 @@ export default function Navbar() {
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           suppressHydrationWarning
-          className="lg:hidden p-2.5 rounded-xl text-[#0B2238] bg-[#E6F3FB] border border-[#00A2E4]/20 hover:bg-[#F8F0E5] active:scale-95 transition-all cursor-pointer"
+          className="lg:hidden p-2.5 rounded-xl text-white bg-white/15 border border-white/20 hover:bg-white/25 active:scale-95 transition-all cursor-pointer"
           aria-label="Toggle navigation menu"
         >
-          {mobileMenuOpen ? <X className="w-6 h-6 text-[#00A2E4]" /> : <Menu className="w-6 h-6 text-[#0B2238]" />}
+          {mobileMenuOpen ? <X className="w-6 h-6 text-[#00A2E4]" /> : <Menu className="w-6 h-6 text-white" />}
         </button>
       </div>
 
@@ -174,10 +178,10 @@ export default function Navbar() {
 
       {/* Mobile Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden absolute top-full inset-x-0 bg-[#F6FAFD] border-b-2 border-[#00A2E4]/25 shadow-2xl p-5 flex flex-col gap-4 max-h-[85vh] overflow-y-auto z-50 animate-in slide-in-from-top-2 duration-200">
+        <div className="lg:hidden absolute top-full inset-x-0 bg-[#082052] border-b-2 border-[#00A2E4]/40 shadow-2xl p-5 flex flex-col gap-4 max-h-[85vh] overflow-y-auto z-50 animate-in slide-in-from-top-2 duration-200 text-white">
           
           {/* Venues Selector Pill */}
-          <div className="bg-[#F6FAFD] p-3 rounded-2xl border border-[#00A2E4]/20 space-y-2">
+          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 space-y-2">
             <span className="text-[11px] font-black uppercase tracking-wider text-[#00A2E4] block px-1">
               Select Your Venue:
             </span>
@@ -185,7 +189,7 @@ export default function Navbar() {
               <Link
                 href="/venues/electronic-city"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#00A2E4]/15 text-sm font-bold text-[#0B2238] hover:bg-[#00A2E4] hover:text-white transition-colors"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-white/10 border border-white/10 text-sm font-bold text-white hover:bg-[#00A2E4] transition-colors"
               >
                 <span className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-[#00A2E4]" /> Electronic City Branch
@@ -195,7 +199,7 @@ export default function Navbar() {
               <Link
                 href="/venues/btm-stage-2"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#00A2E4]/15 text-sm font-bold text-[#0B2238] hover:bg-[#00A2E4] hover:text-white transition-colors"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-white/10 border border-white/10 text-sm font-bold text-white hover:bg-[#00A2E4] transition-colors"
               >
                 <span className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-[#00A2E4]" /> BTM 2nd Stage Branch
@@ -205,7 +209,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Navigation Links with Bold Ink Typography */}
+          {/* Navigation Links with Bold Typography */}
           <div className="flex flex-col gap-1 py-1">
             {navLinks.map((item) => (
               <Link
@@ -214,22 +218,22 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`px-3 py-2.5 rounded-xl text-base font-bold transition-all flex items-center justify-between ${
                   pathname === item.href 
-                    ? 'text-[#00A2E4] bg-[#E6F3FB] font-black' 
-                    : 'text-[#0B2238] hover:bg-[#E6F3FB] hover:text-[#00A2E4]'
+                    ? 'text-[#00A2E4] bg-white/10 font-black' 
+                    : 'text-white/80 hover:bg-white/10 hover:text-white'
                 }`}
               >
                 <span>{item.name}</span>
-                <span className="text-xs text-stone-400 font-bold">&rsaquo;</span>
+                <span className="text-xs text-white/50 font-bold">&rsaquo;</span>
               </Link>
             ))}
           </div>
 
           {/* Action CTAs */}
-          <div className="pt-3 border-t border-[#00A2E4]/15 flex flex-col gap-2.5">
+          <div className="pt-3 border-t border-white/15 flex flex-col gap-2.5">
             <Link
               href="/book-now"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-3.5 rounded-full text-sm font-black text-white bg-[#082052] hover:bg-[#041224] shadow-lg shadow-[#00A2E4]/25 active:scale-98 transition-transform"
+              className="w-full text-center py-3.5 rounded-full text-sm font-black text-white bg-[#00A2E4] hover:bg-[#0072AE] shadow-lg shadow-[#00A2E4]/25 active:scale-98 transition-transform"
             >
               Book Your Private Screen Now
             </Link>
@@ -238,9 +242,9 @@ export default function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-3 rounded-full text-xs sm:text-sm font-bold text-[#0B2238] bg-[#E6F3FB] border border-[#00A2E4]/25 flex items-center justify-center gap-2 active:scale-98 transition-transform"
+              className="w-full text-center py-3 rounded-full text-xs sm:text-sm font-bold text-white bg-white/15 border border-white/20 flex items-center justify-center gap-2 active:scale-98 transition-transform"
             >
-              <Phone className="w-4 h-4 text-emerald-600" />
+              <Phone className="w-4 h-4 text-emerald-400" />
               <span>WhatsApp Us (+91 99029 23656)</span>
             </a>
             <a
