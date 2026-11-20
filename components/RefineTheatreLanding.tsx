@@ -981,33 +981,9 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
     window.addEventListener('mb:intro-done', revealHero);
     const revealFallback = window.setTimeout(revealHero, 3300);
 
-    const media = heroMediaRef.current;
-    const hero = heroRef.current;
-    let raf = 0;
-
-    const updateZoom = () => {
-      raf = 0;
-      if (!media || !hero || reduceMotion) return;
-      const height = hero.offsetHeight || 1;
-      const progress = Math.min(1, Math.max(0, window.scrollY / height));
-      media.style.transform = `scale(${(1 + progress * 0.16).toFixed(4)}) translate3d(0, ${(
-        progress * 2.2
-      ).toFixed(3)}%, 0)`;
-    };
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(updateZoom);
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    updateZoom();
-
     return () => {
       window.removeEventListener('mb:intro-done', revealHero);
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
       window.clearTimeout(revealFallback);
-      if (raf) cancelAnimationFrame(raf);
     };
   }, []);
 
@@ -1510,19 +1486,19 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
         >
           {/* Ambient Real BTM Celebration Hall Background - Crisp, Vibrant & Natural */}
           <div ref={heroMediaRef} className="hero-media absolute inset-0 z-0 overflow-hidden">
-            <div className={`hero-media-frame${heroRevealed ? ' is-in' : ''} w-full h-full relative`}>
+            <div className="w-full h-full relative">
               <Image
                 src="/images/hero_8441.webp"
                 alt="Movie Bash BTM 2nd Stage Celebration Hall"
                 fill
                 priority
-                className="object-cover scale-105"
+                className="object-cover object-[center_20%]"
                 sizes="100vw"
               />
             </div>
             {/* Subtle soft transparent scrim only for text contrast without muting photo colors */}
-            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/45 pointer-events-none" />
+            <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/35 pointer-events-none" />
           </div>
 
           <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
@@ -2117,17 +2093,6 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                             className="object-cover group-hover:scale-105 transition-transform duration-700"
                             sizes="(max-width: 768px) 100vw, 500px"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent pointer-events-none" />
-                          <div className="absolute top-3 left-3 z-10">
-                            <span className="px-3 py-1 rounded-full bg-white/95 backdrop-blur-xs text-[#082052] text-[11px] font-black shadow-md border border-slate-200">
-                              {item.badge}
-                            </span>
-                          </div>
-                          <div className="absolute bottom-3 right-3 z-10">
-                            <span className="px-3 py-1 rounded-full bg-[#00A2E4] text-white text-[11px] font-black shadow-md">
-                              100% Private Theatre
-                            </span>
-                          </div>
                         </div>
                       </div>
 
