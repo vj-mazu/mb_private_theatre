@@ -95,7 +95,7 @@ export default function AdminDashboardPage() {
 
           <Link
             href="/admin/bookings?action=new"
-            className="px-4 py-2 rounded-2xl text-xs font-black text-white bg-gradient-to-r from-[#f39a4b] to-[#e6832e] hover:shadow-[0_8px_25px_rgba(243,154,75,0.35)] shadow-md flex items-center gap-1.5 shrink-0 transition-all active:scale-95 cursor-pointer"
+            className="px-4 py-2 rounded-2xl text-xs font-black text-white bg-[#00A2E4] hover:bg-[#0072AE] shadow-md shadow-md flex items-center gap-1.5 shrink-0 transition-all active:scale-95 cursor-pointer"
           >
             <PhoneCall className="w-4 h-4" />
             <span>+ Phone Call Booking</span>
@@ -109,13 +109,13 @@ export default function AdminDashboardPage() {
         {/* Today's Daily Revenue */}
         <div className="p-5 rounded-3xl bg-white border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] hover:border-sky-300 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#f39a4b] block">Today&apos;s Revenue</span>
-            <Clock className="w-4 h-4 text-[#f39a4b]" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#0072AE] block">Today&apos;s Revenue</span>
+            <Clock className="w-4 h-4 text-[#0072AE]" />
           </div>
           <div className="font-playfair text-2xl sm:text-3xl font-black text-ink mt-1">
             ₹{(metrics.today_revenue || 0).toLocaleString()}
           </div>
-          <span className="text-[11px] text-[#f39a4b] font-bold mt-1 block">
+          <span className="text-[11px] text-[#0072AE] font-bold mt-1 block">
             {metrics.todays_bookings} shows scheduled today
           </span>
         </div>

@@ -187,13 +187,17 @@ export default function AdminBookingsPage() {
     loadSlots();
   }, [showManualModal, manualForm.theatre_id, manualForm.booking_date]);
 
-  // Addons catalog for operational booking
-  const ADDONS_CATALOG: Record<string, { label: string; price: number }> = {
-    fog: { label: 'Dramatic Fog Entry', price: 499 },
-    pyro: { label: 'Cold Pyro Sparklers (2 Shots)', price: 399 },
-    marquee: { label: 'LED Marquee Name Letters', price: 299 },
-    bouquet: { label: 'Fresh Red Rose Bouquet', price: 499 },
-    photo: { label: 'Pro Photography & 4K Video', price: 999 },
+  // Addons catalog for operational booking (all active celebration enhancements)
+  const ADDONS_CATALOG: Record<string, { label: string; price: number; icon: string }> = {
+    fog: { label: 'Dramatic Fog Entry', price: 499, icon: '🌫️' },
+    pyro: { label: 'Cold Pyro Sparklers (2 Shots)', price: 399, icon: '🎆' },
+    marquee: { label: 'LED Marquee Name Letters', price: 299, icon: '💡' },
+    bouquet: { label: 'Fresh Red Rose Bouquet', price: 499, icon: '💐' },
+    photo: { label: 'Pro Photography & 4K Video', price: 999, icon: '📸' },
+    reel: { label: '4K Cinematic iPhone Reel', price: 799, icon: '📱' },
+    bubble: { label: 'Romantic Bubble Entry', price: 399, icon: '🫧' },
+    teddy: { label: 'Giant Teddy Mascot Surprise', price: 699, icon: '🧸' },
+    petals: { label: 'Red Rose Petals Pathway', price: 399, icon: '🌹' },
   };
 
   const recomputeManualTotal = (draft: typeof manualForm) => {
@@ -387,7 +391,10 @@ export default function AdminBookingsPage() {
       (b.extra_hours > 0 ? `⏳ *Extended Duration:* +${b.extra_hours} Hour Extra Showtime (${2 + Number(b.extra_hours)} Hours Total)\n` : `⏳ *Duration:* 2 Hours Standard Showtime\n`) +
       `👥 *Guests:* ${b.guests} ${b.extra_persons > 0 ? `(+${b.extra_persons} extra)` : ''}\n` +
       (b.screen_name ? `✨ *LED Screen Title:* "${b.screen_name}"\n` : '') +
-      (b.custom_item_name ? `🎁 *Custom Request:* ${b.custom_item_name} (+₹${b.custom_item_amount})\n` : '') +
+      (Array.isArray(b.addons) && b.addons.length > 0 
+        ? `🎁 *Celebration Add-ons:* ${b.addons.map((k: any) => ADDONS_CATALOG[typeof k === 'string' ? k : k.addon_name]?.label || (typeof k === 'string' ? k : k.addon_name || k.name)).join(', ')}\n` 
+        : '') +
+      (b.custom_item_name ? `🎀 *Custom Request:* ${b.custom_item_name} (+₹${b.custom_item_amount})\n` : '') +
       (b.discount > 0 ? `🏷️ *Discount Applied:* -₹${b.discount}\n` : '') +
       `💰 *Total Amount:* ₹${b.total}\n` +
       `✅ *Advance Paid:* ₹${b.advance_paid || 0}\n` +
@@ -403,7 +410,7 @@ export default function AdminBookingsPage() {
 
   // Send personalized WhatsApp confirmation to customer
   const sendCustomerWhatsApp = (b: any) => {
-    const phone = String(b.customer_phone).replace(/\D/g, '');
+    const phone = String(b.whatsapp_number || b.customer_phone).replace(/\D/g, '').slice(-10);
     const msg = encodeURIComponent(generateWhatsAppMessage(b));
     window.open(`https://wa.me/91${phone}?text=${msg}`, '_blank');
   };
@@ -716,15 +723,27 @@ export default function AdminBookingsPage() {
                     
                     {/* Ref & Customer */}
                     <td className="py-2.5 px-3 border border-slate-300 align-middle">
-                      <strong className="block text-slate-900 font-extrabold text-[12.5px] truncate">{b.customer_name}</strong>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="font-mono text-[#155fbd] font-bold text-[10.5px] bg-sky-50 px-1 py-0.5 rounded border border-sky-300 shrink-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <strong className="text-slate-900 font-extrabold text-[12.5px] truncate">{b.customer_name}</strong>
+                        {b.special_person_name && (
+                          <span className="text-[10px] font-black text-[#0072AE] bg-sky-50 px-1.5 py-0.2 rounded-full border border-sky-200">
+                            ❤️ {b.special_person_name}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                        <span className="font-mono text-[#0072AE] font-bold text-[10.5px] bg-sky-50 px-1 py-0.5 rounded border border-sky-300 shrink-0">
                           {b.booking_ref}
                         </span>
                         <a href={`tel:${b.customer_phone}`} className="hover:underline flex items-center gap-1 text-[11px] font-semibold text-slate-700 truncate">
                           <Phone className="w-3 h-3 text-slate-400 shrink-0" />
                           <span className="truncate">{b.customer_phone}</span>
                         </a>
+                        {b.occasion && (
+                          <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200 truncate">
+                            {b.occasion}
+                          </span>
+                        )}
                       </div>
                     </td>
 
@@ -762,13 +781,20 @@ export default function AdminBookingsPage() {
                     {/* Source */}
                     <td className="py-2.5 px-2 border border-slate-300 align-middle text-center">
                       <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9.5px] font-extrabold uppercase border whitespace-nowrap ${
-                        b.source === 'phone' 
+                        b.source === 'phone_call' || b.source === 'phone'
                           ? 'bg-amber-50 text-amber-900 border-amber-300' 
-                          : b.source === 'walk_in'
+                          : b.source === 'whatsapp'
+                          ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
+                          : b.source === 'walkin' || b.source === 'walk_in'
                           ? 'bg-purple-50 text-purple-900 border-purple-300'
+                          : b.source === 'instagram'
+                          ? 'bg-pink-50 text-pink-900 border-pink-300'
                           : 'bg-sky-50 text-sky-900 border-sky-300'
                       }`}>
-                        {b.source === 'phone' ? '📞 Phone' : b.source === 'walk_in' ? '🚶 Walk-in' : '🌐 Web'}
+                        {b.source === 'phone_call' || b.source === 'phone' ? '📞 Call' :
+                         b.source === 'whatsapp' ? '💬 WhatsApp' :
+                         b.source === 'walkin' || b.source === 'walk_in' ? '🚶 Walk-in' :
+                         b.source === 'instagram' ? '📸 Insta' : '🌐 Web'}
                       </span>
                     </td>
 
@@ -870,33 +896,156 @@ export default function AdminBookingsPage() {
               <button onClick={() => setSelectedBooking(null)}><X className="w-5 h-5 text-slate-500" /></button>
             </div>
 
-            <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-[#fffdf9] border border-sky-100">
-                <div>
-                  <span className="text-slate-500 block">Phone</span>
-                  <a href={`tel:${selectedBooking.customer_phone}`} className="font-bold text-[#237eea] hover:underline">
-                    +91 {selectedBooking.customer_phone}
-                  </a>
+            <div className="space-y-3.5 text-xs">
+              
+              {/* Card 1: Celebrant & Customer Info */}
+              <div className="p-3.5 rounded-2xl bg-[#F6FAFD] border border-sky-100 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#0072AE]">
+                    1. Celebrant &amp; Customer
+                  </span>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
+                    selectedBooking.status === 'confirmed' ? 'bg-emerald-100 text-emerald-800' :
+                    selectedBooking.status === 'completed' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800'
+                  }`}>
+                    {selectedBooking.status}
+                  </span>
                 </div>
-                <div>
-                  <span className="text-slate-500 block">Status</span>
-                  <span className="font-bold uppercase text-emerald-700">{selectedBooking.status}</span>
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div>
+                    <span className="text-slate-500 text-[10.5px] block font-medium">Special Person&apos;s Name</span>
+                    <strong className="text-slate-900 text-xs font-black">
+                      {selectedBooking.special_person_name || selectedBooking.customer_name}
+                    </strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 text-[10.5px] block font-medium">Occasion</span>
+                    <strong className="text-amber-800 text-xs font-bold">
+                      {selectedBooking.occasion || selectedBooking.occasion_name || 'Celebration'}
+                    </strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 text-[10.5px] block font-medium">WhatsApp Number</span>
+                    <a href={`https://wa.me/91${selectedBooking.whatsapp_number || selectedBooking.customer_phone}`} target="_blank" rel="noreferrer" className="font-black text-[#0072AE] hover:underline flex items-center gap-1">
+                      <Phone className="w-3 h-3" /> +91 {selectedBooking.whatsapp_number || selectedBooking.customer_phone}
+                    </a>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 text-[10.5px] block font-medium">Booked By (Name)</span>
+                    <span className="font-bold text-slate-800">{selectedBooking.customer_name}</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-slate-500 block">Theatre &amp; Branch</span>
-                  <span className="font-bold text-ink">{selectedBooking.theatre_name} &bull; {selectedBooking.branch_name}</span>
+              </div>
+
+              {/* Card 2: Venue, Theatre & Showtime */}
+              <div className="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#0B2238] block">
+                  2. Venue &amp; Showtime
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <span className="text-slate-500 text-[10.5px] block font-medium">Branch</span>
+                    <span className="font-black text-[#0B2238]">{selectedBooking.branch_name}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 text-[10.5px] block font-medium">Private Theatre</span>
+                    <span className="font-black text-[#0072AE] flex items-center gap-1">
+                      <span>{selectedBooking.theatre_emoji || '🎬'}</span>
+                      <span>{selectedBooking.theatre_name}</span>
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 text-[10.5px] block font-medium">Date &amp; Showtime</span>
+                    <span className="font-black text-slate-900">{selectedBooking.booking_date} ({selectedBooking.slot_time})</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 text-[10.5px] block font-medium">Duration &amp; Extra Hours</span>
+                    <span className="font-bold text-slate-800">
+                      {selectedBooking.extra_hours > 0 ? `+${selectedBooking.extra_hours} Hour Extra (${2 + Number(selectedBooking.extra_hours)} Hours Total)` : 'Standard 2 Hours'}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-slate-500 block">Date &amp; Slot</span>
-                  <span className="font-bold text-ink">{selectedBooking.booking_date} ({selectedBooking.slot_time})</span>
+              </div>
+
+              {/* Card 3: Package, Cake, Addons & Custom Items */}
+              <div className="p-3.5 rounded-2xl bg-[#FFFDF9] border border-amber-200/70 space-y-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-900 block">
+                  3. Celebration Package, Cake &amp; Add-ons
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <span className="text-slate-500 text-[10.5px] block font-medium">Package</span>
+                    <span className="font-black text-[#0B2238] uppercase">{selectedBooking.package_type || 'STANDARD'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 text-[10.5px] block font-medium">Cake Flavour</span>
+                    <span className="font-bold text-slate-800">{selectedBooking.cake_flavor || 'None / Own Cake'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 text-[10.5px] block font-medium">Guests Attending</span>
+                    <span className="font-bold text-slate-800">
+                      {selectedBooking.guests} guests {selectedBooking.extra_persons > 0 ? `(+${selectedBooking.extra_persons} extra)` : ''}
+                    </span>
+                  </div>
+                  {selectedBooking.custom_item_name && (
+                    <div>
+                      <span className="text-slate-500 text-[10.5px] block font-medium">Custom Request</span>
+                      <span className="font-bold text-amber-800">
+                        {selectedBooking.custom_item_name} (+₹{selectedBooking.custom_item_amount || 0})
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <span className="text-slate-500 block">Total Amount</span>
-                  <span className="font-bold text-base text-slate-900">₹{selectedBooking.total}</span>
+
+                {/* Addons List */}
+                {selectedBooking.addons && selectedBooking.addons.length > 0 && (
+                  <div className="pt-2 border-t border-amber-200/60">
+                    <span className="text-slate-500 text-[10px] uppercase font-bold block mb-1">Active Add-ons:</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedBooking.addons.map((a: any, i: number) => {
+                        const addonKey = typeof a === 'string' ? a : a.addon_name || a.name || `Addon ${i+1}`;
+                        const addonLabel = ADDONS_CATALOG[addonKey]?.label || addonKey;
+                        const addonPrice = ADDONS_CATALOG[addonKey]?.price || a.price || '';
+                        return (
+                          <span key={i} className="px-2 py-0.5 rounded-lg bg-white border border-amber-300 text-amber-950 font-bold text-[10.5px] flex items-center gap-1 shadow-2xs">
+                            <span>✓</span>
+                            <span>{addonLabel}</span>
+                            {addonPrice && <span className="text-[#0072AE] font-black">(₹{addonPrice})</span>}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Card 4: Financial Calculation & Payment */}
+              <div className="p-4 rounded-2xl bg-[#082052] text-white space-y-2 shadow-sm">
+                <div className="flex items-center justify-between text-[11px] border-b border-white/10 pb-1.5">
+                  <span className="text-white/70 uppercase font-black tracking-wider">Financial Breakdown</span>
+                  <span className="font-bold text-sky-300">
+                    Source: {selectedBooking.source === 'phone_call' ? '📞 Phone Call' : selectedBooking.source === 'whatsapp' ? '💬 WhatsApp' : selectedBooking.source === 'walkin' ? '🚶 Walk-in' : '🌐 Website'}
+                  </span>
                 </div>
-                <div>
-                  <span className="text-slate-500 block">Advance / Balance</span>
-                  <span className="font-bold text-emerald-700">₹{selectedBooking.advance_paid || 0}</span> / <span className="font-bold text-amber-700">₹{selectedBooking.balance || 0}</span>
+                <div className="grid grid-cols-3 gap-2 pt-1 text-center">
+                  <div className="p-2 rounded-xl bg-white/10 border border-white/15">
+                    <span className="text-[10px] text-white/70 block font-bold">Total Amount</span>
+                    <strong className="text-base font-black text-white">₹{selectedBooking.total}</strong>
+                  </div>
+                  <div className="p-2 rounded-xl bg-emerald-500/20 border border-emerald-400/40">
+                    <span className="text-[10px] text-emerald-200 block font-bold">Advance Paid</span>
+                    <strong className="text-base font-black text-emerald-300">₹{selectedBooking.advance_paid || 0}</strong>
+                  </div>
+                  <div className="p-2 rounded-xl bg-amber-500/20 border border-amber-400/40">
+                    <span className="text-[10px] text-amber-200 block font-bold">Balance Due</span>
+                    <strong className="text-base font-black text-amber-300">₹{selectedBooking.balance || 0}</strong>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pt-1 text-[11px] text-white/80">
+                  <span>Payment Type: <strong className="text-white font-bold">{selectedBooking.payment_type || 'UPI'}</strong></span>
+                  {selectedBooking.discount > 0 && (
+                    <span className="text-rose-300 font-bold">Discount: -₹{selectedBooking.discount}</span>
+                  )}
                 </div>
               </div>
 
@@ -1331,6 +1480,8 @@ export default function AdminBookingsPage() {
                     <option value="Black Forest (500g)">🍒 Black Forest (500g)</option>
                     <option value="Butterscotch (500g)">🍯 Butterscotch (500g)</option>
                     <option value="Fresh Pineapple (500g)">🍍 Fresh Pineapple (500g)</option>
+                    <option value="Alphonso Mango (500g)">🥭 Alphonso Mango (500g)</option>
+                    <option value="Blueberry Bliss (500g)">🫐 Blueberry Bliss (500g)</option>
                     <option value="None">🚫 None (Bringing Own Cake / ₹0)</option>
                   </select>
                 </div>
@@ -1349,12 +1500,17 @@ export default function AdminBookingsPage() {
                 </div>
               </div>
 
-              {/* SECTION 6: Addons (Field 10) */}
-              <div className="space-y-1.5 p-3 rounded-2xl bg-[#F6FAFD] border border-sky-100">
-                <span className="font-bold text-[#0B2238] block text-[11px]">
-                  Celebration Add-ons (Tap to select)
-                </span>
-                <div className="flex flex-wrap gap-2">
+              {/* SECTION 6: Addons (Field 10: Horizontal Quick Chips) */}
+              <div className="space-y-2 p-3.5 rounded-2xl bg-[#F6FAFD] border border-sky-100">
+                <div className="flex items-center justify-between">
+                  <span className="font-extrabold text-[#0B2238] block text-[11px] uppercase tracking-wider">
+                    🎁 Celebration Add-ons (Horizontal Quick Chips)
+                  </span>
+                  <span className="text-[10px] font-bold text-[#0072AE] bg-sky-100/70 px-2 py-0.5 rounded-full">
+                    {manualForm.addons.length} selected
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {Object.entries(ADDONS_CATALOG).map(([key, item]) => {
                     const isSelected = manualForm.addons.includes(key);
                     return (
@@ -1362,15 +1518,17 @@ export default function AdminBookingsPage() {
                         type="button"
                         key={key}
                         onClick={() => toggleManualAddon(key)}
-                        className={`px-3 py-1.5 rounded-xl border text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
+                        className={`p-2 rounded-xl border text-left text-xs transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
                           isSelected
-                            ? 'border-[#00A2E4] bg-[#00A2E4] text-white font-bold shadow-2xs'
-                            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                            ? 'border-[#00A2E4] bg-[#00A2E4] text-white font-black shadow-xs'
+                            : 'border-slate-200 bg-white text-slate-800 hover:border-[#00A2E4]/60'
                         }`}
                       >
-                        <span>{isSelected ? '✓' : '+'}</span>
-                        <span>{item.label}</span>
-                        <span className={`text-[10px] ${isSelected ? 'text-white/90' : 'text-slate-500'}`}>
+                        <span className="flex items-center gap-1.5 truncate">
+                          <span className="shrink-0">{item.icon}</span>
+                          <span className="truncate font-bold text-[11px]">{item.label}</span>
+                        </span>
+                        <span className={`text-[10.5px] shrink-0 font-extrabold ${isSelected ? 'text-white' : 'text-[#0072AE]'}`}>
                           ₹{item.price}
                         </span>
                       </button>

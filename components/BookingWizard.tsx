@@ -198,6 +198,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
 
   // Step 4 Celebration Details
   const [occasionId, setOccasionId] = useState<number>(1);
+  const [specialPersonName, setSpecialPersonName] = useState<string>('');
   const [guestsCount, setGuestsCount] = useState<number>(2);
   const [screenName, setScreenName] = useState<string>('');
   const [ledNumberText, setLedNumberText] = useState<string>('');
@@ -787,7 +788,9 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
           extra_hours: extraHours,
           guests: guestsCount,
           customer_name: trimmedName,
+          special_person_name: specialPersonName.trim(),
           customer_phone: cleanPhone,
+          whatsapp_number: cleanPhone,
           customer_email: customerEmail.trim(),
           screen_name: screenName + (ledNumberText ? ` | LED: ${ledNumberText}` : '') + (cakeMessage ? ` | Cake: ${cakeMessage}` : ''),
           occasion_id: occasionId,
@@ -1667,7 +1670,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                             onClick={() => setSelectedCakeFlavor(cake.name)}
                             className={`p-3.5 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 cursor-pointer relative flex flex-col justify-between group hover:-translate-y-1 ${
                               isSelected
-                                ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5] via-white to-[#E6F3FB] shadow-[0_14px_36px_rgba(239,74,35,0.20)] ring-2 ring-[#00A2E4]/30 scale-[1.02]'
+                                ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5] via-white to-[#E6F3FB] shadow-[0_14px_36px_rgba(0,162,228,0.22)] ring-2 ring-[#00A2E4]/30 scale-[1.02]'
                                 : 'border-amber-200/80 bg-white/75 hover:bg-white/95 shadow-xs hover:shadow-md hover:border-[#00A2E4]/60'
                             }`}
                           >
@@ -1802,7 +1805,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                             onClick={() => setCustomFogPots(tier.pots)}
                             className={`py-2 px-1 rounded-xl text-center border-2 transition-all cursor-pointer backdrop-blur-md ${
                               customFogPots === tier.pots
-                                ? 'border-[#00A2E4] bg-gradient-to-r from-[#00A2E4] to-[#ff6b4a] text-white font-black shadow-md scale-[1.02]'
+                                ? 'border-[#00A2E4] bg-gradient-to-r from-[#00A2E4] to-[#0072AE] text-white font-black shadow-md scale-[1.02]'
                                 : 'border-slate-200/80 bg-white/80 text-slate-800 font-bold hover:border-[#00A2E4]/60 hover:bg-white text-xs'
                             }`}
                           >
@@ -1820,7 +1823,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(4) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customColdPyro
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -1848,7 +1851,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(9) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customRosePetals
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -1876,7 +1879,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(7) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customBouquet
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -1904,7 +1907,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(5) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customLedName
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -1932,7 +1935,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(11) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customBubbleEntry
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -1978,7 +1981,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                             onClick={() => setCustomPhotography(p.key as any)}
                             className={`py-2 px-1 rounded-xl text-center border-2 transition-all cursor-pointer backdrop-blur-md ${
                               customPhotography === p.key
-                                ? 'border-[#00A2E4] bg-gradient-to-r from-[#00A2E4] to-[#ff6b4a] text-white font-black shadow-md text-xs scale-[1.02]'
+                                ? 'border-[#00A2E4] bg-gradient-to-r from-[#00A2E4] to-[#0072AE] text-white font-black shadow-md text-xs scale-[1.02]'
                                 : 'border-slate-200/80 bg-white/80 text-slate-800 font-bold hover:border-[#00A2E4]/60 hover:bg-white text-xs'
                             }`}
                           >
@@ -1996,7 +1999,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(8) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customIphoneReel
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2024,7 +2027,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(10) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customTeddyMascot
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2059,7 +2062,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(4) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgColdPyro
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2087,7 +2090,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(3) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgExtraFogPot
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2115,7 +2118,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(7) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgBouquet
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2143,7 +2146,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(9) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgRosePetals
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2171,7 +2174,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(11) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgBubbleEntry
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2217,7 +2220,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                             onClick={() => setPkgPhotography(p.key as any)}
                             className={`py-2 px-1 rounded-xl text-center border-2 transition-all cursor-pointer backdrop-blur-md ${
                               pkgPhotography === p.key
-                                ? 'border-[#00A2E4] bg-gradient-to-r from-[#00A2E4] to-[#ff6b4a] text-white font-black shadow-md text-xs scale-[1.02]'
+                                ? 'border-[#00A2E4] bg-gradient-to-r from-[#00A2E4] to-[#0072AE] text-white font-black shadow-md text-xs scale-[1.02]'
                                 : 'border-slate-200/80 bg-white/80 text-slate-800 font-bold hover:border-[#00A2E4]/60 hover:bg-white text-xs'
                             }`}
                           >
@@ -2235,7 +2238,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(8) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgIphoneReel
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2263,7 +2266,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       style={{ display: addonActive(10) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgTeddyMascot
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
+                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
                           : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
                       }`}
                     >
@@ -2422,6 +2425,30 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 
+                {/* Special Person's Name */}
+                <div>
+                  <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1.5">
+                    Special Person’s Name <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Sneha / Arjun"
+                    value={specialPersonName}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setSpecialPersonName(val);
+                      if (!screenName || screenName.startsWith('Celebration for')) {
+                        setScreenName(val ? `Celebration for ${val} ❤️` : '');
+                      }
+                    }}
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-stone-200 text-xs sm:text-sm font-bold text-slate-900 focus:outline-none focus:border-[#00A2E4] focus:bg-white shadow-xs transition-colors"
+                  />
+                  <span className="text-[10px] text-slate-500 font-medium mt-1 block">
+                    Name for welcome board, LED marquee &amp; greeting
+                  </span>
+                </div>
+
                 {/* Occasion */}
                 <div>
                   <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1.5">
