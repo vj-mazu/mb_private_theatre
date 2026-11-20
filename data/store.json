@@ -1280,7 +1280,7 @@
   "adminUsers": [
     {
       "id": 1,
-      "name": "Super Admin",
+      "name": "naresh",
       "email": "admin@moviebash.in",
       "password_hash": "$2a$10$EKeJ5iwJ3s3Orb3xT9iSQuWwdYRFy.r9Gydoty1drXyDQzaghyI4.",
       "role": "super_admin",
@@ -1313,6 +1313,61 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": 1795160383360,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-20T07:39:43.360Z"
+    },
+    {
+      "id": 1795158902726,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-20T07:15:02.726Z"
+    },
+    {
+      "id": 1795158797367,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "UPDATE_STAFF_ACCOUNT",
+      "entity": "adminUsers",
+      "entity_id": "1",
+      "details": {
+        "name": "naresh",
+        "username": "admin",
+        "email": "admin@moviebash.in",
+        "branch_id": null,
+        "password_updated": false
+      },
+      "created_at": "2026-11-20T07:13:17.367Z"
+    },
+    {
+      "id": 1795158707585,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-20T07:11:47.585Z"
+    },
     {
       "id": 1795158196041,
       "user_id": 1,

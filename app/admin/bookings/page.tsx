@@ -25,7 +25,10 @@ import {
   PhoneCall,
   Sparkles,
   Copy,
-  ExternalLink
+  ExternalLink,
+  Ticket,
+  MapPin,
+  ChevronRight
 } from 'lucide-react';
 import { formatBookingSlotTime } from '@/lib/slot-engine';
 
@@ -46,6 +49,7 @@ export default function AdminBookingsPage() {
   const [paymentAddAmount, setPaymentAddAmount] = useState('');
   const [bookingSuccessData, setBookingSuccessData] = useState<any>(null);
   const [copiedText, setCopiedText] = useState(false);
+  const [copiedLiveTicket, setCopiedLiveTicket] = useState(false);
 
   // Reschedule modal states
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
@@ -61,7 +65,7 @@ export default function AdminBookingsPage() {
   const [rescheduleSlots, setRescheduleSlots] = useState<Array<any>>([]);
   const [loadingRescheduleSlots, setLoadingRescheduleSlots] = useState(false);
 
-  // Manual phone / operational booking form state (Full 17 Fields)
+  // Manual booking form state (Full 18 Operational Fields with Cake Weight & Packages)
   const [manualForm, setManualForm] = useState({
     customer_name: '',
     customer_phone: '',
@@ -69,26 +73,27 @@ export default function AdminBookingsPage() {
     special_person_name: '',
     customer_email: '',
     occasion: 'Birthday Party',
-    occasion_id: 2, // Birthday default
+    occasion_id: 2,
     branch_id: 1,
     theatre_id: 1,
     slot_id: 1,
-    slot_time: '',
+    slot_time: '10:00 AM - 12:00 PM',
     booking_date: getTodayIST(),
     screen_name: '',
-    package_type: 'standard', // 'standard' | 'custom' | 'premium'
+    package_type: 'standard', // 'standard' (Included Decor + Cake + Fog) | 'premium' (VIP Upgrade) | 'custom' (Room Only)
     guests: 2,
     extra_persons: 0,
     extra_hours: 0,
-    cake_flavor: 'Chocolate Truffle (500g)',
+    cake_flavor: 'Chocolate Truffle',
+    cake_weight: '500g', // '500g' | '1kg' | '1.5kg' | '2kg' | 'None'
     addons: [] as string[],
     custom_item_name: '',
     custom_item_amount: 0,
     discount: 0,
-    total: 899,
+    total: 1499,
     advance_paid: 500,
     payment_type: 'UPI', // 'UPI' | 'Cash' | 'Card' | 'Net Banking'
-    source: 'whatsapp', // 'whatsapp' | 'walkin' | 'phone_call' | 'instagram' | 'website'
+    source: 'phone_call', // 'whatsapp' | 'phone_call' | 'walkin' | 'instagram' | 'website'
     notes: ''
   });
 
@@ -140,7 +145,7 @@ export default function AdminBookingsPage() {
       if (statusFilter !== 'all') q.set('status', statusFilter);
       if (dateFilter) q.set('date', dateFilter);
       q.set('page', String(page));
-      q.set('limit', '20');
+      q.set('limit', '25');
 
       const res = await fetch(`/api/admin/bookings?${q.toString()}`);
       const json = await res.json();
@@ -169,12 +174,16 @@ export default function AdminBookingsPage() {
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
           setManualSlots(json.data);
-          // auto-select first available slot if current is invalid
           const currentValid = json.data.find((s: any) => s.id === manualForm.slot_id && !s.is_booked);
           if (!currentValid) {
             const firstAvail = json.data.find((s: any) => !s.is_booked);
             if (firstAvail) {
-              setManualForm(prev => ({ ...prev, slot_id: firstAvail.id }));
+              const timeStr = firstAvail.time || `${firstAvail.start_time} - ${firstAvail.end_time}`;
+              setManualForm(prev => ({ 
+                ...prev, 
+                slot_id: firstAvail.id,
+                slot_time: timeStr
+              }));
             }
           }
         }
@@ -200,18 +209,36 @@ export default function AdminBookingsPage() {
     petals: { label: 'Red Rose Petals Pathway', price: 399, icon: '🌹' },
   };
 
+  // Recompute total cleanly based on theatre, package, cake weight, extra persons, addons, and custom items
   const recomputeManualTotal = (draft: typeof manualForm) => {
+    // 1. Base Theatre Cost
     let base = 899;
     if (draft.theatre_id === 1 || draft.theatre_id === 4) base = 899;
     else if (draft.theatre_id === 2 || draft.theatre_id === 5) base = 1499;
     else if (draft.theatre_id === 3 || draft.theatre_id === 6) base = 1699;
     else if (draft.theatre_id === 7) base = 1599;
 
-    const pkgAdd = draft.package_type === 'premium' ? 1000 : draft.package_type === 'custom' ? 500 : 0;
+    // 2. Package Additions (Standard: +₹600 for Décor+Cake+Fog, Premium: +₹1,500 VIP, Custom: ₹0)
+    let pkgAdd = 600;
+    if (draft.package_type === 'custom') pkgAdd = 0;
+    else if (draft.package_type === 'premium') pkgAdd = 1500;
+    else if (draft.package_type === 'standard') pkgAdd = 600;
+
+    // 3. Extra Persons (+₹150/person)
     const extraPersonsCost = Math.max(0, Number(draft.extra_persons || 0)) * 150;
+
+    // 4. Extra Hours
     const hourlyRate = (draft.theatre_id === 1 || draft.theatre_id === 4) ? 400 : 750;
     const extraHoursCost = Math.max(0, Number(draft.extra_hours || 0)) * hourlyRate;
-    
+
+    // 5. Cake Weight Cost (500g is included in standard/premium or base; 1kg is +₹400, 1.5kg +₹800, 2kg +₹1200)
+    let cakeCost = 0;
+    if (draft.cake_weight === '1kg') cakeCost = 400;
+    else if (draft.cake_weight === '1.5kg') cakeCost = 800;
+    else if (draft.cake_weight === '2kg') cakeCost = 1200;
+    else if (draft.cake_weight === 'None') cakeCost = 0;
+
+    // 6. Celebration Add-ons Total
     let addonsTotal = 0;
     if (Array.isArray(draft.addons)) {
       draft.addons.forEach(key => {
@@ -219,10 +246,13 @@ export default function AdminBookingsPage() {
       });
     }
 
+    // 7. Extra Custom Item Amount
     const customCost = Math.max(0, Number(draft.custom_item_amount || 0));
+
+    // 8. Discount
     const discountVal = Math.max(0, Number(draft.discount || 0));
 
-    return Math.max(0, base + pkgAdd + extraPersonsCost + extraHoursCost + addonsTotal + customCost - discountVal);
+    return Math.max(0, base + pkgAdd + extraPersonsCost + extraHoursCost + cakeCost + addonsTotal + customCost - discountVal);
   };
 
   const updateManualField = (field: string, value: any) => {
@@ -234,7 +264,7 @@ export default function AdminBookingsPage() {
       if (field === 'whatsapp_number' && !prev.customer_phone) {
         next.customer_phone = value;
       }
-      if (['theatre_id', 'package_type', 'extra_persons', 'extra_hours', 'custom_item_amount', 'discount'].includes(field)) {
+      if (['theatre_id', 'package_type', 'cake_weight', 'extra_persons', 'extra_hours', 'custom_item_amount', 'discount'].includes(field)) {
         next.total = recomputeManualTotal(next);
       }
       return next;
@@ -252,7 +282,6 @@ export default function AdminBookingsPage() {
     });
   };
 
-  // Handle theatre presets
   const handleTheatreChange = (theatreId: number) => {
     let defaultGuests = 2;
     if (theatreId === 1 || theatreId === 4) defaultGuests = 2;
@@ -342,7 +371,6 @@ export default function AdminBookingsPage() {
     setRescheduleBooking(null);
   };
 
-  // Actions
   const handleAction = async (id: number, action: string, payload: any = {}) => {
     try {
       const res = await fetch(`/api/admin/bookings/${id}`, {
@@ -364,51 +392,107 @@ export default function AdminBookingsPage() {
     }
   };
 
-  // Generate WhatsApp confirmation text
+  // Helper to resolve theatre name from id
+  const getTheatreDisplayName = (theatreId: number, branchId: number) => {
+    if (branchId === 1) {
+      if (theatreId === 1) return 'Couple Theater (Screen 1)';
+      if (theatreId === 2) return 'Celebration Theater (Screen 2)';
+      if (theatreId === 3) return 'Family Theater (Screen 3)';
+      return 'Private Theater';
+    } else {
+      if (theatreId === 4) return 'Butterfly Blush (Screen 1)';
+      if (theatreId === 5) return 'Lavender Mist (Screen 2)';
+      if (theatreId === 6) return 'Scarlet Red (Screen 3)';
+      if (theatreId === 7) return 'Shadow Suit (Screen 4)';
+      return 'Private Theater';
+    }
+  };
+
+  // Exact WhatsApp confirmation ticket format as requested by user
   const generateWhatsAppMessage = (b: any) => {
     const branchName = b.branch_name || (b.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage');
     const branchAddress = b.branch_id === 1 
       ? '4th Floor, Srinivasam, Beside Sri Vishnu Grand, Electronic City, Bengaluru 560100'
       : '2nd Floor, 16th Main Road, Near Udupi Garden Signal, BTM 2nd Stage, Bengaluru 560076';
+    const mapsLink = b.branch_id === 1
+      ? 'https://maps.app.goo.gl/MovieBashElectronicCity'
+      : 'https://maps.app.goo.gl/MovieBashBTM';
+
+    const specialName = b.special_person_name || b.customer_name || 'Special Guest';
+    const phone = b.whatsapp_number || b.customer_phone || '';
+    const occ = b.occasion || b.occasion_name || 'Celebration';
+    const theatreName = b.theatre_name || getTheatreDisplayName(b.theatre_id, b.branch_id);
+    const timing = `${b.booking_date} | ${b.slot_time || 'Showtime Slot'}`;
+    const pkg = b.package_type === 'custom' 
+      ? 'Custom (Room Only)' 
+      : b.package_type === 'premium' 
+      ? 'Premium VIP Celebration Package' 
+      : 'Standard Celebration Package';
     
-    let statusText = 'CONFIRMED';
-    if (b.status === 'cancelled') statusText = 'CANCELLED';
-    else if (b.status === 'completed') statusText = 'COMPLETED';
+    const extraP = Number(b.extra_persons || 0) > 0 ? `${b.extra_persons} Guests (+₹${b.extra_persons * 150})` : '0';
+    
+    let cakeStr = b.cake_flavor || 'None';
+    if (b.cake_weight && b.cake_weight !== 'None' && !cakeStr.includes(b.cake_weight)) {
+      cakeStr = `${cakeStr} (${b.cake_weight})`;
+    }
+    if (cakeStr === 'None (Bringing Own Cake / ₹0)' || cakeStr === 'None') {
+      cakeStr = 'None (Customer bringing own cake)';
+    }
+
+    let addonsStr = 'None';
+    if (Array.isArray(b.addons) && b.addons.length > 0) {
+      addonsStr = b.addons.map((k: any) => {
+        const key = typeof k === 'string' ? k : k.addon_name || k.name;
+        return ADDONS_CATALOG[key]?.label || key;
+      }).join(', ');
+    }
+
+    const customFieldStr = b.custom_item_name 
+      ? `${b.custom_item_name} (₹${b.custom_item_amount || 0})` 
+      : 'None';
+    
+    const discountStr = Number(b.discount || 0) > 0 ? `₹${b.discount}` : '₹0';
+    const totalStr = `₹${b.total || 0}`;
+    const advanceStr = `₹${b.advance_paid || 0}`;
+    const balanceStr = `₹${Math.max(0, (b.total || 0) - (b.advance_paid || 0))}`;
+    const paymentTypeStr = b.payment_type || 'UPI';
+    const bookingSourceStr = b.source === 'phone_call' ? 'Phone Call' : b.source === 'whatsapp' ? 'WhatsApp' : b.source === 'walkin' ? 'Walk-in' : b.source === 'instagram' ? 'Instagram' : 'Website';
+    const ticketCode = b.booking_ref || `MB-${Date.now().toString().slice(-6)}`;
 
     return (
-      `🎬 *Movie Bash Private Theatre — Reservation Confirmed* 🍿\n\n` +
-      `Dear *${b.customer_name}*,\n` +
-      `Your private theatre reservation is *${statusText}*!\n\n` +
-      `🎟️ *Booking Ref:* ${b.booking_ref}\n` +
-      (b.special_person_name ? `🌟 *Celebrant / Special Person:* ${b.special_person_name}\n` : '') +
-      (b.occasion || b.occasion_name ? `🎉 *Occasion:* ${b.occasion || b.occasion_name}\n` : '') +
-      `📍 *Venue:* Movie Bash (${branchName})\n` +
-      `🎭 *Theatre:* ${b.theatre_name || 'Private Screen'}\n` +
-      `📦 *Package:* ${String(b.package_type || 'standard').toUpperCase()}\n` +
-      (b.cake_flavor && b.cake_flavor !== 'None' ? `🎂 *Cake:* ${b.cake_flavor}\n` : '') +
-      `📅 *Date:* ${b.booking_date}\n` +
-      `⏰ *Showtime Slot:* ${b.slot_time || 'Scheduled Slot'}\n` +
-      (b.extra_hours > 0 ? `⏳ *Extended Duration:* +${b.extra_hours} Hour Extra Showtime (${2 + Number(b.extra_hours)} Hours Total)\n` : `⏳ *Duration:* 2 Hours Standard Showtime\n`) +
-      `👥 *Guests:* ${b.guests} ${b.extra_persons > 0 ? `(+${b.extra_persons} extra)` : ''}\n` +
-      (b.screen_name ? `✨ *LED Screen Title:* "${b.screen_name}"\n` : '') +
-      (Array.isArray(b.addons) && b.addons.length > 0 
-        ? `🎁 *Celebration Add-ons:* ${b.addons.map((k: any) => ADDONS_CATALOG[typeof k === 'string' ? k : k.addon_name]?.label || (typeof k === 'string' ? k : k.addon_name || k.name)).join(', ')}\n` 
-        : '') +
-      (b.custom_item_name ? `🎀 *Custom Request:* ${b.custom_item_name} (+₹${b.custom_item_amount})\n` : '') +
-      (b.discount > 0 ? `🏷️ *Discount Applied:* -₹${b.discount}\n` : '') +
-      `💰 *Total Amount:* ₹${b.total}\n` +
-      `✅ *Advance Paid:* ₹${b.advance_paid || 0}\n` +
-      `💵 *Balance Due at Venue:* ₹${b.balance || 0}\n` +
-      `💳 *Payment Type:* ${b.payment_type || 'UPI'}\n` +
-      `📍 *Location:* ${branchAddress}\n` +
-      `🗺️ *Google Maps:* https://maps.google.com/?q=Movie+Bash+${encodeURIComponent(branchName)}\n\n` +
-      `🍿 *Amenities Included:* 4K Laser Projection, Dolby Surround, Luxury Recliners, Full Privacy & Soundproofing, OTT / Music streaming setup.\n\n` +
-      `For any special requests, call or WhatsApp our desk at *+91 99029 23656*.\n\n` +
-      `We look forward to hosting your grand celebration! 🎉`
+`🎟️ *MOVIE BASH CELEBRATION TICKET* 🎟️
+*Ticket Code:* ${ticketCode}
+
+*Special person’s Name:* ${specialName}
+*Whatsapp number:* +91 ${phone}
+*Occasion:* ${occ}
+*Branch:* ${branchName}
+*Private theater:* ${theatreName}
+*Timings:* ${timing}
+*Package or Custom:* ${pkg}
+*Extra persons:* ${extraP}
+*Cake flavour:* ${cakeStr}
+*Addons:* ${addonsStr}
+*Extra custom field:* ${customFieldStr}
+*Discount:* ${discountStr}
+
+*Total amount:* ${totalStr}
+*Advance:* ${advanceStr}
+*Balance:* ${balanceStr}
+
+*Payment type:* ${paymentTypeStr}
+
+*Booking:* ${bookingSourceStr}
+
+📍 *Location:* ${branchAddress}
+🗺️ *Google Maps:* ${mapsLink}
+🍿 *Amenities:* 4K Laser Cinema Screening, Dolby Sound, 100% Soundproof Private Lounge!
+
+🎉 *We look forward to hosting your celebration!*
+📞 Desk Helpline: +91 99029 23656`
     );
   };
 
-  // Send personalized WhatsApp confirmation to customer
   const sendCustomerWhatsApp = (b: any) => {
     const phone = String(b.whatsapp_number || b.customer_phone).replace(/\D/g, '').slice(-10);
     const msg = encodeURIComponent(generateWhatsAppMessage(b));
@@ -429,11 +513,17 @@ export default function AdminBookingsPage() {
       return;
     }
 
+    // Format cake description with weight
+    const formattedCake = manualForm.cake_weight === 'None' 
+      ? 'None' 
+      : `${manualForm.cake_flavor} (${manualForm.cake_weight})`;
+
     const payload = {
       ...manualForm,
       customer_name: manualForm.customer_name.trim() || finalName,
       customer_phone: cleanPhone,
       whatsapp_number: cleanPhone,
+      cake_flavor: formattedCake,
       screen_name: manualForm.screen_name || (manualForm.special_person_name ? `Celebration for ${manualForm.special_person_name} ❤️` : `Celebration for ${finalName}`),
       balance: Math.max(0, manualForm.total - manualForm.advance_paid)
     };
@@ -453,7 +543,6 @@ export default function AdminBookingsPage() {
           sendCustomerWhatsApp(data.data);
         }
 
-        // Open success confirmation popup
         setBookingSuccessData(data.data);
       } else {
         alert(data.error || 'Failed to create booking');
@@ -470,18 +559,31 @@ export default function AdminBookingsPage() {
     setTimeout(() => setCopiedText(false), 2500);
   };
 
+  const copyLiveTicketText = () => {
+    const liveDraft = {
+      ...manualForm,
+      booking_ref: 'MB-DRAFT',
+      theatre_name: getTheatreDisplayName(manualForm.theatre_id, manualForm.branch_id),
+      branch_name: manualForm.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage'
+    };
+    const text = generateWhatsAppMessage(liveDraft);
+    navigator.clipboard.writeText(text);
+    setCopiedLiveTicket(true);
+    setTimeout(() => setCopiedLiveTicket(false), 2500);
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#237eea]">Reservation Desk</span>
-          <h1 className="font-playfair text-2xl sm:text-3xl font-black text-ink">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#00A2E4]">Reservation Desk</span>
+          <h1 className="font-playfair text-2xl sm:text-3xl font-black text-[#0B2238]">
             All Bookings ({meta.total})
           </h1>
-          <p className="text-xs text-ink/70 mt-0.5">
-            Manage web bookings, handle customer phone calls, dispatch WhatsApp confirmations.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Quick manual booking for phone calls &amp; WhatsApp, instant ticket code generation, and 1-click WhatsApp voucher dispatch.
           </p>
         </div>
 
@@ -492,17 +594,17 @@ export default function AdminBookingsPage() {
                 href={`/api/admin/bookings/export?format=xlsx&${dateFilter ? `date=${dateFilter}&` : ''}${branchFilter !== 'all' ? `branch=${branchFilter}&` : ''}`}
                 download
                 className="px-3.5 py-2.5 rounded-2xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-                title="Download formatted Excel (.xlsx) spreadsheet with colors, alignment & formulas"
+                title="Download formatted Excel spreadsheet"
               >
                 <Download className="w-3.5 h-3.5 text-white" />
-                <span>Export Excel (.xlsx)</span>
+                <span>Export Excel</span>
               </a>
 
               <a
                 href={`/api/admin/bookings/export?format=csv&${dateFilter ? `date=${dateFilter}&` : ''}${branchFilter !== 'all' ? `branch=${branchFilter}&` : ''}`}
                 download
                 className="px-3 py-2.5 rounded-2xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
-                title="Download CSV file (with phone formatting)"
+                title="Download CSV"
               >
                 <Download className="w-3.5 h-3.5 text-slate-500" />
                 <span>CSV</span>
@@ -520,31 +622,31 @@ export default function AdminBookingsPage() {
               }));
               setShowManualModal(true);
             }}
-            className="px-4 py-2.5 rounded-2xl text-xs font-bold text-white bg-[#00A2E4] hover:bg-[#0072AE] shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+            className="px-5 py-2.5 rounded-2xl text-xs font-black text-white bg-[#00A2E4] hover:bg-[#0072AE] shadow-lg shadow-[#00A2E4]/20 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
           >
             <Plus className="w-4 h-4" />
-            <span>Book</span>
+            <span>+ Book Showtime</span>
           </button>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-3xl border border-sky-100 shadow-[0_12px_40px_rgba(22,48,79,0.06)] flex flex-col md:flex-row items-center gap-3">
+      <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-3">
         <div className="relative flex-1 w-full">
-          <Search className="w-4 h-4 text-ink/40 absolute left-3 top-3.5" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by ref (e.g. MBEC202601), customer name, or phone..."
-            className="w-full pl-9 pr-4 py-2.5 rounded-2xl bg-[#fffdf9] border border-sky-100 text-xs text-ink focus:outline-none focus:border-royal-700"
+            placeholder="Search by ticket code (e.g. MBEC...), celebrant name, or phone number..."
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-[#00A2E4]"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
           {/* Date Picker Input */}
-          <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-[#fffdf9] border border-sky-100 text-xs font-bold text-ink shadow-xs">
-            <Calendar className="w-3.5 h-3.5 text-[#237eea] shrink-0" />
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
+            <Calendar className="w-3.5 h-3.5 text-[#00A2E4] shrink-0" />
             <input
               type="date"
               value={dateFilter}
@@ -552,8 +654,7 @@ export default function AdminBookingsPage() {
                 setDateFilter(e.target.value);
                 setPage(1);
               }}
-              className="bg-transparent text-xs font-extrabold text-ink focus:outline-none cursor-pointer"
-              title="Select specific date to filter"
+              className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
             />
             {dateFilter && (
               <button
@@ -563,7 +664,6 @@ export default function AdminBookingsPage() {
                   setPage(1);
                 }}
                 className="w-4 h-4 rounded-full bg-slate-200 hover:bg-rose-100 hover:text-rose-600 text-slate-700 flex items-center justify-center text-[10px] ml-1 cursor-pointer font-bold"
-                title="Clear date filter"
               >
                 ✕
               </button>
@@ -571,7 +671,7 @@ export default function AdminBookingsPage() {
           </div>
 
           {isStaff ? (
-            <div className="flex-1 md:flex-initial px-3.5 py-2 rounded-2xl bg-[#F8F0E5] border border-[#082052]/30 text-xs font-black text-[#082052] flex items-center gap-1.5 shadow-xs">
+            <div className="flex-1 md:flex-initial px-3.5 py-2 rounded-2xl bg-[#082052]/10 border border-[#082052]/30 text-xs font-black text-[#082052] flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#082052]" />
               <span>{currentUser?.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage'} (Assigned)</span>
             </div>
@@ -582,7 +682,7 @@ export default function AdminBookingsPage() {
                 setBranchFilter(e.target.value);
                 setPage(1);
               }}
-              className="flex-1 md:flex-initial px-3 py-2.5 rounded-2xl bg-[#fffdf9] border border-sky-100 text-xs font-bold text-ink focus:outline-none"
+              className="flex-1 md:flex-initial px-3 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none"
             >
               <option value="all">All Branches</option>
               <option value="1">Electronic City</option>
@@ -596,9 +696,9 @@ export default function AdminBookingsPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="flex-1 md:flex-initial px-3 py-2.5 rounded-2xl bg-[#fffdf9] border border-sky-100 text-xs font-bold text-ink focus:outline-none"
+            className="flex-1 md:flex-initial px-3 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none"
           >
-            <option value="all">All Statuses</option>
+            <option value="all">All Status</option>
             <option value="confirmed">Confirmed</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
@@ -606,141 +706,52 @@ export default function AdminBookingsPage() {
         </div>
       </div>
 
-      {/* Quick Status Tabs & Date Quick Pills */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        {/* Status Tabs */}
-        <div className="flex flex-wrap items-center gap-2">
-          {[
-            { label: 'All Bookings', value: 'all' },
-            { label: 'Confirmed', value: 'confirmed' },
-            { label: 'Completed', value: 'completed' },
-            { label: 'Cancelled', value: 'cancelled' },
-          ].map((tab) => (
-            <button
-              key={tab.value}
-              onClick={() => {
-                setStatusFilter(tab.value);
-                setPage(1);
-              }}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                statusFilter === tab.value
-                  ? 'bg-[#155fbd] text-white shadow-sm'
-                  : 'bg-white border border-sky-200 text-slate-700 hover:bg-slate-100'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Date Quick Filter Pills */}
-        <div className="flex flex-wrap items-center gap-1.5 text-xs">
-          <span className="text-[11px] font-black text-slate-500 uppercase tracking-wider mr-1">Date:</span>
-          <button
-            type="button"
-            onClick={() => {
-              setDateFilter('');
-              setPage(1);
-            }}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              !dateFilter
-                ? 'bg-emerald-700 text-white shadow-sm'
-                : 'bg-white border border-sky-200 text-slate-700 hover:bg-slate-100'
-            }`}
-          >
-            All Dates
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setDateFilter(getTodayIST());
-              setPage(1);
-            }}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              dateFilter === getTodayIST()
-                ? 'bg-emerald-700 text-white shadow-sm'
-                : 'bg-white border border-sky-200 text-slate-700 hover:bg-slate-100'
-            }`}
-          >
-            Today
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setDateFilter(getTomorrowIST());
-              setPage(1);
-            }}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              dateFilter === getTomorrowIST()
-                ? 'bg-emerald-700 text-white shadow-sm'
-                : 'bg-white border border-sky-200 text-slate-700 hover:bg-slate-100'
-            }`}
-          >
-            Tomorrow
-          </button>
-          {dateFilter && dateFilter !== getTodayIST() && dateFilter !== getTomorrowIST() && (
-            <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-300 text-xs font-extrabold flex items-center gap-1.5">
-              <span>📅 {dateFilter}</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setDateFilter('');
-                  setPage(1);
-                }}
-                className="w-3.5 h-3.5 rounded-full bg-emerald-200 hover:bg-rose-100 hover:text-rose-600 text-emerald-900 flex items-center justify-center text-[9px] font-black cursor-pointer"
-                title="Clear date"
-              >
-                ✕
-              </button>
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Bookings Table / Cards on mobile */}
-      <div className="bg-white rounded-xl border-2 border-slate-300 shadow-xs overflow-hidden">
+      {/* Bookings Table */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {loading ? (
-          <div className="py-12 text-center text-xs font-bold text-ink">Loading bookings...</div>
+          <div className="py-12 text-center text-xs font-bold text-slate-500">Loading bookings...</div>
         ) : bookings.length === 0 ? (
-          <div className="py-12 text-center text-xs text-ink/60">No bookings found for the selected criteria.</div>
+          <div className="py-12 text-center text-xs text-slate-500">No bookings found for the selected criteria.</div>
         ) : (
-          <div className="overflow-x-auto lg:overflow-x-hidden">
-            <table className="w-full text-left border-collapse text-xs border border-slate-300">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-slate-100 text-[11px] font-black text-slate-800 uppercase tracking-wider">
-                  <th className="py-2.5 px-3 border border-slate-300 w-[22%]">Ref &amp; Customer</th>
-                  <th className="py-2.5 px-3 border border-slate-300 w-[17%]">Venue &amp; Theatre</th>
-                  <th className="py-2.5 px-3 border border-slate-300 w-[16%]">Date &amp; Slot</th>
-                  <th className="py-2.5 px-3 border border-slate-300 w-[16%]">Pricing &amp; Balance</th>
-                  <th className="py-2.5 px-2 border border-slate-300 text-center w-[7%]">Source</th>
-                  <th className="py-2.5 px-2 border border-slate-300 text-center w-[8%]">Status</th>
-                  <th className="py-2.5 px-3 border border-slate-300 text-right w-[14%]">Actions</th>
+                <tr className="bg-slate-50 text-[11px] font-black text-slate-700 uppercase tracking-wider border-b border-slate-200">
+                  <th className="py-3 px-4">Ticket &amp; Celebrant</th>
+                  <th className="py-3 px-4">Venue &amp; Theatre</th>
+                  <th className="py-3 px-4">Showtime</th>
+                  <th className="py-3 px-4">Pricing</th>
+                  <th className="py-3 px-3 text-center">Source</th>
+                  <th className="py-3 px-3 text-center">Status</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100">
                 {bookings.map((b) => (
-                  <tr key={b.id} className="even:bg-slate-50/70 hover:bg-sky-50/70 transition-colors">
+                  <tr key={b.id} className="hover:bg-sky-50/50 transition-colors">
                     
-                    {/* Ref & Customer */}
-                    <td className="py-2.5 px-3 border border-slate-300 align-middle">
+                    {/* Ticket & Celebrant */}
+                    <td className="py-3 px-4 align-middle">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <strong className="text-slate-900 font-extrabold text-[12.5px] truncate">{b.customer_name}</strong>
-                        {b.special_person_name && (
-                          <span className="text-[10px] font-black text-[#0072AE] bg-sky-50 px-1.5 py-0.2 rounded-full border border-sky-200">
-                            ❤️ {b.special_person_name}
+                        <strong className="text-slate-900 font-extrabold text-[13px]">
+                          {b.special_person_name || b.customer_name}
+                        </strong>
+                        {b.special_person_name && b.customer_name && b.special_person_name !== b.customer_name && (
+                          <span className="text-[10px] text-slate-500 font-medium">
+                            (By: {b.customer_name})
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                        <span className="font-mono text-[#0072AE] font-bold text-[10.5px] bg-sky-50 px-1 py-0.5 rounded border border-sky-300 shrink-0">
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        <span className="font-mono text-[#0072AE] font-black text-[10.5px] bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200">
                           {b.booking_ref}
                         </span>
-                        <a href={`tel:${b.customer_phone}`} className="hover:underline flex items-center gap-1 text-[11px] font-semibold text-slate-700 truncate">
-                          <Phone className="w-3 h-3 text-slate-400 shrink-0" />
-                          <span className="truncate">{b.customer_phone}</span>
+                        <a href={`tel:${b.customer_phone}`} className="flex items-center gap-1 text-[11px] font-bold text-slate-700 hover:text-[#00A2E4]">
+                          <Phone className="w-3 h-3 text-slate-400" />
+                          <span>{b.customer_phone}</span>
                         </a>
                         {b.occasion && (
-                          <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200 truncate">
+                          <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
                             {b.occasion}
                           </span>
                         )}
@@ -748,48 +759,48 @@ export default function AdminBookingsPage() {
                     </td>
 
                     {/* Venue & Theatre */}
-                    <td className="py-2.5 px-3 border border-slate-300 align-middle">
-                      <div className="font-extrabold text-slate-900 text-xs flex items-center gap-1">
-                        <span className="text-sm shrink-0">{b.theatre_emoji || '🎬'}</span>
-                        <span className="truncate">{b.theatre_name || 'Screen'}</span>
+                    <td className="py-3 px-4 align-middle">
+                      <div className="font-black text-slate-900 text-xs flex items-center gap-1">
+                        <span>{b.theatre_emoji || '🎬'}</span>
+                        <span>{b.theatre_name || 'Screen'}</span>
                       </div>
-                      <span className="text-[10.5px] font-medium text-slate-500 block mt-0.5 truncate">{b.branch_name}</span>
+                      <span className="text-[10.5px] font-semibold text-slate-500 block mt-0.5">{b.branch_name}</span>
                     </td>
 
-                    {/* Date & Slot */}
-                    <td className="py-2.5 px-3 border border-slate-300 align-middle">
+                    {/* Showtime */}
+                    <td className="py-3 px-4 align-middle">
                       <strong className="block text-slate-900 text-xs font-black">{b.booking_date}</strong>
-                      <div className="text-[10.5px] text-[#155fbd] font-bold mt-0.5 flex items-center gap-1">
+                      <div className="text-[10.5px] text-[#0072AE] font-bold mt-0.5 flex items-center gap-1">
                         <Clock className="w-3 h-3 text-sky-600 shrink-0" />
-                        <span className="truncate">{b.slot_time}</span>
+                        <span>{b.slot_time}</span>
                       </div>
                     </td>
 
                     {/* Pricing */}
-                    <td className="py-2.5 px-3 border border-slate-300 align-middle">
+                    <td className="py-3 px-4 align-middle">
                       <strong className="block text-slate-900 font-black text-xs">₹{b.total}</strong>
                       <div className="text-[10px] mt-0.5 flex items-center gap-1">
-                        <span className="text-emerald-800 font-extrabold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-300 whitespace-nowrap">Adv: ₹{b.advance_paid || 0}</span>
+                        <span className="text-emerald-800 font-extrabold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Adv: ₹{b.advance_paid || 0}</span>
                         {b.balance > 0 ? (
-                          <span className="text-amber-900 font-extrabold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 whitespace-nowrap">Due: ₹{b.balance}</span>
+                          <span className="text-amber-900 font-extrabold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">Due: ₹{b.balance}</span>
                         ) : (
-                          <span className="text-emerald-800 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-300">Paid</span>
+                          <span className="text-emerald-800 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Paid</span>
                         )}
                       </div>
                     </td>
 
                     {/* Source */}
-                    <td className="py-2.5 px-2 border border-slate-300 align-middle text-center">
-                      <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9.5px] font-extrabold uppercase border whitespace-nowrap ${
+                    <td className="py-3 px-3 align-middle text-center">
+                      <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                         b.source === 'phone_call' || b.source === 'phone'
-                          ? 'bg-amber-50 text-amber-900 border-amber-300' 
+                          ? 'bg-amber-50 text-amber-900 border-amber-200' 
                           : b.source === 'whatsapp'
-                          ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
+                          ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
                           : b.source === 'walkin' || b.source === 'walk_in'
-                          ? 'bg-purple-50 text-purple-900 border-purple-300'
+                          ? 'bg-purple-50 text-purple-900 border-purple-200'
                           : b.source === 'instagram'
-                          ? 'bg-pink-50 text-pink-900 border-pink-300'
-                          : 'bg-sky-50 text-sky-900 border-sky-300'
+                          ? 'bg-pink-50 text-pink-900 border-pink-200'
+                          : 'bg-sky-50 text-sky-900 border-sky-200'
                       }`}>
                         {b.source === 'phone_call' || b.source === 'phone' ? '📞 Call' :
                          b.source === 'whatsapp' ? '💬 WhatsApp' :
@@ -799,8 +810,8 @@ export default function AdminBookingsPage() {
                     </td>
 
                     {/* Status */}
-                    <td className="py-2.5 px-2 border border-slate-300 align-middle text-center">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9.5px] font-black uppercase tracking-wider border whitespace-nowrap ${
+                    <td className="py-3 px-3 align-middle text-center">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border ${
                         b.status === 'confirmed' ? 'bg-emerald-50 text-emerald-800 border-emerald-300' :
                         b.status === 'completed' ? 'bg-sky-50 text-sky-800 border-sky-300' :
                         b.status === 'cancelled' ? 'bg-rose-50 text-rose-800 border-rose-300' :
@@ -811,52 +822,36 @@ export default function AdminBookingsPage() {
                     </td>
 
                     {/* Actions */}
-                    <td className="py-2.5 px-3 border border-slate-300 align-middle text-right">
-                      <div className="flex items-center justify-end gap-1">
+                    <td className="py-3 px-4 align-middle text-right">
+                      <div className="flex items-center justify-end gap-1.5">
                         
-                        {/* 1-CLICK WHATSAPP BUTTON */}
+                        {/* 1-CLICK WHATSAPP TICKET BUTTON */}
                         <button
                           onClick={() => sendCustomerWhatsApp(b)}
-                          className="px-2 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-transform active:scale-95 cursor-pointer whitespace-nowrap"
-                          title="Send reservation confirmation to customer on WhatsApp"
+                          className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] flex items-center gap-1.5 shadow-sm transition-transform active:scale-95 cursor-pointer whitespace-nowrap"
+                          title="1-Click: Send formatted confirmation ticket on WhatsApp"
                         >
-                          <MessageCircle className="w-3.5 h-3.5 fill-white" />
-                          <span>WhatsApp</span>
+                          <Ticket className="w-3.5 h-3.5 text-white" />
+                          <span>WhatsApp Ticket</span>
                         </button>
 
-                        {/* Reschedule Slot */}
-                        <button
-                          onClick={() => openRescheduleModal(b)}
-                          className="p-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 transition-colors cursor-pointer"
-                          title="Reschedule Slot"
-                        >
-                          <Clock className="w-3.5 h-3.5" />
-                        </button>
-
-                        {/* View / Manage Details */}
+                        {/* View Ticket / Details */}
                         <button
                           onClick={() => setSelectedBooking(b)}
-                          className="p-1 rounded-lg bg-[#f0f7ff] hover:bg-[#d9ebff]/50 text-[#155fbd] border border-sky-200 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer"
                           title="View Details"
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </button>
 
-                        {/* Cancel Booking Quick Action */}
-                        {b.status !== 'cancelled' && (
-                          <button
-                            onClick={() => {
-                              const reason = prompt(`Cancel reservation #${b.booking_ref} for ${b.customer_name}?\nEnter cancellation reason:`, 'Cancelled by guest request');
-                              if (reason) {
-                                handleAction(b.id, 'cancel', { cancelled_reason: reason });
-                              }
-                            }}
-                            className="p-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors cursor-pointer"
-                            title="Cancel Booking"
-                          >
-                            <XCircle className="w-3.5 h-3.5" />
-                          </button>
-                        )}
+                        {/* Reschedule */}
+                        <button
+                          onClick={() => openRescheduleModal(b)}
+                          className="p-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 transition-colors cursor-pointer"
+                          title="Reschedule Slot"
+                        >
+                          <Clock className="w-3.5 h-3.5" />
+                        </button>
 
                         {/* Soft Delete (Admin Only) */}
                         {!isStaff && (
@@ -866,12 +861,13 @@ export default function AdminBookingsPage() {
                                 handleAction(b.id, 'soft_delete');
                               }
                             }}
-                            className="p-1 rounded-lg bg-slate-50 hover:bg-rose-100 text-rose-600 border border-slate-200 hover:border-rose-300 transition-colors cursor-pointer"
-                            title="Delete Booking (Admin Only)"
+                            className="p-1.5 rounded-xl bg-slate-50 hover:bg-rose-100 text-rose-600 border border-slate-200 transition-colors cursor-pointer"
+                            title="Delete Booking"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         )}
+
                       </div>
                     </td>
                   </tr>
@@ -882,546 +878,293 @@ export default function AdminBookingsPage() {
         )}
       </div>
 
-      {/* BOOKING DETAIL MODAL */}
-      {selectedBooking && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white max-w-lg w-full rounded-3xl p-6 sm:p-8 space-y-4 shadow-elevated border border-sky-100 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-sky-100 pb-3">
-              <div>
-                <span className="text-[10px] uppercase font-bold text-[#237eea] block">Reservation Details</span>
-                <h3 className="font-playfair text-xl font-bold text-ink">
-                  {selectedBooking.customer_name} ({selectedBooking.booking_ref})
-                </h3>
+      {/* ─── FULL-PAGE SPACIOUS MANUAL BOOKING WORKSPACE MODAL ─── */}
+      {showManualModal && (
+        <div className="fixed inset-0 z-50 bg-[#082052]/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-6xl h-[95vh] rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            
+            {/* Top Workspace Bar */}
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#00A2E4] text-white flex items-center justify-center shadow-md shadow-[#00A2E4]/20">
+                  <Ticket className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="font-playfair text-xl font-black text-[#0B2238] flex items-center gap-2">
+                    <span>Create Showtime Booking</span>
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-sky-100 text-[#0072AE] font-bold">
+                      Staff Workspace
+                    </span>
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Enter details while on call &bull; Live WhatsApp ticket auto-formats on right pane &bull; 1-click dispatch
+                  </p>
+                </div>
               </div>
-              <button onClick={() => setSelectedBooking(null)}><X className="w-5 h-5 text-slate-500" /></button>
+
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700">
+                  <span>📅 {manualForm.booking_date}</span>
+                  <span>&bull;</span>
+                  <span>📍 {manualForm.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage'}</span>
+                </div>
+                <button 
+                  onClick={() => setShowManualModal(false)}
+                  className="w-9 h-9 rounded-full bg-white hover:bg-slate-200 text-slate-600 flex items-center justify-center border border-slate-200 transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-3.5 text-xs">
+            {/* Split Workspace Body: Left Form (60%) + Right Live Ticket (40%) */}
+            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
               
-              {/* Card 1: Celebrant & Customer Info */}
-              <div className="p-3.5 rounded-2xl bg-[#F6FAFD] border border-sky-100 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#0072AE]">
-                    1. Celebrant &amp; Customer
+              {/* LEFT COLUMN: Input Fields (Smooth Scroll) */}
+              <div className="lg:w-7/12 xl:w-3/5 overflow-y-auto p-5 sm:p-6 space-y-5 border-r border-slate-100">
+                
+                {/* 1. Celebrant & Customer Contact */}
+                <div className="p-4 rounded-2xl bg-[#F6FAFD] border border-sky-100 space-y-3">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-[#0072AE] flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" /> 1. Celebrant &amp; Contact Details
                   </span>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
-                    selectedBooking.status === 'confirmed' ? 'bg-emerald-100 text-emerald-800' :
-                    selectedBooking.status === 'completed' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800'
-                  }`}>
-                    {selectedBooking.status}
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                  <div>
-                    <span className="text-slate-500 text-[10.5px] block font-medium">Special Person&apos;s Name</span>
-                    <strong className="text-slate-900 text-xs font-black">
-                      {selectedBooking.special_person_name || selectedBooking.customer_name}
-                    </strong>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 text-[10.5px] block font-medium">Occasion</span>
-                    <strong className="text-amber-800 text-xs font-bold">
-                      {selectedBooking.occasion || selectedBooking.occasion_name || 'Celebration'}
-                    </strong>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 text-[10.5px] block font-medium">WhatsApp Number</span>
-                    <a href={`https://wa.me/91${selectedBooking.whatsapp_number || selectedBooking.customer_phone}`} target="_blank" rel="noreferrer" className="font-black text-[#0072AE] hover:underline flex items-center gap-1">
-                      <Phone className="w-3 h-3" /> +91 {selectedBooking.whatsapp_number || selectedBooking.customer_phone}
-                    </a>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 text-[10.5px] block font-medium">Booked By (Name)</span>
-                    <span className="font-bold text-slate-800">{selectedBooking.customer_name}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 2: Venue, Theatre & Showtime */}
-              <div className="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-2">
-                <span className="text-[10px] font-black uppercase tracking-wider text-[#0B2238] block">
-                  2. Venue &amp; Showtime
-                </span>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <span className="text-slate-500 text-[10.5px] block font-medium">Branch</span>
-                    <span className="font-black text-[#0B2238]">{selectedBooking.branch_name}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 text-[10.5px] block font-medium">Private Theatre</span>
-                    <span className="font-black text-[#0072AE] flex items-center gap-1">
-                      <span>{selectedBooking.theatre_emoji || '🎬'}</span>
-                      <span>{selectedBooking.theatre_name}</span>
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 text-[10.5px] block font-medium">Date &amp; Showtime</span>
-                    <span className="font-black text-slate-900">{selectedBooking.booking_date} ({selectedBooking.slot_time})</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 text-[10.5px] block font-medium">Duration &amp; Extra Hours</span>
-                    <span className="font-bold text-slate-800">
-                      {selectedBooking.extra_hours > 0 ? `+${selectedBooking.extra_hours} Hour Extra (${2 + Number(selectedBooking.extra_hours)} Hours Total)` : 'Standard 2 Hours'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 3: Package, Cake, Addons & Custom Items */}
-              <div className="p-3.5 rounded-2xl bg-[#FFFDF9] border border-amber-200/70 space-y-2">
-                <span className="text-[10px] font-black uppercase tracking-wider text-amber-900 block">
-                  3. Celebration Package, Cake &amp; Add-ons
-                </span>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <span className="text-slate-500 text-[10.5px] block font-medium">Package</span>
-                    <span className="font-black text-[#0B2238] uppercase">{selectedBooking.package_type || 'STANDARD'}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 text-[10.5px] block font-medium">Cake Flavour</span>
-                    <span className="font-bold text-slate-800">{selectedBooking.cake_flavor || 'None / Own Cake'}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 text-[10.5px] block font-medium">Guests Attending</span>
-                    <span className="font-bold text-slate-800">
-                      {selectedBooking.guests} guests {selectedBooking.extra_persons > 0 ? `(+${selectedBooking.extra_persons} extra)` : ''}
-                    </span>
-                  </div>
-                  {selectedBooking.custom_item_name && (
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
-                      <span className="text-slate-500 text-[10.5px] block font-medium">Custom Request</span>
-                      <span className="font-bold text-amber-800">
-                        {selectedBooking.custom_item_name} (+₹{selectedBooking.custom_item_amount || 0})
-                      </span>
+                      <label className="block text-xs font-black text-[#0B2238] mb-1">
+                        Special person’s Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Sneha / Arjun"
+                        value={manualForm.special_person_name}
+                        onChange={(e) => updateManualField('special_person_name', e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-sky-200 font-bold text-xs text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-black text-[#0B2238] mb-1">
+                        Whatsapp number (10 digits) *
+                      </label>
+                      <div className="flex">
+                        <span className="px-3 py-2.5 rounded-l-xl bg-slate-200 border border-r-0 border-sky-200 font-bold text-xs text-slate-700">
+                          +91
+                        </span>
+                        <input
+                          type="tel"
+                          required
+                          placeholder="9876543210"
+                          value={manualForm.whatsapp_number}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                            updateManualField('whatsapp_number', val);
+                          }}
+                          className="w-full px-3.5 py-2.5 rounded-r-xl bg-white border border-sky-200 font-black text-xs text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Booked By / Customer Name
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Ramesh Babu (if different)"
+                        value={manualForm.customer_name}
+                        onChange={(e) => updateManualField('customer_name', e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-sky-200 text-xs font-semibold text-slate-800 focus:border-[#00A2E4] focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-black text-[#0B2238] mb-1">
+                        Occasion *
+                      </label>
+                      <select
+                        value={manualForm.occasion}
+                        onChange={(e) => {
+                          const occ = e.target.value;
+                          let occId = 1;
+                          if (occ.includes('Birthday')) occId = 2;
+                          else if (occ.includes('Proposal') || occ.includes('Date')) occId = 1;
+                          else if (occ.includes('Anniversary')) occId = 3;
+                          else if (occ.includes('Bride')) occId = 4;
+                          else if (occ.includes('Family')) occId = 5;
+                          updateManualField('occasion', occ);
+                          updateManualField('occasion_id', occId);
+                        }}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-sky-200 font-bold text-xs text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                      >
+                        <option value="Birthday Party">🎂 Birthday Party</option>
+                        <option value="Romantic Proposal / Date">💍 Romantic Proposal / Date</option>
+                        <option value="Anniversary Celebration">💖 Anniversary Celebration</option>
+                        <option value="Bride-to-Be / Bachelorette">👰 Bride-to-Be / Bachelorette</option>
+                        <option value="Groom-to-Be">🤵 Groom-to-Be</option>
+                        <option value="Family & Friends Movie Night">🍿 Family &amp; Friends Movie Night</option>
+                        <option value="Surprise Celebration">✨ Surprise Celebration</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Branch & Private Theatre */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div>
+                    <label className="block text-xs font-black text-[#0B2238] mb-1">Branch *</label>
+                    <select
+                      value={manualForm.branch_id}
+                      onChange={(e) => {
+                        const newBranch = Number(e.target.value);
+                        const defaultTheatre = newBranch === 1 ? 1 : 4;
+                        updateManualField('branch_id', newBranch);
+                        handleTheatreChange(defaultTheatre);
+                      }}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#F6FAFD] border border-sky-200 font-bold text-xs text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                    >
+                      <option value={1}>📍 Electronic City (3 Screens)</option>
+                      <option value={2}>📍 BTM 2nd Stage (4 Screens)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-black text-[#0B2238] mb-1">Private Theatre *</label>
+                    <select
+                      value={manualForm.theatre_id}
+                      onChange={(e) => handleTheatreChange(Number(e.target.value))}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#F6FAFD] border border-sky-200 font-bold text-xs text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                    >
+                      {manualForm.branch_id === 1 ? (
+                        <>
+                          <option value={1}>🎬 Couple Theater (₹899 • 2 Guests)</option>
+                          <option value={2}>🎉 Celebration Theater (₹1499 • 6 Guests)</option>
+                          <option value={3}>👨‍👩‍👧‍👦 Family Theater (₹1699 • 12-20 Guests)</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value={4}>🦋 Butterfly Blush (₹899 • 2 Guests)</option>
+                          <option value={5}>🪻 Lavender Mist (₹1499 • 6 Guests)</option>
+                          <option value={6}>🌹 Scarlet Red (₹1699 • 12 Guests)</option>
+                          <option value={7}>🖤 Shadow Suit (₹1599 • 8 Guests)</option>
+                        </>
+                      )}
+                    </select>
+                  </div>
+                </div>
+
+                {/* 3. Showtime Date & Slot Selection */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <label className="text-xs font-black text-[#0B2238] flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-[#00A2E4]" />
+                      <span>Showtime Date &amp; Slot *</span>
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={manualForm.booking_date}
+                      onChange={(e) => updateManualField('booking_date', e.target.value)}
+                      className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 font-bold text-[#0B2238] text-xs focus:outline-none"
+                    />
+                  </div>
+
+                  {loadingManualSlots ? (
+                    <div className="p-4 text-center text-xs text-slate-500 animate-pulse bg-slate-50 rounded-xl">
+                      Checking live slot availability...
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-44 overflow-y-auto p-1">
+                      {manualSlots.map((s) => {
+                        const isSelected = manualForm.slot_id === s.id;
+                        const isBooked = s.is_booked;
+                        let slotTime = s.time || `${s.start_time} - ${s.end_time}`;
+                        if (manualForm.extra_hours > 0) {
+                          slotTime = formatBookingSlotTime(s.dynamic_start_time || s.start_time, s.dynamic_end_time || s.end_time, manualForm.extra_hours);
+                        }
+                        return (
+                          <button
+                            type="button"
+                            key={s.id}
+                            disabled={isBooked}
+                            onClick={() => {
+                              updateManualField('slot_id', s.id);
+                              updateManualField('slot_time', slotTime);
+                            }}
+                            className={`p-2 rounded-xl text-center border transition-all cursor-pointer ${
+                              isSelected
+                                ? 'border-[#00A2E4] bg-[#00A2E4] text-white font-black shadow-xs'
+                                : isBooked
+                                ? 'border-slate-200 bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed line-through'
+                                : 'border-slate-200 bg-white hover:border-[#00A2E4] text-slate-800 font-bold'
+                            }`}
+                          >
+                            <span className="block text-xs">{slotTime}</span>
+                            <span className="block text-[10px] mt-0.5">
+                              {isSelected ? '✓ Selected' : isBooked ? 'Booked' : 'Available'}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
-                </div>
 
-                {/* Addons List */}
-                {selectedBooking.addons && selectedBooking.addons.length > 0 && (
-                  <div className="pt-2 border-t border-amber-200/60">
-                    <span className="text-slate-500 text-[10px] uppercase font-bold block mb-1">Active Add-ons:</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {selectedBooking.addons.map((a: any, i: number) => {
-                        const addonKey = typeof a === 'string' ? a : a.addon_name || a.name || `Addon ${i+1}`;
-                        const addonLabel = ADDONS_CATALOG[addonKey]?.label || addonKey;
-                        const addonPrice = ADDONS_CATALOG[addonKey]?.price || a.price || '';
+                  {/* Extend Duration */}
+                  <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-slate-700">
+                      Extend Duration:
+                    </span>
+                    <div className="flex gap-2">
+                      {[0, 1, 2].map((extra) => {
+                        const isSelected = manualForm.extra_hours === extra;
+                        const hourlyRate = (manualForm.theatre_id === 1 || manualForm.theatre_id === 4) ? 400 : 750;
                         return (
-                          <span key={i} className="px-2 py-0.5 rounded-lg bg-white border border-amber-300 text-amber-950 font-bold text-[10.5px] flex items-center gap-1 shadow-2xs">
-                            <span>✓</span>
-                            <span>{addonLabel}</span>
-                            {addonPrice && <span className="text-[#0072AE] font-black">(₹{addonPrice})</span>}
-                          </span>
+                          <button
+                            key={extra}
+                            type="button"
+                            onClick={() => updateManualField('extra_hours', extra)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                              isSelected 
+                                ? 'bg-[#0B2238] text-white shadow-xs' 
+                                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                            }`}
+                          >
+                            {extra === 0 ? 'Standard 2h' : `+${extra}h (+₹${extra * hourlyRate})`}
+                          </button>
                         );
                       })}
                     </div>
                   </div>
-                )}
-              </div>
-
-              {/* Card 4: Financial Calculation & Payment */}
-              <div className="p-4 rounded-2xl bg-[#082052] text-white space-y-2 shadow-sm">
-                <div className="flex items-center justify-between text-[11px] border-b border-white/10 pb-1.5">
-                  <span className="text-white/70 uppercase font-black tracking-wider">Financial Breakdown</span>
-                  <span className="font-bold text-sky-300">
-                    Source: {selectedBooking.source === 'phone_call' ? '📞 Phone Call' : selectedBooking.source === 'whatsapp' ? '💬 WhatsApp' : selectedBooking.source === 'walkin' ? '🚶 Walk-in' : '🌐 Website'}
-                  </span>
                 </div>
-                <div className="grid grid-cols-3 gap-2 pt-1 text-center">
-                  <div className="p-2 rounded-xl bg-white/10 border border-white/15">
-                    <span className="text-[10px] text-white/70 block font-bold">Total Amount</span>
-                    <strong className="text-base font-black text-white">₹{selectedBooking.total}</strong>
-                  </div>
-                  <div className="p-2 rounded-xl bg-emerald-500/20 border border-emerald-400/40">
-                    <span className="text-[10px] text-emerald-200 block font-bold">Advance Paid</span>
-                    <strong className="text-base font-black text-emerald-300">₹{selectedBooking.advance_paid || 0}</strong>
-                  </div>
-                  <div className="p-2 rounded-xl bg-amber-500/20 border border-amber-400/40">
-                    <span className="text-[10px] text-amber-200 block font-bold">Balance Due</span>
-                    <strong className="text-base font-black text-amber-300">₹{selectedBooking.balance || 0}</strong>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between pt-1 text-[11px] text-white/80">
-                  <span>Payment Type: <strong className="text-white font-bold">{selectedBooking.payment_type || 'UPI'}</strong></span>
-                  {selectedBooking.discount > 0 && (
-                    <span className="text-rose-300 font-bold">Discount: -₹{selectedBooking.discount}</span>
-                  )}
-                </div>
-              </div>
 
-              {/* WHATSAPP DISPATCH */}
-              <button
-                type="button"
-                onClick={() => sendCustomerWhatsApp(selectedBooking)}
-                className="w-full py-2.5 px-4 rounded-xl text-xs font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
-              >
-                <MessageCircle className="w-4 h-4 fill-white" />
-                <span>Dispatch Customer WhatsApp Message</span>
-              </button>
-
-              {/* Status Action Buttons */}
-              <div className="p-3 rounded-2xl bg-[#fffdf9] border border-sky-100 space-y-2">
-                <span className="text-[10px] uppercase font-bold text-slate-600 block">Change Status:</span>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleAction(selectedBooking.id, 'update_status', { status: 'confirmed' })}
-                    className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors"
-                  >
-                    ✓ Confirm
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleAction(selectedBooking.id, 'update_status', { status: 'completed' })}
-                    className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-royal-100 text-[#155fbd] hover:bg-royal-200 transition-colors"
-                  >
-                    ★ Complete
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const reason = prompt('Enter cancellation reason:') || 'Client cancelled';
-                      const refund = prompt('Enter refund amount (if any):', '0') || '0';
-                      handleAction(selectedBooking.id, 'cancel', { cancelled_reason: reason, refund_amount: refund });
-                    }}
-                    className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-rose-100 text-rose-800 hover:bg-rose-200 transition-colors"
-                  >
-                    ✕ Cancel
-                  </button>
-                </div>
-              </div>
-
-              {/* RESCHEDULE SLOT BUTTON */}
-              <button
-                type="button"
-                onClick={() => {
-                  openRescheduleModal(selectedBooking);
-                  setSelectedBooking(null);
-                }}
-                className="w-full py-2.5 px-4 rounded-xl text-xs font-extrabold text-[#141110] bg-amber-50 hover:bg-amber-100 border border-amber-300 shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
-              >
-                <Clock className="w-4 h-4 text-amber-700" />
-                <span>Reschedule Date / Time Slot</span>
-              </button>
-
-              {selectedBooking.screen_name && (
-                <div className="p-3 rounded-xl bg-[#f0f7ff]">
-                  <span className="text-[10px] text-ink/60 uppercase font-bold block">Screen Title Display</span>
-                  <span className="font-semibold text-ink">&ldquo;{selectedBooking.screen_name}&rdquo;</span>
-                </div>
-              )}
-
-              {/* Add Payment Field */}
-              {selectedBooking.balance > 0 && (
-                <div className="pt-3 border-t border-sky-100">
-                  <label className="block text-[11px] font-bold text-ink mb-1">
-                    Collect Payment (Remaining Balance: ₹{selectedBooking.balance})
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      value={paymentAddAmount}
-                      onChange={(e) => setPaymentAddAmount(e.target.value)}
-                      placeholder={`e.g. ${selectedBooking.balance}`}
-                      className="px-3 py-2 rounded-xl bg-[#fffdf9] border border-sky-200 text-xs font-bold"
-                    />
-                    <button
-                      onClick={() => {
-                        if (paymentAddAmount) {
-                          handleAction(selectedBooking.id, 'add_payment', { payment_add: paymentAddAmount });
-                          setPaymentAddAmount('');
-                        }
-                      }}
-                      className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs"
-                    >
-                      Record Payment
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-between items-center pt-4 border-t border-sky-100">
-              <button
-                onClick={() => {
-                  const reason = prompt('Enter cancellation reason:') || 'Client cancelled';
-                  const refund = prompt('Enter refund amount (if any):', '0') || '0';
-                  handleAction(selectedBooking.id, 'cancel', { cancelled_reason: reason, refund_amount: refund });
-                }}
-                className="text-xs text-rose-600 font-bold hover:underline"
-              >
-                Cancel Booking
-              </button>
-              <button
-                onClick={() => setSelectedBooking(null)}
-                className="px-5 py-2.5 rounded-full text-xs font-bold bg-[#237eea] text-white"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* BOOKING MODAL (FULL 17 OPERATIONAL FIELDS) */}
-      {showManualModal && (
-        <div className="fixed inset-0 z-50 bg-[#0B2238]/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-white max-w-2xl w-full rounded-3xl p-5 sm:p-7 space-y-4 shadow-elevated border border-[#00A2E4]/20 max-h-[92vh] overflow-y-auto">
-            
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2.5">
-                <span className="w-10 h-10 rounded-2xl bg-[#00A2E4]/10 text-[#00A2E4] flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-[#00A2E4]" />
-                </span>
+                {/* 4. Package or Custom (Matching Frontend Exactly) */}
                 <div>
-                  <h3 className="font-playfair text-xl sm:text-2xl font-bold text-[#0B2238]">
-                    Book Showtime
-                  </h3>
-                  <span className="text-[11px] text-slate-500">
-                    Create private theatre reservation &amp; dispatch customer WhatsApp voucher
-                  </span>
-                </div>
-              </div>
-              <button 
-                onClick={() => setShowManualModal(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={(e) => handleCreateManualBooking(e, true)} className="space-y-4 text-xs">
-              
-              {/* SECTION 1: Celebrant & Contact (Fields 1, 2, + Contact Name) */}
-              <div className="p-3.5 rounded-2xl bg-[#F6FAFD] border border-sky-100/80 space-y-3">
-                <span className="text-[11px] font-black uppercase tracking-wider text-[#0072AE] flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" /> 1. Celebrant &amp; Contact Details
-                </span>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-bold text-[#0B2238] mb-1">
-                      Special person’s Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Sneha / Arjun"
-                      value={manualForm.special_person_name}
-                      onChange={(e) => updateManualField('special_person_name', e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-[#0B2238] mb-1">
-                      Whatsapp number (10 digits) *
-                    </label>
-                    <div className="flex">
-                      <span className="px-3 py-2 rounded-l-xl bg-slate-200 border border-r-0 border-sky-200 font-bold text-slate-700">
-                        +91
-                      </span>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="9876543210"
-                        value={manualForm.whatsapp_number}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                          updateManualField('whatsapp_number', val);
-                        }}
-                        className="w-full px-3 py-2 rounded-r-xl bg-white border border-sky-200 font-black text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">
-                      Customer / Booked By (Name)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Ramesh Babu"
-                      value={manualForm.customer_name}
-                      onChange={(e) => updateManualField('customer_name', e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-semibold text-slate-800 focus:border-[#00A2E4] focus:outline-none"
-                    />
-                  </div>
-
-                  {/* FIELD 3: Occasion */}
-                  <div>
-                    <label className="block font-bold text-[#0B2238] mb-1">
-                      Occasion *
-                    </label>
-                    <select
-                      value={manualForm.occasion}
-                      onChange={(e) => {
-                        const occ = e.target.value;
-                        let occId = 1;
-                        if (occ.includes('Birthday')) occId = 2;
-                        else if (occ.includes('Proposal') || occ.includes('Date')) occId = 1;
-                        else if (occ.includes('Anniversary')) occId = 3;
-                        else if (occ.includes('Bride')) occId = 4;
-                        else if (occ.includes('Family')) occId = 5;
-                        updateManualField('occasion', occ);
-                        updateManualField('occasion_id', occId);
-                      }}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
-                    >
-                      <option value="Birthday Party">🎂 Birthday Party</option>
-                      <option value="Romantic Proposal / Date">💍 Romantic Proposal / Date</option>
-                      <option value="Anniversary Celebration">💖 Anniversary Celebration</option>
-                      <option value="Bride-to-Be / Bachelorette">👰 Bride-to-Be / Bachelorette</option>
-                      <option value="Groom-to-Be">🤵 Groom-to-Be</option>
-                      <option value="Family & Friends Movie Night">🍿 Family &amp; Friends Movie Night</option>
-                      <option value="Surprise Celebration">✨ Surprise Celebration</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* SECTION 2: Branch & Theatre (Fields 4, 5) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-[#0B2238] mb-1">Branch *</label>
-                  <select
-                    value={manualForm.branch_id}
-                    onChange={(e) => {
-                      const newBranch = Number(e.target.value);
-                      const defaultTheatre = newBranch === 1 ? 1 : 4;
-                      updateManualField('branch_id', newBranch);
-                      handleTheatreChange(defaultTheatre);
-                    }}
-                    className="w-full px-3 py-2 rounded-xl bg-[#F6FAFD] border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
-                  >
-                    <option value={1}>Electronic City (3 Screens)</option>
-                    <option value={2}>BTM 2nd Stage (4 Screens)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-[#0B2238] mb-1">Private Theatre *</label>
-                  <select
-                    value={manualForm.theatre_id}
-                    onChange={(e) => handleTheatreChange(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-[#F6FAFD] border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
-                  >
-                    {manualForm.branch_id === 1 ? (
-                      <>
-                        <option value={1}>🎬 Couple Theater (₹899 • 2 Guests)</option>
-                        <option value={2}>🎉 Celebration Theater (₹1499 • 6 Guests)</option>
-                        <option value={3}>👨‍👩‍👧‍👦 Family Theater (₹1699 • 12-20 Guests)</option>
-                      </>
-                    ) : (
-                      <>
-                        <option value={4}>🦋 Butterfly Blush (₹899 • 2 Guests)</option>
-                        <option value={5}>🪻 Lavender Mist (₹1499 • 6 Guests)</option>
-                        <option value={6}>🌹 Scarlet Red (₹1699 • 12 Guests)</option>
-                        <option value={7}>🖤 Shadow Suit (₹1599 • 8 Guests)</option>
-                      </>
-                    )}
-                  </select>
-                </div>
-              </div>
-
-              {/* SECTION 3: Timings & Slot Selection (Field 6) */}
-              <div className="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-2.5">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <label className="font-bold text-[#0B2238] flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-[#00A2E4]" />
-                    <span>Timings / Showtime Slot *</span>
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={manualForm.booking_date}
-                    onChange={(e) => updateManualField('booking_date', e.target.value)}
-                    className="px-3 py-1.5 rounded-xl bg-[#F6FAFD] border border-sky-200 font-bold text-[#0B2238] text-xs focus:outline-none"
-                  />
-                </div>
-
-                {loadingManualSlots ? (
-                  <div className="p-3 text-center text-slate-500 animate-pulse bg-slate-50 rounded-xl">
-                    Checking slot availability...
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-36 overflow-y-auto p-1">
-                    {manualSlots.map((s) => {
-                      const isSelected = manualForm.slot_id === s.id;
-                      const isBooked = s.is_booked;
-                      let slotTime = s.time || `${s.start_time} - ${s.end_time}`;
-                      if (manualForm.extra_hours > 0) {
-                        slotTime = formatBookingSlotTime(s.dynamic_start_time || s.start_time, s.dynamic_end_time || s.end_time, manualForm.extra_hours);
-                      }
-                      return (
-                        <button
-                          type="button"
-                          key={s.id}
-                          disabled={isBooked}
-                          onClick={() => {
-                            updateManualField('slot_id', s.id);
-                            updateManualField('slot_time', slotTime);
-                          }}
-                          className={`p-2 rounded-xl text-center border transition-all cursor-pointer ${
-                            isSelected
-                              ? 'border-[#00A2E4] bg-[#00A2E4] text-white font-black shadow-xs'
-                              : isBooked
-                              ? 'border-slate-200 bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed line-through'
-                              : 'border-slate-200 bg-white hover:border-[#00A2E4] text-slate-800 font-bold'
-                          }`}
-                        >
-                          <span className="block text-xs">{slotTime}</span>
-                          <span className="block text-[10px] mt-0.5">
-                            {isSelected ? '✓ Selected' : isBooked ? 'Booked' : 'Available'}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* Extra Hours Extension */}
-                <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold text-slate-700">
-                    Extend Duration:
-                  </span>
-                  <div className="flex gap-2">
-                    {[0, 1, 2].map((extra) => {
-                      const isSelected = manualForm.extra_hours === extra;
-                      const hourlyRate = (manualForm.theatre_id === 1 || manualForm.theatre_id === 4) ? 400 : 750;
-                      return (
-                        <button
-                          key={extra}
-                          type="button"
-                          onClick={() => updateManualField('extra_hours', extra)}
-                          className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                            isSelected 
-                              ? 'bg-[#0B2238] text-white shadow-xs' 
-                              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                          }`}
-                        >
-                          {extra === 0 ? 'Standard 2h' : `+${extra}h (+₹${extra * hourlyRate})`}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* SECTION 4: Package or Custom (Field 7) & Extra Persons (Field 8) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-[#0B2238] mb-1">
+                  <label className="block text-xs font-black text-[#0B2238] mb-1.5">
                     Package or Custom *
                   </label>
-                  <div className="grid grid-cols-3 gap-1.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                     {[
-                      { key: 'standard', label: 'Standard', sub: 'Base setup' },
-                      { key: 'custom', label: 'Custom', sub: '+₹500 theme' },
-                      { key: 'premium', label: 'VIP Suite', sub: '+₹1,000 all-in' },
+                      { 
+                        key: 'standard', 
+                        label: 'Standard Celebration', 
+                        badge: 'Most Popular',
+                        desc: 'Décor + 500g Cake + Fog Entry Included (+₹600)' 
+                      },
+                      { 
+                        key: 'premium', 
+                        label: 'Premium VIP', 
+                        badge: 'All-In Grand',
+                        desc: 'Themed Décor + Cake + Fog + Cold Pyro (+₹1,500)' 
+                      },
+                      { 
+                        key: 'custom', 
+                        label: 'Custom (Room Only)', 
+                        badge: 'Build Your Own',
+                        desc: 'Base screen only, pick add-ons as needed (+₹0)' 
+                      },
                     ].map((pkg) => {
                       const isSel = manualForm.package_type === pkg.key;
                       return (
@@ -1429,310 +1172,398 @@ export default function AdminBookingsPage() {
                           key={pkg.key}
                           type="button"
                           onClick={() => updateManualField('package_type', pkg.key)}
-                          className={`p-2 rounded-xl text-center border transition-all cursor-pointer ${
+                          className={`p-3 rounded-2xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
                             isSel 
-                              ? 'border-[#00A2E4] bg-[#00A2E4]/10 text-[#0072AE] font-black' 
-                              : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                              ? 'border-[#00A2E4] bg-sky-50/80 ring-2 ring-[#00A2E4]/40 shadow-xs' 
+                              : 'border-slate-200 bg-white hover:border-slate-300'
                           }`}
                         >
-                          <span className="block text-xs font-bold">{pkg.label}</span>
-                          <span className="block text-[9px] text-slate-500">{pkg.sub}</span>
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[10px] font-black uppercase tracking-wider text-[#0072AE]">
+                                {pkg.badge}
+                              </span>
+                              {isSel && <span className="w-2 h-2 rounded-full bg-[#00A2E4]" />}
+                            </div>
+                            <strong className="block text-xs font-extrabold text-[#0B2238]">{pkg.label}</strong>
+                          </div>
+                          <p className="text-[10.5px] text-slate-500 mt-1 leading-snug">{pkg.desc}</p>
                         </button>
                       );
                     })}
                   </div>
                 </div>
 
-                <div>
-                  <label className="block font-bold text-[#0B2238] mb-1">
-                    Extra persons (+₹150/guest)
-                  </label>
-                  <div className="flex items-center gap-2">
+                {/* 5. Extra Persons & LED Screen Display */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div>
+                    <label className="block text-xs font-black text-[#0B2238] mb-1">
+                      Extra persons (+₹150/guest)
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min={0}
+                        max={20}
+                        value={manualForm.extra_persons}
+                        onChange={(e) => updateManualField('extra_persons', Math.max(0, parseInt(e.target.value) || 0))}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-sky-200 font-bold text-xs text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                      />
+                      <span className="text-xs text-slate-500 shrink-0 font-bold">
+                        +₹{manualForm.extra_persons * 150}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Screen Title Display (LED Screen)
+                    </label>
                     <input
-                      type="number"
-                      min={0}
-                      max={20}
-                      value={manualForm.extra_persons}
-                      onChange={(e) => updateManualField('extra_persons', Math.max(0, parseInt(e.target.value) || 0))}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                      type="text"
+                      placeholder="e.g. Happy 25th Birthday Sneha ❤️"
+                      value={manualForm.screen_name}
+                      onChange={(e) => updateManualField('screen_name', e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-sky-200 text-xs font-medium text-slate-800 focus:border-[#00A2E4] focus:outline-none"
                     />
-                    <span className="text-[11px] text-slate-500 shrink-0 font-medium">
-                      +₹{manualForm.extra_persons * 150}
+                  </div>
+                </div>
+
+                {/* 6. Cake Flavour & Cake Weight (500g, 1kg, 1.5kg, 2kg, None) */}
+                <div className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-200/70 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-black uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+                      🎂 Cake Flavour &amp; Weight Options
+                    </span>
+                    <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
+                      {manualForm.cake_weight === 'None' ? 'No Cake' : manualForm.cake_weight}
                     </span>
                   </div>
-                </div>
-              </div>
 
-              {/* SECTION 5: Cake Flavour (Field 9) & LED Screen Title */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-[#0B2238] mb-1">
-                    Cake flavour *
-                  </label>
-                  <select
-                    value={manualForm.cake_flavor}
-                    onChange={(e) => updateManualField('cake_flavor', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
-                  >
-                    <option value="Chocolate Truffle (500g)">🍫 Chocolate Truffle (500g)</option>
-                    <option value="Dutch Dark Chocolate (500g)">🍫 Dutch Dark Chocolate (500g)</option>
-                    <option value="Red Velvet (500g)">❤️ Red Velvet (500g)</option>
-                    <option value="Black Forest (500g)">🍒 Black Forest (500g)</option>
-                    <option value="Butterscotch (500g)">🍯 Butterscotch (500g)</option>
-                    <option value="Fresh Pineapple (500g)">🍍 Fresh Pineapple (500g)</option>
-                    <option value="Alphonso Mango (500g)">🥭 Alphonso Mango (500g)</option>
-                    <option value="Blueberry Bliss (500g)">🫐 Blueberry Bliss (500g)</option>
-                    <option value="None">🚫 None (Bringing Own Cake / ₹0)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">
-                    Screen Title Display (LED Screen)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Happy 25th Birthday Sneha ❤️"
-                    value={manualForm.screen_name}
-                    onChange={(e) => updateManualField('screen_name', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-medium text-slate-800 focus:border-[#00A2E4] focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* SECTION 6: Addons (Field 10: Horizontal Quick Chips) */}
-              <div className="space-y-2 p-3.5 rounded-2xl bg-[#F6FAFD] border border-sky-100">
-                <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-[#0B2238] block text-[11px] uppercase tracking-wider">
-                    🎁 Celebration Add-ons (Horizontal Quick Chips)
-                  </span>
-                  <span className="text-[10px] font-bold text-[#0072AE] bg-sky-100/70 px-2 py-0.5 rounded-full">
-                    {manualForm.addons.length} selected
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {Object.entries(ADDONS_CATALOG).map(([key, item]) => {
-                    const isSelected = manualForm.addons.includes(key);
-                    return (
-                      <button
-                        type="button"
-                        key={key}
-                        onClick={() => toggleManualAddon(key)}
-                        className={`p-2 rounded-xl border text-left text-xs transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
-                          isSelected
-                            ? 'border-[#00A2E4] bg-[#00A2E4] text-white font-black shadow-xs'
-                            : 'border-slate-200 bg-white text-slate-800 hover:border-[#00A2E4]/60'
-                        }`}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label className="block text-xs font-bold text-[#0B2238] mb-1">
+                        Cake Flavour *
+                      </label>
+                      <select
+                        value={manualForm.cake_flavor}
+                        onChange={(e) => updateManualField('cake_flavor', e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-amber-200 font-bold text-xs text-[#0B2238] focus:border-amber-400 focus:outline-none"
                       >
-                        <span className="flex items-center gap-1.5 truncate">
-                          <span className="shrink-0">{item.icon}</span>
-                          <span className="truncate font-bold text-[11px]">{item.label}</span>
-                        </span>
-                        <span className={`text-[10.5px] shrink-0 font-extrabold ${isSelected ? 'text-white' : 'text-[#0072AE]'}`}>
-                          ₹{item.price}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+                        <option value="Chocolate Truffle">🍫 Chocolate Truffle</option>
+                        <option value="Dutch Dark Chocolate">🍫 Dutch Dark Chocolate</option>
+                        <option value="Red Velvet">❤️ Red Velvet</option>
+                        <option value="Black Forest">🍒 Black Forest</option>
+                        <option value="Butterscotch">🍯 Butterscotch</option>
+                        <option value="Fresh Pineapple">🍍 Fresh Pineapple</option>
+                        <option value="Alphonso Mango">🥭 Alphonso Mango</option>
+                        <option value="Blueberry Bliss">🫐 Blueberry Bliss</option>
+                        <option value="None">🚫 None (Bringing Own Cake / ₹0)</option>
+                      </select>
+                    </div>
 
-              {/* SECTION 7: Extra custom field (Field 11: Name & Amount) & Discount (Field 12) */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-2xl bg-[#FFFDF9] border border-amber-200/70">
-                <div className="sm:col-span-2">
-                  <label className="block font-bold text-[#0B2238] mb-1">
-                    Extra custom field (Item Name)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Custom Balloon Arch / Flower Crown / Gift Hamper"
-                    value={manualForm.custom_item_name}
-                    onChange={(e) => updateManualField('custom_item_name', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-amber-200 font-medium text-slate-800 focus:border-amber-400 focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-[#0B2238] mb-1">
-                    Custom Amount (₹)
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    placeholder="0"
-                    value={manualForm.custom_item_amount || ''}
-                    onChange={(e) => updateManualField('custom_item_amount', Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-amber-200 font-black text-[#0B2238] focus:border-amber-400 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* SECTION 8: Discount, Payment Type (Field 16) & Booking Source (Field 17) */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-800 mb-1">
-                    Discount (₹)
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    placeholder="0"
-                    value={manualForm.discount || ''}
-                    onChange={(e) => updateManualField('discount', Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-black text-rose-600 focus:border-[#00A2E4] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-[#0B2238] mb-1">
-                    Payment type *
-                  </label>
-                  <select
-                    value={manualForm.payment_type}
-                    onChange={(e) => updateManualField('payment_type', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
-                  >
-                    <option value="UPI">📱 UPI (GPay / PhonePe / Paytm)</option>
-                    <option value="Cash">💵 Cash</option>
-                    <option value="Card">💳 Credit / Debit Card</option>
-                    <option value="Net Banking">🏦 Net Banking</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-[#0B2238] mb-1">
-                    Booking Source *
-                  </label>
-                  <select
-                    value={manualForm.source}
-                    onChange={(e) => updateManualField('source', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 font-bold text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
-                  >
-                    <option value="whatsapp">💬 WhatsApp</option>
-                    <option value="phone_call">📞 Phone Call</option>
-                    <option value="walkin">🚶 Walk-in</option>
-                    <option value="instagram">📸 Instagram</option>
-                    <option value="website">🌐 Website</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* SECTION 9: Financial Calculation Card (Fields 13, 14, 15) */}
-              <div className="p-4 rounded-2xl bg-[#0B2238] text-white space-y-3 shadow-sm">
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-bold text-white/80 mb-1">
-                      Total amount (₹) *
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      value={manualForm.total}
-                      onChange={(e) => updateManualField('total', Math.max(0, parseInt(e.target.value) || 0))}
-                      className="w-full px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 font-black text-white text-base focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-white/80 mb-1">
-                      Advance (₹) *
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      value={manualForm.advance_paid}
-                      onChange={(e) => updateManualField('advance_paid', Math.max(0, parseInt(e.target.value) || 0))}
-                      className="w-full px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-400 font-black text-emerald-300 text-base focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-white/80 mb-1">
-                      Balance Due (₹)
-                    </label>
-                    <div className="px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/50 font-black text-amber-300 text-base flex items-center">
-                      ₹{Math.max(0, manualForm.total - manualForm.advance_paid)}
+                    <div>
+                      <label className="block text-xs font-bold text-[#0B2238] mb-1">
+                        Cake Weight *
+                      </label>
+                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
+                        {[
+                          { key: '500g', label: '500 gm', cost: 'Included' },
+                          { key: '1kg', label: '1 kg', cost: '+₹400' },
+                          { key: '1.5kg', label: '1.5 kg', cost: '+₹800' },
+                          { key: '2kg', label: '2 kg', cost: '+₹1,200' },
+                          { key: 'None', label: 'None', cost: '₹0' },
+                        ].map((w) => {
+                          const isSel = manualForm.cake_weight === w.key;
+                          return (
+                            <button
+                              key={w.key}
+                              type="button"
+                              onClick={() => updateManualField('cake_weight', w.key)}
+                              className={`p-1.5 rounded-xl text-center border transition-all cursor-pointer ${
+                                isSel
+                                  ? 'bg-[#0B2238] text-white border-[#0B2238] font-bold shadow-xs'
+                                  : 'bg-white text-slate-700 border-amber-200 hover:border-amber-300'
+                              }`}
+                            >
+                              <span className="block text-[11px] font-bold">{w.label}</span>
+                              <span className={`block text-[9px] ${isSel ? 'text-amber-300' : 'text-slate-500'}`}>{w.cost}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-[11px] pt-1 border-t border-white/10">
-                  <span className="text-white/60 font-medium">Quick Advance:</span>
-                  {[500, 1000].map((amt) => (
-                    <button
-                      key={amt}
-                      type="button"
-                      onClick={() => updateManualField('advance_paid', amt)}
-                      className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold transition-colors cursor-pointer"
+                {/* 7. Celebration Add-ons (Horizontal Quick Chips) */}
+                <div className="space-y-2 p-4 rounded-2xl bg-[#F6FAFD] border border-sky-100">
+                  <div className="flex items-center justify-between">
+                    <span className="font-extrabold text-[#0B2238] block text-[11px] uppercase tracking-wider">
+                      🎁 Celebration Add-ons (Quick Chips)
+                    </span>
+                    <span className="text-[10px] font-bold text-[#0072AE] bg-sky-100 px-2 py-0.5 rounded-full">
+                      {manualForm.addons.length} selected
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {Object.entries(ADDONS_CATALOG).map(([key, item]) => {
+                      const isSelected = manualForm.addons.includes(key);
+                      return (
+                        <button
+                          type="button"
+                          key={key}
+                          onClick={() => toggleManualAddon(key)}
+                          className={`p-2 rounded-xl border text-left text-xs transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
+                            isSelected
+                              ? 'border-[#00A2E4] bg-[#00A2E4] text-white font-black shadow-xs'
+                              : 'border-slate-200 bg-white text-slate-800 hover:border-[#00A2E4]/60'
+                          }`}
+                        >
+                          <span className="flex items-center gap-1.5 truncate">
+                            <span className="shrink-0">{item.icon}</span>
+                            <span className="truncate font-bold text-[11px]">{item.label}</span>
+                          </span>
+                          <span className={`text-[10.5px] shrink-0 font-extrabold ${isSelected ? 'text-white' : 'text-[#0072AE]'}`}>
+                            ₹{item.price}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 8. Extra Custom Field (Name & Amount) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-2xl bg-[#FFFDF9] border border-amber-200/70">
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold text-[#0B2238] mb-1">
+                      Extra custom field (Item Name)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Balloon Arch / Rose Petals / Flower Crown"
+                      value={manualForm.custom_item_name}
+                      onChange={(e) => updateManualField('custom_item_name', e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-amber-200 text-xs font-medium text-slate-800 focus:border-amber-400 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#0B2238] mb-1">
+                      Custom Amount (₹)
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      placeholder="0"
+                      value={manualForm.custom_item_amount || ''}
+                      onChange={(e) => updateManualField('custom_item_amount', Math.max(0, parseInt(e.target.value) || 0))}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-amber-200 font-black text-xs text-[#0B2238] focus:border-amber-400 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* 9. Discount, Payment Type & Booking Source */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      Discount (₹)
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      placeholder="0"
+                      value={manualForm.discount || ''}
+                      onChange={(e) => updateManualField('discount', Math.max(0, parseInt(e.target.value) || 0))}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 font-black text-xs text-rose-600 focus:border-[#00A2E4] focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#0B2238] mb-1">
+                      Payment type *
+                    </label>
+                    <select
+                      value={manualForm.payment_type}
+                      onChange={(e) => updateManualField('payment_type', e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 font-bold text-xs text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
                     >
-                      ₹{amt}
+                      <option value="UPI">📱 UPI (GPay / PhonePe / Paytm)</option>
+                      <option value="Cash">💵 Cash</option>
+                      <option value="Card">💳 Credit / Debit Card</option>
+                      <option value="Net Banking">🏦 Net Banking</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#0B2238] mb-1">
+                      Booking Source *
+                    </label>
+                    <select
+                      value={manualForm.source}
+                      onChange={(e) => updateManualField('source', e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 font-bold text-xs text-[#0B2238] focus:border-[#00A2E4] focus:outline-none"
+                    >
+                      <option value="phone_call">📞 Phone Call</option>
+                      <option value="whatsapp">💬 WhatsApp</option>
+                      <option value="walkin">🚶 Walk-in</option>
+                      <option value="instagram">📸 Instagram</option>
+                      <option value="website">🌐 Website</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Special Requests / Notes */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Special Requests / Internal Notes
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Surprise entrance with favorite Spotify playlist"
+                    value={manualForm.notes}
+                    onChange={(e) => updateManualField('notes', e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-800"
+                  />
+                </div>
+
+              </div>
+
+              {/* RIGHT COLUMN: Live Ticket & Financial Breakdown (Pinned / High Visibility) */}
+              <div className="lg:w-5/12 xl:w-2/5 overflow-y-auto p-5 sm:p-6 bg-[#F8FBFD] flex flex-col justify-between space-y-4">
+                
+                {/* Live Ticket Header */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black uppercase tracking-wider text-[#0B2238] flex items-center gap-1.5">
+                      <Ticket className="w-4 h-4 text-[#00A2E4]" />
+                      <span>Live WhatsApp Ticket Preview</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={copyLiveTicketText}
+                      className="text-[11px] font-bold text-[#0072AE] hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>{copiedLiveTicket ? '✓ Copied' : 'Copy'}</span>
                     </button>
-                  ))}
+                  </div>
+
+                  {/* Formatted Live Ticket Card */}
+                  <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm text-xs font-mono space-y-2 text-slate-800 whitespace-pre-wrap leading-relaxed max-h-72 overflow-y-auto">
+                    {generateWhatsAppMessage({
+                      ...manualForm,
+                      booking_ref: 'MB-TICKET',
+                      theatre_name: getTheatreDisplayName(manualForm.theatre_id, manualForm.branch_id),
+                      branch_name: manualForm.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage'
+                    })}
+                  </div>
+                </div>
+
+                {/* Financial Summary Card */}
+                <div className="p-4 rounded-2xl bg-[#082052] text-white space-y-3 shadow-md">
+                  <div className="flex items-center justify-between text-xs border-b border-white/10 pb-2">
+                    <span className="font-bold text-white/70 uppercase">Bill Summary</span>
+                    <span className="text-sky-300 font-bold">
+                      {manualForm.theatre_id === 1 || manualForm.theatre_id === 4 ? 'Couple Theatre' : 'Celebration Theatre'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2.5 text-center">
+                    <div className="p-2.5 rounded-xl bg-white/10 border border-white/15">
+                      <span className="text-[10px] text-white/70 block font-bold">Total Amount</span>
+                      <strong className="text-base font-black text-white">₹{manualForm.total}</strong>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400">
+                      <span className="text-[10px] text-emerald-200 block font-bold">Advance (₹)</span>
+                      <input
+                        type="number"
+                        min={0}
+                        value={manualForm.advance_paid}
+                        onChange={(e) => updateManualField('advance_paid', Math.max(0, parseInt(e.target.value) || 0))}
+                        className="w-full text-center bg-transparent text-emerald-300 font-black text-base focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="p-2.5 rounded-xl bg-amber-500/20 border border-amber-400/50">
+                      <span className="text-[10px] text-amber-200 block font-bold">Balance Due</span>
+                      <strong className="text-base font-black text-amber-300">
+                        ₹{Math.max(0, manualForm.total - manualForm.advance_paid)}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 text-[11px] pt-1 border-t border-white/10">
+                    <span className="text-white/60 font-medium">Quick Advance:</span>
+                    {[500, 1000].map((amt) => (
+                      <button
+                        key={amt}
+                        type="button"
+                        onClick={() => updateManualField('advance_paid', amt)}
+                        className="px-2.5 py-0.5 rounded-lg bg-white/15 hover:bg-white/25 text-white font-bold transition-colors cursor-pointer"
+                      >
+                        ₹{amt}
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => updateManualField('advance_paid', manualForm.total)}
+                      className="px-2.5 py-0.5 rounded-lg bg-white/15 hover:bg-white/25 text-white font-bold transition-colors cursor-pointer"
+                    >
+                      Full (₹{manualForm.total})
+                    </button>
+                  </div>
+                </div>
+
+                {/* Big Action Buttons */}
+                <div className="space-y-2 pt-2">
                   <button
                     type="button"
-                    onClick={() => updateManualField('advance_paid', manualForm.total)}
-                    className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold transition-colors cursor-pointer"
+                    onClick={(e) => handleCreateManualBooking(e, true)}
+                    className="w-full py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all"
                   >
-                    Full (₹{manualForm.total})
+                    <MessageCircle className="w-4 h-4 fill-white" />
+                    <span>Book Showtime &amp; Send WhatsApp Ticket</span>
                   </button>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => handleCreateManualBooking(e, false)}
+                      className="py-2.5 px-4 rounded-xl bg-[#0B2238] hover:bg-slate-900 text-white font-bold text-xs transition-colors cursor-pointer"
+                    >
+                      Save Only
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowManualModal(false)}
+                      className="py-2.5 px-4 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
+
               </div>
 
-              {/* Notes / Special Instructions */}
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">
-                  Special Requests / Internal Notes
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Preferred red heart backdrop, playing favorite Spotify playlist"
-                  value={manualForm.notes}
-                  onChange={(e) => updateManualField('notes', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#F6FAFD] border border-sky-100 font-medium text-slate-800"
-                />
-              </div>
+            </div>
 
-              {/* ACTION BUTTONS */}
-              <div className="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setShowManualModal(false)}
-                  className="px-4 py-2.5 rounded-xl bg-slate-100 font-bold text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => handleCreateManualBooking(e, false)}
-                  className="px-5 py-2.5 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-900 transition-colors cursor-pointer"
-                >
-                  Save Only
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all"
-                >
-                  <MessageCircle className="w-4 h-4 fill-white" />
-                  <span>Book &amp; Dispatch WhatsApp</span>
-                </button>
-              </div>
-
-            </form>
           </div>
         </div>
       )}
 
-      {/* POST-BOOKING SUCCESS & WHATSAPP MODAL */}
+      {/* ─── POST-BOOKING SUCCESS & WHATSAPP MODAL ─── */}
       {bookingSuccessData && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white max-w-md w-full rounded-3xl p-6 sm:p-8 space-y-4 shadow-elevated border-2 border-emerald-500 text-center animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white max-w-md w-full rounded-3xl p-6 sm:p-8 space-y-4 shadow-2xl border-2 border-emerald-500 text-center animate-in zoom-in-95">
             <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center shadow-sm">
               <CheckCircle className="w-8 h-8" />
             </div>
 
             <div>
               <span className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider">
-                Booking Successfully Confirmed
+                Booking Confirmed &amp; Ticket Generated
               </span>
               <h3 className="font-playfair text-2xl font-black text-slate-900 mt-1">
                 Ref #{bookingSuccessData.booking_ref}
@@ -1747,7 +1578,7 @@ export default function AdminBookingsPage() {
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-slate-600">Guest Name:</span>
+                <span className="text-slate-600">Customer Name:</span>
                 <strong className="text-slate-900">{bookingSuccessData.customer_name}</strong>
               </div>
               <div className="flex justify-between">
@@ -1755,21 +1586,21 @@ export default function AdminBookingsPage() {
                 <strong className="text-emerald-800 font-mono">+91 {bookingSuccessData.whatsapp_number || bookingSuccessData.customer_phone}</strong>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Screen &amp; Slot:</span>
+                <span className="text-slate-600">Theatre &amp; Slot:</span>
                 <strong className="text-slate-900">{bookingSuccessData.theatre_name} &bull; {bookingSuccessData.slot_time}</strong>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Advance Collected:</span>
+                <span className="text-slate-600">Advance Paid:</span>
                 <strong className="text-emerald-700">₹{bookingSuccessData.advance_paid} ({bookingSuccessData.payment_type || 'UPI'})</strong>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Remaining Balance:</span>
+                <span className="text-slate-600">Balance Due:</span>
                 <strong className="text-amber-700">₹{bookingSuccessData.balance}</strong>
               </div>
             </div>
 
             <p className="text-xs text-slate-600">
-              WhatsApp Web / App was opened for the customer. If you need to re-send or copy the confirmation voucher, use the options below:
+              WhatsApp was opened with the customer ticket voucher. You can re-send or copy the message anytime.
             </p>
 
             <div className="space-y-2 pt-1">
@@ -1779,16 +1610,16 @@ export default function AdminBookingsPage() {
                 className="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95"
               >
                 <MessageCircle className="w-4 h-4 fill-white" />
-                <span>Re-send WhatsApp Confirmation</span>
+                <span>Open Customer WhatsApp Ticket</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => copyConfirmationText(bookingSuccessData)}
-                className="w-full py-2.5 rounded-2xl bg-[#f0f7ff] hover:bg-[#d9ebff]/50 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Copy className="w-4 h-4" />
-                <span>{copiedText ? '✓ Copied to Clipboard!' : 'Copy Confirmation Message'}</span>
+                <span>{copiedText ? '✓ Copied to Clipboard!' : 'Copy Ticket Message'}</span>
               </button>
             </div>
 
@@ -1796,7 +1627,7 @@ export default function AdminBookingsPage() {
               <button
                 type="button"
                 onClick={() => setBookingSuccessData(null)}
-                className="text-xs font-bold text-slate-500 hover:text-slate-800"
+                className="text-xs font-bold text-slate-500 hover:text-slate-800 cursor-pointer"
               >
                 Close &amp; Back to Bookings
               </button>
@@ -1805,9 +1636,124 @@ export default function AdminBookingsPage() {
         </div>
       )}
 
-      {/* RESCHEDULE SLOT MODAL */}
+      {/* ─── BOOKING DETAIL / TICKET INSPECT MODAL ─── */}
+      {selectedBooking && (
+        <div className="fixed inset-0 z-50 bg-[#082052]/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white max-w-xl w-full rounded-3xl p-6 sm:p-7 space-y-4 shadow-2xl border border-slate-200 max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-[#00A2E4] block">Reservation Voucher</span>
+                <h3 className="font-playfair text-xl font-bold text-[#0B2238]">
+                  {selectedBooking.special_person_name || selectedBooking.customer_name} ({selectedBooking.booking_ref})
+                </h3>
+              </div>
+              <button onClick={() => setSelectedBooking(null)} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 cursor-pointer">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Formatted Ticket Preview */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-mono whitespace-pre-wrap leading-relaxed text-slate-800 max-h-80 overflow-y-auto">
+              {generateWhatsAppMessage(selectedBooking)}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-2 pt-1">
+              <button
+                type="button"
+                onClick={() => sendCustomerWhatsApp(selectedBooking)}
+                className="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                <MessageCircle className="w-4 h-4 fill-white" />
+                <span>Send Ticket on WhatsApp (+91 {selectedBooking.whatsapp_number || selectedBooking.customer_phone})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => copyConfirmationText(selectedBooking)}
+                className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Copy className="w-4 h-4" />
+                <span>{copiedText ? '✓ Copied Ticket!' : 'Copy Ticket Message'}</span>
+              </button>
+            </div>
+
+            {/* Status Change */}
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <span className="text-[10px] uppercase font-bold text-slate-600 block">Update Status:</span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleAction(selectedBooking.id, 'update_status', { status: 'confirmed' })}
+                  className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors"
+                >
+                  ✓ Confirm
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAction(selectedBooking.id, 'update_status', { status: 'completed' })}
+                  className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-sky-100 text-sky-800 hover:bg-sky-200 transition-colors"
+                >
+                  ★ Complete
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const reason = prompt('Enter cancellation reason:') || 'Client cancelled';
+                    const refund = prompt('Enter refund amount (if any):', '0') || '0';
+                    handleAction(selectedBooking.id, 'cancel', { cancelled_reason: reason, refund_amount: refund });
+                  }}
+                  className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-rose-100 text-rose-800 hover:bg-rose-200 transition-colors"
+                >
+                  ✕ Cancel
+                </button>
+              </div>
+            </div>
+
+            {/* Collect Balance Payment */}
+            {selectedBooking.balance > 0 && (
+              <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 space-y-1.5">
+                <span className="text-[11px] font-bold text-amber-900 block">
+                  Collect Remaining Balance: <strong>₹{selectedBooking.balance}</strong>
+                </span>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    value={paymentAddAmount}
+                    onChange={(e) => setPaymentAddAmount(e.target.value)}
+                    placeholder={`e.g. ${selectedBooking.balance}`}
+                    className="flex-1 px-3 py-1.5 rounded-xl bg-white border border-amber-300 text-xs font-bold"
+                  />
+                  <button
+                    onClick={() => {
+                      if (paymentAddAmount) {
+                        handleAction(selectedBooking.id, 'add_payment', { payment_add: paymentAddAmount });
+                        setPaymentAddAmount('');
+                      }
+                    }}
+                    className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
+                  >
+                    Record Payment
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end pt-2 border-t border-slate-100">
+              <button
+                onClick={() => setSelectedBooking(null)}
+                className="px-5 py-2 rounded-xl text-xs font-bold bg-slate-800 text-white hover:bg-slate-900 cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── RESCHEDULE SLOT MODAL ─── */}
       {showRescheduleModal && rescheduleBooking && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#082052]/70 backdrop-blur-sm">
           <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
@@ -1832,18 +1778,16 @@ export default function AdminBookingsPage() {
             </div>
 
             <form onSubmit={handleRescheduleSubmit} className="space-y-4 pt-4">
-              {/* Current Slot Info */}
-              <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-200 text-xs space-y-1">
+              <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs space-y-1">
                 <span className="font-bold text-amber-900 block">Current Reservation:</span>
                 <p className="text-slate-700">
                   📅 <strong>{rescheduleBooking.booking_date}</strong> &bull; ⏰ <strong>{rescheduleBooking.slot_time || 'Standard Slot'}</strong>
                 </p>
                 <p className="text-slate-600">
-                  📍 {rescheduleBooking.branch_name || (rescheduleBooking.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage')} &bull; 🎭 {rescheduleBooking.theatre_name || rescheduleBooking.screen_name || 'Standard Screen'}
+                  📍 {rescheduleBooking.branch_name || (rescheduleBooking.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage')} &bull; 🎭 {rescheduleBooking.theatre_name || 'Standard Screen'}
                 </p>
               </div>
 
-              {/* Select Branch */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">Select Branch</label>
                 <select
@@ -1857,23 +1801,22 @@ export default function AdminBookingsPage() {
                       theatre_id: defaultTheatre
                     }));
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#082052]"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#00A2E4]"
                 >
                   <option value={1}>Electronic City Branch</option>
                   <option value={2}>BTM 2nd Stage Branch</option>
                 </select>
               </div>
 
-              {/* Select Theatre / Suite */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Select Theatre / Suite</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Select Theatre</label>
                 <select
                   value={rescheduleForm.theatre_id}
                   onChange={(e) => {
                     const tId = Number(e.target.value);
                     setRescheduleForm(prev => ({ ...prev, theatre_id: tId }));
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#082052]"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#00A2E4]"
                 >
                   {rescheduleForm.branch_id === 1 ? (
                     <>
@@ -1892,7 +1835,6 @@ export default function AdminBookingsPage() {
                 </select>
               </div>
 
-              {/* Select New Date */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">Select New Date</label>
                 <input
@@ -1900,15 +1842,14 @@ export default function AdminBookingsPage() {
                   value={rescheduleForm.booking_date}
                   onChange={(e) => setRescheduleForm(prev => ({ ...prev, booking_date: e.target.value }))}
                   min={getTodayIST()}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#082052]"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#00A2E4]"
                   required
                 />
               </div>
 
-              {/* Live Slot Picker */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Choose Available Time Slot {loadingRescheduleSlots && '(Checking slots...)'}
+                  Choose Available Slot {loadingRescheduleSlots && '(Loading...)'}
                 </label>
                 {loadingRescheduleSlots ? (
                   <div className="py-4 text-center text-xs text-slate-500 animate-pulse">
@@ -1938,13 +1879,13 @@ export default function AdminBookingsPage() {
                             isBooked
                               ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60'
                               : isSelected
-                              ? 'bg-[#141110] text-[#ffd46e] border-[#141110] shadow-sm font-bold scale-[1.02]'
+                              ? 'bg-[#00A2E4] text-white border-[#00A2E4] shadow-sm font-bold'
                               : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-800'
                           }`}
                         >
                           <span className="font-mono font-bold">{slot.start_time} - {slot.end_time}</span>
                           <span className="text-[10px] mt-1 font-medium">
-                            {isBooked ? '❌ Booked' : isSelected ? '✓ Selected Slot' : '🟢 Available'}
+                            {isBooked ? '❌ Booked' : isSelected ? '✓ Selected' : '🟢 Available'}
                           </span>
                         </button>
                       );
@@ -1952,12 +1893,11 @@ export default function AdminBookingsPage() {
                   </div>
                 ) : (
                   <div className="p-3 rounded-xl bg-slate-50 text-xs text-slate-500 text-center">
-                    No slot data found for this date. Defaulting to standard time slots.
+                    No slot data found for this date.
                   </div>
                 )}
               </div>
 
-              {/* Action Buttons */}
               <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
                 <button
                   type="button"
@@ -1971,7 +1911,7 @@ export default function AdminBookingsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl text-xs font-black bg-[#082052] hover:bg-[#00A2E4] text-white shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl text-xs font-black bg-[#0B2238] hover:bg-[#00A2E4] text-white shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
                 >
                   <Check className="w-4 h-4" />
                   <span>Confirm Reschedule</span>
@@ -1981,7 +1921,6 @@ export default function AdminBookingsPage() {
           </div>
         </div>
       )}
-
 
     </div>
   );
