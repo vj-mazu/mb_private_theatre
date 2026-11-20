@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { mockStore, query } from '@/lib/db';
 
 export async function GET() {
+  const headers = { 'Cache-Control': 'no-store' };
+
   try {
     let activeCoupon: any = null;
 
@@ -17,22 +19,11 @@ export async function GET() {
     }
 
     if (!activeCoupon) {
-      activeCoupon = mockStore.coupons.find(c => c.is_active === 1 && c.discount_type === 'flat')
-        || mockStore.coupons.find(c => c.is_active === 1)
-        || { code: 'MOVIEBASH300', discount_value: 300, discount_type: 'flat' };
+      activeCoupon = mockStore.coupons.find((c: any) => c.is_active === 1) || null;
     }
 
-    const headers = { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' };
-    return NextResponse.json({
-      success: true,
-      data: activeCoupon
-    }, { headers });
+    return NextResponse.json({ success: true, data: activeCoupon }, { headers });
   } catch (err: any) {
-    return NextResponse.json({
-      success: true,
-      data: { code: 'MOVIEBASH300', discount_value: 300, discount_type: 'flat' }
-    }, {
-      headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' }
-    });
+    return NextResponse.json({ success: true, data: null }, { headers });
   }
 }

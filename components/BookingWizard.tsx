@@ -180,7 +180,6 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
   const [customLedName, setCustomLedName] = useState<boolean>(false);
   const [customBouquet, setCustomBouquet] = useState<boolean>(false);
   const [customBubbleEntry, setCustomBubbleEntry] = useState<boolean>(false);
-  const [customPopcornCombo, setCustomPopcornCombo] = useState<boolean>(false);
   const [customPhotography, setCustomPhotography] = useState<'none' | '30min' | '1hr'>('none');
   const [customIphoneReel, setCustomIphoneReel] = useState<boolean>(false);
   const [customTeddyMascot, setCustomTeddyMascot] = useState<boolean>(false);
@@ -193,7 +192,6 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
   const [pkgLedName, setPkgLedName] = useState<boolean>(false);
   const [pkgBouquet, setPkgBouquet] = useState<boolean>(false);
   const [pkgBubbleEntry, setPkgBubbleEntry] = useState<boolean>(false);
-  const [pkgPopcornCombo, setPkgPopcornCombo] = useState<boolean>(false);
   const [pkgPhotography, setPkgPhotography] = useState<'none' | '30min' | '1hr'>('none');
   const [pkgIphoneReel, setPkgIphoneReel] = useState<boolean>(false);
   const [pkgTeddyMascot, setPkgTeddyMascot] = useState<boolean>(false);
@@ -215,11 +213,9 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
   const [emailError, setEmailError] = useState<string>('');
 
   // Coupon state (synchronized with active database promo)
-  const [couponInput, setCouponInput] = useState<string>('MOVIEBASH300');
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount_amount: number } | null>({
-    code: 'MOVIEBASH300',
-    discount_amount: 300
-  });
+  const [couponInput, setCouponInput] = useState<string>('');
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount_amount: number } | null>(null);
+  const [activeCoupon, setActiveCoupon] = useState<{ code: string; discount_value: number } | null>(null);
   const [couponError, setCouponError] = useState<string>('');
 
   // Payment & Submission (UPI Only - 100% direct instant verification)
@@ -392,12 +388,57 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
         }
       })
       .catch(() => {});
+
+    // Only pre-fill the coupon box when a coupon is actually active.
+    fetch('/api/coupons/featured')
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.success && json.data?.code) {
+          const coupon = {
+            code: json.data.code as string,
+            discount_value: Number(json.data.discount_value) || 0,
+          };
+          setActiveCoupon(coupon);
+          setCouponInput(coupon.code);
+          setAppliedCoupon({ code: coupon.code, discount_amount: coupon.discount_value });
+        } else {
+          setActiveCoupon(null);
+          setAppliedCoupon(null);
+          setCouponInput('');
+        }
+      })
+      .catch(() => {});
   }, []);
+
+
 
   const getAddonPrice = (id: number, fallback: number): number => {
     const match = dynamicAddons.find((a: any) => a.id === id);
     return match && typeof match.price === 'number' ? Number(match.price) : fallback;
   };
+
+  // Add-ons switched off in the admin panel disappear from every step.
+  const addonReady = dynamicAddons.length > 0;
+  const addonActive = (id: number): boolean =>
+    !addonReady || dynamicAddons.some((a: any) => Number(a.id) === id);
+
+  // Drop any selection whose add-on has been switched off by the admin.
+  useEffect(() => {
+    if (!addonReady) return;
+    if (!addonActive(1)) setCustomHasCake(false);
+    if (!addonActive(3)) setCustomFogPots(0);
+    if (!addonActive(4)) { setCustomColdPyro(false); setPkgColdPyro(false); }
+    if (!addonActive(9)) { setCustomRosePetals(false); setPkgRosePetals(false); }
+    if (!addonActive(5)) { setCustomLedName(false); setPkgLedName(false); }
+    if (!addonActive(7)) { setCustomBouquet(false); setPkgBouquet(false); }
+    if (!addonActive(11)) { setCustomBubbleEntry(false); setPkgBubbleEntry(false); }
+    if (!addonActive(8)) {
+      setCustomPhotography('none'); setPkgPhotography('none');
+      setCustomIphoneReel(false); setPkgIphoneReel(false);
+    }
+    if (!addonActive(10)) { setCustomTeddyMascot(false); setPkgTeddyMascot(false); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addonReady]);
 
   const mergeDynamicTheatres = (baseTheatres: typeof baseEcityTheatres) => {
     if (!dynamicTheatres.length) return baseTheatres;
@@ -508,7 +549,6 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
   const ledNamePrice = getAddonPrice(5, 250);
   const bouquetPrice = getAddonPrice(7, 399);
   const bubblePrice = getAddonPrice(11, 199);
-  const popcornPrice = getAddonPrice(11, 349);
   const photo30minPrice = 499;
   const photo1hrPrice = getAddonPrice(8, 999);
   const reelPrice = 500;
@@ -550,10 +590,6 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
       addonsCost += bubblePrice;
       computedAddonsPayload.push({ addon_id: 11, name: 'Grand Bubble Machine Entry', quantity: 1, price: bubblePrice, total: bubblePrice });
     }
-    if (customPopcornCombo) {
-      addonsCost += popcornPrice;
-      computedAddonsPayload.push({ addon_id: 12, name: 'Cinema Popcorn & Beverage Combo', quantity: 1, price: popcornPrice, total: popcornPrice });
-    }
     if (customPhotography === '30min') {
       addonsCost += photo30minPrice;
       computedAddonsPayload.push({ addon_id: 8, name: 'DSLR Photography (30 mins)', quantity: 1, price: photo30minPrice, total: photo30minPrice });
@@ -594,10 +630,6 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
     if (pkgBubbleEntry) {
       addonsCost += bubblePrice;
       computedAddonsPayload.push({ addon_id: 11, name: 'Grand Bubble Machine Entry', quantity: 1, price: bubblePrice, total: bubblePrice });
-    }
-    if (pkgPopcornCombo) {
-      addonsCost += popcornPrice;
-      computedAddonsPayload.push({ addon_id: 12, name: 'Cinema Popcorn & Beverage Combo', quantity: 1, price: popcornPrice, total: popcornPrice });
     }
     if (pkgPhotography === '30min') {
       addonsCost += photo30minPrice;
@@ -1094,41 +1126,40 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                           </div>
                         </div>
 
-                        <div className="p-4 sm:p-5 text-center flex flex-col items-center justify-between flex-1 space-y-2.5">
-                          <div className="min-h-[68px] flex flex-col justify-center">
-                            <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+                        <div className="p-4 flex flex-col justify-between flex-1 gap-2.5">
+                          <div>
+                            <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug">
                               {th.name}
                             </h3>
-                            <div className="text-xs font-semibold text-slate-600 flex items-center justify-center gap-1 mt-1">
-                              <MapPin className="w-3.5 h-3.5 text-[#00A2E4] shrink-0" />
+                            <div className="text-[11px] font-semibold text-slate-600 flex items-center gap-1 mt-0.5">
+                              <MapPin className="w-3 h-3 text-[#00A2E4] shrink-0" />
                               <span>{branchLocationLabel}</span>
                             </div>
                           </div>
 
-                          <div className="my-1.5 w-full flex justify-center items-center">
-                            <div className="bg-[#e51e25] text-white font-black text-[12px] sm:text-[13px] py-1.5 px-4 sm:px-5 rounded-full shadow-sm uppercase tracking-wide inline-flex items-center justify-center whitespace-nowrap min-h-[36px]">
-                              Starts @ {th.startPrice.replace('₹', '')}/-
-                            </div>
-                          </div>
-
-                          <div className="text-[10px] sm:text-[11px] font-bold text-slate-600 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200/60 leading-snug text-center min-h-[46px] flex items-center justify-center w-full">
+                          <p className="text-[11px] font-semibold text-slate-600 leading-relaxed">
                             {th.spec}
+                          </p>
+
+                          <div className="flex items-baseline gap-1.5 flex-wrap">
+                            <span className="text-[15px] font-black text-[#082052]">Starts @ {th.startPrice}</span>
+                            <span className="text-[10px] font-bold text-emerald-700">· ₹500 advance</span>
                           </div>
 
-                          <div className="w-full pt-2 mt-auto">
+                          <div className="w-full mt-auto">
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setTheatreId(th.id);
                               }}
-                              className={`w-full min-h-[44px] py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                              className={`w-full min-h-[40px] py-2 px-4 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                                 isSelected
-                                  ? 'bg-[#00A2E4] text-white shadow-md ring-2 ring-[#00A2E4]/30 scale-[1.01]'
+                                  ? 'bg-[#082052] text-white shadow-md'
                                   : 'bg-[#00A2E4] hover:bg-[#0072AE] text-white'
                               }`}
                             >
-                              <span>{isSelected ? '✓ Selected' : 'Book Now →'}</span>
+                              <span>{isSelected ? '✓ Selected' : 'Select theatre'}</span>
                             </button>
                           </div>
                         </div>
@@ -1581,7 +1612,9 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
               {/* ----------------------------------------------------------------- */}
               {/* CAKE SECTION WITH ULTRA-LUXURY GLASSMORPHISM & REAL ICONS         */}
               {/* ----------------------------------------------------------------- */}
-              <div className="p-5 sm:p-6 rounded-3xl backdrop-blur-2xl bg-gradient-to-br from-amber-50/90 via-white/80 to-[#E6F3FB]/40/70 border-2 border-amber-300/80 shadow-[0_16px_40px_rgba(245,158,11,0.08)] space-y-4">
+              <div
+                      style={{ display: addonActive(1) ? undefined : 'none' }}
+                      className="p-5 sm:p-6 rounded-3xl backdrop-blur-2xl bg-gradient-to-br from-amber-50/90 via-white/80 to-[#E6F3FB]/40/70 border-2 border-amber-300/80 shadow-[0_16px_40px_rgba(245,158,11,0.08)] space-y-4">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-2xl backdrop-blur-md bg-amber-100/80 border border-amber-300/70 shadow-xs flex items-center justify-center text-3xl">
@@ -1738,7 +1771,9 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     
                     {/* Fog Entry Multi-pot */}
-                    <div className="p-4 rounded-2xl backdrop-blur-xl bg-white/75 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3 sm:col-span-2">
+                    <div
+                      style={{ display: addonActive(3) ? undefined : 'none' }}
+                      className="p-4 rounded-2xl backdrop-blur-xl bg-white/75 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3 sm:col-span-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-xl backdrop-blur-md bg-white/90 border border-white/90 shadow-2xs flex items-center justify-center text-xl shrink-0">
@@ -1782,6 +1817,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setCustomColdPyro(!customColdPyro)}
+                      style={{ display: addonActive(4) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customColdPyro
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -1809,6 +1845,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setCustomRosePetals(!customRosePetals)}
+                      style={{ display: addonActive(9) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customRosePetals
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -1836,6 +1873,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setCustomBouquet(!customBouquet)}
+                      style={{ display: addonActive(7) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customBouquet
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -1863,6 +1901,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setCustomLedName(!customLedName)}
+                      style={{ display: addonActive(5) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customLedName
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -1890,6 +1929,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setCustomBubbleEntry(!customBubbleEntry)}
+                      style={{ display: addonActive(11) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customBubbleEntry
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -1913,35 +1953,10 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       </div>
                     </button>
 
-                    {/* Popcorn Combo */}
-                    <button
-                      type="button"
-                      onClick={() => setCustomPopcornCombo(!customPopcornCombo)}
-                      className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
-                        customPopcornCombo
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
-                          : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl backdrop-blur-md bg-white/90 border border-white/90 shadow-2xs flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
-                          🍿
-                        </div>
-                        <div>
-                          <span className="text-xs font-black text-slate-900 block">Cinema Popcorn &amp; Cold Drinks Combo</span>
-                          <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Large tubs of buttery caramel popcorn with chilled beverages</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹349</span>
-                        </div>
-                      </div>
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                        customPopcornCombo ? 'border-[#00A2E4] bg-[#00A2E4] text-white shadow-xs' : 'border-slate-300 bg-white/60'
-                      }`}>
-                        {customPopcornCombo && <Check className="w-3.5 h-3.5" />}
-                      </div>
-                    </button>
-
-                    {/* DSLR Photography */}
-                    <div className="p-4 rounded-2xl backdrop-blur-xl bg-white/75 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
+                                        {/* DSLR Photography */}
+                    <div
+                      style={{ display: addonActive(8) ? undefined : 'none' }}
+                      className="p-4 rounded-2xl backdrop-blur-xl bg-white/75 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl backdrop-blur-md bg-white/90 border border-white/90 shadow-2xs flex items-center justify-center text-xl shrink-0">
                           📸
@@ -1978,6 +1993,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setCustomIphoneReel(!customIphoneReel)}
+                      style={{ display: addonActive(8) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customIphoneReel
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -2005,6 +2021,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setCustomTeddyMascot(!customTeddyMascot)}
+                      style={{ display: addonActive(10) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         customTeddyMascot
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -2039,6 +2056,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setPkgColdPyro(!pkgColdPyro)}
+                      style={{ display: addonActive(4) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgColdPyro
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -2066,6 +2084,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setPkgExtraFogPot(!pkgExtraFogPot)}
+                      style={{ display: addonActive(3) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgExtraFogPot
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -2093,6 +2112,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setPkgBouquet(!pkgBouquet)}
+                      style={{ display: addonActive(7) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgBouquet
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -2120,6 +2140,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setPkgRosePetals(!pkgRosePetals)}
+                      style={{ display: addonActive(9) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgRosePetals
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -2147,6 +2168,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setPkgBubbleEntry(!pkgBubbleEntry)}
+                      style={{ display: addonActive(11) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgBubbleEntry
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -2170,35 +2192,10 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                       </div>
                     </button>
 
-                    {/* Popcorn Combo */}
-                    <button
-                      type="button"
-                      onClick={() => setPkgPopcornCombo(!pkgPopcornCombo)}
-                      className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
-                        pkgPopcornCombo
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
-                          : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl backdrop-blur-md bg-white/90 border border-white/90 shadow-2xs flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
-                          🍿
-                        </div>
-                        <div>
-                          <span className="text-xs font-black text-slate-900 block">Cinema Popcorn &amp; Cold Drinks Combo</span>
-                          <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Large tubs of buttery caramel popcorn with chilled beverages</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹349</span>
-                        </div>
-                      </div>
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                        pkgPopcornCombo ? 'border-[#00A2E4] bg-[#00A2E4] text-white shadow-xs' : 'border-slate-300 bg-white/60'
-                      }`}>
-                        {pkgPopcornCombo && <Check className="w-3.5 h-3.5" />}
-                      </div>
-                    </button>
-
-                    {/* DSLR Photography */}
-                    <div className="p-4 rounded-2xl backdrop-blur-xl bg-white/75 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
+                                        {/* DSLR Photography */}
+                    <div
+                      style={{ display: addonActive(8) ? undefined : 'none' }}
+                      className="p-4 rounded-2xl backdrop-blur-xl bg-white/75 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl backdrop-blur-md bg-white/90 border border-white/90 shadow-2xs flex items-center justify-center text-xl shrink-0">
                           📸
@@ -2235,6 +2232,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setPkgIphoneReel(!pkgIphoneReel)}
+                      style={{ display: addonActive(8) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgIphoneReel
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -2262,6 +2260,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     <button
                       type="button"
                       onClick={() => setPkgTeddyMascot(!pkgTeddyMascot)}
+                      style={{ display: addonActive(10) ? undefined : 'none' }}
                       className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
                         pkgTeddyMascot
                           ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(239,74,35,0.14)] ring-2 ring-[#00A2E4]/25'
@@ -2767,7 +2766,8 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
               )}
             </div>
 
-            {/* Coupon Box */}
+            {/* Coupon Box — hidden automatically when no coupon is active */}
+            {activeCoupon && (
             <div className="pt-2">
               <div className="flex gap-2">
                 <input
@@ -2794,6 +2794,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                 <span className="text-[11px] font-bold text-rose-600 block mt-1">{couponError}</span>
               )}
             </div>
+            )}
 
             {/* Total Section */}
             <div className="pt-3 border-t border-slate-200 space-y-2 text-xs text-slate-700">

@@ -7,7 +7,9 @@ import AnnouncementBar from '@/components/AnnouncementBar';
 import HomeStats from '@/components/HomeStats';
 import WhyChooseUs from '@/components/WhyChooseUs';
 import FinalCtaBanner from '@/components/FinalCtaBanner';
-import { Sparkles, Heart, Film, ShieldCheck } from 'lucide-react';
+import { Sparkles, Heart, Film, ShieldCheck, Instagram, Play } from 'lucide-react';
+
+const INSTAGRAM_URL = 'https://www.instagram.com/moviebash_privatetheatre/';
 
 export const metadata = {
   title: 'About Us | Movie Bash Private Theatre Bengaluru',
@@ -97,6 +99,77 @@ export default function AboutPage() {
 
       {/* Why Choose Us */}
       <WhyChooseUs />
+
+      {/* Instagram Reels */}
+      <section className="py-16 sm:py-24 bg-cream border-t border-sky-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-10">
+            <div className="space-y-3">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#833ab4]/10 via-[#fd1d1d]/10 to-[#fcb045]/10 border border-pink-200 text-[#C13584] text-xs font-black uppercase tracking-wider">
+                <Instagram className="w-3.5 h-3.5" />
+                On Instagram
+              </span>
+              <h2 className="font-playfair text-3xl sm:text-4xl font-black text-ink leading-tight">
+                Top reels from our celebrations
+              </h2>
+              <p className="text-sm text-slate-600 max-w-xl font-medium">
+                Surprise reveals, fog entries and cake-cutting moments — filmed inside our private theatres and posted on our official handle.
+              </p>
+            </div>
+
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white text-sm font-black shadow-md hover:opacity-95 transition-opacity whitespace-nowrap"
+            >
+              <Instagram className="w-4 h-4" />
+              Follow @moviebash_privatetheatre
+            </a>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {[
+              { src: '/images/couple_1.webp', title: 'Valentine heart reveal', views: '12.4K' },
+              { src: '/images/celebration_1.webp', title: 'Golden arch birthday', views: '9.8K' },
+              { src: '/images/rooms/btm-scarlet-red.webp', title: 'Scarlet Red walkthrough', views: '7.2K' },
+              { src: '/images/couple_6.webp', title: 'Anniversary surprise', views: '5.6K' },
+            ].map((reel) => (
+              <a
+                key={reel.title}
+                href={`${INSTAGRAM_URL}reels/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative block overflow-hidden rounded-2xl sm:rounded-3xl aspect-[9/16] bg-slate-900 border border-sky-100 shadow-soft hover:shadow-[0_18px_45px_rgba(22,48,79,0.18)] transition-all"
+              >
+                <Image
+                  src={reel.src}
+                  alt={reel.title}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/20" />
+
+                <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md text-white text-[10px] font-black flex items-center gap-1">
+                  <Play className="w-3 h-3 fill-white" />
+                  {reel.views}
+                </div>
+
+                <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-[#ffd46e]">
+                    <Instagram className="w-3 h-3" /> Reel
+                  </span>
+                  <h3 className="mt-1 text-sm font-bold leading-snug">{reel.title}</h3>
+                  <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-bold text-white/90 group-hover:text-[#8fd6f5] transition-colors">
+                    Watch on Instagram <span aria-hidden="true">&rarr;</span>
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* CTA */}
       <FinalCtaBanner />

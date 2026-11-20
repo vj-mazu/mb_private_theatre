@@ -2,7 +2,7 @@
   "branches": [
     {
       "id": 1,
-      "name": "Movie Bash \u2013 Electronic City",
+      "name": "Movie Bash – Electronic City",
       "slug": "electronic-city",
       "address": "MovieBash, 4th Floor, Srinivasam, Nagananthapura Main Road, Beside Sri Vishnu Grand, Electronic City Post, Bengaluru 560100",
       "phone": "+91 99029 23656",
@@ -12,7 +12,7 @@
     },
     {
       "id": 2,
-      "name": "Movie Bash \u2013 BTM 2nd Stage",
+      "name": "Movie Bash – BTM 2nd Stage",
       "slug": "btm-stage-2",
       "address": "MovieBash, 2nd Floor, 16th Main Road, Near Udupi Garden Signal, BTM 2nd Stage, Bengaluru 560076",
       "phone": "+91 99029 23656",
@@ -27,7 +27,7 @@
       "branch_id": 1,
       "name": "Couple Theater",
       "slug": "couple-theater-ecity",
-      "emoji": "\ud83c\udfac",
+      "emoji": "🎬",
       "capacity": 2,
       "base_price": 899,
       "extra_person_price": 150,
@@ -47,7 +47,7 @@
       "branch_id": 1,
       "name": "Celebration Theater",
       "slug": "celebration-theater-ecity",
-      "emoji": "\ud83c\udf89",
+      "emoji": "🎉",
       "capacity": 6,
       "base_price": 1499,
       "extra_person_price": 150,
@@ -60,7 +60,7 @@
       "branch_id": 1,
       "name": "Family Theater",
       "slug": "family-theater-ecity",
-      "emoji": "\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67\u200d\ud83d\udc66",
+      "emoji": "👨‍👩‍👧‍👦",
       "capacity": 12,
       "base_price": 1699,
       "extra_person_price": 150,
@@ -73,7 +73,7 @@
       "branch_id": 2,
       "name": "Butterfly Blush",
       "slug": "butterfly-blush-btm",
-      "emoji": "\ud83e\udd8b",
+      "emoji": "🦋",
       "capacity": 2,
       "base_price": 899,
       "extra_person_price": 150,
@@ -94,7 +94,7 @@
       "branch_id": 2,
       "name": "Lavender Mist",
       "slug": "lavender-mist-btm",
-      "emoji": "\ud83e\udebb",
+      "emoji": "🪻",
       "capacity": 6,
       "base_price": 1499,
       "extra_person_price": 150,
@@ -115,7 +115,7 @@
       "branch_id": 2,
       "name": "Scarlet Red",
       "slug": "scarlet-red-btm",
-      "emoji": "\ud83c\udf39",
+      "emoji": "🌹",
       "capacity": 12,
       "base_price": 1699,
       "extra_person_price": 150,
@@ -137,7 +137,7 @@
       "branch_id": 2,
       "name": "Shadow Suit",
       "slug": "shadow-suit-btm",
-      "emoji": "\ud83c\udfac",
+      "emoji": "🎬",
       "capacity": 8,
       "base_price": 1599,
       "extra_person_price": 150,
@@ -732,7 +732,7 @@
       "branch_id": 2,
       "theatre_id": 7,
       "slot_id": 40,
-      "slot_time": "12:30 PM \u2013 02:30 PM (2 Hours)",
+      "slot_time": "12:30 PM – 02:30 PM (2 Hours)",
       "booking_date": "2026-11-18",
       "customer_name": "girish",
       "customer_phone": "9584584485",
@@ -767,7 +767,7 @@
       "branch_id": 2,
       "theatre_id": 5,
       "slot_id": 28,
-      "slot_time": "01:00 PM \u2013 03:00 PM (2 Hours)",
+      "slot_time": "01:00 PM – 03:00 PM (2 Hours)",
       "booking_date": "2026-11-18",
       "customer_name": "gill",
       "customer_phone": "9545844554",
@@ -802,7 +802,7 @@
       "branch_id": 1,
       "theatre_id": 2,
       "slot_id": 9,
-      "slot_time": "12:00 PM \u2013 02:00 PM (2 Hours)",
+      "slot_time": "12:00 PM – 02:00 PM (2 Hours)",
       "booking_date": "2026-11-18",
       "customer_name": "Soma Narasimha",
       "customer_phone": "9448986953",
@@ -846,7 +846,7 @@
       "branch_id": 1,
       "theatre_id": 3,
       "slot_id": 16,
-      "slot_time": "12:30 PM \u2013 02:30 PM (2 Hours)",
+      "slot_time": "12:30 PM – 02:30 PM (2 Hours)",
       "booking_date": "2026-11-18",
       "customer_name": "vderesh",
       "customer_phone": "9487447454",
@@ -890,7 +890,7 @@
       "branch_id": 1,
       "theatre_id": 3,
       "slot_id": 15,
-      "slot_time": "10:00 AM \u2013 12:00 PM (2 Hours)",
+      "slot_time": "10:00 AM – 12:00 PM (2 Hours)",
       "booking_date": "2026-11-18",
       "customer_name": "gagan",
       "customer_phone": "9148250234",
@@ -925,7 +925,7 @@
       "branch_id": 2,
       "theatre_id": 4,
       "slot_id": 21,
-      "slot_time": "10:00 AM \u2013 01:00 PM (3 Hours \u00b7 +1 Hr Extra)",
+      "slot_time": "10:00 AM – 01:00 PM (3 Hours · +1 Hr Extra)",
       "booking_date": "2026-11-18",
       "customer_name": "Narasimha",
       "customer_phone": "6361000941",
@@ -968,7 +968,7 @@
       "branch_id": 1,
       "theatre_id": 3,
       "slot_id": 16,
-      "slot_time": "12:30 PM \u2013 03:30 PM (3 Hours \u00b7 +1 Hr Extra)",
+      "slot_time": "12:30 PM – 03:30 PM (3 Hours · +1 Hr Extra)",
       "booking_date": "2026-11-17",
       "customer_name": "manjunath",
       "customer_phone": "9448986953",
@@ -1047,7 +1047,7 @@
       "created_at": "2026-11-14T02:50:30.216Z",
       "addons": [],
       "idempotency_key": null,
-      "slot_time": "10:00 AM \u2013 01:00 PM (3 Hours \u00b7 +1 Hr Extra)"
+      "slot_time": "10:00 AM – 01:00 PM (3 Hours · +1 Hr Extra)"
     }
   ],
   "customers": [
@@ -1235,7 +1235,7 @@
     }
   ],
   "siteSettings": {
-    "announcement_text": "\u2728 Book your private celebration at Movie Bash Bengaluru! Flat \u20b9300 OFF with code MOVIEBASH300 \u2728",
+    "announcement_text": "✨ Book your private celebration at Movie Bash Bengaluru! Flat ₹300 OFF with code MOVIEBASH300 ✨",
     "announcement_enabled": "true",
     "business_phone": "+91 99029 23656",
     "business_email": "bookmoviebash@gmail.com",
@@ -1291,7 +1291,7 @@
     },
     {
       "id": 2,
-      "name": "Staff \u2013 Electronic City",
+      "name": "Staff – Electronic City",
       "email": "staff_ec@moviebash.in",
       "username": "manju",
       "role": "staff",
@@ -1302,7 +1302,7 @@
     },
     {
       "id": 3,
-      "name": "Staff \u2013 BTM 2nd Stage",
+      "name": "Staff – BTM 2nd Stage",
       "email": "staff_btm@moviebash.in",
       "username": "nitish",
       "role": "staff",
@@ -1313,6 +1313,19 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": 1795102073256,
+      "user_id": 1,
+      "user_email": "admin@moviebash.in",
+      "action": "LOGIN",
+      "entity": "auth",
+      "entity_id": "1",
+      "details": {
+        "role": "super_admin",
+        "branch_id": null
+      },
+      "created_at": "2026-11-19T15:27:53.256Z"
+    },
     {
       "id": 1795003127357,
       "user_id": 1,
@@ -1535,7 +1548,7 @@
         "action": "reschedule",
         "booking_date": "2026-11-22",
         "slot_id": 2,
-        "slot_time": "12:15 PM \u2013 02:15 PM",
+        "slot_time": "12:15 PM – 02:15 PM",
         "theatre_id": 1
       },
       "created_at": "2026-11-17T08:35:58.511Z"
@@ -1604,7 +1617,7 @@
         "action": "reschedule",
         "booking_date": "2026-11-21",
         "slot_id": 2,
-        "slot_time": "12:15 PM \u2013 02:15 PM",
+        "slot_time": "12:15 PM – 02:15 PM",
         "theatre_id": 1
       },
       "created_at": "2026-11-17T08:35:08.373Z"
@@ -1895,7 +1908,7 @@
       "entity": "siteSettings",
       "entity_id": "global",
       "details": {
-        "announcement_text": "\u2728 Book your private celebration at Movie Bash Bengaluru! Flat \u20b9200 OFF with code MOVIEBASH200 \u2728",
+        "announcement_text": "✨ Book your private celebration at Movie Bash Bengaluru! Flat ₹200 OFF with code MOVIEBASH200 ✨",
         "announcement_enabled": "true",
         "business_phone": "+91 99029 23656",
         "business_email": "bookmoviebash@gmail.com",
@@ -1967,7 +1980,7 @@
       "entity": "adminUsers",
       "entity_id": "2",
       "details": {
-        "name": "Staff \u2013 Electronic City",
+        "name": "Staff – Electronic City",
         "username": "manju",
         "email": "staff_ec@moviebash.in",
         "branch_id": 1,
@@ -2077,7 +2090,7 @@
       "entity": "adminUsers",
       "entity_id": "3",
       "details": {
-        "name": "Staff \u2013 BTM 2nd Stage",
+        "name": "Staff – BTM 2nd Stage",
         "username": "nitish",
         "email": "staff_btm@moviebash.in",
         "branch_id": 2,

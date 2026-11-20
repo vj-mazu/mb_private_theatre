@@ -4,50 +4,51 @@ import React, { useState } from 'react';
 import { ChevronDown, HelpCircle } from 'lucide-react';
 
 export default function FaqSection() {
+  // Official Movie Bash FAQ (copied from moviebash.in)
   const faqs = [
     {
-      q: 'How many screens do you have?',
-      a: 'Movie Bash consists of 3 dedicated private screens per branch: Couple Theater (up to 2 guests), Celebration Theater (up to 6 guests), and Family Theater (up to 12-20 guests). Each screen has its own private room and entrance.',
+      q: 'How many screens do you have in Movie Bash?',
+      a: 'Movie Bash has three private screens at Electronic City — Couple, Celebration and Family — and four themed private theatres at BTM 2nd Stage.',
     },
     {
-      q: 'What if we book and postpone the event date?',
-      a: 'Any postponement or reschedule must be informed at least 72 hours before your scheduled time slot to reschedule with zero penalty fee.',
+      q: 'What if we book and postpone the date of the event? What is the procedure?',
+      a: 'Any postponement must be informed at least 72 hours before your scheduled slot. We will move your booking to another available date and time.',
     },
     {
-      q: 'Is alcohol served / smoking permitted?',
-      a: 'No, alcohol consumption and smoking (including vapes) are strictly prohibited across all Movie Bash premises.',
+      q: 'Is alcohol served at Movie Bash, and is smoking permitted?',
+      a: 'No. Alcohol consumption and smoking, including vapes, are strictly prohibited across all Movie Bash premises.',
     },
     {
-      q: 'Age restrictions?',
-      a: 'Guests must be 18 and above for couple bookings. Guests below 18 are warmly allowed when accompanied by family members or guardians.',
+      q: 'Is there any specific age restriction for booking at Movie Bash?',
+      a: 'Yes, guests must be 18 and above. Guests below 18 are allowed when accompanied by their family members or guardians.',
     },
     {
       q: 'Is outside food allowed?',
-      a: 'Yes! Outside food and beverages are completely permitted. You can also order your favorite food from Swiggy or Zomato directly to our branch address.',
+      a: 'Yes. Outside food and beverages are allowed, and you can also order from Swiggy or Zomato directly to either branch.',
     },
     {
-      q: 'Is 2-wheeler & 4-wheeler parking available?',
-      a: 'Yes, ample dedicated parking space for both two-wheelers and four-wheelers is readily available at both Electronic City and BTM branches.',
+      q: 'Is 2-wheeler and 4-wheeler parking available?',
+      a: 'Yes, parking is available for both two-wheelers and four-wheelers at Electronic City and BTM 2nd Stage.',
     },
     {
-      q: 'Can we bring pets?',
-      a: 'No, pets are not permitted inside the private screening rooms to maintain allergen-free hygiene standards for all guests.',
+      q: 'Can we bring our own pet to Movie Bash?',
+      a: 'No, pets are not allowed inside the private screening rooms.',
     },
     {
-      q: 'What if a technical issue occurs during the event?',
-      a: 'In the extremely rare event of an unresolved technical disruption, a partial refund or priority free slot reschedule is provided as per our terms and conditions.',
+      q: 'What if there is a technical issue during the event?',
+      a: 'A partial refund is provided as per our terms and conditions, and our team will help you reschedule wherever possible.',
     },
     {
-      q: 'What decorations do you have?',
-      a: 'We offer Love, Birthday, Anniversary, and Celebration themes, along with Neon LED milestone numbers, metallic balloon arches, and custom decorations tailored to your needs.',
+      q: 'What type of decorations do you have, and how often do you change them?',
+      a: 'We offer Love, Birthday, Anniversary and Celebration themes, along with neon lettering and balloon setups. We also customise the décor to your requirement.',
     },
     {
-      q: 'What add-ons do you have?',
-      a: 'We offer Fresh Cakes, Buttery Popcorn & Snacks, Magical Fog Entry, Cold Fire Pyro Sparklers, Special Decor, Baby Cart Entry, Photography Sessions, and Dutch Rose Bouquets.',
+      q: 'What type of add-ons do you have?',
+      a: 'Cake, snacks, food, fog entry, cold fire, special decoration, baby cart entry and more. Add-ons and cake flavours are selected while booking.',
     },
     {
-      q: 'When can we book add-ons?',
-      a: 'You can book add-ons directly while reserving your room online, or anytime up to 24 hours before your scheduled show by contacting our support team.',
+      q: 'When can we book the add-ons?',
+      a: 'You can book add-ons while reserving the room, or a day before the event.',
     },
   ];
 

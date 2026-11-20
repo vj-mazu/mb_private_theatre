@@ -4,8 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import OpeningWebsiteIntro from '@/components/OpeningWebsiteIntro';
@@ -66,10 +64,10 @@ const occasionsList = [
   {
     slug: 'birthday-party',
     title: 'Birthday Party',
-    tagline: 'Grand balloons, personalized cake table & HBD neon lighting',
-    badge: 'Most Popular',
+    tagline: 'Golden HBD arch, balloon aisle & a personalised cake table',
+    badge: 'Birthday Favourite',
     type: 'birthday-party',
-    image: '/images/celebration_2.webp',
+    image: '/images/celebration_6.webp',
     borderColor: 'border-amber-300 hover:border-amber-500',
     bgGradient: 'bg-gradient-to-br from-amber-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-amber-100 to-amber-200/90 border border-amber-300/80',
@@ -80,10 +78,10 @@ const occasionsList = [
   {
     slug: 'date-and-proposal',
     title: 'Romantic Proposal',
-    tagline: 'Will You Marry Me neon, candle aisle, rose carpet & cold sparklers',
+    tagline: 'Red heart backdrop, balloon aisle, rose petals & cold sparklers',
     badge: 'Dream Setup',
     type: 'date-and-proposal',
-    image: '/images/couple_3.webp',
+    image: '/images/couple_1.webp',
     borderColor: 'border-rose-300 hover:border-rose-500',
     bgGradient: 'bg-gradient-to-br from-rose-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-rose-100 to-rose-200/90 border border-rose-300/80',
@@ -94,10 +92,10 @@ const occasionsList = [
   {
     slug: 'anniversary',
     title: 'Anniversary Celebration',
-    tagline: 'Fairy lights, handcrafted red roses & romantic heart arch',
+    tagline: 'Happy Anniversary neon heart with fairy lights & fresh roses',
     badge: 'Romantic Pick',
     type: 'anniversary',
-    image: '/images/couple_1.webp',
+    image: '/images/couple_6.webp',
     borderColor: 'border-pink-300 hover:border-pink-500',
     bgGradient: 'bg-gradient-to-br from-pink-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-pink-100 to-pink-200/90 border border-pink-300/80',
@@ -108,10 +106,10 @@ const occasionsList = [
   {
     slug: 'couple-date',
     title: 'Couple Date Night',
-    tagline: 'Ultra-private cinema lounge, cozy recliner sofa & movie streaming',
+    tagline: 'Private recliner lounge under a red heart canopy, your movie on screen',
     badge: 'Cozy Retreat',
     type: 'couple-date',
-    image: '/images/ambience_1.webp',
+    image: '/images/couple_2.webp',
     borderColor: 'border-indigo-300 hover:border-indigo-500',
     bgGradient: 'bg-gradient-to-br from-indigo-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-indigo-100 to-indigo-200/90 border border-indigo-300/80',
@@ -122,7 +120,7 @@ const occasionsList = [
   {
     slug: 'bachelorette-party',
     title: 'Bride-to-be / Bachelorette',
-    tagline: 'Tiara, celebration sash, champagne balloons & hilarious party props',
+    tagline: 'Balloon-covered floor, tiara, sash & a private party lounge',
     badge: 'Girls Night',
     type: 'bachelorette-party',
     image: '/images/celebration_5.webp',
@@ -136,10 +134,10 @@ const occasionsList = [
   {
     slug: 'kids-birthday',
     title: 'Kids Birthday Party',
-    tagline: 'Colorful cartoon themes, superhero balloons & family cake party',
+    tagline: 'Golden peacock arch, balloon aisle & a family cake party',
     badge: 'Fun & Safe',
     type: 'kids-birthday',
-    image: '/images/ambience_5.webp',
+    image: '/images/celebration_1.webp',
     borderColor: 'border-cyan-300 hover:border-cyan-500',
     bgGradient: 'bg-gradient-to-br from-cyan-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-cyan-100 to-cyan-200/90 border border-cyan-300/80',
@@ -150,10 +148,10 @@ const occasionsList = [
   {
     slug: 'baby-shower',
     title: 'Baby Shower / Mom-to-be',
-    tagline: 'Pastel balloons, fairy buggy walk-in & sweet memories',
+    tagline: 'Balloon arch entrance, floral walkway & sweet memories',
     badge: 'Sweet Milestone',
     type: 'baby-shower',
-    image: '/images/celebration_6.webp',
+    image: '/images/ambience_1.webp',
     borderColor: 'border-emerald-300 hover:border-emerald-500',
     bgGradient: 'bg-gradient-to-br from-emerald-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-emerald-100 to-emerald-200/90 border border-emerald-300/80',
@@ -164,10 +162,10 @@ const occasionsList = [
   {
     slug: 'friends-party',
     title: 'Friends & Match Screening',
-    tagline: 'Live sports match, karaoke microphones & group snacks',
+    tagline: 'Full celebration hall, big-screen match & room for the whole group',
     badge: 'Party Vibe',
     type: 'friends-party',
-    image: '/images/ambience_5.webp',
+    image: '/images/celebration_7.webp',
     borderColor: 'border-amber-300 hover:border-amber-500',
     bgGradient: 'bg-gradient-to-br from-amber-50/70 via-white to-white',
     iconBg: 'bg-gradient-to-br from-amber-100 to-amber-200/90 border border-amber-300/80',
@@ -178,7 +176,7 @@ const occasionsList = [
   {
     slug: 'farewell',
     title: 'Farewell / Bon Voyage',
-    tagline: 'Emotional memory montage on giant 4K cinema screen',
+    tagline: 'Personalised letter lights, a memory montage on the 4K screen & roses',
     badge: 'Nostalgic',
     type: 'farewell',
     image: '/images/celebration_4.webp',
@@ -751,7 +749,7 @@ const packageTiers = [
   {
     name: 'Standard',
     price: 'From ₹1,499',
-    note: 'Most popular for celebrations',
+    note: 'Décor, cake and entries included',
     featured: true,
     features: ['500g celebration cake', 'Premium decoration', 'Fog entry — 1 pot', 'LED number & name board', 'HBD neon sign', 'Private 4K screening'],
   },
@@ -763,22 +761,30 @@ const packageTiers = [
   },
 ];
 
+
+
 const gallery = [
-  ['/images/celebration_1.webp', 'Grand birthday surprise'],
-  ['/images/couple_3.webp', 'Dream date and proposal'],
-  ['/images/celebration_5.webp', 'Bride-to-be celebration'],
-  ['/images/celebration_6.webp', 'Pastel baby shower'],
-  ['/images/ambience_10.webp', '150″ Dolby Atmos cinema experience'],
-  ['/images/couple_5.webp', 'Floral romantic arrangement'],
+  ['/images/celebration_1.webp', 'Golden peacock arch birthday'],
+  ['/images/couple_1.webp', 'Rose heart with balloon aisle'],
+  ['/images/celebration_3.webp', 'Rose-petal heart table'],
+  ['/images/couple_6.webp', 'Anniversary heart and canopy'],
+  ['/images/ambience_5.webp', 'Floral welcome walkway'],
+  ['/images/couple_7.webp', 'MOVIE marquee by the screen'],
 ];
 
+// Official Movie Bash FAQ (copied from moviebash.in)
 const faqs: [string, string][] = [
-  ['Are there cameras inside the private theatre?', 'Absolutely NOT. We strictly respect your privacy. There are NO cameras inside any of our private theatre screening rooms. You and your guests have 100% complete privacy throughout your booking slot.'],
-  ['How much advance do I have to pay to book a slot?', 'You have to pay only ₹500 advance online to confirm and lock your private theatre slot. The remaining balance amount is paid at the venue upon arrival.'],
-  ['Can we bring outside food and cake?', 'Yes! Outside food from Swiggy, Zomato, or home is 100% welcome with zero corkage. You can also bring your own cake or order from our freshly baked celebration cake menu.'],
-  ['Can I bring my own movie?', 'Yes. You can stream from your Netflix, Prime, Hotstar, or YouTube accounts, or connect your laptop via HDMI cable. Our team sets up everything for you.'],
-  ['Is decoration included?', 'Yes! Every booking includes free celebration decor with balloons, glowing LED neon signs, and personalized on-screen name wishes.'],
-  ['Can I reschedule my booking?', 'Yes. We offer free rescheduling when requested at least 24 hours before your reserved slot, subject to availability.']
+  ['How many screens do you have in Movie Bash?', 'Movie Bash has three private screens at Electronic City — Couple, Celebration and Family — and four themed private theatres at BTM 2nd Stage.'],
+  ['What if we book and postpone the date of the event? What is the procedure?', 'Any postponement must be informed at least 72 hours before your scheduled slot. We will move your booking to another available date and time.'],
+  ['Is alcohol served at Movie Bash, and is smoking permitted?', 'No. Alcohol consumption and smoking, including vapes, are strictly prohibited across all Movie Bash premises.'],
+  ['Is there any specific age restriction for booking at Movie Bash?', 'Yes, guests must be 18 and above. Guests below 18 are allowed when accompanied by their family members or guardians.'],
+  ['Is outside food allowed?', 'Yes. Outside food and beverages are allowed, and you can also order from Swiggy or Zomato directly to either branch.'],
+  ['Is 2-wheeler and 4-wheeler parking available?', 'Yes, parking is available for both two-wheelers and four-wheelers at Electronic City and BTM 2nd Stage.'],
+  ['Can we bring our own pet to Movie Bash?', 'No, pets are not allowed inside the private screening rooms.'],
+  ['What if there is a technical issue during the event?', 'A partial refund is provided as per our terms and conditions, and our team will help you reschedule wherever possible.'],
+  ['What type of decorations do you have, and how often do you change them?', 'We offer Love, Birthday, Anniversary and Celebration themes, along with neon lettering and balloon setups. We also customise the décor to your requirement.'],
+  ['What type of add-ons do you have?', 'Cake, snacks, food, fog entry, cold fire, special decoration, baby cart entry and more. Add-ons and cake flavours are selected while booking.'],
+  ['When can we book the add-ons?', 'You can book add-ons while reserving the room, or a day before the event.']
 ];
 
 const guestReviews = [
@@ -832,180 +838,83 @@ const heroPhotos = [
   '/images/celebration_3.webp'
 ];
 
-const addonSlides = [
+// `addonId` matches the booking form's add-on record, so switching an add-on
+// off in the admin panel removes it from this section automatically.
+const addonTiles = [
   {
-    number: '01',
-    category: 'Gourmet Cakes',
-    title: 'Artisan Pastry & Celebration Cakes',
-    price: '₹499 (0.5 Kg) · ₹899 (1 Kg)',
-    desc: 'Pure Dutch chocolate ganache, tropical pineapple cream, and ruby red velvet hearts freshly prepared for your screening.',
-    badge: 'Included in Packages (₹0)',
-    bg: 'from-[#F6FAFD] via-[#FFF8EF] to-[#FFEED9]',
-    cardBorder: 'border-[#00A2E4]/30 hover:border-[#00A2E4]',
-    tagColor: 'bg-[#00A2E4]/10 text-[#00A2E4] border-[#00A2E4]/30',
-    accent: '#00A2E4',
-    items: [
-      {
-        iconKey: 'pineapple',
-        title: 'Fresh Pineapple Celebration Cake',
-        price: '₹499 / ₹899',
-        desc: 'Light fluffy sponge with tropical pineapple chunks & glazed cherries.'
-      },
-      {
-        iconKey: 'chocolate',
-        title: 'Belgian Chocolate Truffle Cake',
-        price: '₹499 / ₹899',
-        desc: 'Dutch dark chocolate ganache with velvety cocoa sponge & custom plaque.'
-      },
-      {
-        iconKey: 'red-velvet',
-        title: 'Red Velvet Heart Cake',
-        price: '₹499 / ₹899',
-        desc: 'Ruby cocoa sponge with authentic cream cheese frosting & rose petals.'
-      },
-      {
-        iconKey: 'black-forest',
-        title: 'Classic Black Forest Cake',
-        price: '₹499 / ₹899',
-        desc: 'Moist chocolate sponge with sweet-tart cherries & chocolate shavings.'
-      }
-    ]
+    addonId: 3,
+    title: 'Fog Entry',
+    price: 'From ₹399',
+    desc: 'A pot of dry-ice fog rolling across the doorway as you walk in.',
+    image: '/images/addons/fog-entry.webp',
+    href: '/book-now',
   },
   {
-    number: '02',
-    category: 'Atmospheric Special FX',
-    title: 'Cinematic Visuals & Grand Walk-ins',
-    price: 'From ₹199 to ₹799',
-    desc: 'Dense cold mist billowing at your feet, indoor smokeless golden fountain sparklers, and floating rainbow bubbles.',
-    badge: 'Hero Entry FX',
-    bg: 'from-[#F6FAFD] via-[#FFF5EE] to-[#FFE8DA]',
-    cardBorder: 'border-[#00A2E4]/30 hover:border-[#00A2E4]',
-    tagColor: 'bg-[#00A2E4]/10 text-[#00A2E4] border-[#00A2E4]/30',
-    accent: '#00A2E4',
-    items: [
-      {
-        iconKey: 'fog',
-        title: 'Magical Dry-Ice Ground Fog Entry',
-        price: 'From ₹399',
-        desc: 'Enchanting dense low-lying cold smoke effect for dramatic cinematic walk-in.'
-      },
-      {
-        iconKey: 'pyro',
-        title: 'Cold Fire Pyro Sparkler Entry (2 Pots)',
-        price: '₹799',
-        desc: '100% safe indoor smokeless golden fountain sparklers shooting 6-ft celebratory sparks.'
-      },
-      {
-        iconKey: 'bubbles',
-        title: 'Grand Bubble Machine Walk-in',
-        price: '₹199',
-        desc: 'Thousands of floating rainbow bubbles welcoming your loved ones through the door.'
-      }
-    ]
+    addonId: 4,
+    title: 'Cold Pyro Sparklers',
+    price: 'From ₹799',
+    desc: 'Golden sparkler fountains beside the cake table for the big reveal.',
+    image: '/images/addons/cold-pyro.webp',
+    href: '/book-now',
   },
   {
-    number: '03',
-    category: 'Romantic Décor',
-    title: 'Candlelight & Fresh Rose Setups',
-    price: 'From ₹250 to ₹899',
-    desc: 'Hand-tied Dutch red roses, glowing Will-You-Marry-Me LED neon, candlelit petal carpet & romantic heart arch.',
-    badge: 'Couples & Proposals',
-    bg: 'from-[#F6FAFD] via-[#FFF1F5] to-[#FFE2EB]',
-    cardBorder: 'border-rose-300/80 hover:border-rose-500',
-    tagColor: 'bg-rose-500/10 text-rose-900 border-rose-300',
-    accent: '#db2777',
-    items: [
-      {
-        iconKey: 'roses',
-        title: 'Fresh Dutch Red Rose Bouquet',
-        price: '₹399',
-        desc: '15 hand-tied vibrant Dutch red roses in luxury wrapper with personalized card.'
-      },
-      {
-        iconKey: 'candles',
-        title: 'Candlelight & Rose Petal Pathway',
-        price: '₹499',
-        desc: 'Illuminated aisle with warm glowing lanterns, fairy candles & rose petals.'
-      },
-      {
-        iconKey: 'neon',
-        title: 'Will You Marry Me / Love LED Neon',
-        price: '₹499',
-        desc: 'Glowing illuminated marquee romantic neon centerpiece backdrop.'
-      },
-      {
-        iconKey: 'heart-arch',
-        title: 'Romantic Fairy Light Canopy Heart Arch',
-        price: '₹899',
-        desc: 'Handcrafted red roses & warm glowing heart arch frame for photos.'
-      }
-    ]
+    addonId: 9,
+    title: 'Rose Petal Décor',
+    price: 'From ₹250',
+    desc: 'Fresh petals arranged as a heart on the table and along the aisle.',
+    image: '/images/celebration_3.webp',
+    href: '/book-now',
   },
   {
-    number: '04',
-    category: 'Photography & Media',
-    title: '4K Memory Screen & Professional Reels',
-    price: 'From ₹599 to ₹1,499',
-    desc: 'Turn personal childhood photos and couple videos into a dramatic 4K cinema memory montage on the 150″ screen.',
-    badge: 'Insta Ready',
-    bg: 'from-[#F6FAFD] via-[#F7F2FE] to-[#ECE2FD]',
-    cardBorder: 'border-purple-300/80 hover:border-purple-500',
-    tagColor: 'bg-purple-500/10 text-purple-900 border-purple-300',
-    accent: '#7c3aed',
-    items: [
-      {
-        iconKey: 'montage',
-        title: 'Personal 4K Screen Video Montage',
-        price: '₹599',
-        desc: 'Your photos and clips edited into a movie trailer projected on the 150″ screen.'
-      },
-      {
-        iconKey: 'photography',
-        title: 'Dedicated Photographer & 30s Reel Shoot',
-        price: '₹1,199',
-        desc: 'Professional portrait photos & cinematic 4K reel edited for Instagram.'
-      },
-      {
-        iconKey: 'teddy',
-        title: 'Dancing Teddy Mascot Surprise',
-        price: '₹500',
-        desc: '30-minute interactive live dancing giant Teddy mascot to cheer up guests.'
-      }
-    ]
+    addonId: 5,
+    title: 'LED Name Board',
+    price: 'From ₹250',
+    desc: 'A warm lit board with your name or message on the celebration wall.',
+    image: '/images/addons/led-name-board.webp',
+    href: '/book-now',
   },
   {
-    number: '05',
-    category: 'Cinema Bites',
-    title: 'Theatre Butter Popcorn & Snack Bar',
-    price: 'From ₹149 · Zero Corkage',
-    desc: 'Piping hot golden butter popcorn, loaded Mexican cheese nachos with jalapeños, and chilled fruit mocktails.',
-    badge: 'Party Binge',
-    bg: 'from-[#F6FAFD] via-[#FFF9EA] to-[#FFF1CD]',
-    cardBorder: 'border-amber-300/80 hover:border-amber-500',
-    tagColor: 'bg-amber-500/10 text-amber-900 border-amber-300',
-    accent: '#d97706',
-    items: [
-      {
-        iconKey: 'popcorn',
-        title: 'Jumbo Theatre Butter Popcorn Tub',
-        price: '₹199',
-        desc: 'Freshly popped warm golden corn tossed in rich movie theatre butter.'
-      },
-      {
-        iconKey: 'nachos',
-        title: 'Loaded Crispy Cheese Nachos',
-        price: '₹179',
-        desc: 'Crispy corn tortilla chips with warm melted cheese sauce and salsa.'
-      },
-      {
-        iconKey: 'drinks',
-        title: 'Sparkling Tropical Fruit Mocktails',
-        price: '₹149',
-        desc: 'Chilled bubbly fruit coolers (Virgin Mojito, Blue Curacao, Peach Sunrise).'
-      }
-    ]
-  }
+    addonId: 7,
+    title: 'Rose Bouquet',
+    price: 'From ₹399',
+    desc: 'A hand-tied red rose bouquet waiting on the table when you arrive.',
+    image: '/images/addons/rose-bouquet.webp',
+    href: '/book-now',
+  },
+  {
+    addonId: 11,
+    title: 'Bubble Entry',
+    price: 'From ₹199',
+    desc: 'A bubble machine filling the entry with floating bubbles for your walk-in.',
+    image: '/images/addons/bubble-entry.webp',
+    href: '/book-now',
+  },
+  {
+    addonId: 8,
+    title: 'DSLR Photography',
+    price: 'From ₹499',
+    desc: '30 minutes with a photographer, plus your photos shown on the big screen.',
+    image: '/images/addons/dslr-photography.webp',
+    href: '/book-now',
+  },
+  {
+    addonId: 8,
+    title: 'iPhone 4K Reel',
+    price: '+₹500',
+    desc: 'A 1-minute trending reel, shot on iPhone at your celebration and edited to your song.',
+    image: '/images/addons/iphone-reel.webp',
+    href: '/book-now',
+  },
+  {
+    addonId: 10,
+    title: 'Teddy Mascot Entry',
+    price: 'From ₹500',
+    desc: 'Our teddy mascot walks in with the cake for a 30-minute surprise.',
+    image: '/images/addons/teddy-mascot.webp',
+    href: '/book-now',
+  },
 ];
+
 
 export default function RefineTheatreLanding({ initialLiveTheatres }: { initialLiveTheatres?: any[] } = {}) {
   const router = useRouter();
@@ -1021,6 +930,55 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
   const heroTouchStartX = useRef<number | null>(null);
   const heroTouchEndX = useRef<number | null>(null);
   const heroPillTrackRef = useRef<HTMLDivElement>(null);
+  const heroMediaRef = useRef<HTMLDivElement>(null);
+  const [heroRevealed, setHeroRevealed] = useState(false);
+
+  // The logo loader hands over to a slow zoom-settle on the hero image, then the
+  // same image keeps zooming in gently as the hero scrolls out of view.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const revealHero = () => setHeroRevealed(true);
+
+    let introAlreadySeen = false;
+    try {
+      introAlreadySeen = !!sessionStorage.getItem('mb_intro_v2');
+    } catch (_) {}
+    if (introAlreadySeen || reduceMotion) revealHero();
+
+    window.addEventListener('mb:intro-done', revealHero);
+    const revealFallback = window.setTimeout(revealHero, 3300);
+
+    const media = heroMediaRef.current;
+    const hero = heroRef.current;
+    let raf = 0;
+
+    const updateZoom = () => {
+      raf = 0;
+      if (!media || !hero || reduceMotion) return;
+      const height = hero.offsetHeight || 1;
+      const progress = Math.min(1, Math.max(0, window.scrollY / height));
+      media.style.transform = `scale(${(1 + progress * 0.16).toFixed(4)}) translate3d(0, ${(
+        progress * 2.2
+      ).toFixed(3)}%, 0)`;
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(updateZoom);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    updateZoom();
+
+    return () => {
+      window.removeEventListener('mb:intro-done', revealHero);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      window.clearTimeout(revealFallback);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   useEffect(() => {
     const track = heroPillTrackRef.current;
@@ -1146,10 +1104,8 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
   const [ctaDate, setCtaDate] = useState(() => getTodayIST());
   const [slotFlashMessage, setSlotFlashMessage] = useState<string | null>(null);
   const [liveAvailability, setLiveAvailability] = useState<Record<number, any[]>>({});
-  const [activeCoupon, setActiveCoupon] = useState<{ code: string; discount_value: number }>({
-    code: 'MOVIEBASH300',
-    discount_value: 300,
-  });
+  const [activeCoupon, setActiveCoupon] = useState<{ code: string; discount_value: number } | null>(null);
+  const [activeAddonIds, setActiveAddonIds] = useState<number[] | null>(null);
 
   const [theatres, setTheatres] = useState(() => {
     if (!initialLiveTheatres || !initialLiveTheatres.length) return defaultTheatres;
@@ -1231,11 +1187,27 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
         if (j.success && j.data?.code) {
           setActiveCoupon({
             code: j.data.code,
-            discount_value: Number(j.data.discount_value) || 300,
+            discount_value: Number(j.data.discount_value) || 0,
           });
+        } else {
+          setActiveCoupon(null);
         }
       })
-      .catch(() => {});
+      .catch(() => setActiveCoupon(null));
+  }, []);
+
+  // Only add-ons that are active in the admin panel are shown on the landing page.
+  useEffect(() => {
+    fetch('/api/addons')
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.success && Array.isArray(j.data)) {
+          setActiveAddonIds(j.data.map((a: any) => Number(a.id)));
+        } else {
+          setActiveAddonIds(null);
+        }
+      })
+      .catch(() => setActiveAddonIds(null));
   }, []);
 
   const days = Array.from({ length: 6 }, (_, index) => {
@@ -1305,10 +1277,19 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
     };
   }, [isOccasionPaused]);
 
-  // GSAP Animations: Hero Cursor, Font-Weight Tracking, Reversible Marquee, 3D Card Stack
+  // GSAP Animations — loaded on demand so the first paint is not blocked.
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    gsap.registerPlugin(ScrollTrigger);
+    let cancelled = false;
+    let cleanup: (() => void) | undefined;
+
+    (async () => {
+      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
+        import('gsap'),
+        import('gsap/ScrollTrigger'),
+      ]);
+      if (cancelled) return;
+      gsap.registerPlugin(ScrollTrigger);
 
     // 1. Dynamic Headline Font-Weight Hover Interaction
     const hero = heroRef.current;
@@ -1424,10 +1405,16 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
       theatreScrollCleanup = () => st.kill();
     }
 
+      cleanup = () => {
+        headlineCleanup?.();
+        marqueeCleanup?.();
+        theatreScrollCleanup?.();
+      };
+    })();
+
     return () => {
-      headlineCleanup?.();
-      marqueeCleanup?.();
-      theatreScrollCleanup?.();
+      cancelled = true;
+      cleanup?.();
     };
   }, []);
 
@@ -1471,12 +1458,14 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
       {/* 0. AUTHENTIC CINEMA OPENING INTRO ANIMATION */}
       <OpeningWebsiteIntro />
       
-      {/* 1. TOP OFFER BAR (Dynamically reading active database promo) */}
-      <div className="offer-bar">
-        <span>Opening offer</span>
-        <p>Flat ₹{activeCoupon.discount_value} off your first celebration with code <strong>{activeCoupon.code}</strong></p>
-        <a href="#slots">Explore <Icon name="arrow" size={16} /></a>
-      </div>
+      {/* 1. TOP OFFER BAR — only rendered while the admin keeps a coupon active */}
+      {activeCoupon && (
+        <div className="offer-bar">
+          <span>Opening offer</span>
+          <p>Flat ₹{activeCoupon.discount_value} off your first celebration with code <strong>{activeCoupon.code}</strong></p>
+          <a href="#slots">Explore <Icon name="arrow" size={16} /></a>
+        </div>
+      )}
 
       {/* 2. REAL SITE NAVBAR */}
       <Navbar />
@@ -1485,20 +1474,36 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
         {/* 3. HERO SECTION (THE BINGE TOWN ARCHITECTURE & ALIGNMENT + OUR ETOILE LUXURY COLOR PALETTE) */}
         <section 
           ref={heroRef}
-          className="relative min-h-[85vh] sm:min-h-[92vh] flex flex-col justify-center items-center overflow-hidden w-full pt-16 pb-12 sm:pt-24 sm:pb-20" 
+          className="relative min-h-0 sm:min-h-[92vh] flex flex-col justify-center items-center overflow-hidden w-full pt-8 pb-10 sm:pt-24 sm:pb-20" 
           id="home"
         >
           {/* Ambient Background Image with Dark Vignette Overlay (The Binge Town Master Style) */}
-          <div className="absolute inset-0 z-0">
-            <Image
-              src="/images/celebration_2.webp"
-              alt="Movie Bash Private Theatre Celebration"
-              fill
-              priority
-              className="object-cover object-center scale-105 filter brightness-[0.70]"
-            />
-            {/* Deep Royal Navy Overlay (#082052) matching user-provided color combination */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#082052]/92 via-[#082052]/82 to-[#082052]/95 backdrop-blur-[1px]"></div>
+          <div ref={heroMediaRef} className="hero-media absolute inset-0 z-0 overflow-hidden">
+            {/* The frame zooms in on load and then keeps zooming while the hero
+                scrolls away, the way the reference site's entrance behaves. */}
+            <div className={`hero-media-frame${heroRevealed ? ' is-in' : ''}`}>
+              {/* Desktop crop (16:9) and a separate portrait crop for phones, so the
+                  celebration arch stays centred and cleanly visible on every device. */}
+              <Image
+                src="/images/hero-desktop.webp"
+                alt="Movie Bash private theatre celebration setup"
+                fill
+                priority
+                sizes="100vw"
+                className="hidden sm:block object-cover object-center"
+              />
+              <Image
+                src="/images/hero-mobile.webp"
+                alt="Movie Bash private theatre celebration setup"
+                fill
+                priority
+                sizes="100vw"
+                className="block sm:hidden object-cover object-center"
+              />
+            </div>
+                        {/* Deep Royal Navy Overlay (#082052) matching user-provided color combination */}
+            <div className="absolute inset-0 bg-[#082052]/45" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#082052]/80 via-[#082052]/25 to-[#082052]/85" />
           </div>
 
           <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
@@ -1506,37 +1511,37 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             {/* Top Eyebrow Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[#00A2E4] text-xs font-bold uppercase tracking-widest mb-4 shadow-lg">
               <span className="w-2 h-2 rounded-full bg-[#00A2E4] animate-pulse" />
-              <span>Bengaluru&apos;s #1 Private Theatre for Celebrations</span>
+              <span>Movie Bash · Bengaluru&apos;s #1 Private Theatre for Celebrations</span>
             </div>
 
             {/* H1 Headline (Binge Town Style, Centered, Crisp White) */}
             <h1 
               ref={heroHeadlineRef}
-              className="text-3xl sm:text-5xl md:text-6xl font-['Playfair_Display'] font-black text-white tracking-tight leading-[1.12] max-w-4xl mx-auto drop-shadow-md text-center"
+              className="text-[26px] min-[400px]:text-3xl sm:text-5xl md:text-6xl font-['Playfair_Display'] font-black text-white tracking-tight leading-[1.12] max-w-4xl mx-auto drop-shadow-[0_3px_22px_rgba(4,18,36,0.75)] text-center" 
             >
               Bengaluru&apos;s Best Private Theatre Venue for Celebrations
             </h1>
 
             {/* Subheadline */}
-            <p className="mt-3.5 sm:mt-4 text-sm sm:text-lg md:text-xl text-[#F8F0E5] font-normal max-w-2xl mx-auto leading-relaxed drop-shadow-sm text-center">
+            <p className="mt-3.5 sm:mt-4 text-sm sm:text-lg md:text-xl text-[#F8F0E5] font-normal max-w-2xl mx-auto leading-relaxed drop-shadow-[0_2px_14px_rgba(4,18,36,0.8)] text-center">
               Book Your Perfect Celebration: Birthdays, Anniversaries, Date Nights &amp; Private Screenings!
             </p>
 
             {/* City & Venue Ticker Bar */}
-            <div className="mt-4 inline-flex items-center gap-3 text-xs sm:text-sm font-semibold text-[#F8F0E5]/90 border-y border-white/15 py-2 px-5 overflow-x-auto max-w-full no-scrollbar">
-              <span>📍 Electronic City (3 Screens)</span>
-              <span>•</span>
-              <span>📍 BTM 2nd Stage (4 Screens)</span>
-              <span>•</span>
-              <span>🎬 4K Laser Projection</span>
-              <span>•</span>
-              <span>🔊 Dolby Atmos</span>
-              <span>•</span>
-              <span>🔒 100% Soundproof</span>
+            <div className="mt-4 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px] sm:text-sm font-semibold text-[#F8F0E5]/90 border-y border-white/15 py-2.5 px-3 sm:px-5 max-w-full">
+              <span className="shrink-0">📍 Electronic City (3 Screens)</span>
+              <span className="hidden sm:inline text-white/40">•</span>
+              <span className="shrink-0">📍 BTM 2nd Stage (4 Screens)</span>
+              <span className="hidden sm:inline text-white/40">•</span>
+              <span className="shrink-0">🎬 4K Laser Projection</span>
+              <span className="hidden sm:inline text-white/40">•</span>
+              <span className="shrink-0">🔊 Dolby Atmos</span>
+              <span className="hidden sm:inline text-white/40">•</span>
+              <span className="shrink-0">🔒 100% Soundproof</span>
             </div>
 
             {/* ─── FLOATING QUICK BOOKING WIDGET (EXACT BINGE TOWN ARCHITECTURE) ─── */}
-            <div className="w-full max-w-3xl mt-7 sm:mt-9 bg-white rounded-3xl p-5 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.35)] border border-slate-200 text-left">
+            <div className="w-full max-w-3xl mt-6 sm:mt-9 bg-white rounded-3xl p-4 min-[400px]:p-5 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.35)] border border-slate-200 text-left">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
                 
                 {/* Field 1: Branch */}
@@ -1599,7 +1604,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                   onClick={checkAvailability}
                   className="w-full sm:flex-1 py-3.5 sm:py-4 px-6 rounded-2xl bg-[#082052] hover:bg-[#0B2238] text-white font-['Archivo'] font-black text-sm uppercase tracking-wider shadow-lg shadow-[#082052]/25 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>Book Now</span>
+                  <span>Check Slots</span>
                   <Icon name="arrow" size={16} />
                 </button>
 
@@ -1612,22 +1617,18 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                 </a>
               </div>
 
-              {/* Live Urgency & Social Proof Badges (Binge Town Style) */}
-              <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+              {/* Trust badges */}
+              <div className="mt-4 pt-3 border-t border-slate-100 flex justify-center text-xs">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 font-bold">
                   <span>✨ 3,500+ celebrations completed</span>
                   <span className="text-amber-500 font-black">★ 5.0 Rating</span>
-                </div>
-                <div className="text-[#00A2E4] font-semibold italic flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block" />
-                  <span>48 people checking slots right now!</span>
                 </div>
               </div>
 
             </div>
 
             {/* Reassurance Micro-Copy */}
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-[#F8F0E5]/90">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px] sm:text-xs font-semibold text-[#F8F0E5]/90">
               <span className="flex items-center gap-1.5"><span className="text-[#00A2E4]">✓</span> 100% Private Theatres</span>
               <span>•</span>
               <span className="flex items-center gap-1.5"><span className="text-[#00A2E4]">✓</span> Free Surprise Decor</span>
@@ -2276,6 +2277,43 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           </div>
         </section>
 
+        {/* 6B. CELEBRATION ADD-ONS — SIMPLE IMAGE TILES */}
+        {(!activeAddonIds || activeAddonIds.length > 0) && (
+          <section className="section addons-section" id="addons">
+            <div className="section-heading centered">
+              <div className="eyebrow"><span /> Celebration add-ons <span /></div>
+              <h2>Make it <em>yours.</em></h2>
+              <p>Optional extras you can add while booking, priced exactly as they appear in the booking form. Only the add-ons that are currently available are shown.</p>
+            </div>
+
+            <div className="addon-card-grid">
+              {addonTiles
+                .filter((tile) => !activeAddonIds || activeAddonIds.includes(tile.addonId))
+                .map((tile) => (
+                <Link href={tile.href} key={tile.title} className="addon-card">
+                  <Image
+                    src={tile.image}
+                    alt={tile.title}
+                    fill
+                    sizes="(max-width: 480px) 92vw, (max-width: 760px) 46vw, (max-width: 1024px) 31vw, 23vw"
+                    className="addon-card-img"
+                  />
+                  <span className="addon-card-veil" aria-hidden="true" />
+                  <span className="addon-card-price">{tile.price}</span>
+                  <div className="addon-card-body">
+                    <h3>{tile.title}</h3>
+                    <p>{tile.desc}</p>
+                  </div>
+                  <span className="addon-card-cta" aria-hidden="true">
+                    <Icon name="arrow" size={16} />
+                  </span>
+                </Link>
+              ))}
+            </div>
+            <p className="addons-note">Cake flavours and add-ons are chosen while booking. Anything switched off by our team is hidden automatically.</p>
+          </section>
+        )}
+
         {/* 7. SIGNATURE CELEBRATION PACKAGE BANNER (LUXURY BLACK CARD MATCHING FIGMA & USER DESIGN) */}
         <section className="section package-section" id="signature-celebration">
           <div className="package-card">
@@ -2324,7 +2362,6 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           <div className="pricing-grid">
             {packageTiers.map((tier) => (
               <article className={tier.featured ? 'pricing-card featured' : 'pricing-card'} key={tier.name}>
-                {tier.featured && <span className="best-value">Most booked</span>}
                 <p>{tier.name} package</p>
                 <h3>{tier.price}</h3>
                 <small>{tier.note}</small>
@@ -2342,158 +2379,6 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             ))}
           </div>
 
-          {/* Popular Add-ons Row */}
-          <div className="add-on-row">
-            <strong>Popular add-ons:</strong>
-            <span>Fog entry <b>₹499</b></span>
-            <span>Cold pyro <b>₹399</b></span>
-            <span>Rose bouquet <b>₹399</b></span>
-            <span>Photo &amp; reel shoot <b>₹1,199</b></span>
-            <span>Pineapple cake <b>₹499</b></span>
-          </div>
-        </section>
-
-        {/* 8B. SCROLL-TRIGGERED STACKED CARDS ANIMATION (ADD-ONS & ATMOSPHERE - DESKTOP & MOBILE) */}
-        <section 
-          className="relative bg-[#F6FAFD] text-[#0B2238] border-y border-[#0B2238]/10 pt-16 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-6" 
-          id="addons"
-        >
-          {/* Section Header: Explicitly Branding Celebration Add-Ons */}
-          <div className="text-center max-w-2xl mx-auto space-y-3 mb-10 sm:mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#00A2E4]/10 border border-[#00A2E4]/30 text-[#00A2E4] text-xs font-black uppercase tracking-wider shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-[#00A2E4] animate-pulse" />
-              <span>Celebration Add-Ons · Signature Atmosphere</span>
-            </div>
-            <h2 className="font-['Archivo'] text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-[#0B2238] leading-tight">
-              Celebration Add-Ons, <span className="font-['Playfair'] italic font-normal text-[#00A2E4] normal-case">made to delight.</span>
-            </h2>
-            <p className="text-sm sm:text-base text-slate-700 font-medium leading-relaxed">
-              Scroll down through all 5 handcrafted Add-on collections: Gourmet Cakes, Fog &amp; Pyro FX, Romantic Décor, Photoshoots &amp; Popcorn Bar.
-            </p>
-            <div className="flex items-center justify-center gap-2 pt-1 text-xs font-black text-[#00A2E4]">
-              <span>↓ Scroll to stack celebration add-on cards</span>
-            </div>
-          </div>
-
-          {/* STACKED CARDS SCROLL DECK (Native Sticky Stacking with Luxury Matte Dark Style from Image 1) */}
-          <div className="relative max-w-4xl mx-auto space-y-10 sm:space-y-16 pb-28 min-h-[120vh]">
-            {addonSlides.map((slide, idx) => (
-              <div
-                key={slide.number}
-                className="sticky rounded-[24px] sm:rounded-[34px] p-6 sm:p-9 md:p-10 bg-white text-[#0B2238] border border-slate-200 shadow-[0_20px_50px_rgba(20,17,16,0.08)] transition-all duration-300 relative overflow-hidden"
-                style={{
-                  top: `calc(85px + ${idx * 28}px)`,
-                  zIndex: idx + 1,
-                  willChange: 'transform',
-                }}
-              >
-                {/* Subtle Luxury Curved Highlight Arc in Top-Left (Matching Image 1) */}
-                <div 
-                  className="absolute -top-32 -left-32 w-80 h-80 rounded-full border border-[#00A2E4]/[0.06] pointer-events-none" 
-                  aria-hidden="true"
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-7 sm:gap-8 md:gap-10 items-stretch">
-                  {/* Left Column: Eyebrow, Large Playfair Serif Headline, Description, Price & Cream CTA */}
-                  <div className="md:col-span-5 flex flex-col justify-between text-left">
-                    <div>
-                      {/* Eyebrow with horizontal dash */}
-                      <div className="flex items-center gap-2 mb-3 sm:mb-4">
-                        <span className="w-5 h-[1.5px] bg-[#00A2E4]/40" />
-                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-[#00A2E4]">
-                          Celebration Add-On · {slide.category} · {slide.number}
-                        </span>
-                      </div>
-
-                      {/* Headline in Playfair Serif with Italic emphasis */}
-                      <h3 className="font-['Playfair'] text-2xl sm:text-3xl md:text-4xl font-bold text-[#0B2238] leading-[1.15] tracking-tight">
-                        {slide.title.includes('&') ? (
-                          <>
-                            {slide.title.split('&')[0]}&amp; <br />
-                            <em className="italic font-normal text-[#00A2E4]/80">{slide.title.split('&')[1]}</em>
-                          </>
-                        ) : (
-                          slide.title
-                        )}
-                      </h3>
-
-                      {/* Subtitle / Description */}
-                      <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed mt-3 sm:mt-4">
-                        {slide.desc}
-                      </p>
-                    </div>
-
-                    {/* Bottom Pricing & Cream Action Button */}
-                    <div className="mt-6 sm:mt-8 pt-4 border-t border-slate-200 md:border-t-0 md:pt-0">
-                      <div className="mb-4">
-                        <span className="block text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-1">
-                          Complete Extras From
-                        </span>
-                        <div className="font-['Playfair'] text-2xl sm:text-3xl font-bold text-[#0B2238]">
-                          {slide.price.split('·')[0].trim()}
-                        </div>
-                      </div>
-
-                      <Link
-                        href="/book-now"
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-[#00A2E4] hover:bg-[#0072AE] text-white font-['Archivo'] font-black text-xs uppercase tracking-wider transition-all shadow-md hover:shadow-lg hover:scale-[1.02] cursor-pointer"
-                      >
-                        <span>Explore the package</span>
-                        <span className="text-base font-bold">&rarr;</span>
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Right Column: Clean List of Items with Horizontal Dividers, Circular Icon Discs & Checkmarks */}
-                  <div className="md:col-span-7 flex flex-col justify-center divide-y divide-slate-200 border-t border-b border-slate-200 md:border-t-0 md:border-b-0">
-                    {slide.items.map((item) => (
-                      <div
-                        key={item.title}
-                        className="py-3.5 sm:py-4 flex items-center justify-between gap-3 group transition-colors"
-                      >
-                        <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
-                          {/* Circular icon disc (matching Image 1) */}
-                          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#F6FAFD] group-hover:bg-[#F8F0E5] text-[#00A2E4] flex items-center justify-center p-1.5 shrink-0 transition-colors shadow-2xs border border-slate-200">
-                            <GrandAddonIcon name={item.iconKey} className="w-4 h-4 sm:w-5 sm:h-5 text-[#00A2E4]" />
-                          </div>
-                          <div className="min-w-0">
-                            <h4 className="text-xs sm:text-sm font-semibold text-[#0B2238] truncate leading-tight group-hover:text-[#00A2E4]">
-                              {item.title}
-                            </h4>
-                            <p className="text-[10px] sm:text-xs text-slate-500 font-normal truncate mt-0.5">
-                              {item.desc}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span className="text-xs sm:text-sm font-bold text-[#00A2E4]">
-                            {item.price}
-                          </span>
-                          <span className="w-5 h-5 rounded-full flex items-center justify-center text-emerald-500 group-hover:text-emerald-600 transition-colors">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                            </svg>
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Bottom Direct CTA */}
-          <div className="text-center mt-6">
-            <Link
-              href="/book-now"
-              className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#0B2238] hover:bg-[#00A2E4] text-white font-['Archivo'] font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:shadow-xl transition-all hover:scale-105"
-            >
-              <span>Build Complete Celebration in Booking Wizard</span>
-              <span className="text-base">&rarr;</span>
-            </Link>
-          </div>
         </section>
 
         {/* 9. PICK YOUR PRIVATE THEATRE */}
@@ -2501,7 +2386,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           <div className="section-heading heading-row mb-6 sm:mb-8">
             <div>
               <div className="eyebrow"><span /> Your space, your way</div>
-              <h2>Pick your <em>private theatre</em></h2>
+              <h2>Choose your <em>private theatre</em></h2>
             </div>
             <p>From an intimate date for two to a full family celebration, there’s a room waiting for your story.</p>
           </div>
@@ -2552,7 +2437,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                   const isFourthCard = currentTheatres.length === 4 && i === 3;
                   return (
                     <article 
-                      className={`theatre-card flex flex-col justify-between bg-white rounded-3xl overflow-hidden border border-stone-200/90 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all ${
+                      className={`theatre-card group flex flex-col justify-between bg-white rounded-2xl overflow-hidden border border-[#082052]/10 shadow-[0_1px_2px_rgba(8,32,82,0.04)] hover:shadow-[0_18px_40px_rgba(8,32,82,0.10)] hover:-translate-y-1 transition-all ${
                         isFourthCard ? 'md:col-start-2' : ''
                       }`} 
                       key={theatre.name}
@@ -2568,86 +2453,41 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                         />
                         {theatre.meta && (
                           <div className="absolute top-2.5 left-2.5 z-10">
-                            <span className="px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[9.5px] font-black uppercase tracking-wider shadow-sm border border-white/20 whitespace-nowrap">
+                            <span className="px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md text-[#082052] text-[9.5px] font-black uppercase tracking-wider shadow-sm border border-[#082052]/10 whitespace-nowrap">
                               {theatre.meta}
-                            </span>
-                          </div>
-                        )}
-                        {i === 1 && (
-                          <div className="absolute top-2.5 right-2.5 z-10">
-                            <span className="px-2.5 py-1 rounded-full bg-[#00A2E4] text-white text-[9.5px] font-black uppercase tracking-wider shadow-sm">
-                              Most Loved
                             </span>
                           </div>
                         )}
                       </div>
 
                       <div className="p-5 flex flex-col justify-between flex-1 space-y-3.5 text-left">
-                        {/* Header: Title + Rating */}
-                        <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="text-lg sm:text-xl font-black text-[#082052] tracking-tight">{theatre.name}</h3>
+                          <p className="text-[11px] sm:text-xs text-slate-500 font-bold mt-0.5">
+                            📍 {theatre.location || (theatre.branchSlug === 'btm-stage-2' ? 'BTM 2nd Stage' : 'Electronic City')}
+                          </p>
+                        </div>
+
+                        <p className="text-[12px] font-semibold text-slate-600 leading-relaxed">
+                          {(theatre as any).capacity || (theatre.theatreId === 1 || theatre.theatreId === 4 ? 'Up to 4 guests' : theatre.theatreId === 2 || theatre.theatreId === 5 ? 'Up to 6 guests' : theatre.theatreId === 3 ? 'Up to 10 guests' : 'Up to 8 guests')}
+                          <span className="text-slate-300 mx-1">·</span> 4K laser screen
+                          <span className="text-slate-300 mx-1">·</span> Dolby Atmos
+                          <span className="text-slate-300 mx-1">·</span> soundproof
+                        </p>
+
+                        <div className="mt-auto flex items-center justify-between gap-3 border-t border-slate-100 pt-3">
                           <div>
-                            <h3 className="text-xl font-black text-[#082052] tracking-tight">{theatre.name}</h3>
-                            <p className="text-xs text-slate-500 font-bold mt-0.5">
-                              📍 {theatre.location || (theatre.branchSlug === 'btm-stage-2' ? 'BTM 2nd Stage' : 'Electronic City')}
-                            </p>
-                          </div>
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-black">
-                            ★ 5.0
-                          </span>
-                        </div>
-
-                        {/* Quick Transparency Actions (Binge Town Style) */}
-                        <div className="flex items-center gap-2 text-[11px] font-bold">
-                          <a
-                            href={theatre.branchSlug === 'btm-stage-2' ? 'https://maps.google.com/?q=BTM+2nd+Stage+Bengaluru' : 'https://maps.google.com/?q=Electronic+City+Bengaluru'}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-                          >
-                            <span>📍 MAPS</span>
-                          </a>
-                          <Link
-                            href="/food-menu"
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-                          >
-                            <span>📋 FOOD MENU</span>
-                          </Link>
-                          <span className="ml-auto text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                            Available Today
-                          </span>
-                        </div>
-
-                        {/* Feature Badges Grid */}
-                        <div className="grid grid-cols-2 gap-1.5 text-[11px] font-semibold text-slate-600 bg-[#F8F0E5]/50 p-2.5 rounded-xl border border-slate-200/80">
-                          <span className="flex items-center gap-1">👥 Max {(theatre as any).capacity || (theatre.theatreId === 1 || theatre.theatreId === 4 ? 4 : theatre.theatreId === 2 || theatre.theatreId === 5 ? 6 : theatre.theatreId === 3 ? 10 : 8)} Guests</span>
-                          <span className="flex items-center gap-1">🎬 4K Laser Screen</span>
-                          <span className="flex items-center gap-1">🔊 Dolby Atmos / JBL</span>
-                          <span className="flex items-center gap-1">❄️ Air Conditioned</span>
-                        </div>
-
-                        {/* Pricing Line */}
-                        <div className="pt-1 flex items-baseline justify-between border-t border-slate-100">
-                          <div>
-                            <span className="text-xs text-slate-500 font-medium">Starts from</span>
-                            <div className="text-xl font-black text-[#082052] leading-none mt-0.5">
+                            <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold block">Starts from</span>
+                            <span className="text-lg font-black text-[#082052] leading-none">
                               {theatre.dealPrice}
-                              <span className="text-xs text-slate-500 font-normal ml-1">/ 3 hrs</span>
-                            </div>
+                              <span className="text-[11px] text-slate-500 font-medium ml-1">/ 3 hrs</span>
+                            </span>
                           </div>
-                          <span className="text-[11px] text-slate-500 font-medium">+₹150/extra guest</span>
-                        </div>
-
-                        {/* Reassurance Banner (Binge Town Winning Factor) */}
-                        <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl px-3 py-1.5 text-center text-xs font-bold">
-                          ✨ Pay only ₹500 advance to reserve slot
-                        </div>
-                        
-                        <div className="w-full pt-1 mt-auto">
-                          <Link 
-                            href={`/book-now/${theatre.branchSlug}?theatre=${theatre.theatreId}`} 
-                            className="w-full py-3 px-6 rounded-2xl bg-[#082052] hover:bg-[#041224] text-white font-black text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] active:scale-95"
+                          <Link
+                            href={`/book-now/${theatre.branchSlug}?theatre=${theatre.theatreId}`}
+                            className="py-2.5 px-5 rounded-full bg-[#082052] hover:bg-[#0B2238] text-white font-black text-xs transition-all hover:scale-[1.02] active:scale-95 whitespace-nowrap"
                           >
-                            <span>Select Slot &amp; Book →</span>
+                            Book this room →
                           </Link>
                         </div>
                       </div>
@@ -2755,8 +2595,9 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               
               {/* Card 1: OTT Streaming Apps */}
               <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all">
-                <div className="w-12 h-12 rounded-2xl bg-[#00A2E4]/10 text-[#0072AE] flex items-center justify-center text-2xl mb-5">
-                  🍿
+                <div className="w-16 h-16 rounded-2xl bg-white border border-sky-100 shadow-sm flex flex-col items-center justify-center gap-1.5 mb-5 px-2">
+                  <Image src="/images/ott/netflix.png" alt="Netflix" width={44} height={12} className="h-3 w-auto" />
+                  <Image src="/images/ott/youtube.png" alt="YouTube" width={26} height={18} className="h-4 w-auto" />
                 </div>
                 <h3 className="font-['Playfair_Display'] text-xl font-bold text-[#0B2238] mb-2">
                   All OTT Apps Ready
