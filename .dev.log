@@ -100,3 +100,53 @@ Import trace for requested module:
  ✓ Compiled in 1843ms (627 modules)
  ✓ Compiled in 600ms (315 modules)
  ✓ Compiled in 1657ms (627 modules)
+ ✓ Compiled in 1779ms (627 modules)
+ ✓ Compiled in 1452ms (627 modules)
+ ✓ Compiled in 1549ms (627 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\maju\Desktop\movie_bash\.next\cache\webpack\server-development\4.pack.gz_' -> 'C:\Users\maju\Desktop\movie_bash\.next\cache\webpack\server-development\4.pack.gz'
+ ⨯ ./components/RefineTheatreLanding.tsx
+Error: 
+  [31mx[0m Unexpected token `div`. Expected jsx identifier
+      ,-[[36;1;4mC:\Users\maju\Desktop\movie_bash\components\RefineTheatreLanding.tsx[0m:1485:1]
+ [2m1485[0m |   };
+ [2m1486[0m | 
+ [2m1487[0m |   return (
+ [2m1488[0m |     <div className="min-h-screen overflow-x-clip bg-cream text-ink select-none">
+      : [31;1m     ^^^[0m
+ [2m1489[0m |       {/* 0. AUTHENTIC CINEMA OPENING INTRO ANIMATION */}
+ [2m1490[0m |       <OpeningWebsiteIntro />
+ [2m1490[0m |       
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RefineTheatreLanding.tsx
+./app/page.tsx
+ ⨯ ./components/RefineTheatreLanding.tsx
+Error: 
+  [31mx[0m Unexpected token `div`. Expected jsx identifier
+      ,-[[36;1;4mC:\Users\maju\Desktop\movie_bash\components\RefineTheatreLanding.tsx[0m:1485:1]
+ [2m1485[0m |   };
+ [2m1486[0m | 
+ [2m1487[0m |   return (
+ [2m1488[0m |     <div className="min-h-screen overflow-x-clip bg-cream text-ink select-none">
+      : [31;1m     ^^^[0m
+ [2m1489[0m |       {/* 0. AUTHENTIC CINEMA OPENING INTRO ANIMATION */}
+ [2m1490[0m |       <OpeningWebsiteIntro />
+ [2m1490[0m |       
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RefineTheatreLanding.tsx
+./app/page.tsx
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\maju\Desktop\movie_bash\.next\cache\webpack\server-development\0.pack.gz_' -> 'C:\Users\maju\Desktop\movie_bash\.next\cache\webpack\server-development\0.pack.gz'
+ ✓ Compiled in 800ms (307 modules)
+ ✓ Compiled in 633ms (307 modules)
+ ✓ Compiled in 658ms (307 modules)
+ ✓ Compiled in 715ms (307 modules)
+ ✓ Compiled in 1925ms (627 modules)

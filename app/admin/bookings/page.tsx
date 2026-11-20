@@ -28,7 +28,8 @@ import {
   ExternalLink,
   Ticket,
   MapPin,
-  ChevronRight
+  ChevronRight,
+  Printer
 } from 'lucide-react';
 import { formatBookingSlotTime } from '@/lib/slot-engine';
 
@@ -460,7 +461,7 @@ export default function AdminBookingsPage() {
     const ticketCode = b.booking_ref || `MB-${Date.now().toString().slice(-6)}`;
 
     return (
-`🎟️ *MOVIE BASH CELEBRATION TICKET* 🎟️
+`🎟️ *MOVIE BASH • CELEBRATION TICKET*
 *Ticket Code:* ${ticketCode}
 
 *Special person’s Name:* ${specialName}
@@ -481,16 +482,109 @@ export default function AdminBookingsPage() {
 *Balance:* ${balanceStr}
 
 *Payment type:* ${paymentTypeStr}
-
 *Booking:* ${bookingSourceStr}
 
-📍 *Location:* ${branchAddress}
+📍 *Venue Address:* ${branchAddress}
 🗺️ *Google Maps:* ${mapsLink}
-🍿 *Amenities:* 4K Laser Cinema Screening, Dolby Sound, 100% Soundproof Private Lounge!
-
-🎉 *We look forward to hosting your celebration!*
-📞 Desk Helpline: +91 99029 23656`
+📞 *Helpline:* +91 99029 23656`
     );
+  };
+
+  const printBookingTicket = (b: any) => {
+    const printWindow = window.open('', '_blank', 'width=650,height=800');
+    if (!printWindow) return;
+    const branchName = b.branch_name || (b.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage');
+    const branchAddress = b.branch_id === 1 
+      ? '4th Floor, Srinivasam, Beside Sri Vishnu Grand, Electronic City, Bengaluru 560100'
+      : '2nd Floor, 16th Main Road, Near Udupi Garden Signal, BTM 2nd Stage, Bengaluru 560076';
+    const specialName = b.special_person_name || b.customer_name || 'Guest';
+    const phone = b.whatsapp_number || b.customer_phone || '';
+    const occ = b.occasion || b.occasion_name || 'Celebration';
+    const theatreName = b.theatre_name || getTheatreDisplayName(b.theatre_id, b.branch_id);
+    const timing = `${b.booking_date} | ${b.slot_time || ''}`;
+    const pkg = b.package_type === 'custom' 
+      ? 'Custom (Room Only)' 
+      : b.package_type === 'premium' 
+      ? 'Premium VIP' 
+      : 'Standard Celebration';
+    
+    let cakeStr = b.cake_flavor || 'None';
+    if (b.cake_weight && b.cake_weight !== 'None' && !cakeStr.includes(b.cake_weight)) {
+      cakeStr = `${cakeStr} (${b.cake_weight})`;
+    }
+
+    let addonsStr = 'None';
+    if (Array.isArray(b.addons) && b.addons.length > 0) {
+      addonsStr = b.addons.map((k: any) => {
+        const key = typeof k === 'string' ? k : k.addon_name || k.name;
+        return ADDONS_CATALOG[key]?.label || key;
+      }).join(', ');
+    }
+
+    const customFieldStr = b.custom_item_name 
+      ? `${b.custom_item_name} (₹${b.custom_item_amount || 0})` 
+      : 'None';
+
+    const ticketCode = b.booking_ref || `MB-${Date.now().toString().slice(-6)}`;
+    const total = Number(b.total || 0);
+    const advance = Number(b.advance_paid || 0);
+    const balance = Math.max(0, total - advance);
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Movie Bash Ticket - ${ticketCode}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 24px; color: #082052; max-width: 460px; margin: auto; }
+    .header { text-align: center; border-bottom: 2px dashed #00A2E4; padding-bottom: 12px; margin-bottom: 12px; }
+    .brand { font-size: 20px; font-weight: 900; letter-spacing: 1px; color: #082052; margin: 0; }
+    .subbrand { font-size: 10px; text-transform: uppercase; color: #0072AE; font-weight: 700; margin-top: 3px; }
+    .ticket-badge { display: inline-block; background: #F0F9FF; border: 1px solid #BAE6FD; color: #0284C7; padding: 3px 10px; border-radius: 999px; font-weight: 800; font-size: 11.5px; margin-top: 6px; }
+    .grid { margin-top: 10px; }
+    .row { display: flex; justify-content: space-between; padding: 4.5px 0; border-bottom: 1px solid #F1F5F9; font-size: 11.5px; }
+    .row.highlight { border-top: 2px solid #082052; border-bottom: 2px solid #082052; font-size: 13px; font-weight: 800; padding: 7px 0; margin-top: 6px; }
+    .lbl { color: #64748B; font-weight: 600; }
+    .val { font-weight: 700; text-align: right; color: #082052; max-width: 60%; }
+    .footer { text-align: center; margin-top: 16px; padding-top: 10px; border-top: 1px dashed #CBD5E1; font-size: 10.5px; color: #64748B; line-height: 1.4; }
+    @media print { body { padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1 class="brand">🎬 MOVIE BASH</h1>
+    <div class="subbrand">Private Theatre &amp; Celebration Lounge</div>
+    <div class="ticket-badge">Ticket Code: #${ticketCode}</div>
+  </div>
+  <div class="grid">
+    <div class="row"><span class="lbl">Special Person:</span><span class="val">${specialName}</span></div>
+    <div class="row"><span class="lbl">WhatsApp:</span><span class="val">+91 ${phone}</span></div>
+    <div class="row"><span class="lbl">Occasion:</span><span class="val">${occ}</span></div>
+    <div class="row"><span class="lbl">Branch:</span><span class="val">${branchName}</span></div>
+    <div class="row"><span class="lbl">Private Theatre:</span><span class="val">${theatreName}</span></div>
+    <div class="row"><span class="lbl">Timings:</span><span class="val">${timing}</span></div>
+    <div class="row"><span class="lbl">Package / Custom:</span><span class="val">${pkg}</span></div>
+    <div class="row"><span class="lbl">Extra Persons:</span><span class="val">${b.extra_persons || 0}</span></div>
+    <div class="row"><span class="lbl">Cake Flavour:</span><span class="val">${cakeStr}</span></div>
+    <div class="row"><span class="lbl">Add-ons:</span><span class="val">${addonsStr}</span></div>
+    <div class="row"><span class="lbl">Custom Field:</span><span class="val">${customFieldStr}</span></div>
+    <div class="row"><span class="lbl">Discount:</span><span class="val">₹${b.discount || 0}</span></div>
+    <div class="row highlight"><span class="lbl" style="color:#082052">Total Amount:</span><span class="val" style="color:#082052">₹${total}</span></div>
+    <div class="row"><span class="lbl">Advance Paid:</span><span class="val" style="color:#059669">₹${advance}</span></div>
+    <div class="row"><span class="lbl">Balance Due at Venue:</span><span class="val" style="color:#DC2626">₹${balance}</span></div>
+    <div class="row"><span class="lbl">Payment Type:</span><span class="val">${b.payment_type || 'UPI'}</span></div>
+    <div class="row"><span class="lbl">Booking Source:</span><span class="val">${b.source || 'Phone Call'}</span></div>
+  </div>
+  <div class="footer">
+    <strong>📍 ${branchAddress}</strong><br />
+    Helpline: +91 99029 23656 • www.moviebash.in<br />
+    <em>Thank you for celebrating with Movie Bash!</em>
+  </div>
+  <script>window.onload = function() { window.print(); };</script>
+</body>
+</html>`;
+    printWindow.document.write(html);
+    printWindow.document.close();
   };
 
   const sendCustomerWhatsApp = (b: any) => {
@@ -1439,14 +1533,29 @@ export default function AdminBookingsPage() {
                       <Ticket className="w-4 h-4 text-[#00A2E4]" />
                       <span>Live WhatsApp Ticket Preview</span>
                     </span>
-                    <button
-                      type="button"
-                      onClick={copyLiveTicketText}
-                      className="text-[11px] font-bold text-[#0072AE] hover:underline flex items-center gap-1 cursor-pointer"
-                    >
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>{copiedLiveTicket ? '✓ Copied' : 'Copy'}</span>
-                    </button>
+                    <div className="flex items-center gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() => printBookingTicket({
+                          ...manualForm,
+                          booking_ref: 'MB-DRAFT',
+                          theatre_name: getTheatreDisplayName(manualForm.theatre_id, manualForm.branch_id),
+                          branch_name: manualForm.branch_id === 1 ? 'Electronic City' : 'BTM 2nd Stage'
+                        })}
+                        className="text-[11px] font-bold text-[#082052] hover:text-[#00A2E4] hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        <span>Print</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={copyLiveTicketText}
+                        className="text-[11px] font-bold text-[#0072AE] hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>{copiedLiveTicket ? '✓ Copied' : 'Copy'}</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* Formatted Live Ticket Card */}
@@ -1668,14 +1777,25 @@ export default function AdminBookingsPage() {
                 <span>Send Ticket on WhatsApp (+91 {selectedBooking.whatsapp_number || selectedBooking.customer_phone})</span>
               </button>
 
-              <button
-                type="button"
-                onClick={() => copyConfirmationText(selectedBooking)}
-                className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <Copy className="w-4 h-4" />
-                <span>{copiedText ? '✓ Copied Ticket!' : 'Copy Ticket Message'}</span>
-              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => printBookingTicket(selectedBooking)}
+                  className="py-2.5 rounded-2xl bg-[#082052] hover:bg-[#0B2238] text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>Print Ticket</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => copyConfirmationText(selectedBooking)}
+                  className="py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+                >
+                  <Copy className="w-4 h-4" />
+                  <span>{copiedText ? '✓ Copied Ticket!' : 'Copy Ticket Message'}</span>
+                </button>
+              </div>
             </div>
 
             {/* Status Change */}

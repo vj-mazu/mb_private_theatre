@@ -771,12 +771,12 @@ const packageTiers = [
 
 
 const gallery = [
-  ['/images/celebration_1.webp', 'Golden peacock arch birthday'],
-  ['/images/couple_1.webp', 'Rose heart with balloon aisle'],
-  ['/images/celebration_3.webp', 'Rose-petal heart table'],
-  ['/images/couple_6.webp', 'Anniversary heart and canopy'],
-  ['/images/ambience_5.webp', 'Floral welcome walkway'],
-  ['/images/couple_7.webp', 'MOVIE marquee by the screen'],
+  ['/images/hero_8441.webp', 'Golden butterfly arch hall • BTM 2nd Stage'],
+  ['/images/hero_8388.webp', 'Romantic rose heart suite • Electronic City'],
+  ['/images/btm_wings_arch.webp', 'Grand illuminated celebration stage • BTM'],
+  ['/images/btm_celebration_stage.webp', 'Private balloon canopy & 150″ cinema • BTM'],
+  ['/images/ecity_rose_heart.webp', 'Floral welcome walkway & romantic décor'],
+  ['/images/btm_golden_arch.webp', 'MOVIE BASH celebration hall • BTM 2nd Stage'],
 ];
 
 // Official Movie Bash FAQ (copied from moviebash.in)
@@ -1508,43 +1508,21 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           className="relative flex flex-col justify-between items-center overflow-hidden w-full pt-6 sm:pt-14 pb-0 bg-[#082052]" 
           id="home"
         >
-          {/* Ambient Real Background (Video / IMG_8441 / IMG_8388) */}
+          {/* Ambient Real BTM Celebration Hall Background - Crisp, Vibrant & Natural */}
           <div ref={heroMediaRef} className="hero-media absolute inset-0 z-0 overflow-hidden">
             <div className={`hero-media-frame${heroRevealed ? ' is-in' : ''} w-full h-full relative`}>
-              {heroMediaMode === 'video' ? (
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  poster="/images/hero_8441.webp"
-                  className="w-full h-full object-cover scale-105"
-                >
-                  <source src="/videos/btm-butterfly-blush.mp4" type="video/mp4" />
-                </video>
-              ) : heroMediaMode === '8441' ? (
-                <Image
-                  src="/images/hero_8441.webp"
-                  alt="Golden Arch Celebration Hall - Movie Bash BTM 2nd Stage"
-                  fill
-                  priority
-                  className="object-cover scale-105 transition-all duration-700"
-                  sizes="100vw"
-                />
-              ) : (
-                <Image
-                  src="/images/hero_8388.webp"
-                  alt="Rose Heart Private Theatre - Movie Bash Electronic City"
-                  fill
-                  priority
-                  className="object-cover scale-105 transition-all duration-700"
-                  sizes="100vw"
-                />
-              )}
+              <Image
+                src="/images/hero_8441.webp"
+                alt="Movie Bash BTM 2nd Stage Celebration Hall"
+                fill
+                priority
+                className="object-cover scale-105"
+                sizes="100vw"
+              />
             </div>
-            {/* Natural Dark Vignette Overlay so White Headlines & Booking Form Pop Out */}
-            <div className="absolute inset-0 bg-black/45 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-black/80 pointer-events-none" />
+            {/* Subtle soft transparent scrim only for text contrast without muting photo colors */}
+            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/45 pointer-events-none" />
           </div>
 
           <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
@@ -1562,48 +1540,6 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             <p className="mt-3.5 sm:mt-4 text-sm sm:text-lg md:text-xl text-[#F8F0E5] font-normal max-w-2xl mx-auto leading-relaxed drop-shadow-[0_2px_14px_rgba(4,18,36,0.8)] text-center">
               Book Your Perfect Celebration: Birthdays, Anniversaries, Date Nights &amp; Private Screenings!
             </p>
-
-            {/* Interactive Hero Venue Switcher Pills */}
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 z-10">
-              <button
-                type="button"
-                onClick={() => setHeroMediaMode('8441')}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                  heroMediaMode === '8441'
-                    ? 'bg-[#00A2E4] text-white shadow-md shadow-[#00A2E4]/40 scale-105'
-                    : 'bg-black/50 hover:bg-black/70 text-white/90 border border-white/20'
-                }`}
-              >
-                <span>✨</span>
-                <span>Golden Arch Hall (BTM)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setHeroMediaMode('8388')}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                  heroMediaMode === '8388'
-                    ? 'bg-[#00A2E4] text-white shadow-md shadow-[#00A2E4]/40 scale-105'
-                    : 'bg-black/50 hover:bg-black/70 text-white/90 border border-white/20'
-                }`}
-              >
-                <span>🌹</span>
-                <span>Rose Heart Suite (ECity)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setHeroMediaMode('video')}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                  heroMediaMode === 'video'
-                    ? 'bg-[#00A2E4] text-white shadow-md shadow-[#00A2E4]/40 scale-105'
-                    : 'bg-black/50 hover:bg-black/70 text-white/90 border border-white/20'
-                }`}
-              >
-                <span>🎥</span>
-                <span>Live Video Tour</span>
-              </button>
-            </div>
 
             {/* ─── FLOATING QUICK BOOKING WIDGET (EXACT BINGE TOWN ARCHITECTURE) ─── */}
             <div className="w-full max-w-3xl mt-5 sm:mt-7 bg-white rounded-3xl p-4 min-[400px]:p-5 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.35)] border border-slate-200 text-left">
@@ -1703,77 +1639,6 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                 </button>
               </div>
 
-            </div>
-
-            {/* Real Venue Spotlight Cards (Featuring user images IMG_8388 & IMG_8441) */}
-            <div className="w-full max-w-3xl mt-4 sm:mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 z-10">
-              {/* Card 1: Rose Heart Suite (IMG_8388) */}
-              <div 
-                onClick={() => {
-                  setHeroMediaMode('8388');
-                  setBranch('Electronic City');
-                }}
-                className={`group relative rounded-2xl p-2.5 sm:p-3 bg-white/95 backdrop-blur-md border transition-all text-left flex items-center gap-3 cursor-pointer shadow-md hover:scale-[1.01] ${
-                  heroMediaMode === '8388' ? 'border-[#00A2E4] ring-2 ring-[#00A2E4]/40 bg-white' : 'border-white/50 hover:border-[#00A2E4]'
-                }`}
-              >
-                <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-slate-200">
-                  <Image
-                    src="/images/hero_8388.webp"
-                    alt="Rose Heart Suite - Private Theatre"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    sizes="80px"
-                  />
-                  <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-black text-rose-300">
-                    🌹 ECity
-                  </div>
-                </div>
-                <div className="flex-1 min-w-0 pr-1">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#00A2E4] block">Couple &amp; Date Night</span>
-                  <h4 className="font-playfair text-sm sm:text-base font-black text-[#082052] truncate">Rose Heart Suite</h4>
-                  <div className="flex items-center justify-between mt-1 text-[11px]">
-                    <span className="font-extrabold text-[#082052]">Starts ₹899</span>
-                    <span className="font-black text-[#00A2E4] group-hover:underline flex items-center gap-0.5">
-                      View Setup &rarr;
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 2: Golden Arch Celebration Hall (IMG_8441) */}
-              <div 
-                onClick={() => {
-                  setHeroMediaMode('8441');
-                  setBranch('BTM 2nd Stage');
-                }}
-                className={`group relative rounded-2xl p-2.5 sm:p-3 bg-white/95 backdrop-blur-md border transition-all text-left flex items-center gap-3 cursor-pointer shadow-md hover:scale-[1.01] ${
-                  heroMediaMode === '8441' ? 'border-[#00A2E4] ring-2 ring-[#00A2E4]/40 bg-white' : 'border-white/50 hover:border-[#00A2E4]'
-                }`}
-              >
-                <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-slate-200">
-                  <Image
-                    src="/images/hero_8441.webp"
-                    alt="Golden Arch Celebration Hall"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    sizes="80px"
-                  />
-                  <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-black text-amber-300">
-                    ✨ BTM
-                  </div>
-                </div>
-                <div className="flex-1 min-w-0 pr-1">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#00A2E4] block">Birthdays &amp; Parties</span>
-                  <h4 className="font-playfair text-sm sm:text-base font-black text-[#082052] truncate">Golden Arch Hall</h4>
-                  <div className="flex items-center justify-between mt-1 text-[11px]">
-                    <span className="font-extrabold text-[#082052]">Starts ₹1,699</span>
-                    <span className="font-black text-[#00A2E4] group-hover:underline flex items-center gap-0.5">
-                      View Setup &rarr;
-                    </span>
-                  </div>
-                </div>
-              </div>
             </div>
 
           </div>
@@ -2776,24 +2641,24 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
               
               {/* Card 1: Official OTT Streaming Apps */}
-              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between">
+              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-7 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between">
                 <div>
-                  <div className="w-14 h-14 rounded-2xl bg-white border border-sky-100 shadow-sm flex items-center justify-center mb-5">
-                    <span className="text-2xl">🍿</span>
+                  <div className="w-12 h-12 rounded-2xl bg-white border border-sky-100 shadow-xs flex items-center justify-center text-xl mb-4">
+                    <span>🍿</span>
                   </div>
-                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-2">
+                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-2 min-h-[28px] flex items-center">
                     All OTT Apps Ready
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4 min-h-[42px]">
                     Log in directly to your personal accounts on our 4K Smart Cinema setup with 150″ laser display:
                   </p>
                 </div>
 
                 {/* Official Brand Badges In Bottom (Clean, Bold, Aesthetic Badges) */}
-                <div className="pt-4 border-t border-slate-200/60">
+                <div className="pt-4 border-t border-slate-200/60 mt-auto">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2.5">
                     Official Streaming Supported
                   </span>
@@ -2835,21 +2700,21 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               </div>
 
               {/* Card 2: Plug & Play Personal Videos (HDMI) */}
-              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between">
+              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-7 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between">
                 <div>
-                  <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-700 flex items-center justify-center text-2xl mb-5">
-                    💻
+                  <div className="w-12 h-12 rounded-2xl bg-white border border-sky-100 shadow-xs flex items-center justify-center text-xl mb-4">
+                    <span>💻</span>
                   </div>
-                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-2">
+                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-2 min-h-[28px] flex items-center">
                     Plug &amp; Play HDMI / Phone
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4 min-h-[42px]">
                     Connect your Laptop, iPhone, Android, or Pen Drive via our high-speed 4K HDMI &amp; Type-C cables:
                   </p>
                 </div>
 
                 {/* Compatibility Badges In Bottom */}
-                <div className="pt-4 border-t border-slate-200/60">
+                <div className="pt-4 border-t border-slate-200/60 mt-auto">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2.5">
                     Supported Connections
                   </span>
@@ -2874,21 +2739,21 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               </div>
 
               {/* Card 3: Bluetooth Music & Console Gaming */}
-              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-8 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between">
+              <div className="bg-[#F6FAFD] rounded-3xl p-6 sm:p-7 border border-sky-100 shadow-[0_8px_24px_rgba(11,34,56,0.04)] hover:shadow-[0_16px_40px_rgba(0,162,228,0.10)] transition-all flex flex-col justify-between">
                 <div>
-                  <div className="w-14 h-14 rounded-2xl bg-rose-500/10 text-rose-700 flex items-center justify-center text-2xl mb-5">
-                    🎵
+                  <div className="w-12 h-12 rounded-2xl bg-white border border-sky-100 shadow-xs flex items-center justify-center text-xl mb-4">
+                    <span>🎵</span>
                   </div>
-                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-2">
+                  <h3 className="font-playfair text-xl font-bold text-[#082052] mb-2 min-h-[28px] flex items-center">
                     Bluetooth Music &amp; Gaming
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4 min-h-[42px]">
                     Stream your favorite Spotify playlist during cake cutting, or hook up your gaming console:
                   </p>
                 </div>
 
                 {/* Badges In Bottom */}
-                <div className="pt-4 border-t border-slate-200/60">
+                <div className="pt-4 border-t border-slate-200/60 mt-auto">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2.5">
                     Audio &amp; Console Features
                   </span>
@@ -2978,16 +2843,14 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
         {/* 11. REAL GUEST MOMENTS PHOTO GALLERY */}
         <section className="gallery-section py-8 sm:py-16 overflow-hidden">
           <div className="section max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="section-heading heading-row mb-6 sm:mb-10">
-              <div>
-                <div className="eyebrow flex items-center gap-1.5 text-xs font-bold text-[#00A2E4] uppercase tracking-wider mb-2">
-                  <span className="w-2 h-2 rounded-full bg-[#00A2E4] animate-pulse" /> Real Movie Bash celebrations
-                </div>
-                <h2 className="text-2xl sm:text-4xl md:text-5xl font-['Playfair_Display'] font-bold text-[#0B2238]">
-                  See how moments<br /><em className="italic text-[#00A2E4]">come to life.</em>
-                </h2>
+            <div className="section-heading centered max-w-2xl mx-auto text-center mb-8 sm:mb-12">
+              <div className="eyebrow flex items-center justify-center gap-1.5 text-xs font-bold text-[#00A2E4] uppercase tracking-wider mb-2.5">
+                <span className="w-2 h-2 rounded-full bg-[#00A2E4] animate-pulse" /> Real Movie Bash celebrations
               </div>
-              <p className="text-xs sm:text-sm text-stone-600 max-w-md mt-2 sm:mt-0 leading-relaxed">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-['Playfair_Display'] font-black text-[#0B2238] tracking-tight">
+                See How Moments <em className="italic text-[#00A2E4] font-normal">Come to Life.</em>
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-600 max-w-lg mx-auto mt-2.5 leading-relaxed">
                 Real, unedited setups from birthdays, anniversaries, proposals, baby showers and private movie nights.
               </p>
             </div>
