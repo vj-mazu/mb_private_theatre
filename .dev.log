@@ -95,3 +95,8 @@ Import trace for requested module:
 ./app/page.tsx
  ✓ Compiled in 2.5s (613 modules)
  ✓ Compiled in 587ms (312 modules)
+ ✓ Compiled in 1770ms (627 modules)
+ ✓ Compiled in 1499ms (627 modules)
+ ✓ Compiled in 1843ms (627 modules)
+ ✓ Compiled in 600ms (315 modules)
+ ✓ Compiled in 1657ms (627 modules)

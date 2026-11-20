@@ -935,6 +935,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState('/videos/btm-butterfly-blush.mp4');
   const [selectedVideoTitle, setSelectedVideoTitle] = useState('Butterfly Blush • BTM 2nd Stage');
+  const [heroMediaMode, setHeroMediaMode] = useState<'video' | '8388' | '8441'>('8441');
   const [heroBgIndex, setHeroBgIndex] = useState(0);
   const [isHeroCarouselPaused, setIsHeroCarouselPaused] = useState(false);
   const heroTouchStartX = useRef<number | null>(null);
@@ -1504,26 +1505,46 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
         {/* 3. HERO SECTION (THE BINGE TOWN ARCHITECTURE & ALIGNMENT + OUR ETOILE LUXURY COLOR PALETTE) */}
         <section 
           ref={heroRef}
-          className="relative min-h-0 sm:min-h-[92vh] flex flex-col justify-center items-center overflow-hidden w-full pt-8 pb-10 sm:pt-24 sm:pb-20" 
+          className="relative flex flex-col justify-between items-center overflow-hidden w-full pt-6 sm:pt-14 pb-0 bg-[#082052]" 
           id="home"
         >
-          {/* Ambient Real BTM Video Background with Natural Cinema Lighting */}
+          {/* Ambient Real Background (Video / IMG_8441 / IMG_8388) */}
           <div ref={heroMediaRef} className="hero-media absolute inset-0 z-0 overflow-hidden">
-            <div className={`hero-media-frame${heroRevealed ? ' is-in' : ''} w-full h-full`}>
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                poster="/images/hero-desktop.webp"
-                className="w-full h-full object-cover scale-105"
-              >
-                <source src="/videos/btm-butterfly-blush.mp4" type="video/mp4" />
-              </video>
+            <div className={`hero-media-frame${heroRevealed ? ' is-in' : ''} w-full h-full relative`}>
+              {heroMediaMode === 'video' ? (
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  poster="/images/hero_8441.webp"
+                  className="w-full h-full object-cover scale-105"
+                >
+                  <source src="/videos/btm-butterfly-blush.mp4" type="video/mp4" />
+                </video>
+              ) : heroMediaMode === '8441' ? (
+                <Image
+                  src="/images/hero_8441.webp"
+                  alt="Golden Arch Celebration Hall - Movie Bash BTM 2nd Stage"
+                  fill
+                  priority
+                  className="object-cover scale-105 transition-all duration-700"
+                  sizes="100vw"
+                />
+              ) : (
+                <Image
+                  src="/images/hero_8388.webp"
+                  alt="Rose Heart Private Theatre - Movie Bash Electronic City"
+                  fill
+                  priority
+                  className="object-cover scale-105 transition-all duration-700"
+                  sizes="100vw"
+                />
+              )}
             </div>
             {/* Natural Dark Vignette Overlay so White Headlines & Booking Form Pop Out */}
-            <div className="absolute inset-0 bg-black/40 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/20 to-black/75 pointer-events-none" />
+            <div className="absolute inset-0 bg-black/45 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-black/80 pointer-events-none" />
           </div>
 
           <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
@@ -1542,9 +1563,50 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               Book Your Perfect Celebration: Birthdays, Anniversaries, Date Nights &amp; Private Screenings!
             </p>
 
+            {/* Interactive Hero Venue Switcher Pills */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 z-10">
+              <button
+                type="button"
+                onClick={() => setHeroMediaMode('8441')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  heroMediaMode === '8441'
+                    ? 'bg-[#00A2E4] text-white shadow-md shadow-[#00A2E4]/40 scale-105'
+                    : 'bg-black/50 hover:bg-black/70 text-white/90 border border-white/20'
+                }`}
+              >
+                <span>✨</span>
+                <span>Golden Arch Hall (BTM)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setHeroMediaMode('8388')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  heroMediaMode === '8388'
+                    ? 'bg-[#00A2E4] text-white shadow-md shadow-[#00A2E4]/40 scale-105'
+                    : 'bg-black/50 hover:bg-black/70 text-white/90 border border-white/20'
+                }`}
+              >
+                <span>🌹</span>
+                <span>Rose Heart Suite (ECity)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setHeroMediaMode('video')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  heroMediaMode === 'video'
+                    ? 'bg-[#00A2E4] text-white shadow-md shadow-[#00A2E4]/40 scale-105'
+                    : 'bg-black/50 hover:bg-black/70 text-white/90 border border-white/20'
+                }`}
+              >
+                <span>🎥</span>
+                <span>Live Video Tour</span>
+              </button>
+            </div>
 
             {/* ─── FLOATING QUICK BOOKING WIDGET (EXACT BINGE TOWN ARCHITECTURE) ─── */}
-            <div className="w-full max-w-3xl mt-6 sm:mt-9 bg-white rounded-3xl p-4 min-[400px]:p-5 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.35)] border border-slate-200 text-left">
+            <div className="w-full max-w-3xl mt-5 sm:mt-7 bg-white rounded-3xl p-4 min-[400px]:p-5 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.35)] border border-slate-200 text-left">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
                 
                 {/* Field 1: Branch */}
@@ -1643,6 +1705,76 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
 
             </div>
 
+            {/* Real Venue Spotlight Cards (Featuring user images IMG_8388 & IMG_8441) */}
+            <div className="w-full max-w-3xl mt-4 sm:mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 z-10">
+              {/* Card 1: Rose Heart Suite (IMG_8388) */}
+              <div 
+                onClick={() => {
+                  setHeroMediaMode('8388');
+                  setBranch('Electronic City');
+                }}
+                className={`group relative rounded-2xl p-2.5 sm:p-3 bg-white/95 backdrop-blur-md border transition-all text-left flex items-center gap-3 cursor-pointer shadow-md hover:scale-[1.01] ${
+                  heroMediaMode === '8388' ? 'border-[#00A2E4] ring-2 ring-[#00A2E4]/40 bg-white' : 'border-white/50 hover:border-[#00A2E4]'
+                }`}
+              >
+                <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-slate-200">
+                  <Image
+                    src="/images/hero_8388.webp"
+                    alt="Rose Heart Suite - Private Theatre"
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    sizes="80px"
+                  />
+                  <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-black text-rose-300">
+                    🌹 ECity
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0 pr-1">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#00A2E4] block">Couple &amp; Date Night</span>
+                  <h4 className="font-playfair text-sm sm:text-base font-black text-[#082052] truncate">Rose Heart Suite</h4>
+                  <div className="flex items-center justify-between mt-1 text-[11px]">
+                    <span className="font-extrabold text-[#082052]">Starts ₹899</span>
+                    <span className="font-black text-[#00A2E4] group-hover:underline flex items-center gap-0.5">
+                      View Setup &rarr;
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 2: Golden Arch Celebration Hall (IMG_8441) */}
+              <div 
+                onClick={() => {
+                  setHeroMediaMode('8441');
+                  setBranch('BTM 2nd Stage');
+                }}
+                className={`group relative rounded-2xl p-2.5 sm:p-3 bg-white/95 backdrop-blur-md border transition-all text-left flex items-center gap-3 cursor-pointer shadow-md hover:scale-[1.01] ${
+                  heroMediaMode === '8441' ? 'border-[#00A2E4] ring-2 ring-[#00A2E4]/40 bg-white' : 'border-white/50 hover:border-[#00A2E4]'
+                }`}
+              >
+                <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-slate-200">
+                  <Image
+                    src="/images/hero_8441.webp"
+                    alt="Golden Arch Celebration Hall"
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    sizes="80px"
+                  />
+                  <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-black text-amber-300">
+                    ✨ BTM
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0 pr-1">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#00A2E4] block">Birthdays &amp; Parties</span>
+                  <h4 className="font-playfair text-sm sm:text-base font-black text-[#082052] truncate">Golden Arch Hall</h4>
+                  <div className="flex items-center justify-between mt-1 text-[11px]">
+                    <span className="font-extrabold text-[#082052]">Starts ₹1,699</span>
+                    <span className="font-black text-[#00A2E4] group-hover:underline flex items-center gap-0.5">
+                      View Setup &rarr;
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
           </div>
 
@@ -1837,10 +1969,10 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
             </div>
           )}
 
-          {/* Reversible Feature Marquee */}
+          {/* Reversible Feature Marquee - PINNED DIRECTLY TO BOTTOM OF HERO */}
           <div 
             ref={heroMarqueeRef}
-            className="w-full overflow-hidden flex relative z-10 py-4 border-t border-[#00A2E4]/15 bg-[#F6FAFD]"
+            className="w-full overflow-hidden flex relative z-10 py-3.5 border-t border-b border-[#00A2E4]/20 bg-[#F6FAFD] mt-6 sm:mt-10 mb-0"
           >
             <div className="hero-marquee-track flex items-center gap-8 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wider text-[#00A2E4]">
               <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#00A2E4]/30 shadow-2xs">⭐ 5.0★ RATED (3,500+ GUESTS)</span>
@@ -1861,13 +1993,15 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           </div>
         </section>
 
-{/* 4. INTRO STATS STRIP */}
-        <section className="intro-strip" aria-label="Movie Bash highlights">
-          <div><Icon name="users" /><strong>3,500+</strong><span>happy celebrations</span></div>
-          <div><Icon name="star" /><strong>5.0 / 5</strong><span>guest rating</span></div>
-          <div><Icon name="location" /><strong>2 locations</strong><span>across Bengaluru</span></div>
-          <div><Icon name="sparkles" /><strong>100% private</strong><span>zero interruptions</span></div>
-        </section>
+        {/* 4. INTRO STATS STRIP - FULL WIDTH WHITE CONTAINER DIRECTLY CONNECTED TO MARQUEE */}
+        <div className="w-full bg-white border-b border-slate-200 m-0 p-0">
+          <section className="intro-strip bg-white" aria-label="Movie Bash highlights">
+            <div><Icon name="users" /><strong>3,500+</strong><span>happy celebrations</span></div>
+            <div><Icon name="star" /><strong>5.0 / 5</strong><span>guest rating</span></div>
+            <div><Icon name="location" /><strong>2 locations</strong><span>across Bengaluru</span></div>
+            <div><Icon name="sparkles" /><strong>100% private</strong><span>zero interruptions</span></div>
+          </section>
+        </div>
 
         {/* 5. INTERACTIVE AVAILABILITY & SLOTS SECTION */}
         <section className="availability-section" id="slots">
