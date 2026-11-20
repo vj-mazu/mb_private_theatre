@@ -47,7 +47,7 @@ const baseEcityTheatres = [
     startPrice: '₹899',
     standardPrice: '₹1,499',
     images: ['/images/couple_1.webp', '/images/couple_3.webp'],
-    video: '/videos/video_1.mp4',
+    video: '/videos/couple_theatre.mp4',
   },
   {
     id: 2,
@@ -59,21 +59,21 @@ const baseEcityTheatres = [
     description: 'Party celebration lounge with 135" screen, JBL sound, and party lighting for friend groups.',
     startPrice: '₹1,699',
     standardPrice: '₹2,200',
-    images: ['/images/celebration_2.webp', '/images/celebration_6.webp'],
-    video: '/videos/video_2.mp4',
+    images: ['/images/celebration_theatre.jpg', '/images/celebration_6.webp'],
+    video: '/videos/celebration_theatre.mp4',
   },
   {
     id: 3,
-    name: 'Family Room',
-    showTitle: 'Family Show',
+    name: 'Family Theatre',
+    showTitle: 'Family Theatre',
     emoji: '🧑‍🧑‍🧒‍🧒',
     capacity: 'Up to 6 People',
     spec: '150″ Screen · Dolby 7.1.2 Atmos',
     description: 'Grand family cinema with giant screen, 7.1.2 Dolby system, and spacious multi-row plush seating.',
     startPrice: '₹1,699',
     standardPrice: '₹2,200',
-    images: ['/images/celebration_1.webp', '/images/celebration_6.webp'],
-    video: '/videos/video_3.mp4',
+    images: ['/images/family_theatre.jpg', '/images/celebration_6.webp'],
+    video: '/videos/family_theatre.mp4',
   }
 ];
 
@@ -607,20 +607,21 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
       computedAddonsPayload.push({ addon_id: 10, name: 'Teddy Mascot Entry (30 mins)', quantity: 1, price: mascotPrice, total: mascotPrice });
     }
   } else {
-    // Standard or Premium
-    if (pkgColdPyro) {
+    // Standard or Premium optional extras
+    // Note: In Premium VIP, Cold Pyro (2 nos), Fog Entry (2 Pots), Rose Petals, and LED Name are already included for free!
+    if (packageType !== 'premium' && pkgColdPyro) {
       addonsCost += coldPyroPrice;
-      computedAddonsPayload.push({ addon_id: 4, name: 'Cold Pyro Sparkle Entry (2 Pots)', quantity: 1, price: coldPyroPrice, total: coldPyroPrice });
+      computedAddonsPayload.push({ addon_id: 4, name: 'Cold Pyro Sparklers (2 nos)', quantity: 1, price: coldPyroPrice, total: coldPyroPrice });
     }
-    if (pkgExtraFogPot) {
+    if (packageType !== 'premium' && pkgExtraFogPot) {
       addonsCost += fog1PotPrice;
       computedAddonsPayload.push({ addon_id: 3, name: 'Extra Fog Pot (Total 2 Pots)', quantity: 1, price: fog1PotPrice, total: fog1PotPrice });
     }
-    if (pkgRosePetals) {
+    if (packageType !== 'premium' && pkgRosePetals) {
       addonsCost += rosePetalsPrice;
       computedAddonsPayload.push({ addon_id: 5, name: 'Rose Petal Table Decor with Candles', quantity: 1, price: rosePetalsPrice, total: rosePetalsPrice });
     }
-    if (pkgLedName) {
+    if (packageType !== 'premium' && pkgLedName) {
       addonsCost += ledNamePrice;
       computedAddonsPayload.push({ addon_id: 6, name: 'Personalized LED Name Letters', quantity: 1, price: ledNamePrice, total: ledNamePrice });
     }
@@ -656,19 +657,25 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
   const advanceAmount = 500;
   const balanceAmount = Math.max(0, grandTotal - advanceAmount);
 
-  // Extend slot timing when +1 hour is added (e.g. 10:00 AM - 12:00 PM + 1hr = 10:00 AM – 01:00 PM (3 Hours Total))
+  // Extend slot timing when +1 or +2 hour is added (e.g. 03:00 PM - 05:00 PM + 2hr = 03:00 PM – 07:00 PM (4 Hours Total))
   const extendSlotTime = (rawTime: string, extraHoursCount: number): string => {
-    if (!rawTime || extraHoursCount <= 0) return rawTime;
-    const parts = rawTime.split(/[-–—]/).map(s => s.trim());
-    if (parts.length !== 2) return `${rawTime} (+${extraHoursCount} Hr)`;
+    if (!rawTime) return 'Showtime';
+    // Strip any existing duration tags or parentheses
+    const cleanTime = rawTime.replace(/\s*\([^)]*\)/g, '').trim();
+    const parts = cleanTime.split(/[-–—]/).map(s => s.trim());
+    if (parts.length !== 2) return extraHoursCount > 0 ? `${cleanTime} (+${extraHoursCount} Hr)` : cleanTime;
     
     const [startStr, endStr] = parts;
     const match = endStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-    if (!match) return `${rawTime} (+${extraHoursCount} Hr)`;
+    if (!match) return extraHoursCount > 0 ? `${cleanTime} (+${extraHoursCount} Hr)` : cleanTime;
+    
+    if (extraHoursCount <= 0) {
+      return `${startStr} – ${endStr} (2 Hours)`;
+    }
     
     let hours = parseInt(match[1], 10);
     const minutes = match[2];
-    let meridiem = match[3].toUpperCase();
+    const meridiem = match[3].toUpperCase();
     
     if (meridiem === 'PM' && hours < 12) hours += 12;
     if (meridiem === 'AM' && hours === 12) hours = 0;
@@ -1840,9 +1847,9 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                           ✨
                         </div>
                         <div>
-                          <span className="text-xs font-black text-slate-900 block">Cold Pyro Sparkler Entry (2 Pots)</span>
-                          <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Indoor-safe cold golden spark fountains during hero entry</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹799</span>
+                          <span className="text-xs font-black text-slate-900 block">Cold Pyro Sparklers (2 nos)</span>
+                          <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Indoor-safe cold golden spark fountains (2 nos) during hero entry</p>
+                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹{coldPyroPrice}</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -2064,60 +2071,100 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     
                     {/* Cold Pyro Sparkle */}
-                    <button
-                      type="button"
-                      onClick={() => setPkgColdPyro(!pkgColdPyro)}
-                      style={{ display: addonActive(4) ? undefined : 'none' }}
-                      className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
-                        pkgColdPyro
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
-                          : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl backdrop-blur-md bg-white/90 border border-white/90 shadow-2xs flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
-                          ✨
+                    {packageType === 'premium' ? (
+                      <div className="p-4 rounded-2xl backdrop-blur-xl border-2 border-emerald-500/50 bg-emerald-50/50 text-left flex items-start justify-between shadow-xs">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-xl shrink-0">
+                            ✨
+                          </div>
+                          <div>
+                            <span className="text-xs font-black text-slate-900 block">Cold Pyro Sparklers (2 nos)</span>
+                            <p className="text-[11px] text-emerald-800 mt-0.5 font-bold">✓ Included in Premium VIP Package</p>
+                            <span className="text-xs font-black text-emerald-700 mt-2 inline-block px-2 py-0.5 rounded-full bg-emerald-100/90 border border-emerald-300">
+                              Included Free (₹0)
+                            </span>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-xs font-black text-slate-900 block">Cold Pyro Sparkler Entry (2 Pots)</span>
-                          <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Indoor-safe cold golden spark fountains shooting 6ft</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹799</span>
+                        <div className="w-6 h-6 rounded-full border-2 border-emerald-600 bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                          <Check className="w-3.5 h-3.5" />
                         </div>
                       </div>
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                        pkgColdPyro ? 'border-[#00A2E4] bg-[#00A2E4] text-white shadow-xs' : 'border-slate-300 bg-white/60'
-                      }`}>
-                        {pkgColdPyro && <Check className="w-3.5 h-3.5" />}
-                      </div>
-                    </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setPkgColdPyro(!pkgColdPyro)}
+                        style={{ display: addonActive(4) ? undefined : 'none' }}
+                        className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
+                          pkgColdPyro
+                            ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
+                            : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-xl backdrop-blur-md bg-white/90 border border-white/90 shadow-2xs flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
+                            ✨
+                          </div>
+                          <div>
+                            <span className="text-xs font-black text-slate-900 block">Cold Pyro Sparklers (2 nos)</span>
+                            <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Indoor-safe cold golden spark fountains shooting 6ft</p>
+                            <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹{coldPyroPrice}</span>
+                          </div>
+                        </div>
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                          pkgColdPyro ? 'border-[#00A2E4] bg-[#00A2E4] text-white shadow-xs' : 'border-slate-300 bg-white/60'
+                        }`}>
+                          {pkgColdPyro && <Check className="w-3.5 h-3.5" />}
+                        </div>
+                      </button>
+                    )}
 
                     {/* Extra Fog Pot */}
-                    <button
-                      type="button"
-                      onClick={() => setPkgExtraFogPot(!pkgExtraFogPot)}
-                      style={{ display: addonActive(3) ? undefined : 'none' }}
-                      className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
-                        pkgExtraFogPot
-                          ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
-                          : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl backdrop-blur-md bg-white/90 border border-white/90 shadow-2xs flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
-                          🌫️
+                    {packageType === 'premium' ? (
+                      <div className="p-4 rounded-2xl backdrop-blur-xl border-2 border-emerald-500/50 bg-emerald-50/50 text-left flex items-start justify-between shadow-xs">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-xl shrink-0">
+                            🌫️
+                          </div>
+                          <div>
+                            <span className="text-xs font-black text-slate-900 block">Dry Ice Fog Entry (2 Pots Total)</span>
+                            <p className="text-[11px] text-emerald-800 mt-0.5 font-bold">✓ Included in Premium VIP Package</p>
+                            <span className="text-xs font-black text-emerald-700 mt-2 inline-block px-2 py-0.5 rounded-full bg-emerald-100/90 border border-emerald-300">
+                              Included Free (₹0)
+                            </span>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-xs font-black text-slate-900 block">Extra Fog Pot (Total 2 Pots)</span>
-                          <p className="text-[11px] text-slate-600 mt-0.5 font-medium">1 pot included; add extra pot for ultra-dense billowing clouds</p>
-                          <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹399</span>
+                        <div className="w-6 h-6 rounded-full border-2 border-emerald-600 bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                          <Check className="w-3.5 h-3.5" />
                         </div>
                       </div>
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                        pkgExtraFogPot ? 'border-[#00A2E4] bg-[#00A2E4] text-white shadow-xs' : 'border-slate-300 bg-white/60'
-                      }`}>
-                        {pkgExtraFogPot && <Check className="w-3.5 h-3.5" />}
-                      </div>
-                    </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setPkgExtraFogPot(!pkgExtraFogPot)}
+                        style={{ display: addonActive(3) ? undefined : 'none' }}
+                        className={`p-4 rounded-2xl backdrop-blur-xl border-2 text-left transition-all duration-300 flex items-start justify-between cursor-pointer group hover:-translate-y-0.5 ${
+                          pkgExtraFogPot
+                            ? 'border-[#00A2E4] bg-gradient-to-br from-[#F8F0E5]/90 via-white/90 to-[#E6F3FB]/90 shadow-[0_12px_32px_rgba(0,162,228,0.18)] ring-2 ring-[#00A2E4]/25'
+                            : 'border-slate-200/80 bg-white/70 hover:bg-white/95 shadow-xs hover:shadow-lg hover:border-[#00A2E4]/50'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-xl backdrop-blur-md bg-white/90 border border-white/90 shadow-2xs flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
+                            🌫️
+                          </div>
+                          <div>
+                            <span className="text-xs font-black text-slate-900 block">Extra Fog Pot (Total 2 Pots)</span>
+                            <p className="text-[11px] text-slate-600 mt-0.5 font-medium">1 pot included; add extra pot for ultra-dense billowing clouds</p>
+                            <span className="text-xs font-black text-[#00A2E4] mt-2 inline-block px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">+₹{fog1PotPrice}</span>
+                          </div>
+                        </div>
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                          pkgExtraFogPot ? 'border-[#00A2E4] bg-[#00A2E4] text-white shadow-xs' : 'border-slate-300 bg-white/60'
+                        }`}>
+                          {pkgExtraFogPot && <Check className="w-3.5 h-3.5" />}
+                        </div>
+                      </button>
+                    )}
 
                     {/* Bouquet */}
                     <button
@@ -2325,10 +2372,12 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     >
                       <div>
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-black text-slate-900">Standard Slot (Included)</span>
+                          <span className="text-xs font-black text-slate-900">Standard (2 Hours)</span>
                           {extraHours === 0 && <span className="text-[10px] font-bold text-emerald-700">✓ Active</span>}
                         </div>
-                        <p className="text-[10px] text-slate-500 font-medium mt-1">Default celebration slot</p>
+                        <p className="text-[11px] text-[#082052] font-extrabold mt-1">
+                          {slotId ? extendSlotTime(baseSlotTime, 0) : '2 Hours celebration'}
+                        </p>
                       </div>
                       <span className="text-xs font-extrabold text-slate-700 mt-2">Included (₹0)</span>
                     </button>
@@ -2348,7 +2397,7 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     >
                       <div>
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-black text-[#0B2238]">+1 Hour Extra</span>
+                          <span className="text-xs font-black text-[#0B2238]">+1 Hour (3 Hours)</span>
                           {extraHours === 1 && <span className="text-[10px] font-bold text-[#00A2E4]">✓ Selected</span>}
                           {currentSlot?.can_add_extra_hour === false && (
                             <span className="text-[9px] font-black text-rose-600 uppercase bg-rose-50 px-1 rounded-xs">
@@ -2356,8 +2405,8 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                             </span>
                           )}
                         </div>
-                        <p className="text-[10px] text-slate-500 font-medium mt-1">
-                          {currentSlot?.can_add_extra_hour === false ? 'Cannot extend due to next confirmed booking' : 'Total 3 Hours duration'}
+                        <p className="text-[11px] text-[#00A2E4] font-extrabold mt-1">
+                          {currentSlot?.can_add_extra_hour === false ? 'Cannot extend due to next confirmed booking' : (slotId ? extendSlotTime(baseSlotTime, 1) : '3 Hours duration')}
                         </p>
                       </div>
                       <span className="text-xs font-black text-[#00A2E4] mt-2">+₹{extraHourRate}</span>
@@ -2375,12 +2424,18 @@ export default function BookingWizard({ initialBranch, initialTheatre, initialOc
                     >
                       <div>
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-black text-[#0B2238]">+2 Hours Extra</span>
-                          <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-900">
-                            Max Limit
-                          </span>
+                          <span className="text-xs font-black text-[#0B2238]">+2 Hours (4 Hours)</span>
+                          {extraHours === 2 ? (
+                            <span className="text-[10px] font-bold text-[#00A2E4]">✓ Selected</span>
+                          ) : (
+                            <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-900">
+                              Max Limit
+                            </span>
+                          )}
                         </div>
-                        <p className="text-[10px] text-slate-500 font-medium mt-1">Total 4 Hours duration</p>
+                        <p className="text-[11px] text-[#00A2E4] font-extrabold mt-1">
+                          {slotId ? extendSlotTime(baseSlotTime, 2) : '4 Hours duration'}
+                        </p>
                       </div>
                       <span className="text-xs font-black text-[#00A2E4] mt-2">+₹{extraHourRate * 2}</span>
                     </button>

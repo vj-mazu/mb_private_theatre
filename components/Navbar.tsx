@@ -40,21 +40,17 @@ export default function Navbar() {
     { name: 'Contact', href: '/contact' },
   ];
 
-  const isHome = pathname === '/';
-
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${
       scrolled 
-        ? 'bg-[#082052]/95 backdrop-blur-xl shadow-xl py-2 sm:py-2.5 border-b border-white/10 text-white' 
-        : isHome
-        ? 'bg-gradient-to-b from-[#082052]/80 via-[#082052]/40 to-transparent backdrop-blur-xs py-2.5 sm:py-3.5 border-b border-white/10 text-white'
-        : 'bg-[#082052]/95 backdrop-blur-xl shadow-md py-2 sm:py-3 border-b border-white/10 text-white'
+        ? 'bg-white/98 backdrop-blur-xl shadow-md py-2 sm:py-2.5 border-b border-slate-200 text-[#082052]' 
+        : 'bg-white/95 backdrop-blur-md py-2 sm:py-3 border-b border-slate-200/80 text-[#082052]'
     }`}>
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between">
         
         {/* Brand Logo - Authentic Vector Emblem (Zoomed, High-Contrast & Crisp) */}
         <Link href="/" className="flex items-center gap-2 group shrink-0">
-          <div className="h-10 sm:h-12 md:h-14 w-[96px] sm:w-[124px] md:w-[145px] flex items-center group-hover:scale-105 transition-transform drop-shadow-[0_2px_8px_rgba(0,0,0,0.30)]" style={{ aspectRatio: '370 / 160' }}>
+          <div className="h-10 sm:h-12 md:h-14 w-[96px] sm:w-[124px] md:w-[145px] flex items-center group-hover:scale-105 transition-transform drop-shadow-[0_2px_6px_rgba(20,17,16,0.10)]" style={{ aspectRatio: '370 / 160' }}>
             <MovieBashLogo className="h-full w-full block" />
           </div>
         </Link>
@@ -63,8 +59,8 @@ export default function Navbar() {
         <nav className="hidden lg:flex items-center gap-7">
           <Link
             href="/"
-            className={`text-sm font-bold transition-colors hover:text-[#00A2E4] drop-shadow-sm ${
-              pathname === '/' ? 'text-white underline decoration-[#00A2E4] decoration-2 underline-offset-8' : 'text-white/80'
+            className={`text-sm font-extrabold transition-colors hover:text-[#00A2E4] ${
+              pathname === '/' ? 'text-[#00A2E4] font-black underline decoration-[#00A2E4] decoration-2 underline-offset-8' : 'text-[#082052]'
             }`}
           >
             Home
@@ -76,7 +72,7 @@ export default function Navbar() {
               onClick={() => setVenuesOpen(!venuesOpen)}
               onMouseEnter={() => setVenuesOpen(true)}
               suppressHydrationWarning
-              className="flex items-center gap-1.5 text-sm font-bold text-white/80 hover:text-[#00A2E4] transition-colors py-2 cursor-pointer drop-shadow-sm"
+              className="flex items-center gap-1.5 text-sm font-extrabold text-[#082052] hover:text-[#00A2E4] transition-colors py-2 cursor-pointer"
             >
               <span>Our Venues</span>
               <ChevronDown className="w-4 h-4 text-[#00A2E4] transition-transform group-hover:rotate-180" />
@@ -84,38 +80,38 @@ export default function Navbar() {
 
             {venuesOpen && (
               <div 
-                className="absolute top-full left-0 w-72 bg-[#082052]/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/15 p-3 flex flex-col gap-2 z-50 animate-in fade-in slide-in-from-top-2 text-white"
+                className="absolute top-full left-0 w-72 bg-white rounded-2xl shadow-xl border border-slate-200 p-3 flex flex-col gap-2 z-50 animate-in fade-in slide-in-from-top-2 text-[#082052]"
                 onMouseEnter={() => setVenuesOpen(true)}
                 onMouseLeave={() => setVenuesOpen(false)}
               >
                 <Link
                   href="/venues/electronic-city"
                   onClick={() => setVenuesOpen(false)}
-                  className="p-3 rounded-xl hover:bg-white/10 transition-colors flex items-start gap-3 group/item"
+                  className="p-3 rounded-xl hover:bg-[#E6F3FB] transition-colors flex items-start gap-3 group/item"
                 >
-                  <div className="p-2 rounded-lg bg-white/10 text-[#00A2E4] group-hover/item:bg-[#00A2E4] group-hover/item:text-white transition-colors">
+                  <div className="p-2 rounded-lg bg-[#E6F3FB] text-[#00A2E4] group-hover/item:bg-[#082052] group-hover/item:text-white transition-colors">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-white">Electronic City</h4>
-                    <p className="text-xs text-white/70 mt-0.5">3 Theatres • Couple, Party &amp; Family</p>
+                    <h4 className="text-sm font-bold text-[#082052]">Electronic City</h4>
+                    <p className="text-xs text-slate-500 mt-0.5">3 Theatres • Couple, Celebration &amp; Family</p>
                   </div>
                 </Link>
 
                 <Link
                   href="/venues/btm-stage-2"
                   onClick={() => setVenuesOpen(false)}
-                  className="p-3 rounded-xl hover:bg-white/10 transition-colors flex items-start gap-3 group/item"
+                  className="p-3 rounded-xl hover:bg-[#E6F3FB] transition-colors flex items-start gap-3 group/item"
                 >
-                  <div className="p-2 rounded-lg bg-white/10 text-[#00A2E4] group-hover/item:bg-[#00A2E4] group-hover/item:text-white transition-colors">
+                  <div className="p-2 rounded-lg bg-[#E6F3FB] text-[#00A2E4] group-hover/item:bg-[#082052] group-hover/item:text-white transition-colors">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="text-sm font-bold text-white">BTM 2nd Stage</h4>
+                      <h4 className="text-sm font-bold text-[#082052]">BTM 2nd Stage</h4>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#00A2E4] text-white">4 SCREENS</span>
                     </div>
-                    <p className="text-xs text-white/70 mt-0.5">4 Theatres • Near Udupi Garden</p>
+                    <p className="text-xs text-slate-500 mt-0.5">4 Theatres • Near Udupi Garden</p>
                   </div>
                 </Link>
               </div>
@@ -126,8 +122,8 @@ export default function Navbar() {
             <Link
               key={item.name}
               href={item.href}
-              className={`text-sm font-bold transition-colors hover:text-[#00A2E4] drop-shadow-sm ${
-                pathname === item.href ? 'text-white underline decoration-[#00A2E4] decoration-2 underline-offset-8' : 'text-white/80'
+              className={`text-sm font-extrabold transition-colors hover:text-[#00A2E4] ${
+                pathname === item.href ? 'text-[#00A2E4] font-black underline decoration-[#00A2E4] decoration-2 underline-offset-8' : 'text-[#082052]'
               }`}
             >
               {item.name}
@@ -141,16 +137,16 @@ export default function Navbar() {
             href="https://wa.me/919902923656?text=Hi%20Movie%20Bash%2C%20I%20want%20to%20inquire%20about%20booking%20a%20private%20theatre"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold text-white bg-white/15 hover:bg-white/25 border border-white/20 backdrop-blur-md transition-all hover:scale-105"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs sm:text-sm font-extrabold text-[#082052] bg-[#E6F3FB] hover:bg-[#F8F0E5] border border-[#00A2E4]/25 transition-all hover:scale-105"
             title="Chat on WhatsApp"
           >
-            <Phone className="w-3.5 h-3.5 text-emerald-400" />
+            <Phone className="w-3.5 h-3.5 text-emerald-600" />
             <span>WhatsApp</span>
           </a>
 
           <Link
             href="/book-now"
-            className="flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-black text-white bg-[#00A2E4] hover:bg-[#0072AE] shadow-lg shadow-[#00A2E4]/25 transition-all hover:scale-105"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-black text-white bg-[#00A2E4] hover:bg-[#0072AE] shadow-md shadow-[#00A2E4]/20 transition-all hover:scale-105"
           >
             <CalendarDays className="w-4 h-4 text-white" />
             <span>Book Now</span>
@@ -161,10 +157,10 @@ export default function Navbar() {
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           suppressHydrationWarning
-          className="lg:hidden p-2.5 rounded-xl text-white bg-white/15 border border-white/20 hover:bg-white/25 active:scale-95 transition-all cursor-pointer"
+          className="lg:hidden p-2.5 rounded-xl text-[#082052] bg-[#E6F3FB] border border-[#00A2E4]/20 hover:bg-[#F8F0E5] active:scale-95 transition-all cursor-pointer"
           aria-label="Toggle navigation menu"
         >
-          {mobileMenuOpen ? <X className="w-6 h-6 text-[#00A2E4]" /> : <Menu className="w-6 h-6 text-white" />}
+          {mobileMenuOpen ? <X className="w-6 h-6 text-[#00A2E4]" /> : <Menu className="w-6 h-6 text-[#082052]" />}
         </button>
       </div>
 

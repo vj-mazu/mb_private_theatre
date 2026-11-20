@@ -40,7 +40,8 @@
       "standard_price": 1499,
       "custom_price": 899,
       "premium_price": 2800,
-      "extra_hour_rate": 400
+      "extra_hour_rate": 400,
+      "video_url": "/videos/couple_theatre.mp4"
     },
     {
       "id": 2,
@@ -52,21 +53,23 @@
       "base_price": 1499,
       "extra_person_price": 150,
       "amenities": "135-inch Cinema Screen, JBL Pro Sound, Party Ambient Lighting, Fog Entry Compatible",
-      "image_url": "/images/celebration_2.webp",
-      "is_active": 1
+      "image_url": "/images/celebration_theatre.jpg",
+      "is_active": 1,
+      "video_url": "/videos/celebration_theatre.mp4"
     },
     {
       "id": 3,
       "branch_id": 1,
-      "name": "Family Theater",
+      "name": "Family Theatre",
       "slug": "family-theater-ecity",
       "emoji": "👨‍👩‍👧‍👦",
       "capacity": 6,
       "base_price": 1699,
       "extra_person_price": 150,
       "amenities": "Giant 150-inch Screen, Multi-tier Luxury Seating, Karaoke Microphones, Cake Podium",
-      "image_url": "/images/celebration_1.webp",
-      "is_active": 1
+      "image_url": "/images/family_theatre.jpg",
+      "is_active": 1,
+      "video_url": "/videos/family_theatre.mp4"
     },
     {
       "id": 4,
@@ -655,7 +658,7 @@
     {
       "id": 4,
       "category": "Special Effects",
-      "name": "Cold Fire Pyro Sparklers (2 Pots)",
+      "name": "Cold Pyro Sparklers (2 nos)",
       "description": "Safe indoor pyrotechnic sparklers shooting golden fountains.",
       "price": 399,
       "image_url": "/images/ambience_7.webp",
@@ -713,15 +716,6 @@
       "description": "Specially decorated motorized fairy buggy for celebrations.",
       "price": 699,
       "image_url": "/images/celebration_2.webp",
-      "is_active": 1
-    },
-    {
-      "id": 11,
-      "category": "Snacks",
-      "name": "Popcorn & Soft Drinks Combo (For 4)",
-      "description": "Large tubs of buttery caramel popcorn with chilled drinks.",
-      "price": 349,
-      "image_url": "/images/ambience_11.webp",
       "is_active": 1
     }
   ],

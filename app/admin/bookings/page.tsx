@@ -200,7 +200,7 @@ export default function AdminBookingsPage() {
   // Addons catalog for operational booking (all active celebration enhancements)
   const ADDONS_CATALOG: Record<string, { label: string; price: number; icon: string }> = {
     fog: { label: 'Dramatic Fog Entry', price: 499, icon: '🌫️' },
-    pyro: { label: 'Cold Pyro Sparklers (2 Shots)', price: 399, icon: '🎆' },
+    pyro: { label: 'Cold Pyro Sparklers (2 nos)', price: 399, icon: '🎆' },
     marquee: { label: 'LED Marquee Name Letters', price: 299, icon: '💡' },
     bouquet: { label: 'Fresh Red Rose Bouquet', price: 499, icon: '💐' },
     photo: { label: 'Pro Photography & 4K Video', price: 999, icon: '📸' },
@@ -264,6 +264,17 @@ export default function AdminBookingsPage() {
       }
       if (field === 'whatsapp_number' && !prev.customer_phone) {
         next.customer_phone = value;
+      }
+      if (field === 'extra_hours') {
+        const extraNum = Number(value || 0);
+        const activeSlot = manualSlots.find(s => s.id === next.slot_id);
+        if (activeSlot) {
+          next.slot_time = formatBookingSlotTime(
+            activeSlot.dynamic_start_time || activeSlot.start_time,
+            activeSlot.dynamic_end_time || activeSlot.end_time,
+            extraNum
+          );
+        }
       }
       if (['theatre_id', 'package_type', 'cake_weight', 'extra_persons', 'extra_hours', 'custom_item_amount', 'discount'].includes(field)) {
         next.total = recomputeManualTotal(next);

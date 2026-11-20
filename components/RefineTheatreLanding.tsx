@@ -527,7 +527,7 @@ const defaultTheatres = [
     meta: 'Up to 6 guests · Private Cinema',
     price: '₹2,200',
     dealPrice: '₹1,699',
-    image: '/images/celebration_2.webp',
+    image: '/images/celebration_theatre.jpg',
     description: 'Your own celebration lounge with personalised décor, cinematic sound and space to party.',
     branchSlug: 'electronic-city',
     theatreId: 2,
@@ -540,7 +540,7 @@ const defaultTheatres = [
     meta: 'Up to 6 guests · Private Cinema',
     price: '₹2,200',
     dealPrice: '₹1,699',
-    image: '/images/celebration_1.webp',
+    image: '/images/family_theatre.jpg',
     description: 'A big-screen experience for families and groups with Dolby sound and comfortable seating.',
     branchSlug: 'electronic-city',
     theatreId: 3,
@@ -612,7 +612,7 @@ const defaultSlotRooms = [
     price: '₹1,499',
     custom: '₹899',
     image: '/images/couple_1.webp',
-    video: '/videos/btm-butterfly-blush.mp4',
+    video: '/videos/couple_theatre.mp4',
     slots: [
       '10:00 AM – 12:00 PM',
       '12:15 PM – 02:15 PM',
@@ -632,8 +632,8 @@ const defaultSlotRooms = [
     spec: '4K Laser · JBL Pro',
     price: '₹2,200',
     custom: '₹1,699',
-    image: '/images/celebration_2.webp',
-    video: '/videos/btm-lavender-mist.mp4',
+    image: '/images/celebration_theatre.jpg',
+    video: '/videos/celebration_theatre.mp4',
     slots: [
       '09:30 AM – 11:30 AM',
       '12:00 PM – 02:00 PM',
@@ -648,13 +648,13 @@ const defaultSlotRooms = [
     branch: 'Electronic City',
     branchSlug: 'electronic-city',
     theatreId: 3,
-    name: 'Family Room',
+    name: 'Family Theatre',
     capacity: 'Up to 6 guests',
     spec: '150″ Screen · Dolby 7.1.2',
     price: '₹2,200',
     custom: '₹1,699',
-    image: '/images/celebration_1.webp',
-    video: '/videos/btm-scarlet-red.mp4',
+    image: '/images/family_theatre.jpg',
+    video: '/videos/family_theatre.mp4',
     slots: [
       '10:00 AM – 12:00 PM',
       '12:30 PM – 02:30 PM',
@@ -858,9 +858,9 @@ const addonTiles = [
   },
   {
     addonId: 4,
-    title: 'Cold Pyro Sparklers',
+    title: 'Cold Pyro Sparklers (2 nos)',
     price: 'From ₹799',
-    desc: 'Golden sparkler fountains beside the cake table for the big reveal.',
+    desc: 'Golden sparkler fountains (2 nos) beside the cake table for the big reveal.',
     image: '/images/addons/cold-pyro.webp',
     href: '/book-now',
   },
@@ -1481,7 +1481,7 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
         {/* 3. HERO SECTION (THE BINGE TOWN ARCHITECTURE & ALIGNMENT + OUR ETOILE LUXURY COLOR PALETTE) */}
         <section 
           ref={heroRef}
-          className="relative flex flex-col justify-between items-center overflow-hidden w-full pt-20 sm:pt-28 pb-0 bg-[#082052] -mt-[64px] sm:-mt-[74px]" 
+          className="relative flex flex-col justify-between items-center overflow-hidden w-full pt-8 sm:pt-12 pb-0 bg-[#082052]" 
           id="home"
         >
           {/* Ambient Real BTM Celebration Hall Background - Crisp, Vibrant & Natural */}
@@ -1998,19 +1998,19 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
 
             {/* Vertical Scroll-Connected Timeline with Dynamic Filling Glow Line */}
             <div ref={occasionsTimelineRef} className="relative">
-              {/* Background Base Line (Desktop Center) */}
-              <div className="hidden md:block absolute left-1/2 top-10 bottom-10 w-1 -translate-x-1/2 bg-slate-200/80 rounded-full pointer-events-none" />
+              {/* Background Base Line (Desktop Center) - Thin & Elegant */}
+              <div className="hidden md:block absolute left-1/2 top-10 bottom-10 w-[2px] -translate-x-1/2 bg-slate-200 pointer-events-none" />
               {/* Dynamic Scroll Fill Line (Desktop Center) */}
               <div 
-                className="hidden md:block absolute left-1/2 top-10 w-1 -translate-x-1/2 bg-gradient-to-b from-[#00A2E4] via-[#00A2E4] to-[#082052] rounded-full pointer-events-none shadow-[0_0_14px_rgba(0,162,228,0.9)] transition-all duration-150 ease-out"
+                className="hidden md:block absolute left-1/2 top-10 w-[2px] -translate-x-1/2 bg-[#00A2E4] pointer-events-none shadow-[0_0_8px_rgba(0,162,228,0.7)] transition-all duration-150 ease-out"
                 style={{ height: `${Math.min(100, Math.max(0, timelineProgress * 100))}%` }}
               />
 
               {/* Background Base Line (Mobile Left) */}
-              <div className="md:hidden absolute left-5 top-8 bottom-8 w-1 bg-slate-200/80 rounded-full pointer-events-none" />
+              <div className="md:hidden absolute left-5 top-8 bottom-8 w-[2px] bg-slate-200 pointer-events-none" />
               {/* Dynamic Scroll Fill Line (Mobile Left) */}
               <div 
-                className="md:hidden absolute left-5 top-8 w-1 bg-gradient-to-b from-[#00A2E4] via-[#00A2E4] to-[#082052] rounded-full pointer-events-none shadow-[0_0_14px_rgba(0,162,228,0.9)] transition-all duration-150 ease-out"
+                className="md:hidden absolute left-5 top-8 w-[2px] bg-[#00A2E4] pointer-events-none shadow-[0_0_8px_rgba(0,162,228,0.7)] transition-all duration-150 ease-out"
                 style={{ height: `${Math.min(100, Math.max(0, timelineProgress * 100))}%` }}
               />
 
@@ -2022,10 +2022,9 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     slug: 'birthday-party',
                     title: 'Grand Birthday Party',
                     tagline: 'Golden balloon arch backdrop, custom name neon lights, fog entry, and special cake-cutting moment with Dolby sound.',
-                    badge: 'Top Pick for Birthdays',
-                    image: '/images/celebration_2.webp',
-                    inclusions: ['🎂 500g Cake Included', '🌫️ Dry Ice Fog Entry', '🎈 Signature Balloon Décor', '✨ Personalized Neon LED Name', '🎬 4K Laser Screening'],
-                    alt: 'Birthday celebration at Movie Bash private theatre',
+                    badge: 'Top Pick for Birthdays · BTM 2nd Stage',
+                    image: '/images/hero_8441.webp',
+                    alt: 'Birthday celebration at Movie Bash BTM 2nd Stage private theatre',
                     threshold: 0.1
                   },
                   {
@@ -2035,7 +2034,6 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     tagline: 'An intimate candlelit ambience with rose petals, private couple recliners, heart pathway, and cold pyros for a proposal they will remember forever.',
                     badge: 'Most Popular for Couples',
                     image: '/images/couple_1.webp',
-                    inclusions: ['🌹 Rose Petal Heart Pathway', '🕯️ Ambient Candle Décor', '🎆 Cold Spark Pyros', '💑 Cozy Couple Recliners', '🍿 Gourmet Popcorn & Drinks'],
                     alt: 'Romantic proposal setup at Movie Bash',
                     threshold: 0.35
                   },
@@ -2046,7 +2044,6 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     tagline: 'Celebrate years of togetherness with nostalgic photo slideshow on 150″ 4K cinema screen, fairy lights, and your couple song on Dolby Atmos.',
                     badge: 'Memories to Cherish',
                     image: '/images/couple_6.webp',
-                    inclusions: ['🎞️ Memory Slideshow on 150″', '🥂 Anniversary Special Setup', '🎂 Celebration Cake', '🎶 Custom Spotify Playlist', '📸 Photo & Video Assist'],
                     alt: 'Anniversary celebration at Movie Bash private theatre',
                     threshold: 0.60
                   },
@@ -2057,7 +2054,6 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     tagline: 'The ultimate girl squad private bash with bridal photo booth, party props, music dance floor, signature sash, and full private cinema.',
                     badge: 'Girls Night Out',
                     image: '/images/celebration_5.webp',
-                    inclusions: ['👰 Bride-to-Be Sash & Tiara', '📸 Insta-Worthy Photo Booth', '🎉 Party Props & Poppers', '🔊 Dance Playlist Sound', '✨ Custom Neon Backdrop'],
                     alt: 'Bachelorette party at Movie Bash',
                     threshold: 0.85
                   }
@@ -2113,20 +2109,6 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                         <p className="text-slate-600 text-sm sm:text-base font-medium leading-relaxed">
                           {item.tagline}
                         </p>
-
-                        {/* Inclusions Chips */}
-                        <div className={`flex flex-wrap gap-2 pt-1 ${isEven ? 'md:justify-end' : 'md:justify-start'}`}>
-                          {item.inclusions.map((inc) => (
-                            <span 
-                              key={inc} 
-                              className={`px-3 py-1.5 rounded-xl bg-white border text-slate-700 text-xs font-bold shadow-2xs transition-colors ${
-                                isPassed ? 'border-[#00A2E4]/40' : 'border-slate-200'
-                              }`}
-                            >
-                              {inc}
-                            </span>
-                          ))}
-                        </div>
 
                         {/* CTA Button */}
                         <div className={`pt-2 flex ${isEven ? 'md:justify-end' : 'md:justify-start'}`}>

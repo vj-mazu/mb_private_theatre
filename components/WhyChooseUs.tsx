@@ -20,7 +20,7 @@ export default function WhyChooseUs() {
     {
       num: '03',
       title: 'Food & Add-ons Available',
-      desc: 'Fresh cakes, popcorn combos, and cold drinks available on demand. Outside food and Swiggy/Zomato delivery warmly allowed.',
+      desc: 'Fresh gourmet cakes and chilled beverages available on demand. Outside food and Swiggy/Zomato delivery warmly allowed.',
       icon: Utensils,
     },
     {

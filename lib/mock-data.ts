@@ -111,9 +111,10 @@ export const initialMockStore: MockStore = {
       emoji: '🎬',
       capacity: 2,
       base_price: 899.00,
-      extra_person_price: 0.00,
+      extra_person_price: 150.00,
       amenities: 'Ultra HD 4K Projection, Recliner Sofas, Dolby Atmos Sound, Private Climate Control, OTT Ready',
       image_url: '/images/couple_1.webp',
+      video_url: '/videos/couple_theatre.mp4',
       is_active: 1
     },
     {
@@ -124,22 +125,24 @@ export const initialMockStore: MockStore = {
       emoji: '🎉',
       capacity: 6,
       base_price: 1699.00,
-      extra_person_price: 0.00,
+      extra_person_price: 150.00,
       amenities: '135-inch Cinema Screen, JBL Pro Sound, Party Ambient Lighting, Fog Entry Compatible',
-      image_url: '/images/celebration_2.webp',
+      image_url: '/images/celebration_theatre.jpg',
+      video_url: '/videos/celebration_theatre.mp4',
       is_active: 1
     },
     {
       id: 3,
       branch_id: 1,
-      name: 'Family Theater',
+      name: 'Family Theatre',
       slug: 'family-theater-ecity',
       emoji: '👨‍👩‍👧‍👦',
       capacity: 6,
       base_price: 1699.00,
       extra_person_price: 150.00,
       amenities: 'Giant 150-inch Screen, Multi-tier Luxury Seating, Karaoke Microphones, Cake Podium',
-      image_url: '/images/celebration_1.webp',
+      image_url: '/images/family_theatre.jpg',
+      video_url: '/videos/family_theatre.mp4',
       is_active: 1
     },
     {
@@ -273,14 +276,13 @@ export const initialMockStore: MockStore = {
     { id: 1, category: 'Cakes', name: 'Fresh Cream Truffle Cake (0.5 Kg)', description: 'Rich Dutch chocolate truffle cake baked fresh with custom name.', price: 499.00, image_url: '/images/celebration_7.webp', is_active: 1 },
     { id: 2, category: 'Cakes', name: 'Red Velvet Heart Cake (1 Kg)', description: 'Fluffy red velvet layered with premium cream cheese and topper.', price: 899.00, image_url: '/images/celebration_1.webp', is_active: 1 },
     { id: 3, category: 'Special Effects', name: 'Magical Fog Entry', description: 'Dense dramatic ground fog effect for an enchanting cinematic walk-in.', price: 499.00, image_url: '/images/ambience_6.webp', is_active: 1 },
-    { id: 4, category: 'Special Effects', name: 'Cold Fire Pyro Sparklers (2 Pots)', description: 'Safe indoor pyrotechnic sparklers shooting golden fountains.', price: 399.00, image_url: '/images/ambience_7.webp', is_active: 1 },
+    { id: 4, category: 'Special Effects', name: 'Cold Pyro Sparklers (2 nos)', description: 'Safe indoor pyrotechnic sparklers shooting golden fountains.', price: 399.00, image_url: '/images/ambience_7.webp', is_active: 1 },
     { id: 5, category: 'Decor', name: 'Neon LED Number / Name Light', description: 'Glowing LED name letters or milestone numbers on backdrop.', price: 299.00, image_url: '/images/ambience_8.webp', is_active: 1 },
     { id: 6, category: 'Decor', name: 'Premium Metallic Balloon Arch & Ribbons', description: 'Custom color theme balloon arches, metallic curtains, and ribbons.', price: 599.00, image_url: '/images/ambience_9.webp', is_active: 1 },
     { id: 7, category: 'Flowers', name: 'Fresh Red Rose Bouquet (15 Stems)', description: 'Hand-tied vibrant Dutch roses with personalized card.', price: 399.00, image_url: '/images/couple_5.webp', is_active: 1 },
     { id: 8, category: 'Photography', name: 'Professional Candid Photo & Reel Session', description: '1 Hour dedicated photographer shooting 25 photos & 1 reel.', price: 1199.00, image_url: '/images/ambience_10.webp', is_active: 1 },
     { id: 9, category: 'Entry', name: 'Romantic Rose Petal & Candle Aisle', description: 'Candle lanterns with fresh red rose petals walkway.', price: 499.00, image_url: '/images/couple_6.webp', is_active: 1 },
-    { id: 10, category: 'Entry', name: 'Baby Cart / Fairy Carriage Entry', description: 'Specially decorated motorized fairy buggy for celebrations.', price: 699.00, image_url: '/images/celebration_2.webp', is_active: 1 },
-    { id: 11, category: 'Snacks', name: 'Popcorn & Soft Drinks Combo (For 4)', description: 'Large tubs of buttery caramel popcorn with chilled drinks.', price: 349.00, image_url: '/images/ambience_11.webp', is_active: 1 }
+    { id: 10, category: 'Entry', name: 'Baby Cart / Fairy Carriage Entry', description: 'Specially decorated motorized fairy buggy for celebrations.', price: 699.00, image_url: '/images/celebration_2.webp', is_active: 1 }
   ],
   bookings: [] as Array<any>,
   customers: [] as Array<any>,
