@@ -1501,18 +1501,13 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                 className="block sm:hidden object-cover object-center"
               />
             </div>
-                        {/* Deep Royal Navy Overlay (#082052) matching user-provided color combination */}
-            <div className="absolute inset-0 bg-[#082052]/45" />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#082052]/80 via-[#082052]/25 to-[#082052]/85" />
+                        {/* Natural Dark Vignette Overlay (Zero Blue Tint, Authentic Warm Celebration Lighting) */}
+            <div className="absolute inset-0 bg-black/30" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/70" />
           </div>
 
           <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
             
-            {/* Top Eyebrow Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[#00A2E4] text-xs font-bold uppercase tracking-widest mb-4 shadow-lg">
-              <span className="w-2 h-2 rounded-full bg-[#00A2E4] animate-pulse" />
-              <span>Movie Bash · Bengaluru&apos;s #1 Private Theatre for Celebrations</span>
-            </div>
 
             {/* H1 Headline (Binge Town Style, Centered, Crisp White) */}
             <h1 
@@ -1527,18 +1522,6 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               Book Your Perfect Celebration: Birthdays, Anniversaries, Date Nights &amp; Private Screenings!
             </p>
 
-            {/* City & Venue Ticker Bar */}
-            <div className="mt-4 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px] sm:text-sm font-semibold text-[#F8F0E5]/90 border-y border-white/15 py-2.5 px-3 sm:px-5 max-w-full">
-              <span className="shrink-0">📍 Electronic City (3 Screens)</span>
-              <span className="hidden sm:inline text-white/40">•</span>
-              <span className="shrink-0">📍 BTM 2nd Stage (4 Screens)</span>
-              <span className="hidden sm:inline text-white/40">•</span>
-              <span className="shrink-0">🎬 4K Laser Projection</span>
-              <span className="hidden sm:inline text-white/40">•</span>
-              <span className="shrink-0">🔊 Dolby Atmos</span>
-              <span className="hidden sm:inline text-white/40">•</span>
-              <span className="shrink-0">🔒 100% Soundproof</span>
-            </div>
 
             {/* ─── FLOATING QUICK BOOKING WIDGET (EXACT BINGE TOWN ARCHITECTURE) ─── */}
             <div className="w-full max-w-3xl mt-6 sm:mt-9 bg-white rounded-3xl p-4 min-[400px]:p-5 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.35)] border border-slate-200 text-left">
@@ -1627,14 +1610,6 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
 
             </div>
 
-            {/* Reassurance Micro-Copy */}
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px] sm:text-xs font-semibold text-[#F8F0E5]/90">
-              <span className="flex items-center gap-1.5"><span className="text-[#00A2E4]">✓</span> 100% Private Theatres</span>
-              <span>•</span>
-              <span className="flex items-center gap-1.5"><span className="text-[#00A2E4]">✓</span> Free Surprise Decor</span>
-              <span>•</span>
-              <span className="flex items-center gap-1.5"><span className="text-[#00A2E4]">✓</span> Pay only ₹500 advance to reserve</span>
-            </div>
 
           </div>
 
