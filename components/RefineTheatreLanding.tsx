@@ -526,7 +526,7 @@ const defaultTheatres = [
     name: 'Celebration Room',
     meta: 'Up to 6 guests · Private Cinema',
     price: '₹2,200',
-    dealPrice: '₹1,499',
+    dealPrice: '₹1,699',
     image: '/images/celebration_2.webp',
     description: 'Your own celebration lounge with personalised décor, cinematic sound and space to party.',
     branchSlug: 'electronic-city',
@@ -631,7 +631,7 @@ const defaultSlotRooms = [
     capacity: 'Up to 6 guests',
     spec: '4K Laser · JBL Pro',
     price: '₹2,200',
-    custom: '₹1,499',
+    custom: '₹1,699',
     image: '/images/celebration_2.webp',
     video: '/videos/btm-lavender-mist.mp4',
     slots: [
@@ -692,7 +692,7 @@ const defaultSlotRooms = [
     capacity: 'Up to 6 guests',
     spec: 'Lavender Hues · 135" Cinema Screen',
     price: '₹2,200',
-    custom: '₹1,499',
+    custom: '₹1,699',
     image: '/images/rooms/btm-lavender-mist.webp',
     video: '/videos/btm-lavender-mist.mp4',
     slots: [
@@ -941,7 +941,27 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
   const heroTouchEndX = useRef<number | null>(null);
   const heroPillTrackRef = useRef<HTMLDivElement>(null);
   const heroMediaRef = useRef<HTMLDivElement>(null);
+  const occasionsTimelineRef = useRef<HTMLDivElement>(null);
+  const [timelineProgress, setTimelineProgress] = useState(0);
   const [heroRevealed, setHeroRevealed] = useState(false);
+
+  // Active scroll continuation listener for "What are you celebrating?" timeline
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleScroll = () => {
+      if (!occasionsTimelineRef.current) return;
+      const rect = occasionsTimelineRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const totalHeight = rect.height;
+      const visibleOffset = windowHeight * 0.65 - rect.top;
+      const progress = Math.min(1, Math.max(0, visibleOffset / (totalHeight + windowHeight * 0.1)));
+      setTimelineProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // The logo loader hands over to a slow zoom-settle on the hero image, then the
   // same image keeps zooming in gently as the hero scrolls out of view.
@@ -1487,33 +1507,23 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
           className="relative min-h-0 sm:min-h-[92vh] flex flex-col justify-center items-center overflow-hidden w-full pt-8 pb-10 sm:pt-24 sm:pb-20" 
           id="home"
         >
-          {/* Ambient Background Image with Dark Vignette Overlay (The Binge Town Master Style) */}
+          {/* Ambient Real BTM Video Background with Natural Cinema Lighting */}
           <div ref={heroMediaRef} className="hero-media absolute inset-0 z-0 overflow-hidden">
-            {/* The frame zooms in on load and then keeps zooming while the hero
-                scrolls away, the way the reference site's entrance behaves. */}
-            <div className={`hero-media-frame${heroRevealed ? ' is-in' : ''}`}>
-              {/* Desktop crop (16:9) and a separate portrait crop for phones, so the
-                  celebration arch stays centred and cleanly visible on every device. */}
-              <Image
-                src="/images/hero-desktop.webp"
-                alt="Movie Bash private theatre celebration setup"
-                fill
-                priority
-                sizes="100vw"
-                className="hidden sm:block object-cover object-center"
-              />
-              <Image
-                src="/images/hero-mobile.webp"
-                alt="Movie Bash private theatre celebration setup"
-                fill
-                priority
-                sizes="100vw"
-                className="block sm:hidden object-cover object-center"
-              />
+            <div className={`hero-media-frame${heroRevealed ? ' is-in' : ''} w-full h-full`}>
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                poster="/images/hero-desktop.webp"
+                className="w-full h-full object-cover scale-105"
+              >
+                <source src="/videos/btm-butterfly-blush.mp4" type="video/mp4" />
+              </video>
             </div>
-                        {/* Natural Dark Vignette Overlay (Zero Blue Tint, Authentic Warm Celebration Lighting) */}
-            <div className="absolute inset-0 bg-black/30" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/70" />
+            {/* Natural Dark Vignette Overlay so White Headlines & Booking Form Pop Out */}
+            <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/20 to-black/75 pointer-events-none" />
           </div>
 
           <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
@@ -2011,14 +2021,26 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
               </p>
             </div>
 
-            {/* Vertical Scroll-Connected Timeline */}
-            <div className="relative">
-              {/* Continuous Glowing Joining Line */}
-              <div className="hidden md:block absolute left-1/2 top-10 bottom-10 w-0.5 -translate-x-1/2 bg-gradient-to-b from-[#00A2E4] via-[#082052] to-[#00A2E4] opacity-30 pointer-events-none shadow-[0_0_12px_rgba(0,162,228,0.5)]" />
-              <div className="md:hidden absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-[#00A2E4] via-[#082052] to-[#00A2E4] opacity-30 pointer-events-none" />
+            {/* Vertical Scroll-Connected Timeline with Dynamic Filling Glow Line */}
+            <div ref={occasionsTimelineRef} className="relative">
+              {/* Background Base Line (Desktop Center) */}
+              <div className="hidden md:block absolute left-1/2 top-10 bottom-10 w-1 -translate-x-1/2 bg-slate-200/80 rounded-full pointer-events-none" />
+              {/* Dynamic Scroll Fill Line (Desktop Center) */}
+              <div 
+                className="hidden md:block absolute left-1/2 top-10 w-1 -translate-x-1/2 bg-gradient-to-b from-[#00A2E4] via-[#00A2E4] to-[#082052] rounded-full pointer-events-none shadow-[0_0_14px_rgba(0,162,228,0.9)] transition-all duration-150 ease-out"
+                style={{ height: `${Math.min(100, Math.max(0, timelineProgress * 100))}%` }}
+              />
+
+              {/* Background Base Line (Mobile Left) */}
+              <div className="md:hidden absolute left-5 top-8 bottom-8 w-1 bg-slate-200/80 rounded-full pointer-events-none" />
+              {/* Dynamic Scroll Fill Line (Mobile Left) */}
+              <div 
+                className="md:hidden absolute left-5 top-8 w-1 bg-gradient-to-b from-[#00A2E4] via-[#00A2E4] to-[#082052] rounded-full pointer-events-none shadow-[0_0_14px_rgba(0,162,228,0.9)] transition-all duration-150 ease-out"
+                style={{ height: `${Math.min(100, Math.max(0, timelineProgress * 100))}%` }}
+              />
 
               {/* 4 Primary Occasions */}
-              <div className="space-y-12 sm:space-y-20">
+              <div className="space-y-14 sm:space-y-24">
                 {[
                   {
                     step: '01',
@@ -2028,7 +2050,8 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     badge: 'Top Pick for Birthdays',
                     image: '/images/celebration_2.webp',
                     inclusions: ['🎂 500g Cake Included', '🌫️ Dry Ice Fog Entry', '🎈 Signature Balloon Décor', '✨ Personalized Neon LED Name', '🎬 4K Laser Screening'],
-                    alt: 'Birthday celebration at Movie Bash private theatre'
+                    alt: 'Birthday celebration at Movie Bash private theatre',
+                    threshold: 0.1
                   },
                   {
                     step: '02',
@@ -2038,7 +2061,8 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     badge: 'Most Popular for Couples',
                     image: '/images/couple_1.webp',
                     inclusions: ['🌹 Rose Petal Heart Pathway', '🕯️ Ambient Candle Décor', '🎆 Cold Spark Pyros', '💑 Cozy Couple Recliners', '🍿 Gourmet Popcorn & Drinks'],
-                    alt: 'Romantic proposal setup at Movie Bash'
+                    alt: 'Romantic proposal setup at Movie Bash',
+                    threshold: 0.35
                   },
                   {
                     step: '03',
@@ -2048,7 +2072,8 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     badge: 'Memories to Cherish',
                     image: '/images/couple_6.webp',
                     inclusions: ['🎞️ Memory Slideshow on 150″', '🥂 Anniversary Special Setup', '🎂 Celebration Cake', '🎶 Custom Spotify Playlist', '📸 Photo & Video Assist'],
-                    alt: 'Anniversary celebration at Movie Bash private theatre'
+                    alt: 'Anniversary celebration at Movie Bash private theatre',
+                    threshold: 0.60
                   },
                   {
                     step: '04',
@@ -2058,24 +2083,34 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                     badge: 'Girls Night Out',
                     image: '/images/celebration_5.webp',
                     inclusions: ['👰 Bride-to-Be Sash & Tiara', '📸 Insta-Worthy Photo Booth', '🎉 Party Props & Poppers', '🔊 Dance Playlist Sound', '✨ Custom Neon Backdrop'],
-                    alt: 'Bachelorette party at Movie Bash'
+                    alt: 'Bachelorette party at Movie Bash',
+                    threshold: 0.85
                   }
                 ].map((item, index) => {
                   const isEven = index % 2 === 1;
+                  const isPassed = timelineProgress >= item.threshold;
 
                   return (
                     <div 
                       key={item.slug} 
                       className="relative grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-14 items-center group pl-12 md:pl-0"
                     >
-                      {/* Milestone Number Badge (Timeline Node) */}
-                      <div className="absolute left-0 md:left-1/2 top-4 md:top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border-2 border-[#00A2E4] shadow-lg shadow-[#00A2E4]/20 flex items-center justify-center font-playfair font-black text-sm sm:text-base text-[#082052] group-hover:bg-[#00A2E4] group-hover:text-white transition-all duration-300">
+                      {/* Milestone Number Badge (Timeline Node) with Dynamic Highlight */}
+                      <div className={`absolute left-0 md:left-1/2 top-4 md:top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 w-11 h-11 sm:w-13 sm:h-13 rounded-full flex items-center justify-center font-playfair font-black text-sm sm:text-base transition-all duration-500 ${
+                        isPassed 
+                          ? 'bg-[#00A2E4] text-white ring-4 ring-[#00A2E4]/30 scale-110 shadow-lg shadow-[#00A2E4]/40' 
+                          : 'bg-white border-2 border-slate-300 text-slate-500 shadow-md'
+                      }`}>
                         {item.step}
                       </div>
 
                       {/* Photo Card */}
                       <div className={`w-full ${isEven ? 'md:order-2' : 'md:order-1'}`}>
-                        <div className="relative w-full h-[240px] sm:h-[320px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 group-hover:border-[#00A2E4]/50 group-hover:shadow-2xl transition-all duration-500 bg-slate-900">
+                        <div className={`relative w-full h-[240px] sm:h-[320px] rounded-3xl overflow-hidden border transition-all duration-500 bg-slate-900 ${
+                          isPassed 
+                            ? 'shadow-2xl border-[#00A2E4]/40 ring-1 ring-[#00A2E4]/20' 
+                            : 'shadow-xl border-slate-200'
+                        }`}>
                           <Image
                             src={item.image}
                             alt={item.alt}
@@ -2100,7 +2135,9 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                       {/* Content Card */}
                       <div className={`space-y-4 ${isEven ? 'md:order-1 md:text-right' : 'md:order-2 md:text-left'}`}>
                         <div className={`flex items-center gap-2 ${isEven ? 'md:justify-end' : 'md:justify-start'}`}>
-                          <span className="text-xs font-black uppercase tracking-widest text-[#00A2E4]">
+                          <span className={`text-xs font-black uppercase tracking-widest transition-colors ${
+                            isPassed ? 'text-[#00A2E4]' : 'text-slate-400'
+                          }`}>
                             Celebration Option {item.step}
                           </span>
                         </div>
@@ -2118,7 +2155,9 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                           {item.inclusions.map((inc) => (
                             <span 
                               key={inc} 
-                              className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold shadow-2xs group-hover:border-[#00A2E4]/30 transition-colors"
+                              className={`px-3 py-1.5 rounded-xl bg-white border text-slate-700 text-xs font-bold shadow-2xs transition-colors ${
+                                isPassed ? 'border-[#00A2E4]/40' : 'border-slate-200'
+                              }`}
                             >
                               {inc}
                             </span>
@@ -2619,36 +2658,44 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                   </p>
                 </div>
 
-                {/* Official Brand Logos Grid In Bottom */}
+                {/* Official Brand Badges In Bottom (Clean, Bold, Aesthetic Badges) */}
                 <div className="pt-4 border-t border-slate-200/60">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2.5">
-                    Official Streaming Brands
+                    Official Streaming Supported
                   </span>
-                  <div className="grid grid-cols-4 gap-2">
-                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Netflix">
-                      <Image src="/images/ott/netflix.png" alt="Netflix" width={56} height={16} className="max-h-3.5 w-auto object-contain" />
-                    </div>
-                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Prime Video">
-                      <Image src="/images/ott/prime-video.png" alt="Prime Video" width={56} height={16} className="max-h-4 w-auto object-contain" />
-                    </div>
-                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Disney+ Hotstar">
-                      <Image src="/images/ott/disney-hotstar.svg" alt="Disney+ Hotstar" width={56} height={16} className="max-h-4 w-auto object-contain" />
-                    </div>
-                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="YouTube 4K">
-                      <Image src="/images/ott/youtube.png" alt="YouTube" width={56} height={16} className="max-h-4 w-auto object-contain" />
-                    </div>
-                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Apple TV+">
-                      <Image src="/images/ott/apple-tv.svg" alt="Apple TV" width={56} height={16} className="max-h-4 w-auto object-contain" />
-                    </div>
-                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="SonyLIV">
-                      <Image src="/images/ott/sonyliv.svg" alt="SonyLIV" width={56} height={16} className="max-h-4 w-auto object-contain" />
-                    </div>
-                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Zee5">
-                      <Image src="/images/ott/zee5.svg" alt="Zee5" width={56} height={16} className="max-h-4 w-auto object-contain" />
-                    </div>
-                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Aha">
-                      <Image src="/images/ott/aha.svg" alt="Aha" width={56} height={16} className="max-h-4 w-auto object-contain" />
-                    </div>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-rose-200 text-rose-600 font-extrabold text-xs shadow-2xs flex items-center gap-1.5 hover:border-rose-400 transition-colors">
+                      <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse" />
+                      Netflix 4K
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-sky-200 text-[#00A8E1] font-extrabold text-xs shadow-2xs flex items-center gap-1.5 hover:border-sky-400 transition-colors">
+                      <span className="w-2 h-2 rounded-full bg-[#00A8E1]" />
+                      Prime Video
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-blue-200 text-[#113CCF] font-extrabold text-xs shadow-2xs flex items-center gap-1.5 hover:border-blue-400 transition-colors">
+                      <span className="w-2 h-2 rounded-full bg-[#113CCF]" />
+                      Disney+ Hotstar
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-red-200 text-[#FF0000] font-extrabold text-xs shadow-2xs flex items-center gap-1.5 hover:border-red-400 transition-colors">
+                      <span className="w-2 h-2 rounded-full bg-[#FF0000]" />
+                      YouTube 4K
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-slate-900 font-extrabold text-xs shadow-2xs flex items-center gap-1.5 hover:border-slate-500 transition-colors">
+                      <span className="w-2 h-2 rounded-full bg-slate-900" />
+                      Apple TV+
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-amber-200 text-amber-700 font-extrabold text-xs shadow-2xs flex items-center gap-1.5 hover:border-amber-400 transition-colors">
+                      <span className="w-2 h-2 rounded-full bg-amber-600" />
+                      SonyLIV
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-purple-200 text-[#8230C6] font-extrabold text-xs shadow-2xs flex items-center gap-1.5 hover:border-purple-400 transition-colors">
+                      <span className="w-2 h-2 rounded-full bg-[#8230C6]" />
+                      Zee5
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-orange-200 text-[#FF6700] font-extrabold text-xs shadow-2xs flex items-center gap-1.5 hover:border-orange-400 transition-colors">
+                      <span className="w-2 h-2 rounded-full bg-[#FF6700]" />
+                      Aha Video
+                    </span>
                   </div>
                 </div>
               </div>
@@ -2711,23 +2758,23 @@ export default function RefineTheatreLanding({ initialLiveTheatres }: { initialL
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2.5">
                     Audio &amp; Console Features
                   </span>
-                  <div className="grid grid-cols-2 gap-2 mb-2">
-                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="Spotify">
-                      <Image src="/images/ott/spotify.svg" alt="Spotify" width={70} height={20} className="max-h-4.5 w-auto object-contain" />
-                    </div>
-                    <div className="h-10 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center p-2 hover:border-[#00A2E4] transition-all" title="PS5 & Xbox">
-                      <Image src="/images/ott/ps5-xbox.svg" alt="PS5 & Xbox" width={70} height={20} className="max-h-4.5 w-auto object-contain" />
-                    </div>
-                  </div>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-800 border border-slate-200 shadow-2xs">
-                      🔊 Dolby 7.1 Surround
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-emerald-200 text-emerald-700 font-extrabold text-xs shadow-2xs flex items-center gap-1.5 hover:border-emerald-400 transition-colors">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                      Spotify Hi-Fi Audio
                     </span>
-                    <span className="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-800 border border-slate-200 shadow-2xs">
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-indigo-200 text-indigo-700 font-extrabold text-xs shadow-2xs flex items-center gap-1.5 hover:border-indigo-400 transition-colors">
+                      <span className="w-2 h-2 rounded-full bg-indigo-600" />
+                      PS5 &amp; Xbox Console Ready
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-bold text-xs shadow-2xs">
+                      🔊 Dolby 7.1 Surround Sound
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-bold text-xs shadow-2xs">
                       🎂 Cake-Cutting Playlists
                     </span>
-                    <span className="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-800 border border-slate-200 shadow-2xs">
-                      🎮 Low Latency Gaming
+                    <span className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-bold text-xs shadow-2xs">
+                      🎮 Ultra-Low Latency Mode
                     </span>
                   </div>
                 </div>

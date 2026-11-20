@@ -646,8 +646,8 @@ h1 em, h2 em { color: var(--orange); font-weight: 500; }
 }
 .hero-media-frame.is-in { transform: scale(1); opacity: 1; }
 
-/* ── Celebration add-on cards (full-bleed image cards) ──────────────── */
-.addon-card-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin-top: 44px; }
+/* ── Celebration add-on cards (3-column grid pattern in desktop) ──────────────── */
+.addon-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 44px; }
 .addon-card {
   position: relative;
   display: block;

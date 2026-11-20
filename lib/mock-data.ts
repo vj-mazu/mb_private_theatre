@@ -123,7 +123,7 @@ export const initialMockStore: MockStore = {
       slug: 'celebration-theater-ecity',
       emoji: '🎉',
       capacity: 6,
-      base_price: 1499.00,
+      base_price: 1699.00,
       extra_person_price: 0.00,
       amenities: '135-inch Cinema Screen, JBL Pro Sound, Party Ambient Lighting, Fog Entry Compatible',
       image_url: '/images/celebration_2.webp',

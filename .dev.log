@@ -65,3 +65,33 @@
  ✓ Compiled in 1476ms (627 modules)
  ✓ Compiled in 1321ms (627 modules)
  ✓ Compiled in 1716ms (627 modules)
+ ✓ Compiled in 841ms (315 modules)
+ ✓ Compiled in 1380ms (627 modules)
+ ✓ Compiled in 1385ms (627 modules)
+ ✓ Compiled in 2.3s (627 modules)
+ ✓ Compiled in 1727ms (627 modules)
+ ✓ Compiled in 2s (627 modules)
+ ✓ Compiled in 1730ms (627 modules)
+ ✓ Compiled in 1364ms (627 modules)
+ ⨯ ./components/RefineTheatreLanding.tsx
+Error: 
+  [31mx[0m Unexpected token `div`. Expected jsx identifier
+      ,-[[36;1;4mC:\Users\maju\Desktop\movie_bash\components\RefineTheatreLanding.tsx[0m:1484:1]
+ [2m1484[0m |   };
+ [2m1485[0m | 
+ [2m1486[0m |   return (
+ [2m1487[0m |     <div className="min-h-screen overflow-x-clip bg-cream text-ink select-none">
+      : [31;1m     ^^^[0m
+ [2m1488[0m |       {/* 0. AUTHENTIC CINEMA OPENING INTRO ANIMATION */}
+ [2m1489[0m |       <OpeningWebsiteIntro />
+ [2m1489[0m |       
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RefineTheatreLanding.tsx
+./app/page.tsx
+ ✓ Compiled in 2.5s (613 modules)
+ ✓ Compiled in 587ms (312 modules)
