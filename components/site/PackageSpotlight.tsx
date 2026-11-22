@@ -2,7 +2,7 @@
 
 import Image from '@/components/Img';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Check } from 'lucide-react';
 import { cn } from '@/components/ui';
@@ -23,7 +23,6 @@ interface Item { key: string; name: string; tagline: string; includes: string[];
 export function PackageSpotlight({ branches, theatres, packages, customPackage }: { branches: any[]; theatres: any[]; packages: any[]; customPackage: { enabled: boolean; tagline: string; includes: string[]; image_url: string } }) {
   const [branch, setBranch] = useState(branches[0]?.id);
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
   const list = theatres.filter((t) => t.branch_id === branch);
   const slug = branches.find((b) => b.id === branch)?.slug;
 
@@ -38,14 +37,27 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
   const theme = THEMES[index % THEMES.length];
   const from = Math.min(...list.map((t) => item.price(t)?.price ?? Infinity));
 
-  useEffect(() => {
-    if (paused) return;
-    const t = setInterval(() => setIndex((i) => (i + 1) % n), 6000);
-    return () => clearInterval(t);
-  }, [paused, n]);
+  const fromOf = (it: Item) => {
+    const p = Math.min(...list.map((t) => it.price(t)?.price ?? Infinity));
+    return Number.isFinite(p) ? inr(p) : '—';
+  };
+  // Package toggle (shown at the top): every option visible; the visitor switches, nothing changes on its own.
+  const toggle = (id: string) => (
+    <div role="tablist" aria-label="Packages" className="grid gap-1.5 rounded-2xl border border-line bg-white p-1.5 shadow-card"
+      style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+      {items.map((it, i) => (
+        <button key={it.key} role="tab" aria-selected={i === index} onClick={() => setIndex(i)}
+          className={cn('relative rounded-xl px-2 py-2.5 text-center transition-colors duration-300', i === index ? 'text-white' : 'text-navy hover:bg-cream-deep')}>
+          {i === index && <motion.span layoutId={id} className="absolute inset-0 rounded-xl shadow-lift" style={{ background: theme.accent }} transition={{ type: 'spring', stiffness: 420, damping: 36 }} />}
+          <span className="relative block text-sm font-bold">{it.name}</span>
+          <span className={cn('relative block text-[11px]', i === index ? 'text-white/80' : 'text-navy-soft')}>from {fromOf(it)}</span>
+        </button>
+      ))}
+    </div>
+  );
 
   return (
-    <section id="packages" className="relative scroll-mt-16 overflow-hidden bg-brand-50/60" onPointerEnter={(e) => e.pointerType === "mouse" && setPaused(true)} onPointerLeave={(e) => e.pointerType === "mouse" && setPaused(false)}>
+    <section id="packages" className="relative scroll-mt-16 overflow-hidden bg-brand-50/60">
       <div className="container-page pt-16 lg:hidden">
         <p className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-brand-700"><span className="h-px w-6 bg-brand-700" />The celebration menu</p>
         <h2 className="mt-3 text-3xl">{n} ways to celebrate. <span className="italic" style={{ color: theme.accent }}>One unforgettable night.</span></h2>
@@ -57,12 +69,14 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
             ))}
           </div>
         )}
+        <div className="mt-4">{toggle('pkg-toggle-m')}</div>
       </div>
       <div className="relative grid min-h-[640px] lg:grid-cols-2">
         {/* Left: copy */}
         <div className="relative z-10 order-2 flex flex-col justify-center px-5 pb-16 pt-6 lg:order-1 sm:px-10 lg:py-24 lg:pl-[max(24px,calc((100vw-72rem)/2+24px))] lg:pr-10">
           <p className="hidden items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-brand-700 lg:flex"><span className="h-px w-6 bg-brand-700" />The celebration menu</p>
           <h2 className="mt-4 hidden text-4xl sm:text-5xl lg:block">{n} ways to celebrate. <span className="italic" style={{ color: theme.accent }}>One unforgettable night.</span></h2>
+          <div className="mt-6 hidden max-w-lg lg:block">{toggle('pkg-toggle-d')}</div>
 
           <AnimatePresence mode="wait">
             <motion.div key={item.key + branch} initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, y: -10, filter: 'blur(6px)' }}
@@ -92,17 +106,6 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
             )}
           </div>
 
-          {/* Thumbnails */}
-          <div className="mt-8 flex items-center gap-3">
-            {items.map((it, i) => (
-              <button key={it.key} onClick={() => setIndex(i)} aria-label={it.name}
-                className={cn('relative h-14 w-14 overflow-hidden rounded-full border-[3px] bg-white shadow-card transition-all duration-300 sm:h-16 sm:w-16',
-                  i === index ? 'scale-110' : 'border-white opacity-80 hover:opacity-100')} style={i === index ? { borderColor: theme.accent } : undefined}>
-                {it.image && <Image src={it.image} alt="" fill sizes="64px" className="object-cover" />}
-              </button>
-            ))}
-            <span className="ml-2 font-semibold tracking-[0.15em]" style={{ color: theme.accent }}>{String(index + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}</span>
-          </div>
         </div>
 
         {/* Right: stage */}
@@ -114,7 +117,7 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
           {/* Giant outlined name, horizontal along the bottom of the panel */}
           <AnimatePresence mode="wait">
             <motion.span key={'big' + item.key} aria-hidden
-              className="pointer-events-none absolute bottom-4 left-[40%] right-3 overflow-hidden whitespace-nowrap text-center font-display text-[3.5rem] leading-[1.1] text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.55)] sm:text-[5rem] xl:text-[6.5rem]"
+              className="pointer-events-none absolute bottom-4 left-[40%] max-lg:hidden right-3 overflow-hidden whitespace-nowrap text-center font-display text-[3.5rem] leading-[1.1] text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.55)] sm:text-[5rem] xl:text-[6.5rem]"
               initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 30 }} transition={{ duration: 0.6, ease }}>
               {item.name}
             </motion.span>

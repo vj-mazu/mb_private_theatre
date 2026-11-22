@@ -26,7 +26,7 @@ export function HeroOrbit({ title, items, rating, from }: { title: string; items
   const [maxOffset, setMaxOffset] = useState(2.8);
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 639px)');
-    const apply = () => setMaxOffset(mq.matches ? 1.6 : 2.8);
+    const apply = () => setMaxOffset(mq.matches ? 2.2 : 2.8);
     apply();
     mq.addEventListener('change', apply);
     return () => mq.removeEventListener('change', apply);
@@ -96,12 +96,12 @@ export function HeroOrbit({ title, items, rating, from }: { title: string; items
           </div>
 
           {/* Stage: wheel + centre photo */}
-          <div className="relative h-[clamp(420px,60svh,560px)]">
-            <div className="absolute inset-x-0 top-[86%] sm:top-1/2">
+          <div className="relative h-[clamp(300px,38svh,330px)] sm:h-[clamp(420px,60svh,560px)]">
+            <div className="absolute inset-x-0 top-1/2">
               {items.map((it, i) => <Tile key={it.name} item={it} i={i} n={n} turn={turn} maxOffset={maxOffset} onPick={() => pick(i)} />)}
             </div>
 
-            <div className="absolute left-1/2 top-[38%] z-20 h-[62%] -translate-x-1/2 -translate-y-1/2 sm:top-1/2 sm:h-[84%]">
+            <div className="absolute left-1/2 top-1/2 z-20 h-[76%] -translate-x-1/2 -translate-y-1/2 sm:h-[84%]">
               <div aria-hidden className="absolute -inset-10 rounded-full bg-[radial-gradient(closest-side,rgba(134,203,241,0.45),transparent)] blur-2xl" />
               <div className="gold-frame relative aspect-[4/5] h-full rounded-[30px] p-[3px] shadow-[0_40px_70px_-25px_rgba(0,0,0,0.75),0_0_50px_-10px_rgba(231,199,125,0.35)]">
               <div className="relative h-full w-full overflow-hidden rounded-[27px] bg-navy">
@@ -120,14 +120,14 @@ export function HeroOrbit({ title, items, rating, from }: { title: string; items
                 <div className="absolute inset-x-0 bottom-0 flex flex-col items-center p-4 text-center">
                   <AnimatePresence mode="wait">
                     <motion.p key={item.name} initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, y: -10, filter: 'blur(6px)' }}
-                      transition={{ duration: 0.45, ease }} className="font-display text-2xl text-white drop-shadow sm:text-3xl">{item.name}</motion.p>
+                      transition={{ duration: 0.45, ease }} className="whitespace-nowrap font-display text-xl text-white drop-shadow sm:text-3xl">{item.name}</motion.p>
                   </AnimatePresence>
                   <div className="mt-3 flex items-center gap-2">
-                    <button onClick={() => setActive((a) => a - 1)} aria-label="Previous" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition hover:bg-white hover:text-navy"><ChevronLeft className="h-4 w-4" /></button>
+                    <button onClick={() => setActive((a) => a - 1)} aria-label="Previous" className="hidden h-9 w-9 sm:flex items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition hover:bg-white hover:text-navy"><ChevronLeft className="h-4 w-4" /></button>
                     <Link href={item.href} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-4 py-2 text-sm font-semibold text-navy shadow-lift transition hover:-translate-y-0.5">
                       from {from} <ArrowRight className="h-4 w-4" />
                     </Link>
-                    <button onClick={() => setActive((a) => a + 1)} aria-label="Next" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition hover:bg-white hover:text-navy"><ChevronRight className="h-4 w-4" /></button>
+                    <button onClick={() => setActive((a) => a + 1)} aria-label="Next" className="hidden h-9 w-9 sm:flex items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition hover:bg-white hover:text-navy"><ChevronRight className="h-4 w-4" /></button>
                   </div>
                 </div>
               </div>
@@ -180,7 +180,7 @@ function Tile({ item, i, n, turn, maxOffset, onPick }: { item: OrbitItem; i: num
 
   return (
     <motion.button suppressHydrationWarning onClick={onPick} aria-label={item.name} style={{ x, y, rotate: angle, opacity, scale, zIndex: z }}
-      className="absolute left-1/2 top-0 -ml-[var(--t)] -mt-[var(--t)] h-[calc(var(--t)*2)] w-[calc(var(--t)*2)] rounded-[26%] bg-[linear-gradient(135deg,#f3e3b5,#ffffff_40%,#d9b25f)] p-1.5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6),0_0_26px_rgba(231,199,125,0.3)] transition-[filter] hover:brightness-110 [--r:min(40vw,170px)] [--t:36px] sm:p-2 sm:[--r:min(34vw,420px)] sm:[--t:70px]">
+      className="absolute left-1/2 top-0 -ml-[var(--t)] -mt-[var(--t)] h-[calc(var(--t)*2)] w-[calc(var(--t)*2)] rounded-[26%] bg-[linear-gradient(135deg,#f3e3b5,#ffffff_40%,#d9b25f)] p-1.5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6),0_0_26px_rgba(231,199,125,0.3)] transition-[filter] hover:brightness-110 [--r:min(46vw,190px)] [--t:27px] sm:p-2 sm:[--r:min(34vw,420px)] sm:[--t:70px]">
       <span className="relative block h-full w-full overflow-hidden rounded-[22%]">
         <Image src={item.image} alt="" fill quality={75} sizes="(min-width: 640px) 140px, 72px" draggable={false} className="object-cover" />
       </span>

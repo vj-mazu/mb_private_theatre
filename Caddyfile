@@ -1,5 +1,13 @@
-# Automatic HTTPS (Let's Encrypt) for your domain and its www version.
-{$DOMAIN}, www.{$DOMAIN} {
+# Automatic HTTPS (Let's Encrypt) for your domain. www.<domain> permanently redirects to <domain>,
+# so search engines and WhatsApp ticket links always use one address.
+{$DOMAIN} {
 	encode zstd gzip
-	reverse_proxy app:3000
+	reverse_proxy app:3000 {
+		health_uri /api/health
+		health_interval 30s
+	}
+}
+
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
 }

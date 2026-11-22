@@ -16,14 +16,23 @@ and the first admin account if there is none.
 
 ## 2. Point your domain at it
 
-hPanel → **Domains** → your domain → **DNS**:
+hPanel → **Domains** → your domain → **DNS / Nameservers** → **DNS records**.
 
-| Type | Name | Value |
-| --- | --- | --- |
-| A | `@` | VPS IP |
-| A | `www` | VPS IP |
+1. **Delete** every existing record named `@` or `www` of type **A**, **AAAA** or **CNAME**.
+   New Hostinger domains come with a parking-page A record and an **AAAA (IPv6)** record. If either stays,
+   the free HTTPS certificate fails and visitors may land on the parking page.
+2. **Add** these two records:
 
-Allow up to an hour for DNS to update. HTTPS works once it has.
+| Type | Name | Value | TTL |
+| --- | --- | --- | --- |
+| A | `@` | VPS IP | 300 |
+| A | `www` | VPS IP | 300 |
+
+3. Leave MX/TXT records (email) as they are.
+
+DNS usually updates within 5–30 minutes (up to a few hours). Check it at https://dnschecker.org: both
+`yourdomain` and `www.yourdomain` must show the VPS IP **before** you run the installer.
+`www.yourdomain` automatically redirects to `yourdomain`, so there is one address for search engines and ticket links.
 
 ## 3. Install, one command
 
@@ -47,7 +56,14 @@ The installer asks for:
 | WhatsApp token / phone-number ID | optional | can be added to `.env` later |
 
 When it finishes, it prints your website and admin URLs and the admin login.
-Check it at `https://your-domain/api/health`, which should return `{"ok":true,"db":"up"}`.
+Check it at `https://your-domain/api/health`, which should return `{"ok":true,"db":"up","tables":"ok"}`.
+
+On a new, empty database the site fills itself with the starter content from `db/seed.json.gz`
+(branches, theatres, slots, packages and prices, cakes, add-ons, photos, settings) and **no bookings**.
+It only does this once; after that your admin changes are never overwritten.
+
+**If HTTPS doesn't work:** the DNS records aren't pointing at the VPS yet. Fix them, wait, then run
+`docker compose restart caddy`. `docker compose logs caddy` shows the certificate status.
 
 ## 4. Move your existing data
 
@@ -67,7 +83,7 @@ This **replaces** all data on the server with the backup. A backup made without 
 
 | Task | Command |
 | --- | --- |
-| Update to the newest code | `git pull && docker compose up -d --build` |
+| Update to the newest code | `git pull && docker compose up -d --build && docker image prune -f` |
 | View logs | `docker compose logs -f app` |
 | Restart | `docker compose restart app` |
 | Backup now | `docker compose exec app node scripts/db-backup.js` |
@@ -104,7 +120,7 @@ You can also download a backup any time from **Admin → Settings & backup**.
 **Your checklist:** change the admin password after the first login, give each staff member their own account (Admin → Staff), and keep a backup copy off the server.
 
 Known advisories (all need major upgrades, planned separately):
-- Next.js 14: the remaining advisories are denial-of-service issues fixed only in Next 15+. The site doesn't use the affected features (no remote image patterns, no server actions).
+- Next.js 14: the remaining advisories are denial-of-service issues fixed only in Next 15+. The site doesn't use server actions or remote image sources (only its own photos are resized).
 - Zod 3: oversized-collection memory issue. Booking inputs cap every list, so this is mitigated.
 - exceljs: uses an old `uuid` package. It's only used inside the admin Excel export.
 

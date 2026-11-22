@@ -17,7 +17,8 @@ RUN npm run build
 FROM node:22-alpine AS run
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
-RUN addgroup -S app && adduser -S app -G app
+# Fixed ids (1001) so the server's ./backups folder can be given to this user (see deploy/install.sh).
+RUN addgroup -S -g 1001 app && adduser -S -u 1001 -G app app
 COPY --from=build --chown=app:app /app/.next/standalone ./
 COPY --from=build --chown=app:app /app/.next/static ./.next/static
 COPY --from=build --chown=app:app /app/public ./public

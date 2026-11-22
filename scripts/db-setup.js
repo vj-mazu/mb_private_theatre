@@ -79,13 +79,13 @@ const CAKES = [
 const ADDONS = [
   ['Entry', 'Fog Entry (2 pots)', '2 pots of dense fog for a cinematic walk-in.', 499, '/images/addons/fog-entry.webp'],
   ['Entry', 'Cold Pyro Sparklers', '2 indoor-safe cold pyro fountains.', 399, '/images/addons/cold-pyro.webp'],
-  ['Entry', 'Bubble Entry', 'Bubble machine for a dreamy entry.', 399, '/images/addons/bubble-entry.webp'],
+  ['Entry', 'Bubble Entry', 'Bubble machine for a dreamy entry.', 399, '/images/addons/bubble-entry-party.webp'],
   ['Decor', 'LED Name / Number Board', 'Custom glowing name or number.', 299, '/images/addons/led-name-board.webp'],
   ['Gifts', 'Red Rose Bouquet', 'Fresh hand-tied red roses.', 499, '/images/addons/rose-bouquet.webp'],
   ['Gifts', 'Teddy Mascot Surprise', 'Giant teddy mascot appearance.', 699, '/images/addons/teddy-mascot.webp'],
   ['Photography', 'DSLR Photography', 'Dedicated photographer, edited photos.', 999, '/images/addons/dslr-photography.webp'],
   ['Photography', 'iPhone Reel', 'Short edited reel shot on iPhone.', 499, '/images/addons/iphone-reel.webp'],
-  ['Extras', 'Party Poppers (2)', 'Confetti poppers for the cake moment.', 149, '/images/addons/party-poppers.webp'],
+  ['Extras', 'Party Poppers (2)', 'Confetti poppers for the cake moment.', 149, '/images/addons/party-popper-confetti.webp'],
 ];
 
 const PACKAGES = [
@@ -155,7 +155,10 @@ async function seedFromFile(client, file) {
 async function syncEnvAdmin(client) {
   const username = (process.env.ADMIN_USERNAME || '').trim().toLowerCase();
   const password = process.env.ADMIN_PASSWORD || '';
-  if (!username || !password) return false;
+  if (!username || !password) {
+    console.log('! ADMIN_USERNAME / ADMIN_PASSWORD are not set (names must be exactly these, in capitals) - admin login left unchanged.');
+    return false;
+  }
   if (password.length < 10) {
     console.log(`! ADMIN_PASSWORD is shorter than 10 characters, so it was NOT applied to "${username}". Use 10+ characters.`);
     return false;
@@ -215,7 +218,22 @@ const STORY = {
 };
 
 /** Seeds website content tables when empty. Safe to run repeatedly. */
+/**
+ * Small, safe content fixes for databases created earlier. Each only touches the exact old value,
+ * so anything the admin has changed since (own photo, own name) is left alone. Safe to run every time.
+ */
+async function updateContent(client) {
+  await client.query("UPDATE addons SET image_url='/images/addons/bubble-entry-party.webp' WHERE image_url='/images/addons/bubble-entry.webp'");
+  await client.query("UPDATE addons SET image_url='/images/addons/party-popper-confetti.webp' WHERE image_url='/images/addons/party-poppers.webp'");
+  await client.query("UPDATE addons SET name='Bubble Entry', description='Bubble machine for a dreamy entry.' WHERE name='Bubbles'");
+  await client.query(`UPDATE packages SET includes = (
+      SELECT jsonb_agg(CASE WHEN x = 'Bubbles' THEN 'Bubble entry' ELSE x END ORDER BY i)
+      FROM jsonb_array_elements_text(includes) WITH ORDINALITY AS t(x, i))
+    WHERE includes ? 'Bubbles'`);
+}
+
 async function ensureContent(client) {
+  await updateContent(client);
   const count = async (t) => (await client.query(`SELECT count(*)::int AS n FROM ${t}`)).rows[0].n;
   if (!(await count('faqs'))) {
     for (const [i, [q, a]] of FAQS.entries()) await client.query('INSERT INTO faqs (question, answer, sort_order) VALUES ($1,$2,$3)', [q, a, i]);

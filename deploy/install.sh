@@ -59,7 +59,9 @@ fi
 
 say "Building and starting (first time takes 3-5 minutes)"
 mkdir -p backups
+chown -R 1001:1001 backups   # the app container runs as user 1001 and writes the nightly backups here
 docker compose up -d --build
+docker image prune -f >/dev/null 2>&1 || true
 
 say "Scheduling a daily database backup at 02:30"
 CRON="30 2 * * * cd $(pwd) && docker compose exec -T app node scripts/db-backup.js >> backups/backup.log 2>&1"
