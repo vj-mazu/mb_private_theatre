@@ -1,19 +1,9 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
+  const base = process.env.NEXT_PUBLIC_APP_URL || 'https://moviebash.in';
   return {
-    rules: [
-      {
-        userAgent: '*',
-        allow: '/',
-        disallow: ['/admin/', '/api/admin/', '/api/', '/account/', '/booking-success/'],
-      },
-      {
-        userAgent: ['GPTBot', 'PerplexityBot', 'ClaudeBot', 'Google-Extended', 'Amazonbot'],
-        allow: ['/', '/llms.txt'],
-        disallow: ['/admin/', '/api/admin/', '/api/'],
-      },
-    ],
-    sitemap: 'https://moviebash.in/sitemap.xml',
+    rules: [{ userAgent: '*', allow: '/', disallow: ['/admin/', '/api/', '/ticket/'] }],
+    sitemap: `${base}/sitemap.xml`,
   };
 }

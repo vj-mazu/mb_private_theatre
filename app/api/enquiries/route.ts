@@ -1,51 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { mockStore } from '@/lib/db';
-import { getAdminSession } from '@/lib/auth';
-import { enquiryRateLimiter } from '@/lib/rate-limiter';
+import { strictPhone } from '@/lib/server/bookings';
+import { isValidPhone } from '@/lib/booking-rules';
+import { z } from 'zod';
+import { one } from '@/lib/server/db';
+import { sendWhatsApp } from '@/lib/server/whatsapp';
+import { ok, route } from '@/lib/server/api';
+import { rateLimit } from '@/lib/server/rate-limit';
 
-export async function POST(request: NextRequest) {
-  // Rate limiting
-  const rateLimitResponse = await enquiryRateLimiter(request);
-  if (rateLimitResponse) return rateLimitResponse;
+const schema = z.object({
+  name: z.string().trim().min(2, 'Please enter your name').max(80),
+  phone: z.string().transform(strictPhone).refine(isValidPhone, 'Enter a valid 10-digit mobile number'),
+  email: z.string().trim().max(120).optional().default(''),
+  branch: z.string().trim().max(80).optional().default(''),
+  occasion: z.string().trim().max(60).optional().default(''),
+  preferred_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal('')).transform((v) => v || null),
+  message: z.string().trim().max(1000).optional().default(''),
+});
 
-  try {
-    const body = await request.json();
-    const { name, phone, email, branch_name, preferred_date, guests, message } = body;
-
-    if (!name || !phone || !message) {
-      return NextResponse.json(
-        { success: false, error: 'Name, phone number, and message are required.' },
-        { status: 400 }
-      );
-    }
-
-    const enquiryRecord = {
-      id: mockStore.enquiries.length + 1,
-      name,
-      phone,
-      email: email || '',
-      branch_name: branch_name || 'Electronic City',
-      preferred_date: preferred_date || null,
-      guests: guests ? Number(guests) : null,
-      message,
-      status: 'new' as const,
-      created_at: new Date().toISOString()
-    };
-
-    mockStore.enquiries.unshift(enquiryRecord);
-
-    return NextResponse.json({ success: true, message: 'Enquiry received. Our coordinator will contact you shortly.' });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+export const POST = route(async (req: Request) => {
+  rateLimit(req, 'enquiry', 4, 60_000);
+  const d = schema.parse(await req.json());
+  const row = await one<{ id: number }>(
+    'INSERT INTO enquiries (name, phone, email, branch, occasion, preferred_date, message) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id',
+    [d.name, d.phone, d.email, d.branch, d.occasion, d.preferred_date, d.message]);
+  if (process.env.WHATSAPP_ADMIN_NUMBER) {
+    await sendWhatsApp({
+      to: process.env.WHATSAPP_ADMIN_NUMBER, kind: 'admin_alert',
+      text: `New enquiry from ${d.name} (${d.phone})\n${[d.branch, d.occasion, d.preferred_date].filter(Boolean).join(' · ')}\n${d.message}`,
+    });
   }
-}
-
-export async function GET() {
-  // Enquiries contain personal contact details — admin only.
-  const session = await getAdminSession();
-  if (!session) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-  }
-
-  return NextResponse.json({ success: true, data: mockStore.enquiries });
-}
+  return ok({ id: row?.id });
+});

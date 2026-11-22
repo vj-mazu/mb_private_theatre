@@ -1,129 +1,118 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getAdminSession } from '@/lib/auth';
-import { mockStore, saveStore, getDb } from '@/lib/db';
+import { z } from 'zod';
+import { q } from '@/lib/server/db';
+import { addPayment, bookingToInput, getBooking, recordEvent, setStatus, updateBooking } from '@/lib/server/bookings';
+import { getSettings } from '@/lib/server/catalog';
+import { composeText, sendWhatsApp, waLink, type MessageKind } from '@/lib/server/whatsapp';
+import { ok, route, requireStaff, HttpError } from '@/lib/server/api';
+import type { Session } from '@/lib/server/auth';
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const session = await getAdminSession();
-  if (!session) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-  }
+export const dynamic = 'force-dynamic';
+type Ctx = { params: { id: string } };
 
-  const bookingId = Number(params.id);
-  const booking = mockStore.bookings.find((b: any) => b.id === bookingId);
-
-  if (!booking) {
-    return NextResponse.json({ success: false, error: 'Booking not found' }, { status: 404 });
-  }
-
-  // Branch isolation for staff members
-  if (session.role === 'staff' && session.branch_id && booking.branch_id !== session.branch_id) {
-    return NextResponse.json({ success: false, error: 'Access denied: You can only manage bookings for your assigned branch.' }, { status: 403 });
-  }
-
-  try {
-    const body = await request.json();
-    const { action, status, cancelled_reason, refund_amount, payment_add } = body;
-
-    // 1. Update SQLite atomically
-    try {
-      const db = getDb();
-      if (action === 'delete') {
-        db.prepare("UPDATE bookings SET is_deleted = 1, deleted_at = datetime('now', 'localtime'), deleted_by = ? WHERE id = ?").run(session.email, bookingId);
-      } else if (action === 'cancel') {
-        db.prepare("UPDATE bookings SET status = 'cancelled', cancelled_reason = ?, refund_amount = ? WHERE id = ?").run(cancelled_reason || 'Cancelled by guest request', Number(refund_amount || 0), bookingId);
-      } else if (action === 'update_status' && status) {
-        db.prepare("UPDATE bookings SET status = ? WHERE id = ?").run(status, bookingId);
-      } else if (action === 'reschedule') {
-        const { booking_date, slot_id, theatre_id, branch_id } = body;
-        db.prepare("UPDATE bookings SET booking_date = ?, slot_id = ?, theatre_id = ?, branch_id = ?, status = 'confirmed' WHERE id = ?").run(booking_date, Number(slot_id), Number(theatre_id), Number(branch_id), bookingId);
-      } else if (action === 'add_payment' && payment_add) {
-        const added = Number(payment_add);
-        db.prepare("UPDATE bookings SET advance_paid = advance_paid + ?, balance = MAX(0, total - (advance_paid + ?)), payment_status = CASE WHEN total <= (advance_paid + ?) THEN 'fully_paid' ELSE 'advance_paid' END WHERE id = ?").run(added, added, added, bookingId);
-      }
-    } catch (dbErr) {
-      console.warn('SQLite update error in [id]:', dbErr);
-    }
-
-    // 2. Also keep mockStore in sync
-    if (action === 'delete') {
-      if (session.role === 'staff') {
-        return NextResponse.json({ success: false, error: 'Staff members are not authorized to delete bookings. Use Cancel Booking instead.' }, { status: 403 });
-      }
-      (booking as any).is_deleted = 1;
-      (booking as any).deleted_at = new Date().toISOString();
-      (booking as any).deleted_by = session.email;
-    } else if (action === 'cancel') {
-      (booking as any).status = 'cancelled';
-      (booking as any).cancelled_reason = cancelled_reason || 'Cancelled by guest request';
-      (booking as any).refund_amount = Number(refund_amount || 0);
-    } else if (action === 'update_status' && status) {
-      (booking as any).status = status;
-    } else if (action === 'reschedule') {
-      const { booking_date, slot_id, slot_time, theatre_id, screen_name, branch_id, branch_name } = body;
-      if (booking_date) (booking as any).booking_date = booking_date;
-      if (slot_id) (booking as any).slot_id = Number(slot_id);
-      if (slot_time) (booking as any).slot_time = slot_time;
-      if (theatre_id) (booking as any).theatre_id = Number(theatre_id);
-      if (screen_name) (booking as any).screen_name = screen_name;
-      if (branch_id) (booking as any).branch_id = Number(branch_id);
-      if (branch_name) (booking as any).branch_name = branch_name;
-      (booking as any).status = 'confirmed';
-      (booking as any).rescheduled_at = new Date().toISOString();
-      (booking as any).rescheduled_by = session.email;
-    } else if (action === 'add_payment' && payment_add) {
-      const added = Number(payment_add);
-      (booking as any).advance_paid = Number(booking.advance_paid || 0) + added;
-      (booking as any).balance = Math.max(0, Number(booking.total) - (booking as any).advance_paid);
-      if ((booking as any).balance === 0) {
-        (booking as any).payment_status = 'fully_paid';
-      }
-    }
-
-    // Audit log
-    mockStore.auditLogs.unshift({
-      id: Date.now(),
-      user_id: session.id,
-      user_email: session.email,
-      action: action ? action.toUpperCase() : 'UPDATE_BOOKING',
-      entity: 'bookings',
-      entity_id: String(booking.id),
-      details: body,
-      created_at: new Date().toISOString()
-    });
-
-    saveStore();
-    return NextResponse.json({ success: true, data: booking });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-  }
+async function load(id: string, s: Session) {
+  const b = await getBooking({ id: Number(id) });
+  if (!b) throw new HttpError(404, 'Booking not found');
+  if (s.role === 'staff' && s.branch_id && b.branch_id !== s.branch_id) throw new HttpError(403, 'This booking belongs to another branch');
+  return b;
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const session = await getAdminSession();
-  if (!session || session.role !== 'super_admin') {
-    return NextResponse.json({ success: false, error: 'Super Admin privileges required for permanent deletion' }, { status: 403 });
-  }
+export const GET = route(async (_req: Request, { params }: Ctx) => {
+  const s = requireStaff();
+  const b = await load(params.id, s);
+  const [payments, events, messages] = await Promise.all([
+    q('SELECT * FROM payments WHERE booking_id=$1 ORDER BY created_at', [b.id]),
+    q('SELECT * FROM booking_events WHERE booking_id=$1 ORDER BY created_at DESC', [b.id]),
+    q('SELECT id, kind, status, error, created_at FROM whatsapp_messages WHERE booking_id=$1 ORDER BY created_at DESC', [b.id]),
+  ]);
+  return ok({ booking: b, input: bookingToInput(b), payments, events, messages, waLink: waLink(b.whatsapp || b.phone, composeText('confirmation', b)) });
+});
 
-  const bookingId = Number(params.id);
-  const idx = mockStore.bookings.findIndex((b: any) => b.id === bookingId);
-  if (idx === -1) {
-    return NextResponse.json({ success: false, error: 'Booking not found' }, { status: 404 });
-  }
+/** Full edit (also used for reschedule). */
+export const PUT = route(async (req: Request, { params }: Ctx) => {
+  const s = requireStaff();
+  await load(params.id, s);
+  const row = await updateBooking(Number(params.id), await req.json(), { kind: 'staff', name: s.name, role: s.role, branch_id: s.branch_id });
+  return ok(row);
+});
 
-  try {
-    const db = getDb();
-    db.prepare('DELETE FROM bookings WHERE id = ?').run(bookingId);
-  } catch (dbErr) {
-    console.warn('SQLite delete error:', dbErr);
-  }
+const actionSchema = z.discriminatedUnion('action', [
+  z.object({ action: z.literal('confirm'), advance: z.coerce.number().int().min(0).optional() }),
+  z.object({ action: z.literal('payment'), amount: z.coerce.number().int().positive(), method: z.string(), note: z.string().optional().default('') }),
+  z.object({
+    action: z.literal('close'),
+    package_id: z.coerce.number().int().positive().nullable().optional(),
+    guests: z.coerce.number().int().min(1).max(50).optional(),
+    extra_hours: z.coerce.number().int().min(0).max(2).optional(),
+    addons: z.array(z.object({ addon_id: z.coerce.number().int(), qty: z.coerce.number().int().min(1).max(20) })).max(40),
+    custom_items: z.array(z.object({ name: z.string().min(1).max(80), price: z.coerce.number().int().min(0).max(1000000), qty: z.coerce.number().int().min(1).max(50) })).max(30),
+    discount: z.coerce.number().int().min(0),
+    final_amount: z.coerce.number().int().min(0),
+    method: z.string(),
+    notes: z.string().optional().default(''),
+  }),
+  z.object({ action: z.literal('cancel'), reason: z.string().trim().min(2, 'Enter a reason') }),
+  z.object({ action: z.literal('reopen') }),
+  z.object({ action: z.literal('delete') }),
+  z.object({ action: z.literal('restore') }),
+  z.object({ action: z.literal('whatsapp'), kind: z.enum(['confirmation', 'reminder', 'reschedule', 'cancellation', 'custom']), text: z.string().optional() }),
+]);
 
-  mockStore.bookings.splice(idx, 1);
-  saveStore();
-  return NextResponse.json({ success: true, message: 'Permanently deleted' });
-}
+export const POST = route(async (req: Request, { params }: Ctx) => {
+  const s = requireStaff();
+  const b = await load(params.id, s);
+  const body = actionSchema.parse(await req.json());
+  const staffActor = { kind: 'staff' as const, name: s.name, role: s.role, branch_id: s.branch_id };
+
+  switch (body.action) {
+    case 'confirm': {
+      if (!['awaiting_payment', 'payment_review'].includes(b.status)) throw new HttpError(409, 'Booking is already confirmed');
+      const advance = body.advance ?? (await getSettings()).payment.advance_amount;
+      if (advance > 0 && b.amount_paid === 0) await addPayment(b.id, advance, 'upi', 'Advance (verified screenshot)', s.name);
+      await setStatus(b.id, 'confirmed', s.name);
+      const fresh = await getBooking({ id: b.id });
+      const wa = await sendWhatsApp({ to: fresh.whatsapp || fresh.phone, kind: 'confirmation', booking: fresh });
+      return ok({ whatsapp: wa.status });
+    }
+    case 'payment':
+      await addPayment(b.id, body.amount, body.method, body.note, s.name);
+      return ok();
+    case 'close': {
+      if (b.status === 'completed') throw new HttpError(409, 'Booking is already closed');
+      if (b.status === 'cancelled') throw new HttpError(409, 'Cancelled bookings cannot be closed');
+      const base = bookingToInput(b);
+      const input = {
+        ...base, addons: body.addons, custom_items: body.custom_items, discount: body.discount, notes: body.notes || b.notes,
+        package_id: body.package_id === undefined ? base.package_id : body.package_id, guests: body.guests ?? base.guests,
+        extra_hours: body.extra_hours ?? base.extra_hours,
+      };
+      await updateBooking(b.id, input, staffActor);
+      if (body.final_amount > 0) await addPayment(b.id, body.final_amount, body.method, 'Final payment at closing', s.name);
+      await setStatus(b.id, 'completed', s.name);
+      return ok();
+    }
+    case 'cancel': {
+      await setStatus(b.id, 'cancelled', s.name, { reason: body.reason });
+      const fresh = await getBooking({ id: b.id });
+      await sendWhatsApp({ to: fresh.whatsapp || fresh.phone, kind: 'cancellation', booking: fresh });
+      return ok();
+    }
+    case 'reopen':
+      if (b.status !== 'completed') throw new HttpError(409, 'Only closed bookings can be reopened');
+      await setStatus(b.id, 'confirmed', s.name);
+      return ok();
+    case 'delete':
+      if (s.role !== 'admin') throw new HttpError(403, 'Only admins can delete bookings');
+      await q("UPDATE bookings SET is_deleted=true, status=CASE WHEN status IN ('awaiting_payment','payment_review','confirmed') THEN 'cancelled' ELSE status END, updated_at=now() WHERE id=$1", [b.id]);
+      await recordEvent(b.id, s.name, 'deleted');
+      return ok();
+    case 'restore':
+      if (s.role !== 'admin') throw new HttpError(403, 'Only admins can restore bookings');
+      await q('UPDATE bookings SET is_deleted=false, updated_at=now() WHERE id=$1', [b.id]);
+      await recordEvent(b.id, s.name, 'restored');
+      return ok();
+    case 'whatsapp': {
+      const res = await sendWhatsApp({ to: b.whatsapp || b.phone, kind: body.kind as MessageKind, booking: b, text: body.kind === 'custom' ? body.text : undefined });
+      return ok(res);
+    }
+  }
+});

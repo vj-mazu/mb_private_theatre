@@ -1,108 +1,70 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss';
 
+// Movie Bash palette: sky blue (brand) · creamy white (surface) · deep navy (ink).
 const config: Config = {
-  darkMode: "class",
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        laban: {
-          DEFAULT: "#00A2E4",
-          deep: "#0072AE",
-          light: "#43C6FA",
-          glow: "rgba(0, 162, 228, 0.35)",
+        brand: {
+          50: '#F0F8FE',
+          100: '#DDF0FC',
+          200: '#B9E1F8',
+          300: '#86CBF1',
+          400: '#4FB3E8',
+          500: '#2A9BD9',
+          600: '#167DBA',
+          700: '#126496',
         },
-        milk: {
-          DEFAULT: "#F6FAFD",
-          pure: "#FFFFFF",
-          mist: "#E6F3FB",
+        cream: {
+          DEFAULT: '#FBF7EF',
+          deep: '#F3ECDF',
+          card: '#FFFDF9',
         },
-        caramel: "#C68A4E",
-        cocoa: "#26140B",
-        royal: {
-          950: "#050F30",
-          900: "#0A1F5C",
-          800: "#0E2976",
-          700: "#12338F",
-          600: "#1A44B8",
-          500: "#2F5FD6",
-          400: "#507EF0",
-          200: "#C2D4FC",
-          100: "#E3EAFB",
-          50: "#F0F4FE",
+        navy: {
+          DEFAULT: '#0E2A47',
+          soft: '#4A5E74',
+          faint: '#8A99AA',
         },
-        sand: {
-          50: "#F6FAFD",
-          100: "#E6F3FB",
-          200: "#D8E7F3",
-          300: "#DFD0B0",
-          400: "#D4BE92",
-          500: "#C2A875",
-        },
-        ink: {
-          DEFAULT: "#0B2238",
-          soft: "#4B6076",
-          faint: "#8FA4B8",
-        },
-        cream: "#F6FAFD",
-        /* shadcn/ui semantic tokens — consumed by components/ui/* */
-        border: "hsl(var(--border) / <alpha-value>)",
-        background: "hsl(var(--background) / <alpha-value>)",
-        foreground: "hsl(var(--foreground) / <alpha-value>)",
-        card: {
-          DEFAULT: "hsl(var(--card) / <alpha-value>)",
-          foreground: "hsl(var(--card-foreground) / <alpha-value>)",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted) / <alpha-value>)",
-          foreground: "hsl(var(--muted-foreground) / <alpha-value>)",
-        },
-        ring: "hsl(var(--ring) / <alpha-value>)",
-        chart: {
-          1: "hsl(var(--chart-1) / <alpha-value>)",
-          2: "hsl(var(--chart-2) / <alpha-value>)",
-          3: "hsl(var(--chart-3) / <alpha-value>)",
-          4: "hsl(var(--chart-4) / <alpha-value>)",
-          5: "hsl(var(--chart-5) / <alpha-value>)",
+        line: '#E7DFD1',
+        // Single premium accent: warm champagne gold (frames, rules, highlights).
+        gold: {
+          100: '#FBF3DE',
+          200: '#F3E3B5',
+          300: '#E7C77D',
+          400: '#D9B25F',
+          500: '#C9962E',
+          600: '#A87A1F',
         },
       },
       fontFamily: {
-        interTight: ["var(--font-inter-tight)", "var(--font-inter)", "sans-serif"],
-        playfair: ["var(--font-playfair)", "serif"],
-        poppins: ["var(--font-poppins)", "sans-serif"],
-        inter: ["var(--font-inter)", "sans-serif"],
-        caveat: ["var(--font-caveat)", "cursive"],
-      },
-      borderRadius: {
-        '2xl': '16px',
-        '3xl': '24px',
-        '4xl': '32px',
+        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'Georgia', 'serif'],
       },
       boxShadow: {
-        'soft': '0 8px 30px rgba(10, 31, 92, 0.06)',
-        'elevated': '0 14px 40px rgba(10, 31, 92, 0.12)',
-        'royal-glow': '0 10px 25px rgba(18, 51, 143, 0.25)',
+        card: '0 1px 2px rgba(14,42,71,0.04), 0 8px 24px -12px rgba(14,42,71,0.12)',
+        lift: '0 2px 4px rgba(14,42,71,0.05), 0 20px 40px -16px rgba(14,42,71,0.22)',
+      },
+      transitionTimingFunction: {
+        smooth: 'cubic-bezier(0.22, 1, 0.36, 1)',
       },
       keyframes: {
-        marquee: {
-          '0%': { transform: 'translateX(0%)' },
-          '100%': { transform: 'translateX(-50%)' },
-        },
-        pulseSlow: {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.6' },
-        }
+        'fade-up': { from: { opacity: '0', transform: 'translateY(12px)' }, to: { opacity: '1', transform: 'none' } },
+        'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
+        shimmer: { from: { backgroundPosition: '200% 0' }, to: { backgroundPosition: '-200% 0' } },
+        marquee: { from: { transform: 'translateX(0)' }, to: { transform: 'translateX(-50%)' } },
+        float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-8px)' } },
+        'spin-slow': { to: { transform: 'rotate(360deg)' } },
       },
       animation: {
-        marquee: 'marquee 28s linear infinite',
-        'marquee-slow': 'marquee 42s linear infinite',
-        'marquee-fast': 'marquee 20s linear infinite',
-        'pulse-slow': 'pulseSlow 3s ease-in-out infinite',
-      }
+        'fade-up': 'fade-up 0.6s cubic-bezier(0.22,1,0.36,1) both',
+        'fade-in': 'fade-in 0.4s ease-out both',
+        shimmer: 'shimmer 1.6s linear infinite',
+        marquee: 'marquee 40s linear infinite',
+        'marquee-slow': 'marquee 60s linear infinite',
+        float: 'float 6s ease-in-out infinite',
+        'spin-slow': 'spin-slow 24s linear infinite',
+      },
     },
   },
   plugins: [],

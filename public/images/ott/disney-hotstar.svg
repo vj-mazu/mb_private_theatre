@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" fill="none">
-  <rect width="120" height="40" rx="8" fill="#0B132B"/>
-  <path d="M22 12c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 13c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z" fill="#00A2E4"/>
-  <text x="36" y="24" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="900" font-size="13" letter-spacing="0.5">Disney+</text>
-  <text x="88" y="24" fill="#FFCC00" font-family="Arial, sans-serif" font-weight="800" font-size="10">HOTSTAR</text>
-</svg>

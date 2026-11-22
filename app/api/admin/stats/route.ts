@@ -1,298 +1,46 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getAdminSession } from '@/lib/auth';
-import { mockStore, getDb } from '@/lib/db';
-import { formatBookingSlotTime } from '@/lib/slot-engine';
-import { getTodayIST, getYesterdayIST, getCurrentMonthIST, getDaysAgoIST } from '@/lib/time';
+import { q } from '@/lib/server/db';
+import { releaseExpiredHolds } from '@/lib/server/bookings';
+import { ok, route, requireStaff } from '@/lib/server/api';
+import { addDays, todayIST } from '@/lib/booking-rules';
 
-export async function GET(request: NextRequest) {
-  const session = await getAdminSession();
-  if (!session) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+export const dynamic = 'force-dynamic';
+
+export const GET = route(async () => {
+  const s = requireStaff();
+  await releaseExpiredHolds();
+  const today = todayIST();
+  const monthStart = `${today.slice(0, 7)}-01`;
+  const scope = s.role === 'staff' && s.branch_id ? `AND bk.branch_id=${Number(s.branch_id)}` : '';
+  const live = `NOT bk.is_deleted AND bk.status <> 'cancelled' ${scope}`;
+
+  const [[counts], todayList, daily, verify, upcoming, enquiries] = await Promise.all([
+    q<any>(`SELECT
+        count(*) FILTER (WHERE booking_date=$1)::int AS today,
+        count(*) FILTER (WHERE status='payment_review')::int AS to_verify,
+        count(*) FILTER (WHERE booking_date >= $1 AND status IN ('confirmed','payment_review'))::int AS upcoming,
+        COALESCE(sum(total) FILTER (WHERE booking_date >= $2 AND booking_date <= $1), 0)::int AS month_revenue,
+        COALESCE(sum(amount_paid) FILTER (WHERE booking_date >= $2 AND booking_date <= $1), 0)::int AS month_collected,
+        COALESCE(sum(total - amount_paid) FILTER (WHERE status='confirmed' AND booking_date <= $1), 0)::int AS pending_balance
+      FROM bookings bk WHERE ${live}`, [today, monthStart]),
+    q(`SELECT bk.id, bk.ref, bk.slot_label, bk.customer_name, bk.phone, bk.status, bk.total, bk.amount_paid, t.name AS theatre_name, br.name AS branch_name
+       FROM bookings bk JOIN theatres t ON t.id=bk.theatre_id JOIN branches br ON br.id=bk.branch_id
+       WHERE bk.booking_date=$1 AND ${live} ORDER BY t.name, bk.slot_label`, [today]),
+    q(`SELECT booking_date AS date, count(*)::int AS bookings, COALESCE(sum(total),0)::int AS revenue
+       FROM bookings bk WHERE ${live} AND booking_date BETWEEN $1 AND $2 GROUP BY booking_date ORDER BY booking_date`, [addDays(today, -13), today]),
+    q(`SELECT bk.id, bk.ref, bk.booking_date, bk.slot_label, bk.customer_name, bk.phone, bk.total, bk.amount_paid, t.name AS theatre_name
+       FROM bookings bk JOIN theatres t ON t.id=bk.theatre_id
+       WHERE bk.status='payment_review' AND NOT bk.is_deleted ${scope} ORDER BY bk.created_at LIMIT 6`),
+    q(`SELECT bk.id, bk.ref, bk.booking_date, bk.slot_label, bk.customer_name, bk.total, bk.amount_paid, bk.status, t.name AS theatre_name
+       FROM bookings bk JOIN theatres t ON t.id=bk.theatre_id
+       WHERE bk.booking_date > $1 AND ${live} AND bk.status IN ('confirmed','payment_review') ORDER BY bk.booking_date, bk.slot_label LIMIT 6`, [today]),
+    s.role === 'admin'
+      ? q("SELECT id, name, phone, occasion, preferred_date, created_at FROM enquiries WHERE status='new' ORDER BY created_at DESC LIMIT 4")
+      : Promise.resolve([]),
+  ]);
+  // Staff see operations only — no revenue totals (per-booking balances stay, they collect them at the venue).
+  if (s.role !== 'admin') {
+    for (const k of ['month_revenue', 'month_collected', 'pending_balance']) delete counts[k];
+    return ok({ role: s.role, counts, today: todayList, daily: [], verify, upcoming, enquiries, date: today });
   }
-
-  // Staff members are strictly restricted from viewing dashboard revenue and financial analytics
-  if (session.role === 'staff') {
-    return NextResponse.json({ 
-      success: false, 
-      error: 'Access restricted: Dashboard revenue metrics and operational analytics are reserved for Super Administrators.' 
-    }, { status: 403 });
-  }
-
-  const { searchParams } = new URL(request.url);
-  const branchParam = searchParams.get('branch');
-  const branchId = branchParam ? Number(branchParam) : null;
-
-  // Filter bookings based on branch filter or admin role restriction
-  let effectiveBranchId = branchId;
-  if (session.role === 'branch_manager' && session.branch_id) {
-    effectiveBranchId = session.branch_id;
-  }
-
-  let allBookings: any[] = [];
-  try {
-    const db = getDb();
-    const rows = db.prepare(`
-      SELECT b.*,
-             br.name as branch_name, br.map_url as map_url,
-             th.name as theatre_name, th.emoji as theatre_emoji,
-             ts.start_time as slot_start, ts.end_time as slot_end,
-             oc.name as occasion_name
-      FROM bookings b
-      LEFT JOIN branches br ON b.branch_id = br.id
-      LEFT JOIN theatres th ON b.theatre_id = th.id
-      LEFT JOIN time_slots ts ON b.slot_id = ts.id
-      LEFT JOIN occasions oc ON b.occasion_id = oc.id
-      ORDER BY b.booking_date DESC, b.id DESC
-    `).all();
-    allBookings = rows && rows.length > 0 ? rows : [...mockStore.bookings];
-  } catch (e) {
-    allBookings = [...mockStore.bookings];
-  }
-
-  if (effectiveBranchId) {
-    allBookings = allBookings.filter(b => b.branch_id === effectiveBranchId);
-  }
-
-  const todayStr = getTodayIST();
-  const yesterdayStr = getYesterdayIST();
-  const currentMonthStr = getCurrentMonthIST();
-
-  const prevMonthDate = new Date();
-  prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
-  const lastMonthStr = getCurrentMonthIST(prevMonthDate);
-
-  // Categorize bookings
-  const confirmedAndCompleted = allBookings.filter(b => b.is_deleted === 0 && (b.status === 'confirmed' || b.status === 'completed'));
-  const cancelledBookings = allBookings.filter(b => b.status === 'cancelled' || b.is_deleted === 1);
-  const todaysActive = confirmedAndCompleted.filter(b => b.booking_date === todayStr);
-  const yesterdaysActive = confirmedAndCompleted.filter(b => b.booking_date === yesterdayStr);
-  const thisMonthActive = confirmedAndCompleted.filter(b => b.booking_date.startsWith(currentMonthStr));
-  const lastMonthActive = confirmedAndCompleted.filter(b => b.booking_date.startsWith(lastMonthStr));
-  const upcomingActive = confirmedAndCompleted.filter(b => b.booking_date > todayStr);
-  const completedActive = allBookings.filter(b => b.status === 'completed' && b.is_deleted === 0);
-
-  // Revenue totals
-  let totalRevenue = 0;
-  let advanceCollected = 0;
-  let balancePending = 0;
-
-  confirmedAndCompleted.forEach(b => {
-    totalRevenue += Number(b.total || 0);
-    advanceCollected += Number(b.advance_paid || 0);
-    balancePending += Number(b.balance || 0);
-  });
-
-  // Daily revenue
-  const todayRevenue = todaysActive.reduce((sum, b) => sum + Number(b.total || 0), 0);
-  const todayAdvance = todaysActive.reduce((sum, b) => sum + Number(b.advance_paid || 0), 0);
-  const yesterdayRevenue = yesterdaysActive.reduce((sum, b) => sum + Number(b.total || 0), 0);
-  const yesterdayAdvance = yesterdaysActive.reduce((sum, b) => sum + Number(b.advance_paid || 0), 0);
-
-  // Monthly revenue
-  const thisMonthRevenue = thisMonthActive.reduce((sum, b) => sum + Number(b.total || 0), 0);
-  const thisMonthAdvance = thisMonthActive.reduce((sum, b) => sum + Number(b.advance_paid || 0), 0);
-  const lastMonthRevenue = lastMonthActive.reduce((sum, b) => sum + Number(b.total || 0), 0);
-  const lastMonthAdvance = lastMonthActive.reduce((sum, b) => sum + Number(b.advance_paid || 0), 0);
-
-  // Cancelled & Lost revenue
-  let cancelledLostRevenue = 0;
-  let totalRefunded = 0;
-  cancelledBookings.forEach(b => {
-    cancelledLostRevenue += Number(b.total || 0);
-    totalRefunded += Number(b.refund_amount || 0);
-  });
-
-  const totalBookingsAll = confirmedAndCompleted.length + cancelledBookings.length;
-  const cancellationRate = totalBookingsAll > 0 ? (cancelledBookings.length / totalBookingsAll) * 100 : 0;
-  const collectionRate = totalRevenue > 0 ? (advanceCollected / totalRevenue) * 100 : 0;
-
-  // 18-day window covering future (tomorrow, +2d, +3d), today, and past 14 days
-  const dailyTimeline: Array<{ date: string; display_date: string; revenue: number; advance: number; count: number }> = [];
-  for (let i = -3; i <= 14; i++) {
-    const dStr = getDaysAgoIST(i);
-    const dayMatches = confirmedAndCompleted.filter(b => b.booking_date === dStr);
-    const dayRev = dayMatches.reduce((acc, b) => acc + Number(b.total || 0), 0);
-    const dayAdv = dayMatches.reduce((acc, b) => acc + Number(b.advance_paid || 0), 0);
-    const [y, m, dNum] = dStr.split('-');
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const displayDate = `${dNum} ${monthNames[parseInt(m, 10) - 1]}`;
-    dailyTimeline.push({
-      date: dStr,
-      display_date: displayDate,
-      revenue: dayRev,
-      advance: dayAdv,
-      count: dayMatches.length
-    });
-  }
-  // Sort descending so upcoming & today are displayed prominently
-  dailyTimeline.sort((a, b) => b.date.localeCompare(a.date));
-
-  // Monthly timeline (last 6 months)
-  const monthlyTimeline: Array<{ month_key: string; display_month: string; revenue: number; advance: number; count: number }> = [];
-  const now = new Date();
-  for (let i = 5; i >= 0; i--) {
-    const m = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const mKey = `${m.getFullYear()}-${String(m.getMonth() + 1).padStart(2, '0')}`;
-    const monthMatches = confirmedAndCompleted.filter(b => b.booking_date.startsWith(mKey));
-    const mRev = monthMatches.reduce((acc, b) => acc + Number(b.total || 0), 0);
-    const mAdv = monthMatches.reduce((acc, b) => acc + Number(b.advance_paid || 0), 0);
-    const displayMonth = m.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
-    monthlyTimeline.push({
-      month_key: mKey,
-      display_month: displayMonth,
-      revenue: mRev,
-      advance: mAdv,
-      count: monthMatches.length
-    });
-  }
-
-  // Cancelled bookings details
-  const cancelledList = cancelledBookings.map(b => {
-    const th = mockStore.theatres.find(t => t.id === b.theatre_id);
-    const br = mockStore.branches.find(x => x.id === b.branch_id);
-    return {
-      id: b.id,
-      ref: b.booking_ref,
-      customer_name: b.customer_name,
-      customer_phone: b.customer_phone,
-      booking_date: b.booking_date,
-      branch_name: br?.name || 'Branch',
-      theatre_name: th?.name || 'Theatre',
-      theatre_emoji: th?.emoji || '🎬',
-      total: Number(b.total || 0),
-      refund_amount: Number(b.refund_amount || 0),
-      cancelled_reason: b.cancelled_reason || 'Customer cancellation request',
-      source: b.source || 'web'
-    };
-  });
-
-  // Booking Source distribution (Phone Call vs Web vs Walk-in)
-  const sourceNames: Record<string, string> = {
-    phone: 'Phone Call (Admin)',
-    web: 'Online Website',
-    walk_in: 'Walk-in Desk'
-  };
-  const channelDistribution = ['phone', 'web', 'walk_in'].map(src => {
-    const srcBookings = confirmedAndCompleted.filter(b => (b.source || 'web') === src);
-    const srcRev = srcBookings.reduce((sum, b) => sum + Number(b.total || 0), 0);
-    return {
-      source_key: src,
-      name: sourceNames[src] || src,
-      count: srcBookings.length,
-      revenue: srcRev,
-      pct: totalRevenue > 0 ? ((srcRev / totalRevenue) * 100).toFixed(1) : '0'
-    };
-  });
-
-  // Theatre / Screen Performance
-  const theatreDistribution = mockStore.theatres.map(th => {
-    const thBookings = confirmedAndCompleted.filter(b => b.theatre_id === th.id);
-    const thRev = thBookings.reduce((sum, b) => sum + Number(b.total || 0), 0);
-    return {
-      id: th.id,
-      name: th.name,
-      emoji: th.emoji,
-      branch_id: th.branch_id,
-      count: thBookings.length,
-      revenue: thRev
-    };
-  });
-
-  // Branch Performance
-  const branchDistribution = mockStore.branches.map(br => {
-    const brBookings = confirmedAndCompleted.filter(b => b.branch_id === br.id);
-    const brToday = brBookings.filter(b => b.booking_date === todayStr);
-    const brRev = brBookings.reduce((sum, b) => sum + Number(b.total || 0), 0);
-    const brTodayRev = brToday.reduce((sum, b) => sum + Number(b.total || 0), 0);
-    return {
-      id: br.id,
-      name: br.name,
-      count: brBookings.length,
-      revenue: brRev,
-      today_count: brToday.length,
-      today_revenue: brTodayRev
-    };
-  });
-
-  // Bookings by occasion
-  const occasionDistribution = mockStore.occasions.map(occ => {
-    const count = confirmedAndCompleted.filter(b => b.occasion_id === occ.id).length;
-    return { id: occ.id, name: occ.name, count };
-  });
-
-  // Today's schedule timeline
-  const todaySchedule = todaysActive.map(b => {
-    const slot = mockStore.timeSlots.find(s => s.id === b.slot_id);
-    const theatre = mockStore.theatres.find(t => t.id === b.theatre_id);
-    const branch = mockStore.branches.find(br => br.id === b.branch_id);
-    const extraHours = Math.max(0, Number(b.extra_hours || 0));
-    const computedSlotTime = slot 
-      ? formatBookingSlotTime(slot.start_time, slot.end_time, extraHours)
-      : (b.slot_time || 'Slot');
-
-    return {
-      id: b.id,
-      ref: b.booking_ref,
-      theatre: theatre?.name || 'Screen',
-      emoji: theatre?.emoji || '🎬',
-      branch: branch?.name || 'Branch',
-      customer: b.customer_name,
-      phone: b.customer_phone,
-      slot: computedSlotTime,
-      extra_hours: extraHours,
-      status: b.status,
-      guests: b.guests,
-      title: b.screen_name || 'Celebration',
-      total: b.total,
-      advance_paid: b.advance_paid,
-      balance: b.balance
-    };
-  });
-
-  return NextResponse.json({
-    success: true,
-    data: {
-      metrics: {
-        total_bookings: confirmedAndCompleted.length,
-        todays_bookings: todaysActive.length,
-        upcoming_bookings: upcomingActive.length,
-        completed_bookings: completedActive.length,
-        cancelled_bookings: cancelledBookings.length,
-        cancellation_rate_pct: Number(cancellationRate.toFixed(1)),
-
-        // Revenue Totals
-        total_revenue: totalRevenue,
-        advance_collected: advanceCollected,
-        balance_pending: balancePending,
-        collection_rate_pct: Number(collectionRate.toFixed(1)),
-
-        // Daily
-        today_revenue: todayRevenue,
-        today_advance: todayAdvance,
-        yesterday_revenue: yesterdayRevenue,
-        yesterday_advance: yesterdayAdvance,
-
-        // Monthly
-        this_month_revenue: thisMonthRevenue,
-        this_month_advance: thisMonthAdvance,
-        this_month_bookings: thisMonthActive.length,
-        last_month_revenue: lastMonthRevenue,
-        last_month_advance: lastMonthAdvance,
-        last_month_bookings: lastMonthActive.length,
-
-        // Cancelled & Lost
-        cancelled_lost_revenue: cancelledLostRevenue,
-        total_refunded: totalRefunded,
-      },
-      daily_timeline: dailyTimeline,
-      monthly_timeline: monthlyTimeline,
-      cancelled_list: cancelledList,
-      channel_distribution: channelDistribution,
-      theatre_distribution: theatreDistribution,
-      branch_distribution: branchDistribution,
-      occasion_distribution: occasionDistribution,
-      today_schedule: todaySchedule,
-      branches: mockStore.branches
-    }
-  });
-}
+  return ok({ role: s.role, counts, today: todayList, daily, verify, upcoming, enquiries, date: today });
+});

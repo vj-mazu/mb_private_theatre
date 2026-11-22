@@ -1,30 +1,11 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://moviebash.in';
-
-  const routes = [
-    '',
-    '/about',
-    '/gallery',
-    '/blog',
-    '/testimonials',
-    '/faq',
-    '/contact',
-    '/book-now',
-    '/book-now/electronic-city',
-    '/book-now/btm-2nd-stage',
-    '/venues/electronic-city',
-    '/venues/btm-stage-2',
-    '/terms-and-conditions',
-    '/privacy-policy',
-    '/refund-policy',
-  ];
-
-  return routes.map((route) => ({
-    url: `${baseUrl}${route}`,
+  const base = process.env.NEXT_PUBLIC_APP_URL || 'https://moviebash.in';
+  return ['', '/book', '/our-story', '/gallery', '/terms-and-conditions', '/privacy-policy', '/refund-policy'].map((route) => ({
+    url: `${base}${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
-    priority: route === '' ? 1 : 0.8,
+    priority: route === '' ? 1 : route === '/book' ? 0.9 : 0.5,
   }));
 }
