@@ -13,11 +13,17 @@ const globalForDb = globalThis as unknown as { mbPool?: Pool; mbSchema?: Promise
 
 function getPool(): Pool {
   if (!globalForDb.mbPool) {
-    const url = process.env.DATABASE_URL;
+    // Tolerate common paste mistakes: surrounding spaces/quotes.
+    let url = (process.env.DATABASE_URL || '').trim().replace(/^["']|["']$/g, '');
     if (!url) throw new Error('DATABASE_URL is not configured');
+    // Hosted databases (Supabase etc.) need SSL. An `sslmode=` in the URL would override the setting below and
+    // make node-postgres reject the provider's certificate chain, so SSL is configured here instead.
+    const useSsl = /^(true|1|yes)$/i.test((process.env.DATABASE_SSL || '').trim()) || /supabase\.(co|com)/i.test(url);
+    if (useSsl) url = url.replace(/([?&])sslmode=[^&]*&?/i, '$1').replace(/[?&]$/, '');
     globalForDb.mbPool = new Pool({
       connectionString: url,
-      ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false,
+      ssl: useSsl ? { rejectUnauthorized: false } : false,
+      connectionTimeoutMillis: 10_000,
       // Serverless (Vercel) runs many small instances: keep few connections each and use Supabase's pooler URL.
       max: SERVERLESS ? 3 : 10,
       idleTimeoutMillis: SERVERLESS ? 10_000 : 30_000,
