@@ -146,7 +146,30 @@ async function seedFromFile(client, file) {
   }
 }
 
+/**
+ * ADMIN_USERNAME + ADMIN_PASSWORD (10+ characters) are the source of truth for that one admin login:
+ * on every setup run (every deploy / container start) it is created, or its password reset to the value set
+ * in the hosting environment. Other users, and passwords changed for other accounts, are untouched.
+ * Returns true when it applied the login.
+ */
+async function syncEnvAdmin(client) {
+  const username = (process.env.ADMIN_USERNAME || '').trim().toLowerCase();
+  const password = process.env.ADMIN_PASSWORD || '';
+  if (!username || !password) return false;
+  if (password.length < 10) {
+    console.log(`! ADMIN_PASSWORD is shorter than 10 characters, so it was NOT applied to "${username}". Use 10+ characters.`);
+    return false;
+  }
+  await client.query(
+    `INSERT INTO users (name, username, password_hash, role, is_active) VALUES ('Administrator', $1, $2, 'admin', true)
+     ON CONFLICT (username) DO UPDATE SET password_hash=EXCLUDED.password_hash, role='admin', is_active=true`,
+    [username, bcrypt.hashSync(password, 10)]);
+  console.log(`Admin login "${username}" is ready (password from ADMIN_PASSWORD).`);
+  return true;
+}
+
 async function createFirstAdmin(client) {
+  if (await syncEnvAdmin(client)) return;
   const username = (process.env.ADMIN_USERNAME || 'admin').toLowerCase();
   let password = process.env.ADMIN_PASSWORD || '';
   if (password.length < 10) {
@@ -247,6 +270,7 @@ async function main() {
       await ensureContent(client);
       const { rows: [{ n: userCount }] } = await client.query('SELECT count(*)::int AS n FROM users');
       if (!userCount) await createFirstAdmin(client);
+      else await syncEnvAdmin(client);
       console.log('Data already present — content checked.');
       return;
     }
