@@ -96,12 +96,12 @@ export function HeroOrbit({ title, items, rating, from }: { title: string; items
           </div>
 
           {/* Stage: wheel + centre photo */}
-          <div className="relative h-[clamp(300px,38svh,330px)] sm:h-[clamp(420px,60svh,560px)]">
+          <div className="relative h-[clamp(270px,34svh,296px)] sm:h-[clamp(420px,60svh,560px)]">
             <div className="absolute inset-x-0 top-1/2">
               {items.map((it, i) => <Tile key={it.name} item={it} i={i} n={n} turn={turn} maxOffset={maxOffset} onPick={() => pick(i)} />)}
             </div>
 
-            <div className="absolute left-1/2 top-1/2 z-20 h-[76%] -translate-x-1/2 -translate-y-1/2 sm:h-[84%]">
+            <div className="absolute left-1/2 top-1/2 z-20 h-[84%] -translate-x-1/2 -translate-y-1/2 sm:h-[84%]">
               <div aria-hidden className="absolute -inset-10 rounded-full bg-[radial-gradient(closest-side,rgba(134,203,241,0.45),transparent)] blur-2xl" />
               <div className="gold-frame relative aspect-[4/5] h-full rounded-[30px] p-[3px] shadow-[0_40px_70px_-25px_rgba(0,0,0,0.75),0_0_50px_-10px_rgba(231,199,125,0.35)]">
               <div className="relative h-full w-full overflow-hidden rounded-[27px] bg-navy">
@@ -112,12 +112,12 @@ export function HeroOrbit({ title, items, rating, from }: { title: string; items
                     <Image src={it.image} alt={k === idx ? it.name : ''} fill priority={k === 0} sizes="(min-width: 640px) 380px, 60vw" quality={82} className="object-cover" />
                   </motion.div>
                 ))}
-                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/75 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 hidden h-1/2 bg-gradient-to-t from-black/75 to-transparent sm:block" />
                 {/* light sheen that glides across the photo every few seconds */}
                 <motion.div aria-hidden className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 skew-x-[-18deg] bg-gradient-to-r from-transparent via-white/25 to-transparent"
                   animate={{ x: ['0%', '420%'] }} transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 5, ease: 'easeInOut', delay: d + 1.5 }} />
                 <div aria-hidden className="pointer-events-none absolute inset-2.5 rounded-[20px] border border-white/30" />
-                <div className="absolute inset-x-0 bottom-0 flex flex-col items-center p-4 text-center">
+                <div className="absolute inset-x-0 bottom-0 hidden flex-col items-center p-4 text-center sm:flex">
                   <AnimatePresence mode="wait">
                     <motion.p key={item.name} initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, y: -10, filter: 'blur(6px)' }}
                       transition={{ duration: 0.45, ease }} className="whitespace-nowrap font-display text-xl text-white drop-shadow sm:text-3xl">{item.name}</motion.p>
@@ -135,8 +135,19 @@ export function HeroOrbit({ title, items, rating, from }: { title: string; items
             </div>
           </div>
 
+          {/* Phones: occasion name and price below the photo, so the photo itself stays clean */}
+          <div className="relative z-20 flex flex-col items-center px-4 text-center sm:hidden">
+            <AnimatePresence mode="wait">
+              <motion.p key={'below-' + item.name} initial={{ opacity: 0, y: 10, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, y: -8, filter: 'blur(6px)' }}
+                transition={{ duration: 0.4, ease }} className="whitespace-nowrap font-display text-2xl text-white">{item.name}</motion.p>
+            </AnimatePresence>
+            <Link href={item.href} className="mt-2.5 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-5 py-2 text-sm font-semibold text-navy shadow-lift">
+              from {from} <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
           {/* Headline */}
-          <div className="relative px-4 pb-8 pt-4 text-center sm:pb-10">
+          <div className="relative px-4 pb-8 pt-6 text-center sm:pb-10 sm:pt-4">
             <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: d + 0.25, duration: 0.6 }}
               className="mb-3 flex items-center justify-center gap-2.5 whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-200 sm:gap-3 sm:text-xs sm:tracking-[0.32em]">
               <span className="h-px w-6 shrink-0 bg-gradient-to-r from-transparent to-gold-300 sm:w-14" />Private theatre celebrations<span className="h-px w-6 shrink-0 bg-gradient-to-l from-transparent to-gold-300 sm:w-14" />
