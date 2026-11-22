@@ -21,9 +21,12 @@ for (const file of ['.env.local', '.env']) {
   }
 }
 
-const url = process.env.DATABASE_URL;
+let url = (process.env.DATABASE_URL || '').trim().replace(/^["']|["']$/g, '');
 if (!url) { console.error('DATABASE_URL is not set'); process.exit(1); }
-const ssl = process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false;
+// Same rules as lib/server/db.ts: hosted databases (Supabase) use SSL; an sslmode= in the URL is handled here instead.
+const useSsl = /^(true|1|yes)$/i.test((process.env.DATABASE_SSL || '').trim()) || /supabase\.(co|com)/i.test(url);
+if (useSsl) url = url.replace(/([?&])sslmode=[^&]*&?/i, '$1').replace(/[?&]$/, '');
+const ssl = useSsl ? { rejectUnauthorized: false } : false;
 const pool = new Pool({ connectionString: url, ssl });
 
 /** Creates the database named in DATABASE_URL if it does not exist yet (needs a user with CREATEDB, e.g. postgres). */
@@ -107,6 +110,42 @@ const OCCASION_IMAGES = {
 const legacyCouponRows = [];
 
 /** First admin account. Uses ADMIN_USERNAME / ADMIN_PASSWORD, or prints a one-time random password to the log. */
+/** Inserts the rows of a Movie Bash backup-format file into an empty database (one transaction). */
+async function seedFromFile(client, file) {
+  const ORDER = ['files', 'settings', 'branches', 'theatres', 'slots', 'packages', 'package_prices', 'cakes', 'addons', 'occasions',
+    'gallery', 'coupons', 'promos', 'testimonials', 'faqs'];
+  const seed = JSON.parse(require('zlib').gunzipSync(fs.readFileSync(file)).toString('utf8'));
+  const { rows: colRows } = await client.query("SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema='public'");
+  const columns = {};
+  for (const r of colRows) (columns[r.table_name] ||= {})[r.column_name] = r.data_type;
+  await client.query('BEGIN');
+  try {
+    for (const table of ORDER) {
+      const rows = seed.tables[table] || [];
+      const types = columns[table] || {};
+      for (const row of rows) {
+        const cols = Object.keys(row).filter((c) => c in types);
+        const values = cols.map((c) => {
+          const v = row[c];
+          if (v === null || v === undefined) return null;
+          if (types[c] === 'bytea') return Buffer.from(v, 'base64');
+          if ((types[c] === 'jsonb' || types[c] === 'json') && typeof v !== 'string') return JSON.stringify(v);
+          return v;
+        });
+        await client.query(`INSERT INTO ${table} (${cols.join(',')}) VALUES (${cols.map((_, i) => `$${i + 1}`).join(',')}) ON CONFLICT DO NOTHING`, values);
+      }
+      if (types.id && types.id !== 'uuid') {
+        await client.query(`SELECT setval(pg_get_serial_sequence('${table}','id'), GREATEST(COALESCE((SELECT MAX(id) FROM ${table}), 1), 1))`);
+      }
+      if (rows.length) console.log(`  ${table.padEnd(16)} ${rows.length}`);
+    }
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw err;
+  }
+}
+
 async function createFirstAdmin(client) {
   const username = (process.env.ADMIN_USERNAME || 'admin').toLowerCase();
   let password = process.env.ADMIN_PASSWORD || '';
@@ -213,6 +252,16 @@ async function main() {
     }
 
     const storePath = path.join(root, 'data', 'store.json');
+    const seedPath = path.join(root, 'db', 'seed.json.gz');
+    // Empty database (e.g. a new cloud deployment): load the starter content once - theatres, slots, prices,
+    // packages, cakes, add-ons, photos and settings. Never runs again once branches exist.
+    if (!fs.existsSync(storePath) && fs.existsSync(seedPath)) {
+      await seedFromFile(client, seedPath);
+      await ensureContent(client);
+      await createFirstAdmin(client);
+      console.log('Empty database - starter content loaded (no bookings).');
+      return;
+    }
     const store = fs.existsSync(storePath) ? JSON.parse(fs.readFileSync(storePath, 'utf8')) : {};
     await client.query('BEGIN');
 

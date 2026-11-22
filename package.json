@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3105",
     "build": "next build",
+    "vercel-build": "node scripts/db-setup.js && next build",
     "start": "node scripts/db-setup.js && next start",
     "lint": "next lint",
     "db:setup": "node scripts/db-setup.js",
