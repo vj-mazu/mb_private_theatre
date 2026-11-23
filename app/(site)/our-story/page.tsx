@@ -24,7 +24,7 @@ export default async function OurStoryPage() {
   const { story, stats, business } = settings;
   const wa = business.whatsapp?.replace(/\D/g, '');
   const contacts = [
-    business.phone && { href: `tel:${business.phone.replace(/\s/g, '')}`, label: 'Call us', sub: business.phone, icon: Phone, tone: 'bg-brand-500' },
+    business.phone && { href: `tel:${business.phone.replace(/\s/g, '')}`, label: 'Call us', sub: business.phone, icon: Phone, tone: 'bg-brand-600' },
     wa && { href: `https://wa.me/${wa}`, label: 'WhatsApp', sub: 'Quick replies', icon: MessageCircle, tone: 'bg-[#25D366]' },
     business.instagram && { href: business.instagram, label: 'Instagram', sub: 'Real setups & reels', icon: Instagram, tone: 'bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF]' },
     business.email && { href: `mailto:${business.email}`, label: 'Email', sub: business.email, icon: Mail, tone: 'bg-navy' },

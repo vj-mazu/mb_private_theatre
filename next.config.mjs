@@ -21,7 +21,7 @@ const nextConfig = {
     // Each device gets a photo sized for its screen (WebP, quality 90 via components/Img) instead of the
     // 2400 px originals — same clarity, a fraction of the bytes. Resized copies are cached on the server.
     formats: ['image/webp'],
-    deviceSizes: [640, 828, 1080, 1280, 1600, 1920],
+    deviceSizes: [480, 640, 828, 1080, 1280, 1600, 1920],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days cache for images
 
   },

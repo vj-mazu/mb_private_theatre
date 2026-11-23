@@ -13,7 +13,7 @@ const config: Config = {
           300: '#86CBF1',
           400: '#4FB3E8',
           500: '#2A9BD9',
-          600: '#167DBA',
+          600: '#1577B1',
           700: '#126496',
         },
         cream: {
@@ -24,7 +24,7 @@ const config: Config = {
         navy: {
           DEFAULT: '#0E2A47',
           soft: '#4A5E74',
-          faint: '#8A99AA',
+          faint: '#5E7185',
         },
         line: '#E7DFD1',
         // Single premium accent: warm champagne gold (frames, rules, highlights).

@@ -10,7 +10,7 @@ import { inr } from '@/lib/booking-rules';
 
 // One colour per package: panel, soft circle, accent text.
 const THEMES = [
-  { panel: '#2A9BD9', circle: '#DDF0FC', accent: '#167DBA' },
+  { panel: '#2A9BD9', circle: '#DDF0FC', accent: '#0F5C8C' },
   { panel: '#1B3F6B', circle: '#E4E9F4', accent: '#1B3F6B' },
   { panel: '#18A39A', circle: '#DDF5F2', accent: '#0F7F78' },
   { panel: '#7C5CC4', circle: '#EEE8FA', accent: '#6445AE' },

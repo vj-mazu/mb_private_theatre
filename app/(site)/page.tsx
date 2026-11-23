@@ -78,7 +78,7 @@ ${count} private ${count === 1 ? 'theatre' : 'theatres'} · pick a slot online i
 
       <section>
         {/* Occasions ticker */}
-        <div className="bg-brand-500 py-4 text-white">
+        <div className="bg-brand-600 py-4 text-white">
           <div className="flex overflow-hidden">
             <div className="flex shrink-0 animate-marquee items-center gap-8 pr-8">
               {[...ticker, ...ticker, ...ticker, ...ticker].map((t, i) => (
@@ -186,17 +186,17 @@ ${count} private ${count === 1 ? 'theatre' : 'theatres'} · pick a slot online i
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-300">How booking works</p>
             <h2 className="mt-3 text-3xl text-cream sm:text-5xl">Booked in <span className="italic text-brand-300">two minutes</span></h2>
           </Reveal>
-          <ol className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map(([t, d], i) => (
               <Reveal key={t} delay={i * 0.1}>
-                <li className="group h-full rounded-3xl border border-white/10 bg-white/[0.04] p-6 transition-all duration-500 hover:-translate-y-1 hover:border-brand-300/40 hover:bg-white/[0.07]">
+                <div className="group h-full rounded-3xl border border-white/10 bg-white/[0.04] p-6 transition-all duration-500 hover:-translate-y-1 hover:border-brand-300/40 hover:bg-white/[0.07]">
                   <span className="font-display text-4xl text-brand-300">0{i + 1}</span>
                   <h3 className="mt-4 font-sans text-lg font-semibold text-cream">{t}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-cream/70">{d}</p>
-                </li>
+                </div>
               </Reveal>
             ))}
-          </ol>
+          </div>
           <div className="mt-12 text-center">
             <Link href="/book" className="inline-flex h-14 items-center gap-2 rounded-2xl bg-brand-400 px-8 text-base font-semibold text-navy transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-300">Start booking <ArrowRight className="h-5 w-5" /></Link>
           </div>

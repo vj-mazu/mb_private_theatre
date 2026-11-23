@@ -2,7 +2,7 @@ import { Star, Quote } from 'lucide-react';
 
 function Stars({ n = 5, className = 'h-4 w-4' }: { n?: number; className?: string }) {
   return (
-    <span className="flex gap-0.5" aria-label={`${n} out of 5 stars`}>
+    <span className="flex gap-0.5" role="img" aria-label={`${n} out of 5 stars`}>
       {Array.from({ length: 5 }).map((_, i) => <Star key={i} className={`${className} ${i < n ? 'fill-amber-400 text-amber-400' : 'text-line'}`} />)}
     </span>
   );

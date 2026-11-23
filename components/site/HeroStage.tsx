@@ -317,7 +317,7 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
                   <div className="gold-frame h-full w-full" style={{ padding: U(5), borderRadius: U(38), boxShadow: `0 ${U(40)} ${U(70)} ${U(-22)} ${t.shadow}` }}>
                     <div className="relative h-full w-full overflow-hidden bg-navy" style={{ borderRadius: U(33) }}>
                       <Image src={s.image} alt={s.name} fill priority={i < 2} draggable={false} quality={82}
-                        sizes="(min-width: 1024px) 520px, 80vw" className="object-cover" />
+                        sizes="(min-width: 1024px) 520px, 240px" className="object-cover" />
                       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-white/10" />
                       <div aria-hidden className="pointer-events-none absolute border border-white/40" style={{ inset: U(13), borderRadius: U(23) }} />
                     </div>

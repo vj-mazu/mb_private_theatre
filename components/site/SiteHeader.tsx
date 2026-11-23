@@ -24,7 +24,7 @@ interface Business { phone: string; whatsapp: string; instagram: string; email: 
 function quickLinks(b: Business) {
   const wa = b.whatsapp?.replace(/\D/g, '');
   return [
-    b.phone && { href: `tel:${b.phone.replace(/\s/g, '')}`, label: 'Call us', sub: b.phone, icon: Phone, tone: 'bg-brand-500' },
+    b.phone && { href: `tel:${b.phone.replace(/\s/g, '')}`, label: 'Call us', sub: b.phone, icon: Phone, tone: 'bg-brand-600' },
     wa && { href: `https://wa.me/${wa}?text=${encodeURIComponent('Hi Movie Bash, I would like to book a celebration.')}`, label: 'WhatsApp', sub: 'Chat with us', icon: MessageCircle, tone: 'bg-[#25D366]' },
     b.instagram && { href: b.instagram, label: 'Instagram', sub: 'See real setups', icon: Instagram, tone: 'bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF]' },
   ].filter(Boolean) as { href: string; label: string; sub: string; icon: any; tone: string }[];
@@ -111,7 +111,7 @@ export function SiteHeader({ business, branches, bar }: { business: Business; br
 
             <div className="flex items-center gap-2">
               <Socials b={business} className="hidden 2xl:flex" />
-              <Link href="/book" className="inline-flex h-11 items-center rounded-full bg-brand-500 px-5 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(42,155,217,0.9)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-600">
+              <Link href="/book" className="inline-flex h-11 items-center rounded-full bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(42,155,217,0.9)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-700">
                 Book now
               </Link>
               <button suppressHydrationWarning onClick={() => setOpen(!open)} className="rounded-full p-2.5 text-navy transition xl:hidden" aria-label="Menu" aria-expanded={open}>

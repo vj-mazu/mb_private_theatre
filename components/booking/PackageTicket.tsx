@@ -12,7 +12,7 @@ export interface BookPackage {
   image: string; highlight: boolean; includesCake: boolean; meta?: string;
 }
 
-const ACCENTS = ['#167DBA', '#B8862B', '#14958F', '#7C5CC4'];
+const ACCENTS = ['#1577B1', '#B8862B', '#14958F', '#7C5CC4'];
 const PRINT_S = 1.25;
 
 /**
