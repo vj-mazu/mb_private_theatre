@@ -65,7 +65,14 @@ export function SiteHeader({ business, branches, bar }: { business: Business; br
   useEffect(() => { setOpen(false); setMega(false); }, [pathname]);
   useLayoutEffect(() => {
     if (!ref.current) return;
-    const ro = new ResizeObserver(([e]) => setHeight(e.contentRect.height));
+    const ro = new ResizeObserver(([e]) => {
+      setHeight(e.contentRect.height);
+      // Lets full-screen sections (the home hero) fill exactly the space below the header.
+      // The open phone menu is left out, so the hero does not resize while the menu is open.
+      const bars = Array.from((e.target as HTMLElement).children).filter((c) => c.tagName !== 'NAV');
+      const h = bars.reduce((sum, c) => sum + c.getBoundingClientRect().height, 0);
+      document.documentElement.style.setProperty('--chrome-h', `${Math.round(h)}px`);
+    });
     ro.observe(ref.current);
     return () => ro.disconnect();
   }, []);

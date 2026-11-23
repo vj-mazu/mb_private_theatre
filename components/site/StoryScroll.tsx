@@ -40,7 +40,7 @@ function Card({ c, i, n, progress }: { c: StoryChapter; i: number; n: number; pr
   const shade = useTransform(progress, [start + 0.5 / n, start + 1 / n], [0, i === n - 1 ? 0 : 0.12]);
 
   return (
-    <div className="sticky mx-auto mb-[14vh] h-[min(74svh,600px)] max-w-6xl last:mb-0 lg:mb-[18vh] lg:h-[min(76vh,620px)]"
+    <div className="sticky mx-auto mb-[14vh] h-[min(74svh,600px)] max-w-6xl last:mb-0 lg:mb-[18vh] lg:h-[min(80vh,660px)]"
       style={{ top: `calc(84px + ${i * 14}px)`, perspective: 1200 }}>
       {/* Entry: the card rises, straightens and settles once as it comes into view (smooth on phones too). */}
       <motion.div className="h-full will-change-transform" style={{ transformOrigin: 'center bottom' }}
@@ -59,15 +59,15 @@ function Card({ c, i, n, progress }: { c: StoryChapter; i: number; n: number; pr
             {/* inner hairline frame, like a mounted print */}
             <div aria-hidden className="pointer-events-none absolute inset-3 rounded-[20px] border border-white/45" />
           </div>
-          <div className="relative flex min-h-0 flex-col justify-center overflow-hidden p-5 sm:p-10">
+          <div className="relative flex min-h-0 flex-col justify-center overflow-hidden p-5 sm:p-10 lg:py-8 lg:pl-10 lg:pr-9">
             <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(closest-side,rgba(231,199,125,0.22),transparent)]" />
             <span className="flex items-center gap-3 text-gold-500"><span className="h-px w-10 bg-gradient-to-r from-transparent to-gold-400" />✦<span className="h-px w-10 bg-gradient-to-l from-transparent to-gold-400" /></span>
-            <h3 className="mt-4 text-3xl leading-tight sm:text-5xl">{c.title}</h3>
-            <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-navy-soft sm:text-lg">
+            <h3 className="mt-3 text-3xl leading-tight sm:text-5xl lg:text-[clamp(2.25rem,3.3vw,3rem)] lg:leading-[1.08]">{c.title}</h3>
+            <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-navy-soft sm:text-lg lg:text-base xl:text-[17px]">
               {c.body.split(/\n\s*\n/).map((p, k) => <p key={k} className={k > 0 ? 'max-lg:hidden' : 'max-lg:line-clamp-4'}>{p}</p>)}
             </div>
             {c.quote && (
-              <blockquote className="relative mt-6 max-lg:hidden rounded-2xl border border-gold-300/50 bg-white/60 py-4 pl-6 pr-5 font-display text-lg italic leading-snug text-navy shadow-[0_10px_30px_-20px_rgba(168,122,31,0.6)] sm:text-[1.35rem]">
+              <blockquote className="relative mt-7 shrink-0 max-lg:hidden rounded-2xl border border-gold-300/50 bg-white/60 py-3.5 pl-6 pr-5 font-display text-lg italic leading-snug text-navy shadow-[0_10px_30px_-20px_rgba(168,122,31,0.6)] xl:text-[1.2rem] [@media(max-height:700px)]:hidden">
                 <span aria-hidden className="absolute -top-5 left-4 font-display text-6xl leading-none text-gold-400">“</span>
                 <span className="absolute inset-y-3 left-0 w-[3px] rounded-full bg-gradient-to-b from-gold-300 via-gold-500 to-gold-300" />
                 {c.quote}

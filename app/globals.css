@@ -98,3 +98,13 @@
   }
 }
 
+
+/* Hero: floating celebration props bob gently, each on its own rhythm. */
+@keyframes hero-bob {
+  from { transform: translateY(calc(var(--u, 1px) * -7)) rotate(calc(var(--r, 0deg) - 3deg)); }
+  to { transform: translateY(calc(var(--u, 1px) * 7)) rotate(calc(var(--r, 0deg) + 3deg)); }
+}
+.hero-bob { animation: hero-bob var(--dur, 4s) ease-in-out var(--dl, 0s) infinite alternate; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-bob { animation: none; transform: rotate(var(--r, 0deg)); }
+}

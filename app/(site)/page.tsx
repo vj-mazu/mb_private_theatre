@@ -4,7 +4,7 @@ import { MapPin, Phone, ArrowRight, MessageCircle, PartyPopper } from 'lucide-re
 import { getCatalog } from '@/lib/server/catalog';
 import { getLivePromos } from '@/lib/server/promos';
 import { getHomeGallery } from '@/lib/server/content';
-import { HeroOrbit, type OrbitItem } from '@/components/site/HeroOrbit';
+import { HeroStage, type HeroSlide } from '@/components/site/HeroStage';
 import { IntroLoader } from '@/components/site/IntroLoader';
 import { TheatresSection } from '@/components/site/TheatresSection';
 import { PackageSpotlight } from '@/components/site/PackageSpotlight';
@@ -64,17 +64,17 @@ ${count} private ${count === 1 ? 'theatre' : 'theatres'} · pick a slot online i
       };
     }),
   ];
-  const orbitItems: OrbitItem[] = occasions.filter((o: any) => o.image_url).length >= 4
+  const heroSlides: HeroSlide[] = occasions.filter((o: any) => o.image_url).length >= 4
     ? occasions.filter((o: any) => o.image_url).map((o: any) => ({ name: o.name, image: o.image_url, href: `/book?occasion=${encodeURIComponent(o.name)}` }))
     : heroImages.map((img, k) => ({ name: ['Birthday', 'Anniversary', 'Date night', 'Celebration'][k % 4], image: img, href: '/book' }));
   const ticker = occasions.length ? occasions.map((o: any) => o.name) : ['Birthdays', 'Anniversaries', 'Proposals', 'Movie nights'];
 
   return (
     <>
-      <IntroLoader />
-
       {/* ---------- Hero ---------- */}
-      <HeroOrbit title={settings.hero.title} items={orbitItems} rating={rating} from={inr(lowest)} />
+      <HeroStage title={settings.hero.title} slides={heroSlides} rating={rating} from={inr(lowest)} />
+      {/* Rendered after the hero so the page's first element is not position:fixed (keeps Next's scroll-to-top working). */}
+      <IntroLoader />
 
       <section>
         {/* Occasions ticker */}
