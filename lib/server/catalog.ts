@@ -30,7 +30,7 @@ export const DEFAULT_SETTINGS: Settings = {
   custom_package: {
     enabled: true,
     tagline: 'Just the room — add only what you want',
-    includes: ['Private theatre for your full slot', '4K projector & Dolby sound', 'Bring your own OTT login or pen drive', 'Add cake, decor & extras as you like'],
+    includes: ['Private theatre for your full slot', '4K projector & Dolby sound', 'Choose your own guest count, cake, decor & add-ons'],
     image_url: '',
   },
   visit: {

@@ -227,6 +227,15 @@ async function updateContent(client) {
     WHERE name IN ('Birthday Party', 'Anniversary')
       AND (SELECT sort_order FROM occasions WHERE name='Anniversary' LIMIT 1) = 0
       AND (SELECT sort_order FROM occasions WHERE name='Birthday Party' LIMIT 1) = 1`);
+  // Package wording. Each only matches the exact old lines, so anything an admin has edited since is left alone.
+  await client.query(`UPDATE packages SET includes = (
+      SELECT jsonb_agg(CASE x WHEN 'Premium decoration' THEN 'Decoration' WHEN 'Happy Birthday neon light' THEN 'Neon light (Happy Birthday / Love)' ELSE x END ORDER BY i)
+      FROM jsonb_array_elements_text(includes) WITH ORDINALITY AS t(x, i))
+    WHERE name = 'Standard' AND (includes ? 'Premium decoration' OR includes ? 'Happy Birthday neon light')`);
+  await client.query(`UPDATE packages SET includes = (
+      SELECT jsonb_agg(x ORDER BY i) FROM jsonb_array_elements_text(includes) WITH ORDINALITY AS t(x, i)
+      WHERE x NOT IN ('500 g cake (choose flavour)', 'Fog entry – 2 pots'))
+    WHERE name = 'Premium' AND includes ? 'Everything in Standard' AND (includes ? '500 g cake (choose flavour)' OR includes ? 'Fog entry – 2 pots')`);
   await client.query(`UPDATE settings SET value = replace(value::text, '/images/ecity-family-theatre.webp', '/images/story-birthday.webp')::jsonb
     WHERE key='story' AND value->>'image' = '/images/ecity-family-theatre.webp'`);
   await client.query("UPDATE addons SET image_url='/images/addons/bubble-entry-party.webp' WHERE image_url='/images/addons/bubble-entry.webp'");
