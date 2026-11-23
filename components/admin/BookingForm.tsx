@@ -23,6 +23,8 @@ export interface BookingFormValue {
 export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: BookingFormValue; bookingId?: number; amountPaid?: number }) {
   const router = useRouter();
   const toast = useToast();
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(t); }, []);
   const [cat, setCat] = useState<Catalog | null>(null);
   const [booked, setBooked] = useState<string[]>([]);
   const [blocked, setBlocked] = useState<string[]>([]);
@@ -167,7 +169,7 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
             {theatre?.slots.map((s: any) => {
               const isBlocked = blocked.includes(`${theatre.id}:${s.id}`);
               const taken = booked.includes(`${theatre.id}:${s.id}`) || isBlocked;
-              const started = isSlotExpired(v.booking_date, at(theatre.id, s).start, 0);
+              const started = isSlotExpired(v.booking_date, at(theatre.id, s).start, 0, now);
               const active = v.slot_id === s.id;
               return (
                 <button type="button" key={s.id} disabled={taken} onClick={() => setV((x) => ({ ...x, slot_id: s.id, extra_hours: 0 }))}
@@ -175,7 +177,7 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
                     active ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-200' : 'border-line bg-white hover:border-brand-300',
                     taken && 'cursor-not-allowed bg-cream-deep text-navy-faint line-through hover:border-line')}>
                   <span className="font-semibold">{slotLabel(at(theatre.id, s).start, at(theatre.id, s).end)}</span>
-                  <span className="block text-xs text-navy-soft">{isBlocked ? 'Unavailable' : taken ? 'Booked' : started ? 'Started' : 'Available'}</span>
+                  <span className="block text-xs text-navy-soft">{isBlocked ? 'Unavailable' : taken ? 'Booked' : started ? 'Expired' : 'Available'}</span>
                 </button>
               );
             })}

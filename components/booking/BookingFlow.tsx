@@ -250,7 +250,7 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                                   {slotLabel(at(t.id, s).start, at(t.id, s).end)}
                                   {at(t.id, s).shifted && st === 'open' && <span className="block text-[10px] font-medium text-amber-600">new timing</span>}
                                   <span className={cn('block text-[10px] font-medium', active ? 'text-white/80' : st === 'open' ? 'text-emerald-700' : 'text-navy-faint')}>
-                                    {st === 'booked' ? 'Booked' : st === 'blocked' ? 'Unavailable' : st === 'closed' ? 'Closed' : st === 'loading' ? '…' : 'Available'}
+                                    {st === 'booked' ? 'Booked' : st === 'blocked' ? 'Unavailable' : st === 'closed' ? 'Expired' : st === 'loading' ? '…' : 'Available'}
                                   </span>
                                 </button>
                               );
