@@ -41,18 +41,18 @@ function Card({ c, i, n, progress }: { c: StoryChapter; i: number; n: number; pr
 
   return (
     <div className="sticky mx-auto mb-[14vh] h-[min(74svh,600px)] max-w-6xl last:mb-0 lg:mb-[18vh] lg:h-[min(80vh,660px)]"
-      style={{ top: `calc(84px + ${i * 14}px)`, perspective: 1200 }}>
+      style={{ top: `calc(84px + ${i * 14}px)` }}>
       {/* Entry: the card rises, straightens and settles once as it comes into view (smooth on phones too). */}
       <motion.div className="h-full will-change-transform" style={{ transformOrigin: 'center bottom' }}
-        initial={{ opacity: 0, y: 70, scale: 0.92, rotateX: 12 }}
-        whileInView={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ type: 'spring', stiffness: 70, damping: 18, mass: 0.9 }}>
-      <motion.article style={{ scale, transformOrigin: 'center top' }}
+        initial={{ opacity: 0, y: 56, scale: 0.96 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>
+      <motion.article style={{ scale, transformOrigin: 'center top', willChange: 'transform', backfaceVisibility: 'hidden' }}
         className="gold-frame relative h-full rounded-[34px] p-[2px] shadow-[0_40px_80px_-36px_rgba(14,42,71,0.55),0_0_0_1px_rgba(201,150,46,0.08)]">
         <div className={`grid h-full grid-rows-[45%_1fr] overflow-hidden rounded-[32px] bg-gradient-to-br lg:grid-cols-[1.05fr_1fr] lg:grid-rows-1 ${TONES[i % TONES.length]}`}>
           <div className="relative m-2 overflow-hidden rounded-[26px] lg:m-3 lg:mr-0">
-            <motion.div className="absolute inset-0" initial={{ scale: 1.15 }} whileInView={{ scale: 1 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}>
+            <motion.div className="absolute inset-0 will-change-transform" initial={{ scale: 1.08 }} whileInView={{ scale: 1 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}>
               <Image src={c.image} alt={c.title} fill quality={85} sizes="(min-width: 1024px) 620px, 100vw" className="object-cover" priority={i === 0} />
             </motion.div>
             <div className="absolute inset-0 bg-gradient-to-t from-navy/25 via-transparent to-transparent" />
@@ -83,7 +83,7 @@ function Card({ c, i, n, progress }: { c: StoryChapter; i: number; n: number; pr
             )}
           </div>
         </div>
-        <motion.div aria-hidden className="pointer-events-none absolute inset-[2px] rounded-[32px] bg-navy" style={{ opacity: shade }} />
+        <motion.div aria-hidden className="pointer-events-none absolute inset-[2px] rounded-[32px] bg-navy" style={{ opacity: shade, willChange: 'opacity' }} />
       </motion.article>
       </motion.div>
     </div>
