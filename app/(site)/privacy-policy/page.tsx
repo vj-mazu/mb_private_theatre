@@ -2,6 +2,7 @@
 export const metadata = {
   title: 'Privacy Policy',
   description: 'How Movie Bash handles your customer information, booking data, and communication preferences.',
+  alternates: { canonical: '/privacy-policy' },
 };
 
 export default function PrivacyPolicyPage() {

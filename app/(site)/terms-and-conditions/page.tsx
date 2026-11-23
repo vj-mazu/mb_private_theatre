@@ -2,6 +2,7 @@
 export const metadata = {
   title: 'Terms & Conditions',
   description: 'Terms and conditions for booking private theatre screens at Movie Bash Bengaluru (Electronic City & BTM 2nd Stage).',
+  alternates: { canonical: '/terms-and-conditions' },
 };
 
 export default function TermsPage() {

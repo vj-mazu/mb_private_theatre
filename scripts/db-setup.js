@@ -222,6 +222,13 @@ const STORY = {
  * so anything the admin has changed since (own photo, own name) is left alone. Safe to run every time.
  */
 async function updateContent(client) {
+  // Birthday leads the home hero. Only swaps while the order is still the original one, so admin changes win.
+  await client.query(`UPDATE occasions SET sort_order = CASE name WHEN 'Birthday Party' THEN 0 ELSE 1 END
+    WHERE name IN ('Birthday Party', 'Anniversary')
+      AND (SELECT sort_order FROM occasions WHERE name='Anniversary' LIMIT 1) = 0
+      AND (SELECT sort_order FROM occasions WHERE name='Birthday Party' LIMIT 1) = 1`);
+  await client.query(`UPDATE settings SET value = replace(value::text, '/images/ecity-family-theatre.webp', '/images/story-birthday.webp')::jsonb
+    WHERE key='story' AND value->>'image' = '/images/ecity-family-theatre.webp'`);
   await client.query("UPDATE addons SET image_url='/images/addons/bubble-entry-party.webp' WHERE image_url='/images/addons/bubble-entry.webp'");
   await client.query("UPDATE addons SET image_url='/images/addons/party-popper-confetti.webp' WHERE image_url='/images/addons/party-poppers.webp'");
   await client.query("UPDATE addons SET name='Bubble Entry', description='Bubble machine for a dreamy entry.' WHERE name='Bubbles'");

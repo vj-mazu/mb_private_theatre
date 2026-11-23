@@ -2,7 +2,7 @@ import { getGallery } from '@/lib/server/content';
 import { GalleryGrid } from '@/components/site/GalleryGrid';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Gallery', description: 'Photos of birthdays, anniversaries and celebrations at Movie Bash private theatres in Bengaluru.' };
+export const metadata = { title: 'Gallery', description: 'Photos of birthdays, anniversaries and celebrations at Movie Bash private theatres in Bengaluru.', alternates: { canonical: '/gallery' } };
 
 export default async function GalleryPage() {
   const photos = await getGallery();

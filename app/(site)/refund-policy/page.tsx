@@ -2,6 +2,7 @@
 export const metadata = {
   title: 'Refund & Cancellation Policy',
   description: 'Understand Movie Bash cancellation deadlines, refund terms, and rescheduling guidelines.',
+  alternates: { canonical: '/refund-policy' },
 };
 
 export default function RefundPolicyPage() {

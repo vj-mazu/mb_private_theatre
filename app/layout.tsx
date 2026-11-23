@@ -22,14 +22,13 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     siteName: 'Movie Bash',
-    images: [{ url: '/images/hero-desktop.webp', width: 1200, height: 630, alt: 'Movie Bash private theatre' }],
+    images: [{ url: '/images/og-image.jpg', width: 1200, height: 630, alt: 'Movie Bash private theatre' }],
   },
   keywords: ['private theatre Bangalore', 'private theatre Electronic City', 'private theatre BTM', 'birthday celebration theatre',
     'anniversary surprise Bangalore', 'couple theatre Bangalore', 'private movie screening Bengaluru', 'Movie Bash'],
-  twitter: { card: 'summary_large_image', images: ['/images/hero-desktop.webp'] },
+  twitter: { card: 'summary_large_image', images: ['/images/og-image.jpg'] },
   icons: { icon: [{ url: '/icon.svg', type: 'image/svg+xml' }, { url: '/favicon.ico', sizes: 'any' }] },
   formatDetection: { telephone: true },
-  alternates: { canonical: SITE },
 };
 
 const jsonLd = {
