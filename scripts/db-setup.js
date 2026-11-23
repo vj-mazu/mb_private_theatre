@@ -85,7 +85,6 @@ const ADDONS = [
   ['Gifts', 'Teddy Mascot Surprise', 'Giant teddy mascot appearance.', 699, '/images/addons/teddy-mascot.webp'],
   ['Photography', 'DSLR Photography', 'Dedicated photographer, edited photos.', 999, '/images/addons/dslr-photography.webp'],
   ['Photography', 'iPhone Reel', 'Short edited reel shot on iPhone.', 499, '/images/addons/iphone-reel.webp'],
-  ['Extras', 'Party Poppers (2)', 'Confetti poppers for the cake moment.', 149, '/images/addons/party-popper-confetti.webp'],
 ];
 
 const PACKAGES = [
@@ -214,7 +213,7 @@ const STORY = {
   title: 'Made for moments that matter',
   body: 'Movie Bash began with a simple idea: celebrations feel bigger when they are private. Today our theatres in Electronic City and BTM 2nd Stage host birthdays, anniversaries, proposals and family movie nights every day.\n\nEvery room has a big 4K screen, Dolby sound, comfortable recliners and a decorated celebration corner. Bring your own movie, choose your cake and decoration, and the whole theatre is yours.',
   quote: 'Walk in, see the setup, hit play on your favourite movie… and watch the moment turn special.',
-  image: '/images/ecity-family-theatre.webp',
+  image: '/images/story-birthday.webp',
 };
 
 /** Seeds website content tables when empty. Safe to run repeatedly. */
