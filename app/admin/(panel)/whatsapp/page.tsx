@@ -22,7 +22,7 @@ export default function WhatsAppLog() {
     <>
       <PageHeader title="WhatsApp log" subtitle="Every automatic and manual message sent through the WhatsApp Cloud API"
         actions={<Select className="w-44" value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}>
-          <option value="">All</option><option value="sent">Sent</option><option value="failed">Failed</option><option value="not_configured">Not configured</option>
+          <option value="">All</option><option value="sent">Sent</option><option value="delivered">Delivered</option><option value="read">Read</option><option value="failed">Failed</option><option value="not_configured">Not configured</option>
         </Select>} />
 
       {data && !data.configured && (
@@ -45,7 +45,7 @@ export default function WhatsAppLog() {
                   <td className="whitespace-nowrap px-3 py-2.5 font-mono text-xs">+{m.to_phone}</td>
                   <td className="whitespace-nowrap px-3 py-2.5">{m.booking_id ? <Link className="text-brand-700 hover:underline" href={`/admin/bookings/${m.booking_id}`}>{m.ref}</Link> : '—'}<p className="text-xs text-navy-soft">{m.customer_name}</p></td>
                   <td className="px-3 py-2.5 capitalize">{m.kind.replace('_', ' ')}</td>
-                  <td className="px-3 py-2.5"><Badge tone={m.status === 'sent' ? 'green' : m.status === 'failed' ? 'red' : 'amber'}>{m.status.replace('_', ' ')}</Badge></td>
+                  <td className="px-3 py-2.5"><Badge tone={['sent', 'delivered', 'read'].includes(m.status) ? 'green' : m.status === 'failed' ? 'red' : 'amber'}>{m.status.replace('_', ' ')}</Badge></td>
                   <td className="px-3 py-2.5">
                     <button onClick={() => setOpen(open === m.id ? null : m.id)} className="text-xs text-brand-700 hover:underline">{open === m.id ? 'Hide' : 'View message'}</button>
                     {open === m.id && <pre className="mt-2 max-w-md whitespace-pre-wrap rounded-lg bg-cream p-2 font-sans text-xs">{m.body}{m.error && `\n\nError: ${m.error}`}</pre>}

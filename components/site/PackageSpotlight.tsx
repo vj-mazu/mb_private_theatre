@@ -2,9 +2,9 @@
 
 import Image from '@/components/Img';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/components/ui';
 import { inr } from '@/lib/booking-rules';
 
@@ -23,6 +23,8 @@ interface Item { key: string; name: string; tagline: string; includes: string[];
 export function PackageSpotlight({ branches, theatres, packages, customPackage }: { branches: any[]; theatres: any[]; packages: any[]; customPackage: { enabled: boolean; tagline: string; includes: string[]; image_url: string } }) {
   const [branch, setBranch] = useState(branches[0]?.id);
   const [index, setIndex] = useState(0);
+  const [dir, setDir] = useState(1); // 1 = next (photo enters from the right), -1 = previous
+  const down = useRef<{ x: number; y: number } | null>(null);
   const list = theatres.filter((t) => t.branch_id === branch);
   const slug = branches.find((b) => b.id === branch)?.slug;
 
@@ -34,6 +36,18 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
   ];
   const n = items.length;
   const item = items[index];
+  const goTo = (i: number, d?: number) => { setDir(d ?? (i >= index ? 1 : -1)); setIndex(((i % n) + n) % n); };
+  // Swipe left / right anywhere on the package area (phones and tablets); vertical scrolling still works.
+  const swipe = {
+    onPointerDown: (e: React.PointerEvent) => { if (!(e.target as HTMLElement).closest('a,button')) down.current = { x: e.clientX, y: e.clientY }; },
+    onPointerUp: (e: React.PointerEvent) => {
+      const d0 = down.current; down.current = null;
+      if (!d0 || n < 2) return;
+      const dx = e.clientX - d0.x, dy = e.clientY - d0.y;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.2) goTo(index + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+    },
+    onPointerCancel: () => { down.current = null; },
+  };
   const theme = THEMES[index % THEMES.length];
   const from = Math.min(...list.map((t) => item.price(t)?.price ?? Infinity));
 
@@ -46,7 +60,7 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
     <div role="tablist" aria-label="Packages" className="grid gap-1.5 rounded-2xl border border-line bg-white p-1.5 shadow-card"
       style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
       {items.map((it, i) => (
-        <button key={it.key} role="tab" aria-selected={i === index} onClick={() => setIndex(i)}
+        <button key={it.key} role="tab" aria-selected={i === index} onClick={() => goTo(i)}
           className={cn('relative rounded-xl px-2 py-2.5 text-center transition-colors duration-300', i === index ? 'text-white' : 'text-navy hover:bg-cream-deep')}>
           {i === index && <motion.span layoutId={id} className="absolute inset-0 rounded-xl shadow-lift" style={{ background: theme.accent }} transition={{ type: 'spring', stiffness: 420, damping: 36 }} />}
           <span className="relative block text-sm font-bold">{it.name}</span>
@@ -71,7 +85,7 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
         )}
         <div className="mt-4">{toggle('pkg-toggle-m')}</div>
       </div>
-      <div className="relative grid min-h-[640px] lg:grid-cols-2">
+      <div className="relative grid min-h-[640px] touch-pan-y lg:grid-cols-2" {...swipe}>
         {/* Left: copy */}
         <div className="relative z-10 order-2 flex flex-col justify-center px-5 pb-16 pt-6 lg:order-1 sm:px-10 lg:py-24 lg:pl-[max(24px,calc((100vw-72rem)/2+24px))] lg:pr-10">
           <p className="hidden items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-brand-700 lg:flex"><span className="h-px w-6 bg-brand-700" />The celebration menu</p>
@@ -109,7 +123,7 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
         </div>
 
         {/* Right: stage */}
-        <div className="relative order-1 min-h-[320px] overflow-hidden sm:min-h-[420px] lg:order-2 lg:min-h-0">
+        <div className="relative order-1 min-h-[370px] overflow-hidden sm:min-h-[470px] lg:order-2 lg:min-h-0">
           <motion.div aria-hidden className="absolute -left-[18%] top-1/2 aspect-square w-[118%] -translate-y-1/2 rounded-full max-lg:left-[-10%] max-lg:w-[120%]"
             animate={{ backgroundColor: theme.circle }} transition={{ duration: 0.8 }} />
           <motion.div aria-hidden className="absolute inset-y-0 left-[38%] right-0 rounded-l-[56px]" animate={{ backgroundColor: theme.panel }} transition={{ duration: 0.8 }} />
@@ -124,22 +138,42 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
           </AnimatePresence>
 
           {/* Photo with name label on top */}
-          <div className="absolute inset-0 flex items-center justify-center lg:pl-[6%]" style={{ perspective: 1400 }}>
-            <AnimatePresence mode="popLayout" initial={false}>
-              <motion.div key={'img' + item.key + branch} className="relative w-[80%] max-w-[520px]"
-                initial={{ opacity: 0, x: 120, rotate: 8, rotateY: -25, scale: 0.9 }}
-                animate={{ opacity: 1, x: 0, rotate: -3, rotateY: 0, scale: 1 }}
-                exit={{ opacity: 0, x: -120, rotate: -12, rotateY: 25, scale: 0.9 }}
+          <div className="absolute inset-0 flex items-center justify-center pb-12 lg:pb-0 lg:pl-[6%]" style={{ perspective: 1400 }}>
+            <AnimatePresence mode="popLayout" initial={false} custom={dir}>
+              <motion.div key={'img' + item.key + branch} className="relative w-[80%] max-w-[520px] select-none" custom={dir}
+                variants={{
+                  enter: (d: number) => ({ opacity: 0, x: 120 * d, rotate: 8 * d, rotateY: -25 * d, scale: 0.9 }),
+                  center: { opacity: 1, x: 0, rotate: -3, rotateY: 0, scale: 1 },
+                  exit: (d: number) => ({ opacity: 0, x: -120 * d, rotate: -12 * d, rotateY: 25 * d, scale: 0.9 }),
+                }}
+                initial="enter" animate="center" exit="exit"
                 transition={{ duration: 0.75, ease }}>
                 <span className="absolute -top-5 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-5 py-2 font-display text-xl shadow-lift sm:text-2xl" style={{ color: theme.accent }}>
                   {item.name} package
                 </span>
                 <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] border-[6px] border-white shadow-[0_40px_70px_-25px_rgba(14,42,71,0.55)]">
-                  {item.image && <Image src={item.image} alt={`${item.name} package setup`} fill sizes="(min-width: 1024px) 520px, 80vw" quality={82} className="object-cover" />}
+                  {item.image && <Image src={item.image} alt={`${item.name} package setup`} draggable={false} fill sizes="(min-width: 1024px) 520px, 80vw" quality={82} className="object-cover" />}
                 </div>
               </motion.div>
             </AnimatePresence>
           </div>
+
+          {/* Phones / tablets: swipe hint, dots and arrows */}
+          {n > 1 && (
+            <div className="absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-3 lg:hidden">
+              <button type="button" onClick={() => goTo(index - 1, -1)} aria-label="Previous package"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-navy shadow-card backdrop-blur"><ChevronLeft className="h-4 w-4" /></button>
+              <div className="flex items-center gap-2 rounded-full bg-white/90 px-3.5 py-2 shadow-card backdrop-blur">
+                {items.map((it, i) => (
+                  <button key={it.key} type="button" onClick={() => goTo(i)} aria-label={`${it.name} package`}
+                    className="h-2 rounded-full transition-all duration-300" style={{ width: i === index ? 20 : 8, background: i === index ? theme.accent : 'rgba(14,42,71,0.2)' }} />
+                ))}
+                <span className="ml-1 text-[11px] font-semibold text-navy-soft">Swipe</span>
+              </div>
+              <button type="button" onClick={() => goTo(index + 1, 1)} aria-label="Next package"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-navy shadow-card backdrop-blur"><ChevronRight className="h-4 w-4" /></button>
+            </div>
+          )}
         </div>
       </div>
     </section>

@@ -46,36 +46,41 @@ const THEMES: Theme[] = [
 
 interface Slot { x: number; y: number; w: number; r: number }
 // Props stay below the word band so they never cover the letters.
-const SLOTS: Slot[] = [
+const SLOTS_D: Slot[] = [
   { x: 372, y: 335, w: 118, r: -8 },
   { x: 968, y: 330, w: 128, r: 8 },
   { x: 292, y: 545, w: 145, r: -6 },
   { x: 1195, y: 470, w: 145, r: 10 },
   { x: 965, y: 585, w: 125, r: -10 },
 ];
-const CORNERS: Slot[] = [
+const CORNERS_D: Slot[] = [
   { x: -50, y: 330, w: 230, r: -12 },
   { x: 1290, y: 330, w: 200, r: 14 },
+];
+// Phones only show the middle ~700 design px (x 370-1070), so props get their own spots inside that,
+// fully on screen in the gutters beside a slightly narrower photo; the blurred ones peek in from the edges.
+const SLOTS_M: Slot[] = [
+  { x: 390, y: 285, w: 114, r: -8 },
+  { x: 938, y: 272, w: 118, r: 8 },
+  { x: 382, y: 525, w: 128, r: -6 },
+  { x: 940, y: 480, w: 122, r: 10 },
+  { x: 835, y: 630, w: 112, r: -10 },
+];
+const CORNERS_M: Slot[] = [
+  { x: 338, y: 690, w: 140, r: -12 },
+  { x: 995, y: 372, w: 115, r: 14 },
 ];
 // Layout per mode. Region = the vertical slice of the design frame that must stay visible between the UI bands.
 // The word sits above the photo; the photo only tucks under the bottom edge of the letters, so the name stays readable.
 const GEO = {
-  d: { viewW: 1440, top: 64, bottom: 128, region: [70, 735], photo: { x: 540, y: 262, w: 360, h: 450 }, wordCy: 172, maxWord: 250, pull: 1, cornerPull: 1, dy: 0 },
-  m: { viewW: 700, top: 56, bottom: 184, region: [80, 815], photo: { x: 500, y: 250, w: 440, h: 550 }, wordCy: 160, maxWord: 165, pull: 0.8, cornerPull: 0.55, dy: 0 },
+  d: { viewW: 1440, top: 64, bottom: 128, region: [70, 735], photo: { x: 540, y: 262, w: 360, h: 450 }, wordCy: 172, maxWord: 250, slots: SLOTS_D, corners: CORNERS_D },
+  m: { viewW: 700, top: 56, bottom: 244, region: [80, 790], photo: { x: 528, y: 250, w: 384, h: 480 }, wordCy: 160, maxWord: 165, slots: SLOTS_M, corners: CORNERS_M },
 } as const;
 
 /** Big background word: drop generic words so "Birthday Party" reads "Birthday", "Date & Proposal" reads "Proposal". */
 function shortWord(name: string) {
   const last = name.split('&').map((s) => s.trim()).filter(Boolean).pop() || name;
   return last.replace(/\b(party|event|celebrations?|night|special)\b/gi, '').replace(/\s+/g, ' ').trim() || name;
-}
-
-function place(s: Slot, mode: Mode, corner: boolean): Slot {
-  const g = GEO[mode];
-  const pull = corner ? g.cornerPull : g.pull;
-  const w = mode === 'm' ? s.w * 0.95 : s.w;
-  const cx = FRAME_W / 2 + (s.x + s.w / 2 - FRAME_W / 2) * pull;
-  return { x: cx - w / 2, y: s.y + g.dy, w, r: s.r };
 }
 
 const layersOf = (el: HTMLElement) => Array.from(el.querySelectorAll<HTMLElement>(':scope > [data-frame] > [data-l]'));
@@ -252,7 +257,7 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
   const arrow = (dir: 1 | -1, extra = 'h-12 w-12') => (
     <button type="button" data-rise onClick={dir > 0 ? next : prev} aria-label={dir > 0 ? 'Next celebration' : 'Previous celebration'}
       className={`pointer-events-auto flex shrink-0 items-center justify-center rounded-full border transition-[background-color,border-color] duration-500 hover:bg-white/15 ${extra}`}
-      style={{ borderColor: th.line }}>
+      style={extra.includes('border-transparent') ? undefined : { borderColor: th.line }}>
       <svg viewBox="0 0 28 28" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <path d={dir > 0 ? 'M4 14h20 M16 6l8 8-8 8' : 'M24 14H4 M12 6l-8 8 8 8'} />
       </svg>
@@ -297,8 +302,8 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
               <div data-l className="absolute inset-0 will-change-transform">
                 {[
                   [g.photo.x + g.photo.w / 2, g.photo.y + g.photo.h + 18, g.photo.w * 1.05, 38],
-                  [place(SLOTS[2], mode, false).x + 75, g.photo.y + g.photo.h - 10, 150, 20],
-                  [place(SLOTS[4], mode, false).x + 65, g.photo.y + g.photo.h + 30, 140, 20],
+                  [g.slots[2].x + g.slots[2].w / 2, g.photo.y + g.photo.h - 10, 150, 20],
+                  [g.slots[4].x + g.slots[4].w / 2, g.photo.y + g.photo.h + 30, 140, 20],
                 ].map(([cx, cy, w, h], k) => (
                   <span key={k} className="absolute rounded-full" style={{
                     left: U(cx - w / 2), top: U(cy - h / 2), width: U(w), height: U(h), filter: `blur(${U(4)})`,
@@ -321,11 +326,11 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
               </div>
               {/* sharp props */}
               <div data-l className="absolute inset-0 will-change-transform">
-                {SLOTS.map((slot, j) => <Piece key={j} kind={kinds[j]} slot={place(slot, mode, false)} tone={t.tones[j % 2]} seed={i * 7 + j} />)}
+                {g.slots.map((slot, j) => <Piece key={j} kind={kinds[j]} slot={slot} tone={t.tones[j % 2]} seed={i * 7 + j} />)}
               </div>
               {/* big blurred foreground props */}
               <div data-l className="absolute inset-0 will-change-transform" style={{ filter: `blur(${U(9)})` }}>
-                {CORNERS.map((slot, j) => <Piece key={j} kind={kinds[5 + j]} slot={place(slot, mode, true)} tone={t.tones[(j + 1) % 2]} seed={i * 7 + 5 + j} />)}
+                {g.corners.map((slot, j) => <Piece key={j} kind={kinds[5 + j]} slot={slot} tone={t.tones[(j + 1) % 2]} seed={i * 7 + 5 + j} />)}
               </div>
             </div>
           </div>
@@ -351,12 +356,6 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
           </div>
         </div>
 
-        {mode === 'm' && (
-          <div className="absolute inset-x-2 flex -translate-y-1/2 justify-between" style={{ top: `calc(var(--fy) + var(--u) * ${g.photo.y + g.photo.h / 2})` }}>
-            {arrow(-1, 'h-10 w-10 bg-black/10 backdrop-blur-sm')}
-            {arrow(1, 'h-10 w-10 bg-black/10 backdrop-blur-sm')}
-          </div>
-        )}
         {mode === 'd' ? (
           <>
             <div data-rise className="absolute bottom-8 left-10 max-w-[420px] xl:max-w-[520px]">
@@ -379,6 +378,22 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
           </>
         ) : (
           <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-5 text-center">
+            {/* arrows + dots + swipe hint (clear of the props and the WhatsApp button) */}
+            {n > 1 && (
+              <div data-rise className="mb-4" style={{ textShadow: 'none' }}>
+                <div className="pointer-events-auto flex items-center gap-2.5">
+                {arrow(-1, 'h-9 w-9 bg-white/90 text-navy border-transparent shadow-card')}
+                <div className="flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-2 text-navy shadow-card">
+                  {slides.map((s, i) => (
+                    <button key={s.name + i} type="button" onClick={() => go(i, i > st.current.cur ? 1 : -1)} aria-label={s.name}
+                      className="h-2 rounded-full transition-all duration-500" style={{ width: i === active ? 18 : 7, background: i === active ? '#0E2A47' : 'rgba(14,42,71,0.22)' }} />
+                  ))}
+                  <span className="ml-1 text-[11px] font-semibold text-navy-soft">Swipe</span>
+                </div>
+                {arrow(1, 'h-9 w-9 bg-white/90 text-navy border-transparent shadow-card')}
+            </div>
+              </div>
+            )}
             <div data-rise className="flex flex-col items-center">
               <p className="flex items-center gap-2 whitespace-nowrap text-xs opacity-90">from {from}<span className="opacity-50">•</span>{ratingEl}</p>
               <h1 style={{ color: 'inherit' }} className="mt-2 max-w-[22ch] font-display text-[clamp(24px,6.4vw,36px)] leading-[1.06]">
