@@ -14,7 +14,7 @@ const schema = z.object({
 
 /** Upcoming blocks (today onwards). */
 export const GET = route(async () => {
-  requireStaff('admin');
+  await requireStaff('admin');
   return ok(await q(`SELECT b.*, t.name AS theatre_name, br.name AS branch_name, s.start_time, s.end_time
                      FROM slot_blocks b JOIN theatres t ON t.id=b.theatre_id JOIN branches br ON br.id=t.branch_id
                      LEFT JOIN slots s ON s.id=b.slot_id
@@ -22,7 +22,7 @@ export const GET = route(async () => {
 });
 
 export const POST = route(async (req: Request) => {
-  const s = requireStaff('admin');
+  const s = await requireStaff('admin');
   const d = schema.parse(await req.json());
   if (d.block_date < todayIST()) throw new HttpError(400, 'That date has already passed');
   if (d.slot_id) {
@@ -42,7 +42,7 @@ export const POST = route(async (req: Request) => {
 });
 
 export const DELETE = route(async (req: Request) => {
-  const s = requireStaff('admin');
+  const s = await requireStaff('admin');
   const id = Number(new URL(req.url).searchParams.get('id'));
   await q('DELETE FROM slot_blocks WHERE id=$1', [id]);
   await audit(s.name, 'delete', 'slot_block', id);

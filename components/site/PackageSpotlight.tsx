@@ -152,7 +152,7 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
                   {item.name} package
                 </span>
                 <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] border-[6px] border-white shadow-[0_40px_70px_-25px_rgba(14,42,71,0.55)]">
-                  {item.image && <Image src={item.image} alt={`${item.name} package setup`} draggable={false} fill sizes="(min-width: 1024px) 520px, 80vw" quality={82} className="object-cover" />}
+                  {item.image && <Image src={item.image} alt={`${item.name} package setup`} draggable={false} fill sizes="(min-width: 1024px) 760px, 100vw" quality={86} className="object-cover" />}
                 </div>
               </motion.div>
             </AnimatePresence>

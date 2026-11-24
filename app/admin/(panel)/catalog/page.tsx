@@ -5,8 +5,9 @@ import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/admin/AdminShell';
 import { CrudManager, type CrudConfig } from '@/components/admin/CrudManager';
 import { CustomPackageCard } from '@/components/admin/CustomPackageCard';
-import { Input, Select, api, cn } from '@/components/ui';
-import { inr, slotLabel } from '@/lib/booking-rules';
+import { Plus, Trash2 } from 'lucide-react';
+import { Button, Input, Select, api, cn } from '@/components/ui';
+import { inr, priceTiers, slotLabel } from '@/lib/booking-rules';
 
 const TABS = ['Branches', 'Theatres', 'Time slots', 'Packages', 'Cakes', 'Add-ons', 'Occasions'] as const;
 
@@ -121,16 +122,44 @@ export default function CatalogPage() {
     },
     'Add-ons': {
       entity: 'addons', noun: 'Add-on', layout: 'grid',
-      defaults: { category: 'Extras', name: '', description: '', price: 0, image_url: '', sort_order: 0, is_active: true },
-      title: (r) => r.name, subtitle: (r) => `${r.category} · ${inr(r.price)}`, image: (r) => r.image_url,
+      defaults: { category: 'Extras', name: '', description: '', price: 0, price_tiers: [], image_url: '', sort_order: 0, is_active: true },
+      title: (r) => r.name, image: (r) => r.image_url,
+      subtitle: (r) => {
+        const tiers = priceTiers(r);
+        return `${r.category} · ${tiers.length ? tiers.map((t) => `${t.label} ${inr(t.price)}`).join(' · ') : inr(r.price)}`;
+      },
       fields: [
         { key: 'name', label: 'Name', type: 'text', required: true, half: true },
         { key: 'category', label: 'Category', type: 'text', hint: 'Entry, Decor, Gifts, Photography…', half: true },
-        { key: 'price', label: 'Price ₹', type: 'number', half: true },
+        { key: 'price', label: 'Price ₹', type: 'number', hint: 'Per piece. With price options below, use the smallest option price.', half: true },
         { key: 'sort_order', label: 'Display order', type: 'number', half: true },
         { key: 'description', label: 'Short description', type: 'textarea' },
         { key: 'image_url', label: 'Photo', type: 'image' },
       ],
+      extra: (draft, setDraft) => {
+        const rows: { qty: number | ''; price: number | ''; label: string }[] = Array.isArray(draft.price_tiers) ? draft.price_tiers : [];
+        const put = (next: typeof rows) => setDraft((d) => ({ ...d, price_tiers: next }));
+        const num = (v: string) => (v === '' ? '' : Number(v.replace(/\D/g, '')));
+        return (
+          <div>
+            <span className="mb-1.5 block text-xs font-semibold text-navy-soft">Price options (optional)</span>
+            <p className="mb-2 text-xs text-navy-soft">For items sold in packs, e.g. fog: 1 pot ₹399 · 2 pots ₹699. Guests pick one option and pay that price. Leave empty to sell per piece.</p>
+            {rows.length > 0 && (
+              <div className="divide-y divide-line rounded-xl border border-line bg-white">
+                {rows.map((r, i) => (
+                  <div key={i} className="grid grid-cols-[1fr_80px_100px_36px] items-center gap-2 px-3 py-2">
+                    <Input placeholder="Label, e.g. 2 pots" value={r.label} onChange={(e) => put(rows.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))} />
+                    <Input placeholder="Qty" inputMode="numeric" value={r.qty} onChange={(e) => put(rows.map((x, j) => (j === i ? { ...x, qty: num(e.target.value) } : x)))} />
+                    <Input placeholder="Price ₹" inputMode="numeric" value={r.price} onChange={(e) => put(rows.map((x, j) => (j === i ? { ...x, price: num(e.target.value) } : x)))} />
+                    <button type="button" onClick={() => put(rows.filter((_, j) => j !== i))} className="rounded-lg p-2 text-navy-soft hover:bg-red-50 hover:text-red-600" aria-label="Remove option"><Trash2 className="h-4 w-4" /></button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <Button type="button" size="sm" variant="secondary" className="mt-2" onClick={() => put([...rows, { qty: '', price: '', label: '' }])}><Plus className="h-4 w-4" />Add option</Button>
+          </div>
+        );
+      },
     },
     Occasions: {
       entity: 'occasions', noun: 'Occasion', layout: 'grid',

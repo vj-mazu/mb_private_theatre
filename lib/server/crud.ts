@@ -2,40 +2,46 @@ import 'server-only';
 import { q, one, tx, audit } from './db';
 import { HttpError } from './api';
 import { invalidateContent } from './cache';
+import { priceTiers } from '../booking-rules';
 
-type ColType = 'text' | 'int' | 'int?' | 'bool' | 'json' | 'time' | 'date?' | 'upper';
+type ColType = 'text' | 'url' | 'int' | 'int?' | 'bool' | 'json' | 'time' | 'date?' | 'upper';
 interface Entity { table: string; cols: Record<string, ColType>; order: string; required: string[] }
 
 const common = { sort_order: 'int', is_active: 'bool' } as const;
 
 export const ENTITIES: Record<string, Entity> = {
   branches: { table: 'branches', order: 'sort_order, id', required: ['name', 'slug'],
-    cols: { name: 'text', slug: 'text', address: 'text', phone: 'text', map_url: 'text', image_url: 'text', ...common } },
+    cols: { name: 'text', slug: 'text', address: 'text', phone: 'text', map_url: 'url', image_url: 'url', story_text: 'text', story_image: 'url', ...common } },
   theatres: { table: 'theatres', order: 'branch_id, sort_order, id', required: ['name', 'branch_id'],
     cols: { branch_id: 'int', name: 'text', description: 'text', base_capacity: 'int', max_capacity: 'int', base_price: 'int',
-      extra_person_price: 'int', extra_hour_price: 'int', image_url: 'text', images: 'json', video_url: 'text', ...common } },
+      extra_person_price: 'int', extra_hour_price: 'int', image_url: 'url', images: 'json', video_url: 'url', ...common } },
   slots: { table: 'slots', order: 'theatre_id, start_time', required: ['theatre_id', 'start_time', 'end_time'],
     cols: { theatre_id: 'int', start_time: 'time', end_time: 'time', ...common } },
   packages: { table: 'packages', order: 'sort_order, id', required: ['name'],
-    cols: { name: 'text', tagline: 'text', includes: 'json', includes_cake: 'bool', included_addons: 'json', image_url: 'text', highlight: 'bool', ...common } },
-  cakes: { table: 'cakes', order: 'sort_order, id', required: ['name'], cols: { name: 'text', image_url: 'text', price: 'int', ...common } },
+    cols: { name: 'text', tagline: 'text', includes: 'json', includes_cake: 'bool', included_addons: 'json', image_url: 'url', highlight: 'bool', ...common } },
+  cakes: { table: 'cakes', order: 'sort_order, id', required: ['name'], cols: { name: 'text', image_url: 'url', price: 'int', ...common } },
   addons: { table: 'addons', order: 'category, sort_order, id', required: ['name'],
-    cols: { category: 'text', name: 'text', description: 'text', price: 'int', image_url: 'text', ...common } },
-  occasions: { table: 'occasions', order: 'sort_order, id', required: ['name'], cols: { name: 'text', image_url: 'text', ...common } },
+    cols: { category: 'text', name: 'text', description: 'text', price: 'int', price_tiers: 'json', image_url: 'url', ...common } },
+  occasions: { table: 'occasions', order: 'sort_order, id', required: ['name'], cols: { name: 'text', image_url: 'url', ...common } },
   gallery: { table: 'gallery', order: 'sort_order, id DESC', required: ['image_url'],
-    cols: { image_url: 'text', caption: 'text', category: 'text', featured: 'bool', ...common } },
+    cols: { image_url: 'url', caption: 'text', category: 'text', featured: 'bool', ...common } },
   testimonials: { table: 'testimonials', order: 'sort_order, id', required: ['name', 'text'],
-    cols: { name: 'text', occasion: 'text', rating: 'int', text: 'text', image_url: 'text', ...common } },
+    cols: { name: 'text', occasion: 'text', rating: 'int', text: 'text', image_url: 'url', ...common } },
   faqs: { table: 'faqs', order: 'sort_order, id', required: ['question', 'answer'],
     cols: { question: 'text', answer: 'text', ...common } },
   enquiries: { table: 'enquiries', order: 'created_at DESC', required: ['name', 'phone'],
     cols: { name: 'text', phone: 'text', email: 'text', branch: 'text', occasion: 'text', preferred_date: 'date?', message: 'text', status: 'text', notes: 'text' } },
   promos: { table: 'promos', order: 'sort_order, id DESC', required: ['title'],
-    cols: { title: 'text', text: 'text', image_url: 'text', coupon_code: 'upper', link_url: 'text', button_label: 'text',
+    cols: { title: 'text', text: 'text', image_url: 'url', coupon_code: 'upper', link_url: 'url', button_label: 'text',
       placement: 'text', starts_on: 'date?', ends_on: 'date?', ...common } },
   coupons: { table: 'coupons', order: 'id DESC', required: ['code'],
     cols: { code: 'upper', discount_type: 'text', value: 'int', min_amount: 'int', usage_limit: 'int?', show_on_site: 'bool', expires_on: 'date?', is_active: 'bool' } },
+  showcase_videos: { table: 'showcase_videos', order: 'sort_order, id', required: ['title', 'video_url'],
+    cols: { title: 'text', room: 'text', video_url: 'url', poster_url: 'url', ...common } },
 };
+
+/** A link admins may save: a path on this site ("/images/…", "/api/files/…") or an https:// address. */
+const SAFE_URL = /^(\/(?![/\\])\S*|https:\/\/\S+)$/i;
 
 export function entity(name: string): Entity {
   const e = ENTITIES[name];
@@ -52,6 +58,11 @@ function coerce(type: ColType, v: unknown, col: string) {
     case 'time': { const s = String(v); if (!/^\d{2}:\d{2}$/.test(s)) throw new HttpError(400, 'Time must be HH:MM'); return s; }
     case 'date?': return v ? String(v) : null;
     case 'upper': return String(v ?? '').trim().toUpperCase();
+    case 'url': {
+      const s = String(v ?? '').trim();
+      if (s && !SAFE_URL.test(s)) throw new HttpError(400, `${col.replace(/_/g, ' ')} must start with / or https://`);
+      return s;
+    }
     default: return String(v ?? '').trim();
   }
 }
@@ -60,7 +71,14 @@ function pick(e: Entity, body: Record<string, unknown>, partial: boolean) {
   const out: Record<string, unknown> = {};
   for (const [col, type] of Object.entries(e.cols)) {
     if (!(col in body)) continue;
-    out[col] = coerce(type, body[col], col);
+    if (col === 'images') {
+      const list = Array.isArray(body[col]) ? (body[col] as unknown[]).map((x) => String(x ?? '').trim()).filter(Boolean) : [];
+      if (list.some((x) => !SAFE_URL.test(x))) throw new HttpError(400, 'Photos must start with / or https://');
+      out[col] = JSON.stringify(list);
+      continue;
+    }
+    // Price options: keep only complete rows (label, qty, price), one per qty.
+    out[col] = coerce(type, col === 'price_tiers' ? priceTiers({ price_tiers: body[col] }) : body[col], col);
   }
   if (!partial) for (const r of e.required) if (out[r] === undefined || out[r] === '') throw new HttpError(400, `${r.replace(/_/g, ' ')} is required`);
   return out;

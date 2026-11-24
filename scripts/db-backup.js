@@ -18,7 +18,7 @@ for (const file of ['.env.local', '.env']) {
 }
 
 const TABLES = ['settings', 'branches', 'theatres', 'slots', 'packages', 'package_prices', 'cakes', 'addons', 'occasions', 'gallery',
-  'coupons', 'promos', 'testimonials', 'faqs', 'enquiries', 'users', 'bookings', 'payments', 'booking_events', 'whatsapp_messages', 'audit_log', 'slot_blocks'];
+  'coupons', 'promos', 'testimonials', 'faqs', 'enquiries', 'users', 'bookings', 'payments', 'booking_events', 'whatsapp_messages', 'audit_log', 'slot_blocks', 'showcase_videos'];
 const KEEP = 30;
 
 (async () => {

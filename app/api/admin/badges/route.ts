@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 /** Counts shown as badges in the admin sidebar. */
 export const GET = route(async () => {
-  const s = requireStaff();
+  const s = await requireStaff();
   await releaseExpiredHolds();
   const scope = s.role === 'staff' && s.branch_id ? `AND branch_id=${Number(s.branch_id)}` : '';
   const [[v], enq] = await Promise.all([

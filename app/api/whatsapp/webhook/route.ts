@@ -1,6 +1,16 @@
+import crypto from 'crypto';
 import { q } from '@/lib/server/db';
 
 export const dynamic = 'force-dynamic';
+
+/** Meta signs every webhook call with the app secret (X-Hub-Signature-256: sha256=<hex HMAC of the raw body>). */
+function signedByMeta(raw: string, header: string | null): boolean {
+  const secret = process.env.WHATSAPP_APP_SECRET?.trim();
+  if (!secret) return true; // not configured: accept (only delivery labels can change)
+  const expected = Buffer.from(`sha256=${crypto.createHmac('sha256', secret).update(raw).digest('hex')}`);
+  const got = Buffer.from(header || '');
+  return got.length === expected.length && crypto.timingSafeEqual(got, expected);
+}
 
 // Meta calls this once to verify the URL.
 export async function GET(req: Request) {
@@ -14,7 +24,10 @@ export async function GET(req: Request) {
 
 // Delivery receipts: sent -> delivered -> read, or failed with Meta's reason.
 export async function POST(req: Request) {
-  const body: any = await req.json().catch(() => null);
+  const raw = await req.text();
+  if (!signedByMeta(raw, req.headers.get('x-hub-signature-256'))) return new Response('Invalid signature', { status: 401 });
+  let body: any = null;
+  try { body = JSON.parse(raw); } catch { /* ignore malformed calls */ }
   const changes = (body?.entry || []).flatMap((e: any) => e.changes || []);
   for (const ch of changes) {
     for (const s of ch?.value?.statuses || []) {

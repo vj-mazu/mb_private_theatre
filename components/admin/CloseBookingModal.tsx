@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Check, Plus, Trash2 } from 'lucide-react';
 import { Button, Field, Input, Modal, Select, Textarea, api, cn, useToast } from '@/components/ui';
-import { Stepper } from './BookingForm';
-import { PAYMENT_METHODS, cakeCharge, computeQuote, inr } from '@/lib/booking-rules';
+import { Stepper, TierSelect } from './BookingForm';
+import { PAYMENT_METHODS, addonItem, cakeCharge, computeQuote, inr, priceTiers } from '@/lib/booking-rules';
 
 type Custom = { name: string; price: number | ''; qty: number };
 
@@ -51,9 +51,10 @@ export function CloseBookingModal({ open, onClose, booking, input, onDone }: {
       { id: null, name: 'Custom', price: theatre.base_price }]
     : [], [cat, theatre]);
 
-  const items = selected.map((a) => {
+  const items = selected.flatMap((a) => {
     const ad = cat?.addons.find((x: any) => x.id === a.addon_id);
-    return { kind: 'addon' as const, name: ad?.name || '', price: ad?.price || 0, qty: a.qty };
+    const line = ad ? addonItem(ad, a.qty) : null;
+    return line ? [line] : [];
   });
   const customItems = customs.filter((c) => c.name.trim() && c.price !== '').map((c) => ({ kind: 'custom' as const, name: c.name, price: Number(c.price), qty: c.qty }));
   const quote = theatre ? computeQuote({
@@ -90,8 +91,8 @@ export function CloseBookingModal({ open, onClose, booking, input, onDone }: {
   }
 
   return (
-    <Modal open={open} onClose={onClose} title={`Close ${booking.ref}`} size="lg"
-      footer={<><Button variant="secondary" onClick={onClose}>Cancel</Button><Button variant="dark" loading={busy} onClick={submit}>Collect & close booking</Button></>}>
+    <Modal open={open} onClose={onClose} title={`Complete ${booking.ref}`} size="lg"
+      footer={<><Button variant="secondary" onClick={onClose}>Cancel</Button><Button variant="dark" loading={busy} onClick={submit}>Collect & complete booking</Button></>}>
       <p className="mb-4 text-sm text-navy-soft">Update anything that changed during the celebration, then record the final payment.</p>
 
       <h3 className="mb-2 text-xs font-semibold text-navy-soft">Package</h3>
@@ -126,10 +127,13 @@ export function CloseBookingModal({ open, onClose, booking, input, onDone }: {
       <div className="grid gap-2 sm:grid-cols-2">
         {(cat?.addons || []).map((a: any) => {
           const n = selected.find((s) => s.addon_id === a.id)?.qty || 0;
+          const tiers = priceTiers(a);
           return (
             <div key={a.id} className={cn('flex items-center justify-between gap-2 rounded-xl border px-3 py-2', n ? 'border-brand-300 bg-brand-50/50' : 'border-line bg-white')}>
-              <div className="min-w-0"><p className="truncate text-sm font-medium">{a.name}</p><p className="text-xs text-navy-soft">{inr(a.price)} each</p></div>
-              <Stepper value={n} onChange={(v) => qty(a.id, v)} max={20} />
+              <div className="min-w-0"><p className="truncate text-sm font-medium">{a.name}</p><p className="text-xs text-navy-soft">{tiers.length ? `from ${inr(tiers[0].price)}` : `${inr(a.price)} each`}</p></div>
+              {tiers.length
+                ? <TierSelect tiers={tiers} value={n} onChange={(v) => qty(a.id, v)} />
+                : <Stepper value={n} onChange={(v) => qty(a.id, v)} max={20} />}
             </div>
           );
         })}

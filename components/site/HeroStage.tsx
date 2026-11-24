@@ -12,7 +12,10 @@ export interface HeroSlide { name: string; image: string; href: string }
 /*
  * Full-screen occasion slider. Each occasion floods the hero with one theme colour, its name sits huge behind a
  * framed theatre photo, and celebration props (cake, popcorn, poppers, balloons…) float around it at different depths.
- * Changing slide wipes the old one away from its right edge while the new layers slide in with parallax.
+ * A slide holds for a couple of seconds (its photo slowly zooming inside the frame), then the whole slide zooms
+ * through the screen: every layer flies towards the viewer from the photo's centre by a different amount (word least,
+ * blurred corner props most) while the slide fades, and the next slide grows into place behind it. Going back
+ * plays the same move in reverse.
  * Everything inside a slide is drawn on a 1440 × 900 design frame scaled by --u.
  */
 
@@ -21,20 +24,13 @@ const FRAME_W = 1440;
 const U = (v: number) => `calc(var(--u) * ${v})`;
 const EASE = 'cubic-bezier(0.22, 0.8, 0.3, 1)';
 const FACTORS = [0.4, 0.3, 0.15, 0.55, 0.75]; // parallax travel per layer: word, shadow, photo, props, corners
-const AUTOPLAY_MS = 4200;
-const WIPE_MS = 970;
-
-// Measured coverage curve of the wipe: slow start, rush through the middle, long soft settle.
-const CT = [0, 0.031, 0.134, 0.206, 0.278, 0.34, 0.412, 0.485, 0.546, 0.583, 0.62, 0.69, 0.79, 0.85, 0.93, 1];
-const CV = [0, 0.006, 0.012, 0.023, 0.047, 0.07, 0.105, 0.158, 0.246, 0.55, 0.825, 0.9, 0.94, 0.956, 0.975, 1];
-function cover(t: number) {
-  if (t <= 0) return 0;
-  if (t >= 1) return 1;
-  let i = 1;
-  while (CT[i] < t) i++;
-  const k = (t - CT[i - 1]) / (CT[i] - CT[i - 1]);
-  return CV[i - 1] + (CV[i] - CV[i - 1]) * k * k * (3 - 2 * k);
-}
+const HOLD_MS = 2400;        // a settled slide stays this long, then zooms through to the next
+const THROUGH_MS = 950;      // the zoom-through
+const THROUGH = [1.6, 1.75, 2, 2.6, 3.4]; // how far each layer flies towards the viewer: word, shadow, photo, props, corners
+const ARRIVE = [0.86, 0.84, 0.8, 0.72, 0.62]; // the incoming slide's layers grow from these
+const EASE_IN = 'cubic-bezier(0.4, 0, 0.75, 0.55)'; // rushes into the screen, visibly from the start
+const EASE_OUT = 'cubic-bezier(0.16, 1, 0.3, 1)';   // settles softly
+const PHOTO_DRIFT = 1.08;    // slow zoom of the photo inside its frame while a slide holds
 
 interface Theme { bg: string; word: string; ink: string; accent: string; line: string; shadow: string; cta: 'gold' | 'navy'; tones: [Tone, Tone]; glow: boolean }
 const THEMES: Theme[] = [
@@ -47,11 +43,11 @@ const THEMES: Theme[] = [
 interface Slot { x: number; y: number; w: number; r: number }
 // Props stay below the word band so they never cover the letters.
 const SLOTS_D: Slot[] = [
-  { x: 372, y: 335, w: 118, r: -8 },
-  { x: 968, y: 330, w: 128, r: 8 },
-  { x: 292, y: 545, w: 145, r: -6 },
-  { x: 1195, y: 470, w: 145, r: 10 },
-  { x: 965, y: 585, w: 125, r: -10 },
+  { x: 355, y: 335, w: 118, r: -8 },
+  { x: 985, y: 330, w: 128, r: 8 },
+  { x: 285, y: 545, w: 145, r: -6 },
+  { x: 1200, y: 470, w: 145, r: 10 },
+  { x: 985, y: 590, w: 125, r: -10 },
 ];
 const CORNERS_D: Slot[] = [
   { x: -50, y: 330, w: 230, r: -12 },
@@ -73,8 +69,8 @@ const CORNERS_M: Slot[] = [
 // Layout per mode. Region = the vertical slice of the design frame that must stay visible between the UI bands.
 // The word sits above the photo; the photo only tucks under the bottom edge of the letters, so the name stays readable.
 const GEO = {
-  d: { viewW: 1440, top: 64, bottom: 128, region: [70, 735], photo: { x: 540, y: 262, w: 360, h: 450 }, wordCy: 172, maxWord: 250, slots: SLOTS_D, corners: CORNERS_D },
-  m: { viewW: 700, top: 56, bottom: 244, region: [80, 790], photo: { x: 528, y: 250, w: 384, h: 480 }, wordCy: 160, maxWord: 165, slots: SLOTS_M, corners: CORNERS_M },
+  d: { viewW: 1440, top: 64, bottom: 128, region: [70, 735], photo: { x: 495, y: 262, w: 450, h: 440 }, wordCy: 172, maxWord: 250, zoomCy: 482, slots: SLOTS_D, corners: CORNERS_D },
+  m: { viewW: 700, top: 56, bottom: 244, region: [80, 790], photo: { x: 524, y: 250, w: 392, h: 524 }, wordCy: 160, maxWord: 165, zoomCy: 512, slots: SLOTS_M, corners: CORNERS_M },
 } as const;
 
 /** Big background word: drop generic words so "Birthday Party" reads "Birthday", "Date & Proposal" reads "Proposal". */
@@ -94,9 +90,35 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
   const barRef = useRef<HTMLSpanElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [active, setActive] = useState(0);
+  // Photos load for the slide on screen and the next one (then stay): 9 photos at once would slow the first visit.
+  const [seen, setSeen] = useState<number[]>([0, 1]);
+  useEffect(() => {
+    const n = slides.length;
+    if (!n) return;
+    setSeen((p) => { const add = [active, (active + 1) % n].filter((x) => !p.includes(x)); return add.length ? [...p, ...add] : p; });
+  }, [active, slides.length]);
   const [mode, setMode] = useState<Mode>('d');
   const [sizes, setSizes] = useState<number[]>(() => slides.map(() => 260));
-  const st = useRef({ cur: 0, busy: false, last: 0, inView: true, u: 1, reduce: false, down: null as null | { x: number; y: number } });
+  const st = useRef({
+    cur: 0, busy: false, intro: true, last: 0, inView: true, u: 1, reduce: false, down: null as null | { x: number; y: number },
+    timer: 0 as ReturnType<typeof setTimeout> | 0, schedule: null as null | ((ms?: number) => void),
+  });
+  const zooms = useRef(new Map<number, Animation[]>());
+
+  // ---- While a slide holds, its photo slowly zooms inside the frame (stopped once the slide has left).
+  const stopZoom = useCallback((i: number) => {
+    zooms.current.get(i)?.forEach((a) => a.cancel());
+    zooms.current.delete(i);
+  }, []);
+  const startZoom = useCallback((i: number) => {
+    const el = slideRefs.current[i];
+    stopZoom(i);
+    if (!el || st.current.reduce || typeof el.animate !== 'function') return;
+    const anims = Array.from(el.querySelectorAll<HTMLElement>('[data-kb]')).map((k) => k.animate(
+      [{ scale: '1' }, { scale: String(PHOTO_DRIFT) }],
+      { duration: HOLD_MS + THROUGH_MS, easing: 'cubic-bezier(0.3, 0, 0.7, 1)', fill: 'forwards' }));
+    zooms.current.set(i, anims);
+  }, [stopZoom]);
 
   // ---- Scale the design frame to the hero box, and fit each word to the visible width.
   const layout = useCallback(() => {
@@ -133,7 +155,9 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
     setSizes((prev) => (prev.length === next.length && prev.every((v, i) => v === next[i]) ? prev : next));
   }, [slides]);
 
-  // ---- Slide change: measured wipe on the old slide, parallax arrival on the new one.
+  // ---- Slide change: zoom-through. Forward: the old slide flies into the screen and fades while the new one grows
+  // into place beneath it. Back: the old slide shrinks away and the new one comes down from the viewer on top.
+  // Web Animations on the independent `scale` property, so it never fights the opening sequence's `transform`.
   const go = useCallback((to: number, dir: 1 | -1, user = true) => {
     const s = st.current;
     if (user) s.last = Date.now();
@@ -142,30 +166,43 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
     if (!A || !B) return;
     s.busy = true;
     setActive(to);
-    const la = layersOf(A), lb = layersOf(B);
+    const from = s.cur;
+    const anims: Animation[] = [];
+    let done = false;
     const finish = () => {
-      A.style.visibility = 'hidden'; A.style.zIndex = '0'; A.style.clipPath = ''; A.setAttribute('aria-hidden', 'true');
-      la.forEach((l) => { l.style.transform = ''; });
-      lb.forEach((l) => { l.style.transform = ''; });
+      if (done) return;
+      done = true;
+      anims.forEach((a) => a.cancel());
+      A.style.visibility = 'hidden'; A.style.zIndex = '0'; A.setAttribute('aria-hidden', 'true');
       B.style.zIndex = '2'; B.removeAttribute('aria-hidden');
       s.cur = to; s.busy = false;
+      stopZoom(from);
+      startZoom(to);
+      s.schedule?.();
     };
-    B.style.visibility = 'visible'; B.style.zIndex = '1'; A.style.zIndex = '2';
-    if (s.reduce) return finish();
-    const W = FRAME_W * s.u;
-    const t0 = performance.now();
-    const step = (now: number) => {
-      const t = (now - t0) / WIPE_MS;
-      const c = cover(Math.min(t, 1));
-      A.style.clipPath = dir > 0 ? `inset(0 ${c * 100}% 0 0)` : `inset(0 0 0 ${c * 100}%)`;
-      la.forEach((l) => { l.style.transform = `translate3d(${-dir * c * 0.14 * W}px,0,0)`; });
-      const k0 = Math.min(1, Math.max(0, (t - 0.5) / 0.42));
-      const k = 1 - (1 - k0) * (1 - k0);
-      lb.forEach((l, j) => { l.style.transform = `translate3d(${dir * (1 - k) * FACTORS[j] * W}px,0,0)`; });
-      if (t < 1) requestAnimationFrame(step); else finish();
-    };
-    step(t0);
-  }, [n]);
+    B.style.visibility = 'visible';
+    if (s.reduce || typeof A.animate !== 'function') { A.style.zIndex = '1'; return finish(); }
+
+    // The incoming slide's colour is there at once; its content fades and grows in only once the old slide is
+    // mostly gone, so the two never show as a double exposure.
+    const T = THROUGH_MS;
+    const frameOf = (el: HTMLElement) => el.querySelector<HTMLElement>(':scope > [data-frame]')!;
+    if (dir > 0) {
+      A.style.zIndex = '2'; B.style.zIndex = '1';
+      layersOf(A).forEach((l, j) => anims.push(l.animate([{ scale: '1' }, { scale: String(THROUGH[j]) }], { duration: T * 0.7, easing: EASE_IN, fill: 'forwards' })));
+      anims.push(A.animate([{ opacity: 1 }, { opacity: 1, offset: 0.3 }, { opacity: 0, offset: 0.68 }, { opacity: 0 }], { duration: T, fill: 'forwards' }));
+      layersOf(B).forEach((l, j) => anims.push(l.animate([{ scale: String(ARRIVE[j]) }, { scale: '1' }], { duration: T, delay: T * 0.42, easing: EASE_OUT, fill: 'both' })));
+      anims.push(frameOf(B).animate([{ opacity: 0 }, { opacity: 1 }], { duration: T * 0.5, delay: T * 0.45, easing: 'ease-out', fill: 'both' }));
+    } else {
+      A.style.zIndex = '1'; B.style.zIndex = '2';
+      layersOf(A).forEach((l, j) => anims.push(l.animate([{ scale: '1' }, { scale: String(ARRIVE[j]) }], { duration: T, easing: EASE_IN, fill: 'forwards' })));
+      anims.push(frameOf(A).animate([{ opacity: 1 }, { opacity: 0, offset: 0.5 }, { opacity: 0 }], { duration: T, fill: 'forwards' }));
+      anims.push(B.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T * 0.5, delay: T * 0.25, easing: 'ease-out', fill: 'both' }));
+      layersOf(B).forEach((l, j) => anims.push(l.animate([{ scale: String(THROUGH[j]) }, { scale: '1' }], { duration: T, delay: T * 0.3, easing: EASE_OUT, fill: 'both' })));
+    }
+    Promise.all(anims.map((a) => a.finished)).then(finish).catch(() => {});
+    setTimeout(finish, THROUGH_MS * 1.8); // never stuck if the tab was hidden mid-way
+  }, [n, startZoom, stopZoom]);
 
   const next = useCallback(() => go((st.current.cur + 1) % n, 1), [go, n]);
   const prev = useCallback(() => go((st.current.cur - 1 + n) % n, -1), [go, n]);
@@ -189,7 +226,8 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
   useLayoutEffect(() => {
     const s = st.current;
     const root = rootRef.current, first = slideRefs.current[0];
-    if (!laidOut || s.reduce || !root || !first) return;
+    if (!laidOut) return;
+    if (s.reduce || !root || !first) { s.intro = false; s.schedule?.(); return; }
     const d = delayMs.current;
     const W = FRAME_W * s.u;
     s.busy = true;
@@ -200,7 +238,15 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
     root.querySelectorAll<HTMLElement>('[data-rise]').forEach((el, k) => anims.push(el.animate(
       [{ opacity: 0, translate: '0 14px' }, { opacity: 1, translate: '0 0' }],
       { duration: 1000, delay: d + 250 + k * 80, easing: EASE, fill: 'backwards' })));
-    const done = () => { s.busy = false; };
+    let settled = false;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      s.busy = false;
+      s.intro = false;
+      startZoom(0);
+      s.schedule?.();
+    };
     anims[0]?.finished.then(done).catch(() => {});
     const failsafe = setTimeout(() => { anims.forEach((a) => a.finish()); done(); }, d + 3000);
     return () => { clearTimeout(failsafe); anims.forEach((a) => a.cancel()); s.busy = false; };
@@ -215,9 +261,16 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
     if (!root) return;
     const io = new IntersectionObserver(([e]) => { s.inView = e.isIntersecting; }, { threshold: 0.35 });
     io.observe(root);
-    const timer = setInterval(() => {
-      if (!document.hidden && s.inView && Date.now() - s.last > 6000) go((s.cur + 1) % n, 1, false);
-    }, AUTOPLAY_MS);
+    // Autoplay: each settled slide holds HOLD_MS; waits while the tab is hidden, the hero is off screen, or just after a tap.
+    const tick = () => {
+      if (n < 2) return;
+      if (document.hidden || !s.inView || s.busy || Date.now() - s.last < 6000) { s.timer = setTimeout(tick, 1000); return; }
+      go((s.cur + 1) % n, 1, false);
+    };
+    s.schedule = (ms = HOLD_MS) => { clearTimeout(s.timer); s.timer = setTimeout(tick, ms); };
+    // The opening sequence starts the first push-in and the timer itself when it ends.
+    if (s.reduce) s.intro = false;
+    if (!s.intro) { startZoom(s.cur); s.schedule(); }
     const onKey = (e: KeyboardEvent) => {
       if (!s.inView || (e.target as HTMLElement)?.closest?.('input,textarea,select,[contenteditable="true"]')) return;
       if (e.key === 'ArrowRight') next();
@@ -232,8 +285,13 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
     };
     window.addEventListener('keydown', onKey);
     window.addEventListener('pointerup', onUp);
-    return () => { io.disconnect(); clearInterval(timer); window.removeEventListener('keydown', onKey); window.removeEventListener('pointerup', onUp); };
-  }, [go, n, next, prev]);
+    const zoomMap = zooms.current;
+    return () => {
+      io.disconnect(); clearTimeout(s.timer); s.schedule = null;
+      zoomMap.forEach((list) => list.forEach((a) => a.cancel())); zoomMap.clear();
+      window.removeEventListener('keydown', onKey); window.removeEventListener('pointerup', onUp);
+    };
+  }, [go, n, next, prev, startZoom]);
 
   // ---- Underline follows the active tab; the tab row scrolls it into the middle on small screens.
   useEffect(() => {
@@ -253,6 +311,8 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
     ? 'bg-[linear-gradient(135deg,#f3e3b5,#d9b25f_55%,#c9962e)] text-navy shadow-[0_14px_30px_-12px_rgba(201,150,46,0.8),inset_0_1px_0_rgba(255,255,255,0.6)]'
     : 'bg-navy text-white shadow-[0_14px_30px_-14px_rgba(4,14,28,0.9)]';
   const item = slides[active];
+  // Every layer zooms from the centre of the photo, so the photo pushes straight in and the props spread outwards.
+  const layerStyle: CSSProperties = { transformOrigin: `${U(FRAME_W / 2)} ${U(g.zoomCy)}`, willChange: 'transform, scale' };
 
   const arrow = (dir: 1 | -1, extra = 'h-12 w-12') => (
     <button type="button" data-rise onClick={dir > 0 ? next : prev} aria-label={dir > 0 ? 'Next celebration' : 'Previous celebration'}
@@ -292,14 +352,14 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
             className="absolute inset-0 overflow-hidden" style={{ background: t.bg, visibility: i === 0 ? 'visible' : 'hidden', zIndex: i === 0 ? 2 : 0 }}>
             <div data-frame className="absolute" style={{ left: 'var(--fx)', top: 'var(--fy)', width: U(FRAME_W), height: U(900) }}>
               {/* word */}
-              <div data-l className="absolute inset-0 will-change-transform">
+              <div data-l className="absolute inset-0" style={layerStyle}>
                 <span data-word={i} data-f={sizes[i] ?? 260} className="absolute left-1/2 whitespace-nowrap font-display font-medium leading-none"
                   style={{ top: U(g.wordCy), transform: 'translate(-50%,-50%)', fontSize: U(sizes[i] ?? 260), letterSpacing: '-0.02em', color: t.word }}>
                   {shortWord(s.name)}
                 </span>
               </div>
               {/* floor shadows */}
-              <div data-l className="absolute inset-0 will-change-transform">
+              <div data-l className="absolute inset-0" style={layerStyle}>
                 {[
                   [g.photo.x + g.photo.w / 2, g.photo.y + g.photo.h + 18, g.photo.w * 1.05, 38],
                   [g.slots[2].x + g.slots[2].w / 2, g.photo.y + g.photo.h - 10, 150, 20],
@@ -312,12 +372,16 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
                 ))}
               </div>
               {/* framed theatre photo */}
-              <div data-l className="absolute inset-0 will-change-transform">
+              <div data-l className="absolute inset-0" style={layerStyle}>
                 <div className="absolute" style={{ left: U(g.photo.x), top: U(g.photo.y), width: U(g.photo.w), height: U(g.photo.h) }}>
                   <div className="gold-frame h-full w-full" style={{ padding: U(5), borderRadius: U(38), boxShadow: `0 ${U(40)} ${U(70)} ${U(-22)} ${t.shadow}` }}>
                     <div className="relative h-full w-full overflow-hidden bg-navy" style={{ borderRadius: U(33) }}>
-                      <Image src={s.image} alt={s.name} fill priority={i < 2} draggable={false} quality={82}
-                        sizes="(min-width: 1024px) 520px, 240px" className="object-cover" />
+                      <div data-kb className="absolute inset-0" style={{ willChange: 'scale' }}>
+                        {(seen.includes(i) || i === 0) && (
+                          <Image src={s.image} alt={s.name} fill priority={i < 2} draggable={false} quality={88}
+                            sizes="(min-width: 1024px) 42vw, 460px" className="object-cover" />
+                        )}
+                      </div>
                       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-white/10" />
                       <div aria-hidden className="pointer-events-none absolute border border-white/40" style={{ inset: U(13), borderRadius: U(23) }} />
                     </div>
@@ -325,11 +389,11 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
                 </div>
               </div>
               {/* sharp props */}
-              <div data-l className="absolute inset-0 will-change-transform">
+              <div data-l className="absolute inset-0" style={layerStyle}>
                 {g.slots.map((slot, j) => <Piece key={j} kind={kinds[j]} slot={slot} tone={t.tones[j % 2]} seed={i * 7 + j} />)}
               </div>
               {/* big blurred foreground props */}
-              <div data-l className="absolute inset-0 will-change-transform" style={{ filter: `blur(${U(9)})` }}>
+              <div data-l className="absolute inset-0" style={{ ...layerStyle, filter: `blur(${U(9)})` }}>
                 {g.corners.map((slot, j) => <Piece key={j} kind={kinds[5 + j]} slot={slot} tone={t.tones[(j + 1) % 2]} seed={i * 7 + 5 + j} />)}
               </div>
             </div>

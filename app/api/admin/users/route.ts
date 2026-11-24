@@ -17,12 +17,12 @@ const schema = z.object({
 });
 
 export const GET = route(async () => {
-  requireStaff('admin');
+  await requireStaff('admin');
   return ok(await q('SELECT id, name, username, phone, role, branch_id, is_active, last_login_at, created_at FROM users ORDER BY role, name'));
 });
 
 export const POST = route(async (req: Request) => {
-  const s = requireStaff('admin');
+  const s = await requireStaff('admin');
   const d = schema.parse(await req.json());
   if (d.password && d.password.length < 8) throw new HttpError(400, 'Password must be at least 8 characters');
 
@@ -30,7 +30,8 @@ export const POST = route(async (req: Request) => {
     if (d.id === s.id && (d.role !== 'admin' || !d.is_active)) throw new HttpError(400, 'You cannot remove your own admin access');
     await q('UPDATE users SET name=$2, username=$3, phone=$4, role=$5, branch_id=$6, is_active=$7 WHERE id=$1',
       [d.id, d.name, d.username, d.phone, d.role, d.branch_id, d.is_active]);
-    if (d.password) await q('UPDATE users SET password_hash=$2 WHERE id=$1', [d.id, await hashPassword(d.password)]);
+    // A new password signs this account out on every device (deactivation and role changes apply at once anyway).
+    if (d.password) await q('UPDATE users SET password_hash=$2, sessions_valid_after=now() WHERE id=$1', [d.id, await hashPassword(d.password)]);
     await audit(s.name, 'update', 'user', d.id, { username: d.username, role: d.role, password_changed: !!d.password });
     return ok();
   }
@@ -42,7 +43,7 @@ export const POST = route(async (req: Request) => {
 });
 
 export const DELETE = route(async (req: Request) => {
-  const s = requireStaff('admin');
+  const s = await requireStaff('admin');
   const id = Number(new URL(req.url).searchParams.get('id'));
   if (id === s.id) throw new HttpError(400, 'You cannot delete your own account');
   await q('DELETE FROM users WHERE id=$1', [id]);

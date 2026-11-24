@@ -39,7 +39,7 @@ export default function RevenuePage() {
   const t = d?.totals;
   const max = Math.max(1, ...(d?.daily || []).map((x: any) => x.revenue));
   const kpis = [
-    ['Bookings', t?.bookings, `${t?.closed ?? 0} closed`],
+    ['Bookings', t?.bookings, `${t?.closed ?? 0} completed`],
     ['Booked revenue', t && inr(t.revenue), 'Total bill value'],
     ['Collected', t && inr(t.collected), t ? `${t.revenue ? Math.round((t.collected / t.revenue) * 100) : 0}% of revenue` : ''],
     ['Pending', t && inr(t.revenue - t.collected), 'Balance not yet paid'],

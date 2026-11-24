@@ -1,6 +1,7 @@
 import 'server-only';
 import { q } from './db';
 import { cached } from './cache';
+import { dayMinutes } from '../booking-rules';
 
 export interface Settings {
   business: { name: string; phone: string; whatsapp: string; email: string; instagram: string; facebook: string; youtube: string };
@@ -36,7 +37,7 @@ export const DEFAULT_SETTINGS: Settings = {
   visit: {
     notes: [
       'Please arrive 10 minutes before your slot',
-      'Free 2-wheeler and 4-wheeler parking is available',
+      'Dedicated parking at Electronic City only (none at BTM 2nd Stage)',
       'Outside food is allowed · alcohol and smoking are not',
       'Carry a valid ID for the booking name',
     ],
@@ -64,13 +65,13 @@ export const getCatalog = cached(loadCatalog, 'catalog');
 
 async function loadCatalog() {
   const [branches, theatres, slots, packages, prices, cakes, addons, occasions, coupons, settings, testimonials, faqs] = await Promise.all([
-    q('SELECT id, name, slug, address, phone, map_url, image_url FROM branches WHERE is_active ORDER BY sort_order, id'),
+    q('SELECT id, name, slug, address, phone, map_url, image_url, story_text, story_image FROM branches WHERE is_active ORDER BY sort_order, id'),
     q('SELECT id, branch_id, name, description, base_capacity, max_capacity, base_price, extra_person_price, extra_hour_price, image_url, images, video_url FROM theatres WHERE is_active ORDER BY sort_order, id'),
     q('SELECT id, theatre_id, start_time, end_time FROM slots WHERE is_active ORDER BY sort_order, start_time'),
     q('SELECT id, name, tagline, includes, includes_cake, included_addons, image_url, highlight FROM packages WHERE is_active ORDER BY sort_order, id'),
     q('SELECT package_id, theatre_id, price, original_price FROM package_prices'),
     q('SELECT id, name, image_url, price FROM cakes WHERE is_active ORDER BY sort_order, id'),
-    q('SELECT id, category, name, description, price, image_url FROM addons WHERE is_active ORDER BY sort_order, id'),
+    q('SELECT id, category, name, description, price, price_tiers, image_url FROM addons WHERE is_active ORDER BY sort_order, id'),
     q('SELECT id, name, image_url FROM occasions WHERE is_active ORDER BY sort_order, id'),
     q(`SELECT code, discount_type, value, min_amount FROM coupons
        WHERE is_active AND show_on_site AND (expires_on IS NULL OR expires_on >= CURRENT_DATE)
@@ -82,7 +83,9 @@ async function loadCatalog() {
 
   const theatreList: Theatre[] = theatres.map((t: any) => ({
     ...t,
-    slots: slots.filter((s: any) => s.theatre_id === t.id).map(({ theatre_id, ...s }: any) => s),
+    // Time order of the business day (a 12:00 AM slot comes last, after the evening slots).
+    slots: slots.filter((s: any) => s.theatre_id === t.id).map(({ theatre_id, ...s }: any) => s)
+      .sort((a: any, b: any) => dayMinutes(a.start_time) - dayMinutes(b.start_time)),
     prices: Object.fromEntries(prices.filter((p: any) => p.theatre_id === t.id).map((p: any) => [p.package_id, { price: p.price, original_price: p.original_price }])),
   }));
 

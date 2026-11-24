@@ -5,7 +5,7 @@ import { ok, route, requireStaff } from '@/lib/server/api';
 export const dynamic = 'force-dynamic';
 
 export const GET = route(async (req: Request) => {
-  requireStaff('admin');
+  await requireStaff('admin');
   const sp = new URL(req.url).searchParams;
   const page = Math.max(1, Number(sp.get('page')) || 1);
   const per = 30;

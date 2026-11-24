@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { MapPin, Phone, ArrowRight, MessageCircle, PartyPopper } from 'lucide-react';
 import { getCatalog } from '@/lib/server/catalog';
 import { getLivePromos } from '@/lib/server/promos';
-import { getHomeGallery } from '@/lib/server/content';
+import { getHomeGallery, getShowcaseVideos } from '@/lib/server/content';
 import { HeroStage, type HeroSlide } from '@/components/site/HeroStage';
 import { IntroLoader } from '@/components/site/IntroLoader';
 import { TheatresSection } from '@/components/site/TheatresSection';
@@ -12,8 +12,9 @@ import { Testimonials } from '@/components/site/Testimonials';
 import { EnquiryForm } from '@/components/site/EnquiryForm';
 import { Reveal } from '@/components/site/Reveal';
 import { InstagramReels } from '@/components/site/InstagramReels';
+import { CelebrationVideos } from '@/components/site/CelebrationVideos';
 import { StoryScroll, type StoryChapter } from '@/components/site/StoryScroll';
-import { inr } from '@/lib/booking-rules';
+import { inr, priceTiers } from '@/lib/booking-rules';
 
 export const dynamic = 'force-dynamic';
 export const metadata = {
@@ -40,10 +41,11 @@ function Heading({ eyebrow, title, accent, text, center = true }: { eyebrow: str
 }
 
 export default async function Home() {
-  const [catalog, gallery, promos] = await Promise.all([
+  const [catalog, gallery, promos, videos] = await Promise.all([
     getCatalog(),
     getHomeGallery(),
     getLivePromos(),
+    getShowcaseVideos(),
   ]);
   const { branches, theatres, packages, customPackage, cakes, addons, occasions, settings, testimonials, faqs } = catalog;
   const lowest = theatres.length ? Math.min(...theatres.map((t) => t.base_price)) : 0;
@@ -54,19 +56,22 @@ export default async function Home() {
     { title: story.title, body: story.body, quote: story.quote, image: story.image },
     ...branches.map((b: any): StoryChapter => {
       const count = theatres.filter((t) => t.branch_id === b.id).length;
+      // Admin → Website → Story cards; empty text/photo falls back to the address and the branch photo.
       return {
         title: b.name,
-        body: `${b.address}
+        body: b.story_text?.trim() || `${b.address}
 
 ${count} private ${count === 1 ? 'theatre' : 'theatres'} · pick a slot online in under two minutes.`,
-        image: b.image_url || story.image,
+        image: b.story_image || b.image_url || story.image,
         cta: { href: `/book?branch=${b.slug}`, label: `Book ${b.name}` }, mapUrl: b.map_url,
       };
     }),
   ];
-  const heroSlides: HeroSlide[] = occasions.filter((o: any) => o.image_url).length >= 4
-    ? occasions.filter((o: any) => o.image_url).map((o: any) => ({ name: o.name, image: o.image_url, href: `/book?occasion=${encodeURIComponent(o.name)}` }))
-    : heroImages.map((img, k) => ({ name: ['Birthday', 'Anniversary', 'Date night', 'Celebration'][k % 4], image: img, href: '/book' }));
+  // Hero slides = active occasions with a photo (Admin → Website → Hero slides), in their display order.
+  const withPhoto = occasions.filter((o: any) => o.image_url);
+  const heroSlides: HeroSlide[] = withPhoto.length
+    ? withPhoto.map((o: any) => ({ name: o.name, image: o.image_url, href: `/book?occasion=${encodeURIComponent(o.name)}` }))
+    : heroImages.map((img, k) => ({ name: ['Kids Birthday', 'Anniversary', 'Date night', 'Celebration'][k % 4], image: img, href: '/book' }));
   const ticker = occasions.length ? occasions.map((o: any) => o.name) : ['Birthdays', 'Anniversaries', 'Proposals', 'Movie nights'];
 
   return (
@@ -135,6 +140,18 @@ ${count} private ${count === 1 ? 'theatre' : 'theatres'} · pick a slot online i
       {/* ---------- Packages: colourful 3D menu ---------- */}
       <PackageSpotlight branches={branches} theatres={theatres} packages={packages} customPackage={customPackage} />
 
+      {/* ---------- Celebration videos (Admin → Website → Videos) ---------- */}
+      {videos.length > 0 && (
+      <section id="videos" className="relative scroll-mt-20 overflow-hidden bg-gradient-to-b from-cream via-[#F4F8FC] to-cream py-24">
+        <div aria-hidden className="pointer-events-none absolute -left-32 top-10 h-96 w-96 rounded-full bg-[radial-gradient(closest-side,rgba(231,199,125,0.28),transparent)]" />
+        <div aria-hidden className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-[radial-gradient(closest-side,rgba(22,125,186,0.16),transparent)]" />
+        <div className="container-page relative">
+          <Heading eyebrow="See it live" title="Our celebrations," accent="in motion" text="Real setups from our Electronic City rooms. Tap a video to play." />
+          <CelebrationVideos videos={videos} />
+        </div>
+      </section>
+      )}
+
       {/* ---------- Cakes ---------- */}
       <section id="cakes" className="scroll-mt-20 bg-cream-deep/60 py-24">
         <div className="container-page">
@@ -163,7 +180,9 @@ ${count} private ${count === 1 ? 'theatre' : 'theatres'} · pick a slot online i
                         {a.image_url
                           ? <Image src={a.image_url} alt={a.name} fill sizes="(min-width: 1024px) 25vw, 50vw" className="object-cover transition-transform duration-700 ease-smooth group-hover:scale-[1.06]" />
                           : <span className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-300 via-brand-400 to-brand-600 text-white"><PartyPopper className="h-14 w-14" /></span>}
-                        <span className="absolute right-2.5 top-2.5 rounded-full bg-cream/95 px-3 py-1 text-sm font-bold text-brand-700 shadow-card backdrop-blur">{inr(a.price)}</span>
+                        <span className="absolute right-2.5 top-2.5 rounded-full bg-cream/95 px-3 py-1 text-sm font-bold text-brand-700 shadow-card backdrop-blur">
+                          {priceTiers(a)[0] ? <>{inr(priceTiers(a)[0].price)}<span className="font-medium text-navy-soft"> / {priceTiers(a)[0].label}</span></> : inr(a.price)}
+                        </span>
                       </div>
                       <figcaption className="flex flex-1 flex-col items-center justify-center px-2 pb-2 pt-3 text-center">
                         <span className="font-display text-lg leading-tight">{a.name}</span>
@@ -217,7 +236,7 @@ ${count} private ${count === 1 ? 'theatre' : 'theatres'} · pick a slot online i
             {gallery.map((g: any, i: number) => (
               <Reveal key={g.id} delay={(i % 4) * 0.06} className={i === 0 ? 'col-span-2 row-span-2' : i === 3 ? 'row-span-2' : ''}>
                 <Link href="/gallery" className="group relative block h-full overflow-hidden rounded-3xl bg-cream-deep">
-                  <Image src={g.image_url} alt={g.caption || 'Movie Bash celebration'} fill sizes={i === 0 ? '50vw' : '25vw'} className="object-cover transition-transform duration-700 ease-smooth group-hover:scale-105" />
+                  <Image src={g.image_url} alt={g.caption || 'Movie Bash celebration'} fill sizes={i === 0 ? '75vw' : '38vw'} className="object-cover transition-transform duration-700 ease-smooth group-hover:scale-105" />
                 </Link>
               </Reveal>
             ))}

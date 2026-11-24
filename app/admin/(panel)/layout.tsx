@@ -6,8 +6,8 @@ import { ConfirmProvider, ToastProvider } from '@/components/ui';
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Admin', robots: { index: false } };
 
-export default function PanelLayout({ children }: { children: React.ReactNode }) {
-  const session = getSession();
+export default async function PanelLayout({ children }: { children: React.ReactNode }) {
+  const session = await getSession();
   if (!session) redirect('/admin/login');
   return (
     <ToastProvider>

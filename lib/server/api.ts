@@ -10,8 +10,8 @@ export class HttpError extends Error {
 
 export const ok = (data: unknown = null, init?: ResponseInit) => NextResponse.json({ ok: true, data }, init);
 
-export function requireStaff(role?: 'admin'): Session {
-  const s = getSession();
+export async function requireStaff(role?: 'admin'): Promise<Session> {
+  const s = await getSession();
   if (!s) throw new HttpError(401, 'Please sign in again');
   if (role === 'admin' && s.role !== 'admin') throw new HttpError(403, 'Only admins can do this');
   return s;

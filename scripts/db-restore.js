@@ -22,7 +22,7 @@ for (const file of ['.env.local', '.env']) {
 
 // Parent tables first.
 const ORDER = ['files', 'settings', 'branches', 'theatres', 'slots', 'packages', 'package_prices', 'cakes', 'addons', 'occasions',
-  'gallery', 'coupons', 'promos', 'testimonials', 'faqs', 'enquiries', 'users', 'bookings', 'payments', 'booking_events', 'whatsapp_messages', 'audit_log', 'slot_blocks'];
+  'gallery', 'coupons', 'promos', 'testimonials', 'faqs', 'enquiries', 'users', 'bookings', 'payments', 'booking_events', 'whatsapp_messages', 'audit_log', 'slot_blocks', 'showcase_videos'];
 
 async function main() {
   const file = process.argv[2];
@@ -47,7 +47,8 @@ async function main() {
 
     await client.query('BEGIN');
     // A backup made without images keeps the images already in this database.
-    const order = backup.tables.files ? ORDER : ORDER.filter((t) => t !== 'files');
+    // Tables missing from an older backup (e.g. made before a table existed) keep their current rows.
+    const order = ORDER.filter((t) => Array.isArray(backup.tables[t]));
     await client.query(`TRUNCATE ${order.join(', ')} RESTART IDENTITY CASCADE`);
     for (const table of order) {
       const rows = backup.tables[table] || [];

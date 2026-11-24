@@ -5,11 +5,11 @@ import { todayIST } from '@/lib/booking-rules';
 export const dynamic = 'force-dynamic';
 
 const TABLES = ['settings', 'branches', 'theatres', 'slots', 'packages', 'package_prices', 'cakes', 'addons', 'occasions', 'gallery',
-  'coupons', 'promos', 'testimonials', 'faqs', 'enquiries', 'users', 'bookings', 'payments', 'booking_events', 'whatsapp_messages', 'audit_log', 'slot_blocks'];
+  'coupons', 'promos', 'testimonials', 'faqs', 'enquiries', 'users', 'bookings', 'payments', 'booking_events', 'whatsapp_messages', 'audit_log', 'slot_blocks', 'showcase_videos'];
 
 /** Full JSON backup. Add ?files=1 to include uploaded images (base64). */
 export const GET = route(async (req: Request) => {
-  const s = requireStaff('admin');
+  const s = await requireStaff('admin');
   const withFiles = new URL(req.url).searchParams.get('files') === '1';
   const data: Record<string, unknown[]> = {};
   for (const t of TABLES) data[t] = await q(`SELECT * FROM ${t} ORDER BY 1`);

@@ -55,7 +55,7 @@ const LEGACY_TABLES = [
   'booking_addons', 'enquiries', 'newsletter_subscribers', 'faqs', 'testimonials',
 ];
 const TABLES = [
-  'audit_log', 'whatsapp_messages', 'booking_events', 'payments', 'bookings', 'users', 'coupons', 'gallery',
+  'showcase_videos', 'audit_log', 'whatsapp_messages', 'booking_events', 'payments', 'bookings', 'users', 'coupons', 'gallery',
   'occasions', 'addons', 'cakes', 'package_prices', 'packages', 'slots', 'theatres', 'branches', 'settings', 'files',
 ];
 
@@ -90,7 +90,7 @@ const ADDONS = [
 const PACKAGES = [
   {
     name: 'Standard', tagline: 'Everything you need for a perfect celebration', highlight: true,
-    includes: ['500g cake (choose flavour)', 'Fog entry (2 pots)', 'Celebration decoration', 'LED name & number board', 'Neon light (Happy Birthday / Love)', '4K projector & Dolby sound'],
+    includes: ['500g cake (choose flavour)', 'Fog entry (1 pot)', 'Celebration decoration', 'LED name & number board', 'Neon light (Happy Birthday / Love)', '4K projector & Dolby sound'],
     price: (t) => t.standard_price || (t.capacity <= 2 ? 1499 : 2200),
   },
   {
@@ -191,13 +191,13 @@ const FAQS = [
   ['Is alcohol served or smoking permitted?', 'No, both are strictly prohibited across all premises.'],
   ['Are there age restrictions?', '18 and above. Guests below 18 are welcome with family members.'],
   ['Is outside food allowed?', 'Yes, outside food is allowed and you can also order via Swiggy or Zomato.'],
-  ['Is parking available?', 'Yes, 2-wheeler and 4-wheeler parking is available at both branches.'],
+  ['Is parking available?', 'Electronic City has dedicated 2-wheeler and 4-wheeler parking. BTM 2nd Stage does not have dedicated parking.'],
   ['Can we bring pets?', 'No, pets are not allowed inside the theatres.'],
   ['What if a technical issue occurs during the event?', 'A partial refund or rescheduling is provided as per our terms and conditions.'],
   ['What decorations do you have?', 'Love, Birthday, Anniversary and Celebration themes, plus custom decoration on request.'],
   ['What add-ons do you have?', 'Cake, snacks, fog entry, cold pyro, special decoration, baby cart entry, photography and more.'],
   ['When can we book add-ons?', 'While booking the room, or anytime up to 24 hours before the event.'],
-  ['Can we watch our own movie or videos?', 'Yes. Use your own OTT login (Netflix, Prime, Hotstar and more) or bring a pen drive.'],
+  ['Can we watch our own movie or videos?', 'Yes. Log in to your own OTT account (Netflix, Prime, Hotstar and more). Pen drives are not supported.'],
 ];
 
 const TESTIMONIALS = [
@@ -245,6 +245,147 @@ async function updateContent(client) {
       SELECT jsonb_agg(CASE WHEN x = 'Bubbles' THEN 'Bubble entry' ELSE x END ORDER BY i)
       FROM jsonb_array_elements_text(includes) WITH ORDINALITY AS t(x, i))
     WHERE includes ? 'Bubbles'`);
+  await updateContentNov2026(client);
+}
+
+const FOG_TIERS = [
+  { qty: 1, price: 399, label: '1 pot' }, { qty: 2, price: 699, label: '2 pots' },
+  { qty: 3, price: 1000, label: '3 pots' }, { qty: 5, price: 1500, label: '5 pots' },
+];
+
+/** Nov 2026 content changes. Each statement only matches the old default value, so admin edits are kept. */
+async function updateContentNov2026(client) {
+  // Standard package: fog entry is 1 pot.
+  await client.query(`UPDATE packages SET includes = (
+      SELECT jsonb_agg(CASE WHEN x = 'Fog entry – 2 pots' THEN 'Fog entry – 1 pot' WHEN x = 'Fog entry (2 pots)' THEN 'Fog entry (1 pot)' ELSE x END ORDER BY i)
+      FROM jsonb_array_elements_text(includes) WITH ORDINALITY AS t(x, i))
+    WHERE name = 'Standard' AND (includes ? 'Fog entry – 2 pots' OR includes ? 'Fog entry (2 pots)')`);
+
+  // Fog entry is sold in packs: 1 pot ₹399, 2 pots ₹699, 3 pots ₹1000, 5 pots ₹1500.
+  await client.query(`UPDATE addons SET name='Fog Entry', price=399, price_tiers=$1,
+      description='Dense fog for a cinematic walk-in. Choose 1, 2, 3 or 5 pots.'
+    WHERE name='Fog Entry (2 pots)' AND price_tiers='[]'::jsonb`, [JSON.stringify(FOG_TIERS)]);
+
+  // New photos and prices.
+  const photo = (from, to) => client.query('UPDATE addons SET image_url=$2 WHERE image_url=$1', [from, to]);
+  await photo('/images/addons/fog-entry.webp', '/images/addons/fog-entry-pots.webp');
+  await photo('/images/addons/cold-pyro.webp', '/images/addons/cold-pyro-entry.webp');
+  await photo('/images/addons/bubble-entry-party.webp', '/images/addons/bubble-entry-machine.webp');
+  await photo('/images/addons/led-name-board.webp', '/images/addons/led-name-number.webp');
+  await client.query("UPDATE addons SET price=799 WHERE name='Cold Pyro Sparkle Entry' AND price=399");
+  await client.query("UPDATE addons SET price=250 WHERE name='Bubble Entry' AND price=399");
+  await client.query("UPDATE addons SET price=250 WHERE name='LED Name / Number' AND price=299");
+  for (const [i, [name, desc, image]] of [
+    ["Kid's Car Entry", 'Grand entry in a light-up kids car.', '/images/addons/kids-car-entry.webp'],
+    ['Baby Cart Entry', 'Decorated baby cart entry for the little one.', '/images/addons/baby-cart-entry.webp'],
+  ].entries()) {
+    await client.query(`INSERT INTO addons (category, name, description, price, image_url, sort_order)
+      SELECT 'Entry', $1, $2, 799, $3, $4 WHERE NOT EXISTS (SELECT 1 FROM addons WHERE lower(replace(name, '''', '')) = lower(replace($1, '''', '')))`,
+      [name, desc, image, 3 + i]);
+  }
+
+  // Family & celebration rooms: extra hour ₹750 (couple rooms unchanged).
+  await client.query('UPDATE theatres SET extra_hour_price=750 WHERE base_capacity > 2 AND extra_hour_price=449');
+
+  // Only Electronic City has dedicated parking; pen drives are not supported.
+  await client.query(`UPDATE faqs SET answer=$1 WHERE answer='Yes, 2-wheeler and 4-wheeler parking is available at both branches.'`,
+    ['Electronic City has dedicated 2-wheeler and 4-wheeler parking. BTM 2nd Stage does not have dedicated parking.']);
+  await client.query(`UPDATE faqs SET answer=$1 WHERE answer='Yes. Use your own OTT login (Netflix, Prime, Hotstar and more) or bring a pen drive.'`,
+    ['Yes. Log in to your own OTT account (Netflix, Prime, Hotstar and more). Pen drives are not supported.']);
+  await client.query(`UPDATE settings SET value = replace(value::text, 'Free 2-wheeler and 4-wheeler parking is available', 'Dedicated parking at Electronic City only (none at BTM 2nd Stage)')::jsonb
+    WHERE key='visit' AND value::text LIKE '%Free 2-wheeler and 4-wheeler parking is available%'`);
+
+  // Occasion list (once): Birthday, Anniversary, Bride to Be, Groom to Be, Date, Love Proposal / Marry Me, Baby Shower,
+  // Naming Ceremony. "Other" (custom text) is built into the booking form.
+  const { rowCount: done } = await client.query("SELECT 1 FROM occasions WHERE name='Naming Ceremony'");
+  if (!done) {
+    await client.query("UPDATE occasions SET name='Birthday' WHERE name='Birthday Party'");
+    await client.query("UPDATE occasions SET name='Bride to Be' WHERE name='Bachelorette Party'");
+    await client.query("UPDATE occasions SET name='Love Proposal / Marry Me' WHERE name='Date & Proposal'");
+    await client.query("UPDATE occasions SET is_active=false WHERE name IN ('Farewell', 'Corporate Event')");
+    const order = ['Birthday', 'Anniversary', 'Bride to Be', 'Groom to Be', 'Date', 'Love Proposal / Marry Me', 'Baby Shower', 'Naming Ceremony'];
+    for (const [i, name] of order.entries()) {
+      await client.query('INSERT INTO occasions (name, sort_order) SELECT $1, $2 WHERE NOT EXISTS (SELECT 1 FROM occasions WHERE name=$1)', [name, i]);
+      await client.query('UPDATE occasions SET sort_order=$2, is_active=true WHERE name=$1', [name, i]);
+    }
+  }
+  await keepLegacyPackLines(client);
+  await updateMediaNov2026(client);
+}
+
+/**
+ * Bookings made before an add-on got pack prices (e.g. "Fog Entry (2 pots)" at ₹499) have no chosen pack.
+ * Editing or completing them would re-price that line as the 1-pack price, so keep each such line as a
+ * fixed-price custom line with the same name, price and qty. Lines with an `option` or an included qty are left alone.
+ */
+async function keepLegacyPackLines(client) {
+  const legacy = `i->>'kind' = 'addon' AND NOT (i ? 'option') AND COALESCE((i->>'included')::int, 0) = 0
+    AND (i->>'addon_id')::int IN (SELECT id FROM addons WHERE jsonb_array_length(price_tiers) > 0)`;
+  await client.query(`UPDATE bookings b SET items = (
+      SELECT jsonb_agg(CASE WHEN ${legacy}
+        THEN jsonb_build_object('kind', 'custom', 'name', i->'name', 'price', i->'price', 'qty', i->'qty') ELSE i END ORDER BY n)
+      FROM jsonb_array_elements(b.items) WITH ORDINALITY AS t(i, n))
+    WHERE jsonb_typeof(b.items) = 'array' AND EXISTS (SELECT 1 FROM jsonb_array_elements(b.items) AS t(i) WHERE ${legacy})`);
+}
+
+/**
+ * Photos from the Movie Bash Drive folder (Electronic City rooms), the occasion list for the hero and booking,
+ * and the gallery. Runs once for each part; theatre photos are only replaced while still the old defaults.
+ */
+async function updateMediaNov2026(client) {
+  const E = (n) => `/images/ecity/${n}.webp`;
+
+  // Occasions (hero + booking): Kids Birthday, Anniversary, Bride to Be, Groom to Be, Mom To Be, Love Proposal / Marry Me, Date, Baby Shower, Naming Ceremony.
+  const { rowCount: occasionsDone } = await client.query("SELECT 1 FROM occasions WHERE name='Mom To Be'");
+  if (!occasionsDone) {
+    await client.query("UPDATE occasions SET name='Kids Birthday' WHERE name IN ('Birthday', 'Birthday Party')");
+    await client.query("UPDATE occasions SET name='Bride to Be' WHERE name='Bachelorette Party'");
+    const OLD = ['', '/images/couple_3.webp', '/images/couple_6.webp', '/images/rooms/btm-butterfly-blush.webp', '/images/rooms/btm-lavender-mist.webp', '/images/ambience_3.webp', '/images/ambience_1.webp', '/images/occasion-farewell.webp'];
+    const occasions = [
+      ['Kids Birthday', E('kids-family-1')], ['Anniversary', E('celebration-anniversary-2')], ['Bride to Be', E('family-bride-1')],
+      ['Groom to Be', E('family-groom-2')], ['Mom To Be', E('family-mom-2')], ['Love Proposal / Marry Me', E('couple-anniversary-1')],
+      ['Date', E('couple-anniversary-3')], ['Baby Shower', E('celebration-mom-2')], ['Naming Ceremony', E('naming-2')],
+    ];
+    for (const [i, [name, image]] of occasions.entries()) {
+      await client.query('INSERT INTO occasions (name, sort_order, image_url) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM occasions WHERE name=$1)', [name, i, image]);
+      await client.query('UPDATE occasions SET sort_order=$2, is_active=true WHERE name=$1', [name, i]);
+      await client.query('UPDATE occasions SET image_url=$2 WHERE name=$1 AND image_url = ANY($3::text[])', [name, image, OLD]);
+    }
+  }
+
+  // Electronic City rooms: couple = red, celebration = gold, family = purple.
+  const rooms = [
+    ['Couple Theater', '/images/rooms/room_1_1794980138988.webp', E('couple-anniversary-2'), ['couple-anniversary-1', 'couple-anniversary-3', 'couple-birthday-1', 'couple-birthday-2']],
+    ['Celebration Theater', '/images/ecity-celebration-theatre.webp', E('celebration-anniversary-4'), ['celebration-anniversary-1', 'celebration-birthday-2', 'celebration-anniversary-5', 'celebration-bride-2', 'celebration-groom-2', 'celebration-birthday-4']],
+    ['Family Theatre', '/images/ecity-family-theatre.webp', E('family-anniversary-2'), ['family-anniversary-1', 'family-birthday-2', 'family-anniversary-4', 'family-bride-2', 'family-groom-1', 'family-mom-2']],
+  ];
+  for (const [name, old, main, more] of rooms) {
+    await client.query('UPDATE theatres SET image_url=$2, images=$3 WHERE name=$1 AND image_url=$4', [name, main, JSON.stringify([main, ...more.map(E)]), old]);
+  }
+
+  // "Our story" cards under the hero: new full-size photos while the old small ones are still in place.
+  await client.query("UPDATE settings SET value = jsonb_set(value, '{image}', to_jsonb($1::text)) WHERE key='story' AND value->>'image' IN ('/images/story-birthday.webp', '')", [E('celebration-birthday-2')]);
+  await client.query('UPDATE branches SET image_url=$1 WHERE slug=$2 AND image_url = ANY($3::text[])', [E('venue-1'), 'electronic-city', ['/images/couple_1.webp', '', E('venue-6')]]);
+
+  // Gallery: the new photos first (the last 8 inserted are the ones the home page shows, a mix of rooms).
+  const files = (prefix, n) => Array.from({ length: n }, (_, i) => `${prefix}-${i + 1}`);
+  const home = ['couple-anniversary-1', 'celebration-anniversary-2', 'family-bride-1', 'kids-family-1', 'family-anniversary-2', 'celebration-birthday-2', 'naming-2', 'family-mom-2'];
+  const groups = [
+    ['Couples', [...files('couple-anniversary', 3), ...files('couple-birthday', 2)]],
+    ['Celebrations', [...files('celebration-anniversary', 5), ...files('celebration-birthday', 6), ...files('celebration-bride', 3), ...files('celebration-groom', 3), ...files('celebration-mom', 2),
+      ...files('family-anniversary', 4), ...files('family-birthday', 4), ...files('family-bride', 2), ...files('family-groom', 2), ...files('family-mom', 3),
+      ...files('kids-celebration', 2), ...files('kids-family', 8), ...files('naming', 2)]],
+    ['Ambience', files('venue', 10)],
+  ];
+  for (const [category, list] of groups) {
+    for (const n of list.filter((x) => !home.includes(x))) {
+      await client.query('INSERT INTO gallery (image_url, category, sort_order) SELECT $1,$2,-1 WHERE NOT EXISTS (SELECT 1 FROM gallery WHERE image_url=$1)', [E(n), category]);
+    }
+  }
+  for (const n of home) {
+    const category = n.startsWith('couple') ? 'Couples' : 'Celebrations';
+    await client.query('INSERT INTO gallery (image_url, category, sort_order) SELECT $1,$2,-1 WHERE NOT EXISTS (SELECT 1 FROM gallery WHERE image_url=$1)', [E(n), category]);
+  }
 }
 
 async function ensureContent(client) {
@@ -268,6 +409,24 @@ async function ensureContent(client) {
     const category = url.includes('btm') ? 'BTM 2nd Stage' : 'Electronic City';
     await client.query('INSERT INTO gallery (image_url, category, sort_order) SELECT $1,$2,-1 WHERE NOT EXISTS (SELECT 1 FROM gallery WHERE image_url=$1)', [url, category]);
   }
+}
+
+// Home page videos (Admin → Website → Videos): [file in /public/videos/celebrations, room, title].
+const SHOWCASE_VIDEOS = [
+  ['celebration-anniversary', 'Celebration room', 'Anniversary'], ['couple-marry-me', 'Couple room', 'Marry me'],
+  ['celebration-bride-to-be', 'Celebration room', 'Bride to be'], ['couple-birthday', 'Couple room', 'Birthday'],
+  ['celebration-groom-to-be', 'Celebration room', 'Groom to be'], ['family-birthday', 'Family room', 'Birthday'],
+  ['kids-first-birthday', '', '1st birthday setup'], ['couple-anniversary', 'Couple room', 'Anniversary'],
+  ['couple-i-love-you', 'Couple room', 'I love you'], ['celebration-birthday', 'Celebration room', 'Birthday'],
+];
+
+async function seedShowcaseVideos(client) {
+  for (const [i, [file, room, title]] of SHOWCASE_VIDEOS.entries()) {
+    if (!fs.existsSync(path.join(root, 'public', 'videos', 'celebrations', `${file}.mp4`))) continue;
+    await client.query('INSERT INTO showcase_videos (title, room, video_url, poster_url, sort_order) VALUES ($1,$2,$3,$4,$5)',
+      [title, room, `/videos/celebrations/${file}.mp4`, `/images/ecity/posters/${file}.webp`, i]);
+  }
+  console.log('Seeded home page videos.');
 }
 
 async function main() {
@@ -295,8 +454,11 @@ async function main() {
       await client.query(`DROP TABLE IF EXISTS ${[...LEGACY_TABLES, ...TABLES].join(', ')} CASCADE`);
     }
 
+    const { rows: [{ t: hadVideos }] } = await client.query("SELECT to_regclass('public.showcase_videos') AS t");
     await client.query(fs.readFileSync(path.join(root, 'db', 'schema.sql'), 'utf8'));
     console.log('Schema ready.');
+    // First run with the videos table: start it with the celebration videos shipped in /public (once; admin edits are kept).
+    if (!hadVideos) await seedShowcaseVideos(client);
 
     const { rows: [{ n: branchCount }] } = await client.query('SELECT count(*)::int AS n FROM branches');
     if (branchCount > 0) {

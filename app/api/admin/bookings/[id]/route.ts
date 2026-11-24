@@ -17,7 +17,7 @@ async function load(id: string, s: Session) {
 }
 
 export const GET = route(async (_req: Request, { params }: Ctx) => {
-  const s = requireStaff();
+  const s = await requireStaff();
   const b = await load(params.id, s);
   const [payments, events, messages] = await Promise.all([
     q('SELECT * FROM payments WHERE booking_id=$1 ORDER BY created_at', [b.id]),
@@ -29,7 +29,7 @@ export const GET = route(async (_req: Request, { params }: Ctx) => {
 
 /** Full edit (also used for reschedule). */
 export const PUT = route(async (req: Request, { params }: Ctx) => {
-  const s = requireStaff();
+  const s = await requireStaff();
   await load(params.id, s);
   const row = await updateBooking(Number(params.id), await req.json(), { kind: 'staff', name: s.name, role: s.role, branch_id: s.branch_id });
   return ok(row);
@@ -58,7 +58,7 @@ const actionSchema = z.discriminatedUnion('action', [
 ]);
 
 export const POST = route(async (req: Request, { params }: Ctx) => {
-  const s = requireStaff();
+  const s = await requireStaff();
   const b = await load(params.id, s);
   const body = actionSchema.parse(await req.json());
   const staffActor = { kind: 'staff' as const, name: s.name, role: s.role, branch_id: s.branch_id };
@@ -77,8 +77,8 @@ export const POST = route(async (req: Request, { params }: Ctx) => {
       await addPayment(b.id, body.amount, body.method, body.note, s.name);
       return ok();
     case 'close': {
-      if (b.status === 'completed') throw new HttpError(409, 'Booking is already closed');
-      if (b.status === 'cancelled') throw new HttpError(409, 'Cancelled bookings cannot be closed');
+      if (b.status === 'completed') throw new HttpError(409, 'Booking is already completed');
+      if (b.status === 'cancelled') throw new HttpError(409, 'Cancelled bookings cannot be completed');
       const base = bookingToInput(b);
       const input = {
         ...base, addons: body.addons, custom_items: body.custom_items, discount: body.discount, notes: body.notes || b.notes,
@@ -97,7 +97,7 @@ export const POST = route(async (req: Request, { params }: Ctx) => {
       return ok();
     }
     case 'reopen':
-      if (b.status !== 'completed') throw new HttpError(409, 'Only closed bookings can be reopened');
+      if (b.status !== 'completed') throw new HttpError(409, 'Only completed bookings can be reopened');
       await setStatus(b.id, 'confirmed', s.name);
       return ok();
     case 'delete':

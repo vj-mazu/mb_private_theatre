@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, Sparkles } from 'lucide-react';
-import { Badge, Button, Empty, Field, ImageUpload, Input, Modal, Select, Textarea, Toggle, api, cn, useConfirm, useToast } from '@/components/ui';
+import { Badge, Button, Empty, Field, ImageUpload, Input, Modal, Select, Textarea, Toggle, VideoUpload, api, cn, useConfirm, useToast } from '@/components/ui';
 
 export type FieldDef =
   | { key: string; label: string; type: 'text' | 'textarea' | 'number' | 'time' | 'date'; hint?: string; required?: boolean; half?: boolean }
   | { key: string; label: string; type: 'select'; options: { value: string | number; label: string }[]; half?: boolean; number?: boolean }
-  | { key: string; label: string; type: 'image' }
+  | { key: string; label: string; type: 'image'; hint?: string }
+  | { key: string; label: string; type: 'video'; hint?: string; /** field that gets the automatic cover photo when empty */ posterKey?: string }
   | { key: string; label: string; type: 'images' }
   | { key: string; label: string; type: 'list'; hint?: string }
   | { key: string; label: string; type: 'toggle'; half?: boolean }
@@ -26,6 +27,8 @@ export interface CrudConfig {
   filter?: (row: any) => boolean;
   extra?: (draft: any, setDraft: (fn: (d: any) => any) => void) => React.ReactNode;
   rowExtra?: (row: any) => React.ReactNode;
+  /** Edit-only list (e.g. branch story cards): no add, delete or show/hide buttons. */
+  editOnly?: boolean;
 }
 
 export function CrudManager({ config, onChange }: { config: CrudConfig; onChange?: (rows: any[]) => void }) {
@@ -85,7 +88,7 @@ export function CrudManager({ config, onChange }: { config: CrudConfig; onChange
     <div>
       <div className="mb-4 flex items-center justify-between">
         <p className="text-sm text-navy-soft">{visible ? `${visible.length} ${config.noun.toLowerCase()}${visible.length === 1 ? '' : 's'}` : ' '}</p>
-        <Button size="sm" onClick={() => setDraft({ ...config.defaults })}><Plus className="h-4 w-4" />Add {config.noun.toLowerCase()}</Button>
+        {!config.editOnly && <Button size="sm" onClick={() => setDraft({ ...config.defaults })}><Plus className="h-4 w-4" />Add {config.noun.toLowerCase()}</Button>}
       </div>
 
       {!visible && <div className={cn('grid gap-3', grid && 'sm:grid-cols-2 lg:grid-cols-3')}>{[0, 1, 2].map((i) => <div key={i} className="skeleton h-28" />)}</div>}
@@ -99,7 +102,7 @@ export function CrudManager({ config, onChange }: { config: CrudConfig; onChange
               className={cn('card flex overflow-hidden transition-shadow hover:shadow-lift', grid ? 'flex-col' : 'items-center', !row.is_active && 'opacity-60')}>
               {config.image && (
                 grid
-                  ? <div className="aspect-[16/10] bg-cream-deep">{config.image(row) && <img src={config.image(row)} alt="" className="h-full w-full object-cover" loading="lazy" />}</div>
+                  ? <div className="aspect-[16/10] overflow-hidden bg-cream-deep">{config.image(row) && <img src={config.image(row)} alt="" className="h-full w-full object-cover" loading="lazy" />}</div>
                   : <div className="m-3 h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-cream-deep">{config.image(row) && <img src={config.image(row)} alt="" className="h-full w-full object-cover" loading="lazy" />}</div>
               )}
               <div className={cn('flex min-w-0 flex-1 items-start justify-between gap-3', grid ? 'p-4' : 'px-4 py-3')}>
@@ -110,9 +113,9 @@ export function CrudManager({ config, onChange }: { config: CrudConfig; onChange
                   {config.rowExtra?.(row)}
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
-                  {'is_active' in row && <Toggle checked={!!row.is_active} onChange={() => toggleActive(row)} />}
+                  {!config.editOnly && 'is_active' in row && <Toggle checked={!!row.is_active} onChange={() => toggleActive(row)} />}
                   <button onClick={() => setDraft({ ...row })} className="rounded-lg p-2 text-navy-soft transition hover:bg-cream-deep hover:text-navy" aria-label="Edit"><Pencil className="h-4 w-4" /></button>
-                  <button onClick={() => remove(row)} className="rounded-lg p-2 text-navy-soft transition hover:bg-red-50 hover:text-red-600" aria-label="Delete"><Trash2 className="h-4 w-4" /></button>
+                  {!config.editOnly && <button onClick={() => remove(row)} className="rounded-lg p-2 text-navy-soft transition hover:bg-red-50 hover:text-red-600" aria-label="Delete"><Trash2 className="h-4 w-4" /></button>}
                 </div>
               </div>
             </motion.div>
@@ -124,7 +127,13 @@ export function CrudManager({ config, onChange }: { config: CrudConfig; onChange
         footer={<><Button variant="secondary" onClick={() => setDraft(null)}>Cancel</Button><Button loading={busy} onClick={save}>Save</Button></>}>
         {draft && (
           <div className="grid gap-4 sm:grid-cols-2">
-            {config.fields.map((f) => <FieldInput key={f.key} field={f} value={draft[f.key]} onChange={(v) => setDraft((d: any) => ({ ...d, [f.key]: v }))} />)}
+            {config.fields.map((f) => (
+              <FieldInput key={f.key} field={f} value={draft[f.key]} onChange={(v, poster) => setDraft((d: any) => ({
+                ...d, [f.key]: v,
+                // A new video brings its own cover photo unless one was already chosen.
+                ...(f.type === 'video' && f.posterKey && poster && !d[f.posterKey] ? { [f.posterKey]: poster } : {}),
+              }))} />
+            ))}
             {config.extra && <div className="sm:col-span-2">{config.extra(draft, setDraft)}</div>}
           </div>
         )}
@@ -133,11 +142,18 @@ export function CrudManager({ config, onChange }: { config: CrudConfig; onChange
   );
 }
 
-function FieldInput({ field: f, value, onChange }: { field: FieldDef; value: any; onChange: (v: any) => void }) {
+function FieldInput({ field: f, value, onChange }: { field: FieldDef; value: any; onChange: (v: any, poster?: string) => void }) {
   const span = 'half' in f && f.half ? '' : 'sm:col-span-2';
   switch (f.type) {
     case 'image':
-      return <div className="sm:col-span-2 sm:max-w-xs"><ImageUpload label={f.label} value={value || ''} onChange={onChange} /></div>;
+      return (
+        <div className="sm:col-span-2 sm:max-w-xs">
+          <ImageUpload label={f.label} value={value || ''} onChange={onChange} />
+          {f.hint && <p className="mt-1 text-xs text-navy-faint">{f.hint}</p>}
+        </div>
+      );
+    case 'video':
+      return <div className="sm:col-span-2"><VideoUpload label={f.label} hint={f.hint} value={value || ''} onChange={onChange} /></div>;
     case 'images': {
       const list: string[] = Array.isArray(value) ? value : [];
       return (

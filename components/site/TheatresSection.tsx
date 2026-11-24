@@ -25,7 +25,7 @@ export function TheatresSection({ branches, theatres }: { branches: any[]; theat
                 transition={{ duration: 0.5, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
                 className="card group overflow-hidden text-left transition-shadow duration-500 hover:shadow-lift">
                 <div className="relative aspect-[4/3] overflow-hidden bg-cream-deep">
-                  {t.image_url && <Image src={t.image_url} alt={t.name} fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  {t.image_url && <Image src={t.image_url} alt={t.name} fill sizes="(min-width: 1024px) 38vw, (min-width: 640px) 56vw, 100vw"
                     className="object-cover transition-transform duration-700 ease-smooth group-hover:scale-[1.05]" />}
                 </div>
                 <div className="p-5">

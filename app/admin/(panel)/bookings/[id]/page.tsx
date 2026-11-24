@@ -62,7 +62,7 @@ export default function BookingDetail({ params }: { params: { id: string } }) {
           {open && <Link href={`/admin/bookings/${b.id}/edit`}><Button variant="secondary"><Pencil className="h-4 w-4" />Edit</Button></Link>}
           {open && <Link href={`/admin/bookings/${b.id}/edit`}><Button variant="secondary"><CalendarClock className="h-4 w-4" />Reschedule</Button></Link>}
           {b.status === 'confirmed' && <Button variant="secondary" onClick={() => setModal('payment')}><Wallet className="h-4 w-4" />Add payment</Button>}
-          {b.status === 'confirmed' && <Button variant="dark" onClick={() => setModal('close')}><Lock className="h-4 w-4" />Close booking</Button>}
+          {b.status === 'confirmed' && <Button variant="dark" onClick={() => setModal('close')}><Lock className="h-4 w-4" />Complete booking</Button>}
           {b.status === 'completed' && <Button variant="secondary" onClick={() => act({ action: 'reopen' }, 'Booking reopened')}><RotateCcw className="h-4 w-4" />Reopen</Button>}
           <Button variant="secondary" onClick={() => setModal('whatsapp')}><MessageCircle className="h-4 w-4" />WhatsApp</Button>
           <a href={`/ticket/${b.ref}`} target="_blank" rel="noreferrer"><Button variant="secondary"><Printer className="h-4 w-4" />Ticket</Button></a>
@@ -158,7 +158,7 @@ export default function BookingDetail({ params }: { params: { id: string } }) {
       <PaymentModal open={modal === 'payment'} onClose={() => setModal('')} balance={balance} busy={busy}
         onSubmit={(p) => act({ action: 'payment', ...p }, 'Payment recorded')} />
       <CancelModal open={modal === 'cancel'} onClose={() => setModal('')} busy={busy} onSubmit={(reason) => act({ action: 'cancel', reason }, 'Booking cancelled')} />
-      <CloseBookingModal open={modal === 'close'} onClose={() => setModal('')} booking={b} input={d.input} onDone={() => { setModal(''); toast('Booking closed'); load(); }} />
+      <CloseBookingModal open={modal === 'close'} onClose={() => setModal('')} booking={b} input={d.input} onDone={() => { setModal(''); toast('Booking completed'); load(); }} />
       <WhatsAppModal open={modal === 'whatsapp'} onClose={() => setModal('')} busy={busy} messages={d.messages} waLink={d.waLink}
         onSend={(kind, text) => act({ action: 'whatsapp', kind, text }, 'WhatsApp message sent')} />
 

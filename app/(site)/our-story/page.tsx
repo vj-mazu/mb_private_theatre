@@ -15,7 +15,7 @@ export const metadata = {
 const VALUES = [
   ['Completely private', 'Only your group in the room for the whole slot — no strangers, no cameras inside.'],
   ['Decor that wows', 'Neon names, balloon arches, fog entries and cake moments set up before you walk in.'],
-  ['Your movie, your way', 'Bring your own OTT login or pen drive — 4K screen and Dolby sound do the rest.'],
+  ['Your movie, your way', 'Log in to your own OTT account — 4K screen and Dolby sound do the rest.'],
   ['Simple, honest pricing', 'Clear packages, a small advance to book, and the balance at the venue.'],
 ];
 
@@ -121,7 +121,7 @@ export default async function OurStoryPage() {
             <Reveal key={b.slug} delay={i * 0.08}>
               <article className="group overflow-hidden rounded-[28px] border border-line bg-white shadow-card">
                 <div className="relative aspect-[16/10] overflow-hidden">
-                  {b.image_url && <Image src={b.image_url} alt={b.name} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover transition-transform duration-1000 group-hover:scale-105" />}
+                  {b.image_url && <Image src={b.image_url} alt={b.name} fill sizes="(min-width: 768px) 75vw, 100vw" className="object-cover transition-transform duration-1000 group-hover:scale-105" />}
                 </div>
                 <div className="p-6">
                   <h3 className="text-3xl">{b.name}</h3>

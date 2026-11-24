@@ -6,7 +6,7 @@ import { Minus, Plus, Trash2, Check } from 'lucide-react';
 import { Button, Field, Input, Select, Textarea, api, cn, useToast } from '@/components/ui';
 import { CakeWeight } from '@/components/booking/CakeWeight';
 import {
-  PAYMENT_METHODS, SOURCES, phoneDigits, cakeCharge, chargedQty, kgLabel, computeQuote, formatDate, inr, isSlotExpired, slotLabel, todayIST, type BookingItem,
+  PAYMENT_METHODS, SOURCES, addonItem, priceTiers, phoneDigits, cakeCharge, chargedQty, kgLabel, computeQuote, formatDate, inr, isSlotExpired, slotLabel, todayIST, type BookingItem,
 } from '@/lib/booking-rules';
 
 type Catalog = any;
@@ -42,6 +42,12 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
   });
   const [customs, setCustoms] = useState<Custom[]>(initial?.custom_items?.length ? initial.custom_items : []);
   const set = <K extends keyof BookingFormValue>(k: K, val: BookingFormValue[K]) => setV((s) => ({ ...s, [k]: val }));
+  // "Other" occasion: staff type the occasion themselves (also used when an existing booking has a custom one).
+  const [otherOccasion, setOtherOccasion] = useState(false);
+  useEffect(() => {
+    if (cat && v.occasion && !cat.occasions.some((o: any) => o.name === v.occasion)) setOtherOccasion(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cat]);
 
   useEffect(() => {
     api('/api/catalog').then((c) => {
@@ -69,9 +75,10 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
   const extraPersons = theatre ? Math.max(0, v.guests - theatre.base_capacity) : 0;
 
   const items: BookingItem[] = [
-    ...v.addons.map((a) => {
+    ...v.addons.flatMap((a) => {
       const ad = cat?.addons.find((x: any) => x.id === a.addon_id);
-      return { kind: 'addon' as const, name: ad?.name || '', price: ad?.price || 0, qty: a.qty };
+      const line = ad ? addonItem(ad, a.qty) : null;
+      return line ? [line] : [];
     }),
     ...customs.filter((c) => c.name && c.price !== '').map((c) => ({ kind: 'custom' as const, name: c.name, price: Number(c.price), qty: c.qty })),
   ];
@@ -103,6 +110,7 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
     e.preventDefault();
     setError('');
     if (!v.slot_id) return setError('Choose a time slot');
+    if (otherOccasion && v.occasion.trim().length < 2) return setError('Type the occasion');
     if (pkg && pkgPrice === undefined) return setError(`${pkg.name} has no price for ${theatre?.name}. Choose Custom or set a price in Packages.`);
     const payload = {
       ...v,
@@ -138,12 +146,21 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
             <Field label="Special person's name" required><Input value={v.special_person_name} onChange={(e) => set('special_person_name', e.target.value)} required /></Field>
             <Field label="WhatsApp number" required><Input type="tel" inputMode="numeric" value={v.whatsapp} onChange={(e) => set('whatsapp', phoneDigits(e.target.value))} placeholder="10-digit mobile" required /></Field>
             <Field label="Occasion">
-              <Select value={v.occasion} onChange={(e) => set('occasion', e.target.value)}>
+              <Select value={otherOccasion ? 'Other' : v.occasion} onChange={(e) => {
+                const other = e.target.value === 'Other';
+                setOtherOccasion(other);
+                set('occasion', other ? '' : e.target.value);
+              }}>
                 <option value="">Select occasion</option>
                 {cat.occasions.map((o: any) => <option key={o.id}>{o.name}</option>)}
                 <option>Other</option>
               </Select>
             </Field>
+            {otherOccasion && (
+              <Field label="Occasion (type it)" required>
+                <Input autoFocus maxLength={60} value={v.occasion} onChange={(e) => set('occasion', e.target.value)} placeholder="e.g. Retirement party" />
+              </Field>
+            )}
             <Field label="Booked by (if different)" hint="Leave empty to use special person's name">
               <Input value={v.customer_name} onChange={(e) => set('customer_name', e.target.value)} />
             </Field>
@@ -255,10 +272,13 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
           <div className="grid gap-2 sm:grid-cols-2">
             {cat.addons.map((a: any) => {
               const qty = v.addons.find((x) => x.addon_id === a.id)?.qty || 0;
+              const tiers = priceTiers(a);
               return (
                 <div key={a.id} className={cn('flex items-center justify-between gap-2 rounded-xl border px-3 py-2 transition', qty ? 'border-brand-400 bg-brand-50' : 'border-line bg-white')}>
-                  <div className="min-w-0"><p className="truncate text-sm font-medium">{a.name}</p><p className="text-xs text-navy-soft">{inr(a.price)}</p></div>
-                  <Stepper value={qty} onChange={(n) => addonQty(a.id, n - qty)} max={20} />
+                  <div className="min-w-0"><p className="truncate text-sm font-medium">{a.name}</p><p className="text-xs text-navy-soft">{tiers.length ? `from ${inr(tiers[0].price)}` : inr(a.price)}</p></div>
+                  {tiers.length
+                    ? <TierSelect tiers={tiers} value={qty} onChange={(n) => addonQty(a.id, n - qty)} />
+                    : <Stepper value={qty} onChange={(n) => addonQty(a.id, n - qty)} max={20} />}
                 </div>
               );
             })}
@@ -352,6 +372,16 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
       <dt className={cn('min-w-0 truncate', !strong && 'text-navy-soft')}>{label}</dt>
       <dd className="shrink-0 tabular-nums">{value}</dd>
     </div>
+  );
+}
+
+/** Pick one pack of a pack-priced add-on (e.g. fog: 1 pot ₹399 … 5 pots ₹1,500), or none. */
+export function TierSelect({ tiers, value, onChange }: { tiers: { qty: number; price: number; label: string }[]; value: number; onChange: (qty: number) => void }) {
+  return (
+    <Select aria-label="Option" value={value} onChange={(e) => onChange(Number(e.target.value))} className="w-40 shrink-0">
+      <option value={0}>None</option>
+      {tiers.map((t) => <option key={t.qty} value={t.qty}>{t.label} · {inr(t.price)}</option>)}
+    </Select>
   );
 }
 

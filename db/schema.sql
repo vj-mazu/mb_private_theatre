@@ -343,3 +343,39 @@ CREATE INDEX IF NOT EXISTS slot_blocks_lookup_idx ON slot_blocks (theatre_id, bl
 -- Actual start/end of the booked slot (slots can shift later when an earlier booking takes extra hours).
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS slot_start TEXT NOT NULL DEFAULT '';
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS slot_end TEXT NOT NULL DEFAULT '';
+-- Pack-priced add-ons, e.g. fog entry: [{"qty":1,"price":399,"label":"1 pot"},{"qty":2,"price":699,"label":"2 pots"}]. Empty = per piece at price.
+ALTER TABLE addons ADD COLUMN IF NOT EXISTS price_tiers JSONB NOT NULL DEFAULT '[]';
+
+-- Sessions signed before this time are rejected (set when a password changes).
+ALTER TABLE users ADD COLUMN IF NOT EXISTS sessions_valid_after TIMESTAMPTZ;
+
+-- Home page "Our story" branch cards: own text and photo (empty = address + branch photo).
+ALTER TABLE branches ADD COLUMN IF NOT EXISTS story_text  TEXT NOT NULL DEFAULT '';
+ALTER TABLE branches ADD COLUMN IF NOT EXISTS story_image TEXT NOT NULL DEFAULT '';
+
+-- Home page "Our celebrations, in motion" videos (Admin → Website → Videos).
+CREATE TABLE IF NOT EXISTS showcase_videos (
+  id          SERIAL PRIMARY KEY,
+  title       TEXT NOT NULL,
+  room        TEXT NOT NULL DEFAULT '',
+  video_url   TEXT NOT NULL,
+  poster_url  TEXT NOT NULL DEFAULT '',
+  sort_order  INTEGER NOT NULL DEFAULT 0,
+  is_active   BOOLEAN NOT NULL DEFAULT true,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS showcase_videos_live_idx ON showcase_videos (sort_order, id) WHERE is_active;
+
+-- Foreign keys without an index make deletes of the parent row scan the whole child table.
+CREATE INDEX IF NOT EXISTS bookings_slot_idx        ON bookings (slot_id);
+CREATE INDEX IF NOT EXISTS bookings_package_idx     ON bookings (package_id) WHERE package_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS bookings_cake_idx        ON bookings (cake_id) WHERE cake_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS slot_blocks_slot_idx     ON slot_blocks (slot_id) WHERE slot_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS users_branch_idx         ON users (branch_id) WHERE branch_id IS NOT NULL;
+-- WhatsApp delivery receipts look messages up by Meta's message id.
+CREATE INDEX IF NOT EXISTS wa_provider_idx          ON whatsapp_messages (provider_id) WHERE provider_id <> '';
+-- Live content lists (home page, booking page).
+CREATE INDEX IF NOT EXISTS promos_live_idx          ON promos (sort_order, id DESC) WHERE is_active;
+CREATE INDEX IF NOT EXISTS occasions_live_idx       ON occasions (sort_order, id) WHERE is_active;
+-- Store file bytes uncompressed so a video can be streamed in byte ranges without reading the whole file.
+ALTER TABLE files ALTER COLUMN data SET STORAGE EXTERNAL;

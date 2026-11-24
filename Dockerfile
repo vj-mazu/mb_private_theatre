@@ -19,6 +19,8 @@ WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 # Fixed ids (1001) so the server's ./backups folder can be given to this user (see deploy/install.sh).
 RUN addgroup -S -g 1001 app && adduser -S -u 1001 -G app app
+# ffmpeg compresses videos uploaded in Admin → Website → Videos (H.264 MP4, ≤1280 px, plays on every phone).
+RUN apk add --no-cache ffmpeg
 COPY --from=build --chown=app:app /app/.next/standalone ./
 COPY --from=build --chown=app:app /app/.next/static ./.next/static
 COPY --from=build --chown=app:app /app/public ./public

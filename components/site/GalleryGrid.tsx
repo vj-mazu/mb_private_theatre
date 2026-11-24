@@ -10,7 +10,9 @@ export function GalleryGrid({ photos }: { photos: { id: number; image_url: strin
   const categories = ['All', ...Array.from(new Set(photos.map((p) => p.category)))];
   const [cat, setCat] = useState('All');
   const [open, setOpen] = useState<number | null>(null);
-  const list = cat === 'All' ? photos : photos.filter((p) => p.category === cat);
+  const [shown, setShown] = useState(24);
+  const all = cat === 'All' ? photos : photos.filter((p) => p.category === cat);
+  const list = all.slice(0, shown); // the rest loads on "Show more" (a hundred photos at once would slow the page)
 
   useEffect(() => {
     if (open === null) return;
@@ -27,7 +29,7 @@ export function GalleryGrid({ photos }: { photos: { id: number; image_url: strin
     <>
       <div className="no-scrollbar -mx-4 mt-8 flex gap-2 overflow-x-auto px-4">
         {categories.map((c) => (
-          <button key={c} onClick={() => setCat(c)} className={cn('whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200', cat === c ? 'bg-navy text-cream' : 'bg-cream-card text-navy-soft ring-1 ring-line hover:text-navy')}>{c}</button>
+          <button key={c} onClick={() => { setCat(c); setShown(24); }} className={cn('whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200', cat === c ? 'bg-navy text-cream' : 'bg-cream-card text-navy-soft ring-1 ring-line hover:text-navy')}>{c}</button>
         ))}
       </div>
 
@@ -36,11 +38,18 @@ export function GalleryGrid({ photos }: { photos: { id: number; image_url: strin
           {list.map((p, i) => (
             <motion.button layout key={p.id} onClick={() => setOpen(i)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.35 }} className="group relative aspect-square overflow-hidden rounded-2xl bg-cream-deep">
-              <Image src={p.image_url} alt={p.caption || p.category} fill sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw" className="object-cover transition-transform duration-700 ease-smooth group-hover:scale-105" />
+              <Image src={p.image_url} alt={p.caption || p.category} fill sizes="(min-width: 1024px) 38vw, (min-width: 640px) 50vw, 75vw" quality={80} className="object-cover transition-transform duration-700 ease-smooth group-hover:scale-105" />
             </motion.button>
           ))}
         </AnimatePresence>
       </motion.div>
+      {all.length > shown && (
+        <div className="mt-8 text-center">
+          <button onClick={() => setShown((n) => n + 24)} className="inline-flex h-11 items-center rounded-full bg-navy px-6 text-sm font-semibold text-cream transition hover:bg-navy/90">
+            Show more photos ({all.length - shown} more)
+          </button>
+        </div>
+      )}
 
       <AnimatePresence>
         {open !== null && list[open] && (

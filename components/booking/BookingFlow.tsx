@@ -9,7 +9,9 @@ import { Button, Field, Input, Modal, Select, Textarea, api, cn } from '@/compon
 import { BranchTabs } from '@/components/site/BranchTabs';
 import { PackageTicket, type BookPackage } from './PackageTicket';
 import { CakeWeight } from './CakeWeight';
-import { addDays, isValidPhone, phoneDigits, cakeCharge, chargedQty, computeQuote, kgLabel, formatDate, inr, isSlotExpired, slotLabel, todayIST } from '@/lib/booking-rules';
+import { OccasionShowcase } from './OccasionShowcase';
+import { roomMedia } from '@/lib/room-media';
+import { addDays, addonItem, priceTiers, isValidPhone, phoneDigits, cakeCharge, chargedQty, computeQuote, kgLabel, formatDate, inr, isSlotExpired, slotLabel, todayIST } from '@/lib/booking-rules';
 
 const STEPS = ['Slot', 'Package', 'Cake & extras', 'Details'];
 
@@ -40,6 +42,9 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
   const [cakeKg, setCakeKg] = useState(0.5);
   const [picked, setPicked] = useState<Record<number, number>>({});
   const [form, setForm] = useState({ special_person_name: '', customer_name: '', phone: '', email: '', occasion: initial.occasion || '', notes: '' });
+  // Own wording when the occasion is "Other".
+  const [occasionOther, setOccasionOther] = useState('');
+  const occasionValue = form.occasion === 'Other' ? occasionOther.trim() : form.occasion;
   const [coupon, setCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [couponInput, setCouponInput] = useState('');
   const [couponMsg, setCouponMsg] = useState('');
@@ -66,11 +71,12 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
     return () => { alive = false; clearInterval(t); };
   }, [branchId, date]);
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(t); }, []);
-  // Warm the browser cache with cake & add-on photos while the guest is still choosing a slot.
+  // Warm the browser cache with cake & add-on photos once the guest reaches the package step.
   useEffect(() => {
+    if (step < 1) return;
     const t = setTimeout(() => { [...cakes, ...addons].forEach((x: any) => { if (x.image_url) { const img = new window.Image(); img.src = x.image_url; } }); }, 800);
     return () => clearTimeout(t);
-  }, [cakes, addons]);
+  }, [cakes, addons, step >= 1]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const branchTheatres = theatres.filter((t) => t.branch_id === branchId);
   const theatre = theatres.find((t) => t.id === theatreId);
@@ -79,6 +85,10 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
   // The chosen room's own photos (admin → Theatres), main photo first.
   const roomPhotos: string[] = theatre ? Array.from(new Set([theatre.image_url, ...(theatre.images || [])].filter(Boolean))) : [];
   const pkgPrice = pkg && theatre ? theatre.prices[pkg.id]?.price : undefined;
+  // Package cards always show the chosen theatre's own photos (each package starts on a different one).
+  const rotate = (list: string[], k: number) => (list.length ? [...list.slice(k % list.length), ...list.slice(0, k % list.length)] : list);
+  // Photos/videos of this theatre set up for the chosen occasion (Electronic City rooms).
+  const occasionMedia = theatre && form.occasion && form.occasion !== 'Other' ? roomMedia(theatre.name, form.occasion) : null;
   const cake = cakes.find((c) => c.id === cakeId);
 
   const slotState = (t: any, s: any) =>
@@ -99,9 +109,11 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
   useEffect(() => { if (pkg && theatre && theatre.prices[pkg.id] === undefined) setPackageId(null); }, [pkg, theatre]);
 
   const includedQty = (addonId: number): number => (pkg?.included_addons || []).find((x: any) => x.addon_id === addonId)?.qty || 0;
-  const items = Object.entries(picked).filter(([, q]) => q > 0).map(([id, qty]) => {
+  // Bill lines; a pack-priced add-on (fog pots) is charged at its pack price.
+  const items = Object.entries(picked).filter(([, q]) => q > 0).flatMap(([id, qty]) => {
     const a = addons.find((x) => x.id === Number(id));
-    return { kind: 'addon' as const, addon_id: a.id, name: a.name, price: a.price, qty };
+    const line = a ? addonItem(a, qty) : null;
+    return line ? [line] : [];
   });
   const quote = theatre ? computeQuote({
     basePrice: pkg ? pkgPrice ?? 0 : theatre.base_price, includesCake: false, baseCapacity: theatre.base_capacity,
@@ -125,9 +137,9 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
     !!(theatre && slot),
     !!theatre && (!pkg || pkgPrice !== undefined),
     !pkg?.includes_cake || cakeId !== null,
-    form.special_person_name.trim().length > 1 && isValidPhone(form.phone),
+    form.special_person_name.trim().length > 1 && isValidPhone(form.phone) && (form.occasion !== 'Other' || occasionOther.trim().length > 1),
   ][step];
-  const hints = ['Choose a theatre and time slot', 'Choose a package', 'Choose your cake flavour', 'Enter name and WhatsApp number'];
+  const hints = ['Choose a theatre and time slot', 'Choose a package', 'Choose your cake flavour', form.occasion === 'Other' && occasionOther.trim().length < 2 ? 'Type your occasion' : 'Enter name and WhatsApp number'];
 
   async function applyCoupon() {
     if (!quote || !couponInput.trim()) return;
@@ -154,7 +166,7 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
           branch_id: branchId, theatre_id: theatre.id, slot_id: slot.id, booking_date: date, package_id: packageId,
           guests: guests || theatre.base_capacity, extra_hours: extraHours, cake_id: cakeId, cake_kg: cakeKg, addons: Object.entries(picked).filter(([, q]) => q > 0).map(([id, qty]) => ({ addon_id: Number(id), qty })),
           customer_name: form.customer_name.trim() || form.special_person_name.trim(), special_person_name: form.special_person_name,
-          phone, whatsapp: phone, email: form.email, occasion: form.occasion, notes: form.notes, coupon_code: coupon?.code || '',
+          phone, whatsapp: phone, email: form.email, occasion: occasionValue, notes: form.notes, coupon_code: coupon?.code || '',
         },
       });
       router.push(`/ticket/${r.ref}`);
@@ -273,11 +285,11 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                     items={[
                       ...packages.filter((p) => theatre.prices[p.id]).map((p, k): BookPackage => ({
                         id: p.id, name: p.name, tagline: p.tagline, includes: p.includes, price: theatre.prices[p.id].price,
-                        original_price: theatre.prices[p.id].original_price, image: p.image_url || roomPhotos[k % Math.max(1, roomPhotos.length)] || '', highlight: p.highlight, includesCake: p.includes_cake,
+                        original_price: theatre.prices[p.id].original_price, images: rotate(roomPhotos, k), highlight: p.highlight, includesCake: p.includes_cake,
                         meta: `2 hours · up to ${theatre.base_capacity} people · extra person ${inr(theatre.extra_person_price)}`,
                       })),
                       ...(customPackage.enabled ? [{ id: null, name: 'Custom', tagline: customPackage.tagline, price: theatre.base_price, original_price: null,
-                        image: customPackage.image_url || roomPhotos[0] || theatre.image_url, highlight: false, includesCake: false, meta: `Room only · up to ${theatre.base_capacity} people · extra person ${inr(theatre.extra_person_price)}`,
+                        images: rotate(roomPhotos, packages.filter((p) => theatre.prices[p.id]).length), highlight: false, includesCake: false, meta: `Room only · up to ${theatre.base_capacity} people · extra person ${inr(theatre.extra_person_price)}`,
                         includes: customPackage.includes }] : []),
                     ]}
                   />
@@ -352,19 +364,39 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       {addons.map((a) => {
                         const qty = picked[a.id] || 0;
+                        const tiers = priceTiers(a);
                         return (
-                          <div key={a.id} className={cn('flex items-center gap-3 rounded-2xl border bg-cream-card p-3 transition-all duration-200', qty ? 'border-brand-400 shadow-card' : 'border-line')}>
-                            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-brand-50">
-                              {a.image_url && <Image src={a.image_url} alt="" fill unoptimized loading="eager" sizes="64px" className="object-cover" />}
+                          <div key={a.id} className={cn('rounded-2xl border bg-cream-card p-3 transition-all duration-200', qty ? 'border-brand-400 shadow-card' : 'border-line', tiers.length > 0 && 'sm:col-span-2')}>
+                            <div className="flex items-center gap-3">
+                              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-brand-50">
+                                {a.image_url && <Image src={a.image_url} alt="" fill unoptimized loading="eager" sizes="64px" className="object-cover" />}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-semibold">{a.name}</p>
+                                <p className="text-sm text-navy-soft">
+                                  {tiers.length ? <>From {inr(tiers[0].price)} <span className="text-xs">· choose an option · extra</span></> : <>{inr(a.price)} <span className="text-xs">each · extra</span></>}
+                                </p>
+                                {includedQty(a.id) > 0 && <p className="mt-0.5 inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">{pkg?.name} already includes {tiers.find((t) => t.qty === includedQty(a.id))?.label || includedQty(a.id)}</p>}
+                              </div>
+                              {tiers.length === 0 && (qty === 0
+                                ? <Button size="sm" variant="secondary" onClick={() => setPicked((p) => ({ ...p, [a.id]: 1 }))}>Add</Button>
+                                : <Counter value={qty} min={0} max={10} onChange={(n) => setPicked((p) => ({ ...p, [a.id]: n }))} />)}
                             </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm font-semibold">{a.name}</p>
-                              <p className="text-sm text-navy-soft">{inr(a.price)} <span className="text-xs">each · extra</span></p>
-                              {includedQty(a.id) > 0 && <p className="mt-0.5 inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">{pkg?.name} already includes {includedQty(a.id)}</p>}
-                            </div>
-                            {qty === 0
-                              ? <Button size="sm" variant="secondary" onClick={() => setPicked((p) => ({ ...p, [a.id]: 1 }))}>Add</Button>
-                              : <Counter value={qty} min={0} max={10} onChange={(n) => setPicked((p) => ({ ...p, [a.id]: n }))} />}
+                            {tiers.length > 0 && (
+                              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                                {tiers.map((t) => {
+                                  const on = qty === t.qty;
+                                  return (
+                                    <button key={t.qty} type="button" aria-pressed={on} onClick={() => setPicked((p) => ({ ...p, [a.id]: on ? 0 : t.qty }))}
+                                      className={cn('rounded-xl border px-2 py-2 text-center text-sm transition-all duration-200',
+                                        on ? 'border-brand-600 bg-brand-600 text-white shadow-sm' : 'border-line bg-white hover:border-brand-400 hover:bg-brand-50')}>
+                                      <span className="block font-semibold">{t.label}</span>
+                                      <span className={cn('block text-xs tabular-nums', on ? 'text-white' : 'text-navy-soft')}>{inr(t.price)}</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </div>
                         );
                       })}
@@ -374,6 +406,8 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
               )}
 
               {step === 3 && (
+                <div className="space-y-5">
+                {theatre && occasionMedia && <OccasionShowcase media={occasionMedia} room={theatre.name} occasion={form.occasion} />}
                 <div className="card space-y-4 p-5 sm:p-6">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <Field label="Special person's name" required hint="Shown on the screen and LED board"><Input value={form.special_person_name} onChange={(e) => setForm({ ...form, special_person_name: e.target.value })} /></Field>
@@ -384,6 +418,11 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                         <option>Other</option>
                       </Select>
                     </Field>
+                    {form.occasion === 'Other' && (
+                      <Field label="Your occasion" required hint="Shown on your ticket" className="sm:col-span-2">
+                        <Input autoFocus maxLength={60} value={occasionOther} onChange={(e) => setOccasionOther(e.target.value)} placeholder="e.g. Retirement party, Graduation, Welcome home" />
+                      </Field>
+                    )}
                     <Field label="Your WhatsApp number" required hint="Ticket and updates are sent here"><Input type="tel" inputMode="numeric" autoComplete="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: phoneDigits(e.target.value) })} placeholder="10-digit mobile number" /></Field>
                     <Field label="Your name"><Input autoComplete="name" value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} /></Field>
                     <Field label="Email (optional)" className="sm:col-span-2"><Input type="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
@@ -415,6 +454,7 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                       </>
                     )}
                   </div>
+                </div>
                 </div>
               )}
             </motion.div>

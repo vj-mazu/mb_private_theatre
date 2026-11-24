@@ -53,7 +53,7 @@ function Card({ c, i, n, progress }: { c: StoryChapter; i: number; n: number; pr
         <div className={`grid h-full grid-rows-[45%_1fr] overflow-hidden rounded-[32px] bg-gradient-to-br lg:grid-cols-[1.05fr_1fr] lg:grid-rows-1 ${TONES[i % TONES.length]}`}>
           <div className="relative m-2 overflow-hidden rounded-[26px] lg:m-3 lg:mr-0">
             <motion.div className="absolute inset-0 will-change-transform" initial={{ scale: 1.08 }} whileInView={{ scale: 1 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}>
-              <Image src={c.image} alt={c.title} fill quality={85} sizes="(min-width: 1024px) 620px, 100vw" className="object-cover" priority={i === 0} />
+              <Image src={c.image} alt={c.title} fill quality={88} sizes="(min-width: 1024px) 960px, 100vw" className="object-cover" priority={i === 0} />
             </motion.div>
             <div className="absolute inset-0 bg-gradient-to-t from-navy/25 via-transparent to-transparent" />
             {/* inner hairline frame, like a mounted print */}

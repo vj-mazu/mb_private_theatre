@@ -9,7 +9,8 @@ import { inr } from '@/lib/booking-rules';
 
 export interface BookPackage {
   id: number | null; name: string; tagline: string; includes: string[]; price: number; original_price: number | null;
-  image: string; highlight: boolean; includesCake: boolean; meta?: string;
+  /** Photos of the chosen theatre (first one is shown first); the guest can switch between them. */
+  images: string[]; highlight: boolean; includesCake: boolean; meta?: string;
 }
 
 const ACCENTS = ['#1577B1', '#B8862B', '#14958F', '#7C5CC4'];
@@ -98,6 +99,10 @@ function bars(seed: string) {
 function Ticket({ it, n, theatreName, stamped }: { it: BookPackage; n: number; theatreName?: string; stamped: boolean }) {
   const accent = ACCENTS[n % ACCENTS.length];
   const serial = `MB-${it.name.slice(0, 3).toUpperCase()}-${String(n + 1).padStart(4, '0')}`;
+  const [shot, setShot] = useState(0);
+  const [bad, setBad] = useState<string[]>([]);
+  const photos = it.images.filter((p) => p && !bad.includes(p));
+  const cur = photos[Math.min(shot, photos.length - 1)];
 
   // Gentle 3D tilt that follows the pointer (desktop only — touch devices keep it flat).
   const mx = useMotionValue(0);
@@ -117,31 +122,68 @@ function Ticket({ it, n, theatreName, stamped }: { it: BookPackage; n: number; t
   return (
     <motion.div onPointerMove={move} onPointerLeave={leave} style={{ rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' }}
       className="relative pb-3 drop-shadow-[0_22px_26px_rgba(14,42,71,0.22)]">
-      <div className="ticket-paper relative overflow-hidden text-navy md:grid md:grid-cols-[minmax(0,1fr)_170px]">
-        {/* Main part */}
+      <div className="ticket-paper relative overflow-hidden text-navy">
+        {/* Photo + header */}
         <div className="relative min-w-0">
           <div className="flex items-center justify-between border-b border-dashed border-navy/20 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.22em] text-navy-soft sm:px-6">
             <span>Admit · Private screening</span>
             <span className="font-mono tracking-normal">{serial}</span>
           </div>
-          <div className="grid gap-0 sm:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-            <div className="relative aspect-[16/10] sm:aspect-auto sm:min-h-[260px]">
-              {it.image
-                ? <Image src={it.image} alt={`${it.name} package setup`} fill priority sizes="(min-width: 1024px) 300px, (min-width: 640px) 45vw, 100vw" className="object-cover" />
-                : <div className="absolute inset-0" style={{ background: accent }} />}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
-              <span className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow" style={{ background: accent }}>
-                No. {String(n + 1).padStart(2, '0')}
-              </span>
-              {it.highlight && <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-navy shadow">Most loved</span>}
-              <div className="absolute inset-x-0 bottom-0 p-4 text-white">
-                <h3 className="font-display text-3xl leading-tight text-white sm:text-4xl">{it.name}</h3>
-                {it.tagline && <p className="mt-0.5 text-sm text-white/85">{it.tagline}</p>}
+          <div>
+            {/* Theatre photos: large and sharp, with a strip to switch between them */}
+            <div className="flex flex-col bg-navy">
+              <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16 / 10', minHeight: 200 }}>
+                {cur
+                  ? (
+                    <AnimatePresence initial={false}>
+                      <motion.div key={cur} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45 }}>
+                        <Image src={cur} alt={`${it.name} package in ${theatreName || 'the theatre'}`} fill priority quality={90} onError={() => setBad((b) => [...b, cur])}
+                          sizes="(min-width: 1024px) 760px, 100vw" className="object-cover" />
+                      </motion.div>
+                    </AnimatePresence>
+                  )
+                  : <div className="absolute inset-0" style={{ background: accent }} />}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-black/10" />
+                <span className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow" style={{ background: accent }}>
+                  No. {String(n + 1).padStart(2, '0')}
+                </span>
+                {/* "Selected" stamp lands once printing finishes */}
+                <div className="pointer-events-none absolute right-3 top-3 z-10">
+                  <AnimatePresence>
+                    {stamped && (
+                      <motion.span initial={{ scale: 2.4, opacity: 0, rotate: -20 }} animate={{ scale: 1, opacity: 0.95, rotate: -8 }}
+                        transition={{ type: 'spring', stiffness: 380, damping: 16 }}
+                        className="block whitespace-nowrap rounded-md border-[2.5px] bg-[#fffaf0]/95 px-2 py-0.5 font-mono text-[11px] font-black uppercase tracking-[0.18em]"
+                        style={{ color: accent, borderColor: accent }}>
+                        ✓ Selected
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </div>
+                {it.highlight && <span className="absolute left-[72px] top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-navy shadow">Most loved</span>}
+                <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+                  <h3 className="font-display text-3xl leading-tight text-white sm:text-4xl">{it.name}</h3>
+                  {it.tagline && <p className="mt-0.5 text-sm text-white/90">{it.tagline}</p>}
+                </div>
               </div>
+              {photos.length > 1 && (
+                <div className="no-scrollbar flex gap-1.5 overflow-x-auto bg-navy p-2">
+                  {photos.map((p, k) => (
+                    <button key={p} type="button" aria-label={`Photo ${k + 1}`} aria-pressed={k === shot} onClick={() => setShot(k)}
+                      className={cn('relative h-12 w-[68px] shrink-0 overflow-hidden rounded-md ring-2 transition', k === shot ? 'ring-white' : 'opacity-60 ring-transparent hover:opacity-100')}>
+                      <Image src={p} alt="" fill quality={60} sizes="68px" className="object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="px-5 py-4 sm:px-6">
+          </div>
+        </div>
+
+        <div className="md:grid md:grid-cols-[minmax(0,1fr)_170px]">
+            <div className="min-w-0 px-5 py-4 sm:px-6">
               {it.meta && <p className="text-xs font-semibold text-navy-soft">{it.meta}</p>}
-              <ul className="mt-3 space-y-1.5">
+              <ul className="mt-3 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
                 {it.includes.map((inc) => (
                   <li key={inc} className="flex gap-2.5 text-sm leading-snug">
                     <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-white" style={{ background: accent }}><Check className="h-2.5 w-2.5" strokeWidth={3} /></span>
@@ -155,8 +197,6 @@ function Ticket({ it, n, theatreName, stamped }: { it: BookPackage; n: number; t
                 </p>
               )}
             </div>
-          </div>
-        </div>
 
         {/* Tear-off stub */}
         <div className="relative flex items-center justify-between gap-4 border-t-2 border-dashed border-navy/25 px-5 py-4 md:flex-col md:items-stretch md:justify-center md:border-l-2 md:border-t-0 md:px-4 md:text-center">
@@ -176,19 +216,8 @@ function Ticket({ it, n, theatreName, stamped }: { it: BookPackage; n: number; t
           </div>
         </div>
 
-        {/* "Selected" stamp lands once printing finishes */}
-        <div className="pointer-events-none absolute right-4 top-14 z-10 md:right-[85px] md:top-9 md:translate-x-1/2">
-          <AnimatePresence>
-            {stamped && (
-              <motion.span initial={{ scale: 2.4, opacity: 0, rotate: -20 }} animate={{ scale: 1, opacity: 0.85, rotate: -10 }}
-                transition={{ type: 'spring', stiffness: 380, damping: 16 }}
-                className="block whitespace-nowrap rounded-md border-[2.5px] bg-[#fffaf0]/90 px-2 py-0.5 font-mono text-[11px] font-black uppercase tracking-[0.18em]"
-                style={{ color: accent, borderColor: accent }}>
-                ✓ Selected
-              </motion.span>
-            )}
-          </AnimatePresence>
         </div>
+
         {/* glossy sheen that follows the pointer */}
         <motion.div aria-hidden className="pointer-events-none absolute inset-0 opacity-60 mix-blend-soft-light"
           style={{ background: sheen }} />

@@ -12,7 +12,7 @@ const schema = z.object({
 
 /** Revenue report for a date range (by booking date). Cancelled and deleted bookings are excluded. */
 export const GET = route(async (req: Request) => {
-  requireStaff('admin');
+  await requireStaff('admin');
   const p = schema.parse(Object.fromEntries(new URL(req.url).searchParams));
   const params: unknown[] = [p.from, p.to];
   let where = `NOT bk.is_deleted AND bk.status <> 'cancelled' AND bk.status <> 'awaiting_payment' AND bk.booking_date BETWEEN $1 AND $2`;

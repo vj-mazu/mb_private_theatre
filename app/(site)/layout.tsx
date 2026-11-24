@@ -21,7 +21,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <SiteHeader business={settings.business} branches={branches} bar={bar} />
       <main className="overflow-x-clip">{children}</main>
       <SiteFooter settings={settings} branches={branches} />
-      {settings.business.whatsapp && <WhatsAppButton number={settings.business.whatsapp} />}
+      {(settings.business.whatsapp || settings.business.phone) && <WhatsAppButton number={settings.business.whatsapp} phone={settings.business.phone} />}
       <PromoPopup promos={promos.filter((p) => p.placement === 'popup')} />
     </>
   );

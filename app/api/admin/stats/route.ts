@@ -6,7 +6,7 @@ import { addDays, todayIST } from '@/lib/booking-rules';
 export const dynamic = 'force-dynamic';
 
 export const GET = route(async () => {
-  const s = requireStaff();
+  const s = await requireStaff();
   await releaseExpiredHolds();
   const today = todayIST();
   const monthStart = `${today.slice(0, 7)}-01`;

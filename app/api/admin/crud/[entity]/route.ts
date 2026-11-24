@@ -8,11 +8,11 @@ type Ctx = { params: { entity: string } };
 const STAFF_READABLE = new Set(['branches', 'theatres', 'slots', 'packages', 'cakes', 'addons', 'occasions']);
 
 export const GET = route(async (_req: Request, { params }: Ctx) => {
-  requireStaff(STAFF_READABLE.has(params.entity) ? undefined : 'admin');
+  await requireStaff(STAFF_READABLE.has(params.entity) ? undefined : 'admin');
   return ok(await list(params.entity));
 });
 
 export const POST = route(async (req: Request, { params }: Ctx) => {
-  const s = requireStaff('admin');
+  const s = await requireStaff('admin');
   return ok(await create(params.entity, await req.json(), s.name));
 });

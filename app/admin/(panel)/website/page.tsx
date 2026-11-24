@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { PageHeader } from '@/components/admin/AdminShell';
 import { CrudManager } from '@/components/admin/CrudManager';
 import { Button, Field, ImageUpload, Input, Textarea, Toggle, api, cn, useToast } from '@/components/ui';
 
-const TABS = ['Home & story', 'Testimonials', 'FAQs'] as const;
+const TABS = ['Home & story', 'Hero slides', 'Story cards', 'Videos', 'Testimonials', 'FAQs'] as const;
 const NL = String.fromCharCode(10);
 
 export default function WebsitePage() {
@@ -16,7 +16,7 @@ export default function WebsitePage() {
     <>
       <PageHeader title="Website" subtitle="Everything visitors see on the home page"
         actions={<a href="/" target="_blank" rel="noreferrer"><Button variant="secondary"><ExternalLink className="h-4 w-4" />Open website</Button></a>} />
-      <div className="mb-6 inline-flex gap-1 rounded-2xl border border-line bg-cream-card p-1">
+      <div className="mb-6 inline-flex max-w-full flex-wrap gap-1 rounded-2xl border border-line bg-cream-card p-1">
         {TABS.map((t) => (
           <button key={t} onClick={() => setTab(t)} className={cn('relative rounded-xl px-4 py-2 text-sm font-medium transition-colors', tab === t ? 'text-cream' : 'text-navy-soft hover:text-navy')}>
             {tab === t && <motion.span layoutId="website-tab" className="absolute inset-0 rounded-xl bg-navy" transition={{ type: 'spring', stiffness: 400, damping: 34 }} />}
@@ -25,7 +25,61 @@ export default function WebsitePage() {
         ))}
       </div>
       <motion.div key={tab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-        {tab === 'Home & story' && <HomeContent />}
+        {tab === 'Home & story' && <HomeContent onOpen={setTab} />}
+        {tab === 'Hero slides' && (
+          <>
+            <Note>
+              Each slide at the top of the home page is an <b>occasion with a photo</b>, in display order. The slide&apos;s button books that occasion.
+              Remove a photo to take an occasion out of the hero but keep it in the booking form; turning an occasion off hides it everywhere.
+              Square or portrait photos fit the frame best.
+            </Note>
+            <CrudManager config={{
+              entity: 'occasions', noun: 'Occasion', layout: 'grid',
+              defaults: { name: '', image_url: '', sort_order: 0, is_active: true },
+              title: (r) => r.name, image: (r) => r.image_url,
+              subtitle: (r) => (!r.is_active ? 'Turned off · not in the hero or booking' : r.image_url ? `In the hero · order ${r.sort_order}` : 'No photo · not in the hero'),
+              fields: [
+                { key: 'name', label: 'Occasion (shown on the slide)', type: 'text', required: true, half: true },
+                { key: 'sort_order', label: 'Display order', type: 'number', half: true },
+                { key: 'image_url', label: 'Slide photo', type: 'image', hint: 'Square or portrait photo' },
+              ],
+            }} />
+          </>
+        )}
+        {tab === 'Story cards' && (
+          <>
+            <Note>
+              The &ldquo;Our story&rdquo; section shows the story card first (edit it under <b>Home &amp; story</b>), then one card per branch.
+              Leave the text or photo empty to use the branch address and branch photo.
+            </Note>
+            <CrudManager config={{
+              entity: 'branches', noun: 'Story card', layout: 'grid', editOnly: true, defaults: {},
+              title: (r) => r.name, image: (r) => r.story_image || r.image_url,
+              subtitle: (r) => <span className="line-clamp-2">{r.story_text || r.address}</span>,
+              fields: [
+                { key: 'story_text', label: 'Card text', type: 'textarea' },
+                { key: 'story_image', label: 'Card photo', type: 'image', hint: 'Empty = the branch photo' },
+              ],
+            }} />
+          </>
+        )}
+        {tab === 'Videos' && (
+          <>
+            <Note>Videos in the &ldquo;Our celebrations, in motion&rdquo; strip on the home page, in display order. Turn one off to hide it. The strip is hidden when there are none.</Note>
+            <CrudManager config={{
+              entity: 'showcase_videos', noun: 'Video', layout: 'grid',
+              defaults: { title: '', room: '', video_url: '', poster_url: '', sort_order: 0, is_active: true },
+              title: (r) => r.title, subtitle: (r) => r.room || 'Movie Bash', image: (r) => r.poster_url,
+              fields: [
+                { key: 'title', label: 'Title', type: 'text', required: true, half: true },
+                { key: 'room', label: 'Room', type: 'text', hint: 'e.g. Couple room — shown above the title', half: true },
+                { key: 'sort_order', label: 'Display order', type: 'number', half: true },
+                { key: 'video_url', label: 'Video', type: 'video', posterKey: 'poster_url' },
+                { key: 'poster_url', label: 'Cover photo', type: 'image', hint: 'Shown before the video plays. Filled in automatically from the video; upload your own to change it.' },
+              ],
+            }} />
+          </>
+        )}
         {tab === 'Testimonials' && (
           <CrudManager config={{
             entity: 'testimonials', noun: 'Testimonial', layout: 'rows',
@@ -59,7 +113,7 @@ export default function WebsitePage() {
   );
 }
 
-function HomeContent() {
+function HomeContent({ onOpen }: { onOpen: (tab: (typeof TABS)[number]) => void }) {
   const toast = useToast();
   const [s, setS] = useState<any>(null);
   const [busy, setBusy] = useState(false);
@@ -81,16 +135,9 @@ function HomeContent() {
       <Card title="Hero (top of home page)" wide>
         <Field label="Headline"><Input value={s.hero.title} onChange={(e) => upd('hero', 'title', e.target.value)} /></Field>
         <Field label="Sub-headline"><Textarea value={s.hero.subtitle} onChange={(e) => upd('hero', 'subtitle', e.target.value)} /></Field>
-        <span className="block text-xs font-semibold text-navy-soft">Hero photos (first photo shows first, they slowly cross-fade)</span>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {s.hero.images.map((src: string, i: number) => (
-            <div key={src + i} className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-line">
-              <img src={src} alt="" className="h-full w-full object-cover" />
-              <button onClick={() => upd('hero', 'images', s.hero.images.filter((_: string, j: number) => j !== i))} className="absolute right-1.5 top-1.5 rounded-full bg-white/90 p-1 shadow" aria-label="Remove"><X className="h-3.5 w-3.5" /></button>
-            </div>
-          ))}
-          <ImageUpload label="" value="" onChange={(url) => url && upd('hero', 'images', [...s.hero.images, url])} />
-        </div>
+        <p className="text-sm text-navy-soft">
+          Hero photos and their order: <button type="button" onClick={() => onOpen('Hero slides')} className="font-semibold text-brand-700 underline">Hero slides</button>.
+        </p>
       </Card>
 
       <Card title="Our story" wide>
@@ -129,6 +176,10 @@ function HomeContent() {
       <div className="lg:col-span-2"><Button size="lg" loading={busy} onClick={save}>Save website content</Button></div>
     </div>
   );
+}
+
+function Note({ children }: { children: React.ReactNode }) {
+  return <p className="mb-4 max-w-3xl rounded-xl border border-brand-200 bg-brand-50/60 px-4 py-3 text-sm leading-relaxed text-navy-soft">{children}</p>;
 }
 
 function Card({ title, children, wide }: { title: string; children: React.ReactNode; wide?: boolean }) {

@@ -7,7 +7,7 @@ import { getSettings } from './catalog';
 import { invalidateContent } from './cache';
 import { reserveTime } from './occupancy';
 import { sendWhatsApp } from './whatsapp';
-import { MAX_EXTRA_HOURS, isValidPhone, cakeCharge, kgLabel, normalizeKg, CAKE_MAX_KG, CAKE_MIN_KG, computeQuote, couponDiscount, isSlotExpired, slotLabel, todayIST, type BookingItem } from '../booking-rules';
+import { MAX_EXTRA_HOURS, addonItem, priceTiers, isValidPhone, cakeCharge, kgLabel, normalizeKg, CAKE_MAX_KG, CAKE_MIN_KG, computeQuote, couponDiscount, isSlotExpired, slotLabel, todayIST, type BookingItem } from '../booking-rules';
 
 export class BookingError extends Error {
   constructor(message: string, public status = 400) { super(message); }
@@ -115,7 +115,7 @@ async function priceBooking(input: BookingInput, actor: Actor, ex: PoolClient) {
 
   const items: BookingItem[] = [];
   if (input.addons.length) {
-    const addons = await q<any>(`SELECT id, name, price FROM addons WHERE id = ANY($1::int[])${actor.kind === 'customer' ? ' AND is_active' : ''}`, [input.addons.map((a) => a.addon_id)], ex);
+    const addons = await q<any>(`SELECT id, name, price, price_tiers FROM addons WHERE id = ANY($1::int[])${actor.kind === 'customer' ? ' AND is_active' : ''}`, [input.addons.map((a) => a.addon_id)], ex);
     const seen = new Set<number>();
     for (const a of input.addons) {
       const found = addons.find((x) => x.id === a.addon_id);
@@ -123,7 +123,10 @@ async function priceBooking(input: BookingInput, actor: Actor, ex: PoolClient) {
       if (seen.has(found.id)) continue; // ignore duplicate lines
       seen.add(found.id);
       // Add-ons are always extras on top of the package (what the package includes is listed separately).
-      items.push({ kind: 'addon', addon_id: found.id, name: found.name, price: found.price, qty: a.qty });
+      // Pack-priced add-ons (fog pots) are charged at the pack price for the chosen pack.
+      const item = addonItem(found, a.qty);
+      if (!item) throw new BookingError(`${found.name}: choose one of ${priceTiers(found).map((t) => t.label).join(', ')}`);
+      items.push(item);
     }
   }
   if (actor.kind === 'staff') {
@@ -230,7 +233,7 @@ export async function updateBooking(id: number, raw: unknown, actor: Extract<Act
     return await tx(async (c) => {
       const before = await one<any>('SELECT * FROM bookings WHERE id=$1 FOR UPDATE', [id], c);
       if (!before) throw new BookingError('Booking not found', 404);
-      if (before.status === 'completed') throw new BookingError('Closed bookings cannot be edited');
+      if (before.status === 'completed') throw new BookingError('Completed bookings cannot be edited');
       // The form's discount is the full discount; a coupon is only applied again when a new code is entered.
       const couponChanged = Boolean(input.coupon_code) && input.coupon_code !== before.coupon_code;
       const p = await priceBooking({ ...input, coupon_code: couponChanged ? input.coupon_code : '' }, actor, c);
@@ -299,7 +302,7 @@ export function bookingToInput(b: any): BookingInput {
     special_person_name: b.special_person_name, occasion: b.occasion, package_id: b.package_id, guests: b.guests,
     cake_id: b.cake_id, cake_kg: Number(b.cake_kg) || 0.5, coupon_code: b.coupon_code, discount: b.discount, source: b.source, notes: b.notes,
     advance: 0, payment_method: 'upi', extra_hours: Number(b.extra_hours) || 0,
-    addons: items.filter((i) => i.kind === 'addon' && i.addon_id).map((i) => ({ addon_id: i.addon_id!, qty: i.qty })),
+    addons: items.filter((i) => i.kind === 'addon' && i.addon_id).map((i) => ({ addon_id: i.addon_id!, qty: i.option ?? i.qty })),
     custom_items: items.filter((i) => i.kind === 'custom').map((i) => ({ name: i.name, price: i.price, qty: i.qty })),
   };
 }

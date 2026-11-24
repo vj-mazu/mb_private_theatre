@@ -4,7 +4,7 @@ import Link from 'next/link';
 import QRCode from 'qrcode';
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Copy, Check, Upload, MapPin, Phone, Printer, Share2, Clock, ShieldCheck, PartyPopper, Loader2 } from 'lucide-react';
+import { Upload, MapPin, Phone, Printer, Share2, Clock, ShieldCheck, PartyPopper, Loader2 } from 'lucide-react';
 import { Button, cn, resizeImage } from '@/components/ui';
 import { Logo } from '@/components/site/Logo';
 import { formatDate, inr } from '@/lib/booking-rules';
@@ -48,7 +48,7 @@ export function TicketView({ initial, payment, whatsapp, notes = [] }: { initial
         )}
         {['payment_review', 'confirmed', 'completed'].includes(t.status) && (
           <motion.div key="ticket" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
-            <TicketCard t={t} notes={notes} />
+            <TicketCard t={t} notes={notes} advance={Math.min(payment.advance_amount, t.total)} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -70,7 +70,6 @@ function PaymentStep({ ticket: t, payment, onUploaded }: { ticket: Ticket; payme
   const amount = Math.min(payment.advance_amount, t.total);
   const upi = `upi://pay?pa=${encodeURIComponent(payment.upi_id)}&pn=${encodeURIComponent(payment.payee_name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(`Movie Bash ${t.ref}`)}`;
   const [qr, setQr] = useState('');
-  const [copied, setCopied] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState('');
   const [busy, setBusy] = useState(false);
@@ -127,10 +126,6 @@ function PaymentStep({ ticket: t, payment, onUploaded }: { ticket: Ticket; payme
             {qr ? <img src={qr} alt={`UPI QR code to pay ${inr(amount)}`} className="w-full" /> : <div className="skeleton aspect-square" />}
           </div>
           <p className="mt-3 text-2xl font-bold">{inr(amount)}</p>
-          <button onClick={() => { navigator.clipboard?.writeText(payment.upi_id); setCopied(true); setTimeout(() => setCopied(false), 1800); }}
-            className="mx-auto mt-2 flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-navy-soft transition hover:bg-cream-deep">
-            {payment.upi_id}{copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
-          </button>
           <a href={upi} className="mt-4 inline-flex h-11 w-full items-center justify-center rounded-xl bg-navy text-sm font-semibold text-cream transition hover:bg-navy/90 md:hidden">
             Pay with UPI app
           </a>
@@ -151,15 +146,38 @@ function PaymentStep({ ticket: t, payment, onUploaded }: { ticket: Ticket; payme
         </section>
       </div>
       <p className="mt-6 text-center text-sm text-navy-soft">Total {inr(t.total)} · balance {inr(t.total - amount)} payable at the venue · Booking ID {t.ref}</p>
+      <PaymentTerms advance={amount} />
     </div>
   );
 }
 
-function TicketCard({ t, notes }: { t: Ticket; notes: string[] }) {
+/** Short booking terms shown before paying. */
+function PaymentTerms({ advance }: { advance: number }) {
+  const terms = [
+    `The ${inr(advance)} advance confirms your slot and is non-refundable.`,
+    'To change the date, tell us at least 72 hours before your slot.',
+    'Please arrive on time — the slot ends at the booked time. Extra time is charged.',
+    'No alcohol or smoking. Any damage to the theatre is charged.',
+  ];
+  return (
+    <section className="mx-auto mt-6 max-w-xl rounded-2xl border border-line bg-cream-card p-4 text-sm">
+      <p className="font-semibold">Booking terms</p>
+      <ul className="mt-2 space-y-1 text-navy-soft">
+        {terms.map((x) => <li key={x} className="flex gap-2"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />{x}</li>)}
+      </ul>
+      <p className="mt-2 text-xs text-navy-faint">By paying you agree to these and our <Link href="/terms-and-conditions" className="underline hover:text-navy">full terms</Link>.</p>
+    </section>
+  );
+}
+
+function TicketCard({ t, notes, advance }: { t: Ticket; notes: string[]; advance: number }) {
   const [qr, setQr] = useState('');
   useEffect(() => { QRCode.toDataURL(`${window.location.origin}/ticket/${t.ref}`, { width: 240, margin: 0, color: { dark: '#0E2A47', light: '#FFFFFF' } }).then(setQr); }, [t.ref]);
   const confirmed = t.status === 'confirmed' || t.status === 'completed';
-  const balance = t.total - t.amount_paid;
+  // Screenshot uploaded but not verified yet: show the advance the guest paid, marked as being verified.
+  const verifying = t.status === 'payment_review' && t.amount_paid === 0;
+  const paid = verifying ? advance : t.amount_paid;
+  const balance = t.total - paid;
 
   async function share() {
     const url = window.location.href;
@@ -177,7 +195,7 @@ function TicketCard({ t, notes }: { t: Ticket; notes: string[] }) {
         </motion.div>
         <h1 className="mt-4 text-3xl sm:text-4xl">{confirmed ? 'Your celebration is booked!' : 'Booking received'}</h1>
         <p className="mt-2 text-navy-soft">
-          {confirmed ? 'See you soon. This ticket is also on your WhatsApp.' : 'We are verifying your payment. This page updates automatically once confirmed.'}
+          {confirmed ? 'See you soon. This ticket is also on your WhatsApp.' : `We received your ${inr(advance)} advance screenshot and are verifying it. You will get the confirmation on WhatsApp.`}
         </p>
       </div>
 
@@ -223,7 +241,7 @@ function TicketCard({ t, notes }: { t: Ticket; notes: string[] }) {
             <Row label="Total" value={inr(t.total)} />
             {t.extra_hours > 0 && <Row label={`Extra hours × ${t.extra_hours}`} value={inr(t.extra_hour_amount)} />}
             {t.discount > 0 && <Row label="Discount applied" value={`− ${inr(t.discount)}`} />}
-            <Row label="Paid" value={inr(t.amount_paid)} />
+            <Row label={verifying ? 'Advance paid · verifying' : 'Paid'} value={inr(paid)} />
             <div className="flex justify-between border-t border-line pt-2 text-base font-bold"><dt>Balance at venue</dt><dd className="tabular-nums">{inr(balance)}</dd></div>
           </dl>
           <div className="text-sm">

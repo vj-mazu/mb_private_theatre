@@ -30,19 +30,32 @@ export function slotLabel(start: string, end: string, extraHours = 0): string {
 /** A guest can extend a slot by up to this many hours (if the following time is free). */
 export const MAX_EXTRA_HOURS = 2;
 
+/**
+ * The business day runs past midnight: a slot that starts before this time (e.g. 12:00 AM – 1:00 AM)
+ * belongs to the night of the booking date, after the evening slots.
+ */
+export const DAY_ROLLOVER_MIN = 5 * 60;
+
+/** "HH:MM" -> minutes from midnight of the booking date (after-midnight starts count past 1440). */
+export function dayMinutes(t: string): number {
+  const [h, m] = t.split(':').map(Number);
+  const min = h * 60 + m;
+  return min < DAY_ROLLOVER_MIN ? min + 1440 : min;
+}
+
 export interface Span { start: number; end: number }
 /** Minutes from midnight of the booking date; slots past midnight continue beyond 1440. */
 export function slotSpan(start: string, end: string, extraHours = 0): Span {
-  const toMin = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
-  const s = toMin(start);
-  let e = toMin(end);
-  if (e <= s) e += 1440;
+  const s = dayMinutes(start);
+  let e = dayMinutes(end);
+  while (e <= s) e += 1440;
   return { start: s, end: e + Math.max(0, extraHours) * 60 };
 }
 
-/** Epoch ms for a slot start on a given IST date. */
+/** Epoch ms for a slot start on a given IST date (an after-midnight slot starts on the next calendar day). */
 export function slotStartMs(date: string, start: string): number {
-  return Date.parse(`${date}T${start}:00+05:30`);
+  const extraDay = dayMinutes(start) >= 1440 ? 86_400_000 : 0;
+  return Date.parse(`${date}T${start}:00+05:30`) + extraDay;
 }
 
 /** A slot stops being bookable `cutoffMinutes` after it starts. */
@@ -68,10 +81,41 @@ export const isValidPhone = (v: string) => /^[6-9]\d{9}$/.test(v);
 
 export const inr = (n: number) => `₹${Math.round(n || 0).toLocaleString('en-IN')}`;
 
-/** `included` = how many of this add-on the package already covers (not charged). */
-export type BookingItem = { kind: 'addon' | 'custom'; addon_id?: number | null; name: string; price: number; qty: number; included?: number };
+/**
+ * `included` = how many of this add-on the package already covers (not charged).
+ * `option` = the chosen price option of an add-on sold in fixed packs (e.g. 2 for "Fog entry · 2 pots");
+ * such a line is stored as qty 1 at the pack price.
+ */
+export type BookingItem = { kind: 'addon' | 'custom'; addon_id?: number | null; name: string; price: number; qty: number; included?: number; option?: number };
 
 export const chargedQty = (it: BookingItem) => Math.max(0, Math.round(it.qty) - Math.max(0, it.included || 0));
+
+/** A fixed pack price for an add-on, e.g. { qty: 2, price: 699, label: '2 pots' }. */
+export interface PriceTier { qty: number; price: number; label: string }
+export interface AddonLike { id: number; name: string; price: number; price_tiers?: unknown }
+
+/** Valid pack prices of an add-on, smallest pack first. Empty = sold per piece at `price`. */
+export function priceTiers(a: { price_tiers?: unknown } | null | undefined): PriceTier[] {
+  const raw = Array.isArray(a?.price_tiers) ? (a!.price_tiers as any[]) : [];
+  const seen = new Set<number>();
+  return raw
+    .map((t) => ({ qty: Math.round(Number(t?.qty)), price: Math.round(Number(t?.price)), label: String(t?.label ?? '').trim() }))
+    .filter((t) => t.qty > 0 && t.price >= 0 && Number.isFinite(t.price) && !seen.has(t.qty) && seen.add(t.qty))
+    .map((t) => ({ ...t, label: t.label || `${t.qty}` }))
+    .sort((x, y) => x.qty - y.qty);
+}
+
+/**
+ * The bill line for `qty` of an add-on. For a pack-priced add-on `qty` must be one of its packs
+ * (2 pots = ₹699, not 2 × the 1-pot price); returns null when it is not.
+ */
+export function addonItem(a: AddonLike, qty: number): BookingItem | null {
+  const tiers = priceTiers(a);
+  if (!tiers.length) return { kind: 'addon', addon_id: a.id, name: a.name, price: a.price, qty };
+  const tier = tiers.find((t) => t.qty === qty);
+  if (!tier) return null;
+  return { kind: 'addon', addon_id: a.id, name: `${a.name} · ${tier.label}`, price: tier.price, qty: 1, option: tier.qty };
+}
 
 export interface QuoteInput {
   basePrice: number;          // package price for this theatre, or theatre custom price
@@ -138,7 +182,7 @@ export const STATUS_META: Record<string, { label: string; tone: 'amber' | 'sky' 
   awaiting_payment: { label: 'Awaiting payment', tone: 'amber' },
   payment_review: { label: 'Verify payment', tone: 'sky' },
   confirmed: { label: 'Confirmed', tone: 'green' },
-  completed: { label: 'Closed', tone: 'slate' },
+  completed: { label: 'Completed', tone: 'slate' },
   cancelled: { label: 'Cancelled', tone: 'red' },
 };
 

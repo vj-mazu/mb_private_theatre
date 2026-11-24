@@ -12,7 +12,7 @@ const STATUS_FILL: Record<string, string> = {
 
 /** Formatted Excel export: frozen coloured header, column widths, ₹ number formats, status colours, totals row. */
 export const GET = route(async (req: Request) => {
-  const s = requireStaff();
+  const s = await requireStaff();
   const rows = await exportBookings(parseFilters(req.url), s);
 
   const wb = new ExcelJS.Workbook();
