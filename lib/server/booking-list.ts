@@ -26,6 +26,9 @@ function where(f: ListFilters, s: Session) {
   else if (f.branch) add('bk.branch_id = ?', Number(f.branch));
   if (f.status === 'active') cond.push("bk.status IN ('payment_review','confirmed')");
   else if (f.status) add('bk.status = ?', f.status);
+  // A website guest who opened the payment page and left has an unpaid hold, not a booking yet: it only appears
+  // here once the screenshot is sent, unless you filter by "Awaiting payment" or search for it.
+  else if (!f.q) cond.push("bk.status <> 'awaiting_payment'");
   if (f.source) add('bk.source = ?', f.source);
   if (f.from) add('bk.booking_date >= ?', f.from);
   if (f.to) add('bk.booking_date <= ?', f.to);

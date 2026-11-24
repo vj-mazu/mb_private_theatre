@@ -9,7 +9,7 @@ const STATUS: Record<string, { label: string; tone: 'amber' | 'sky' | 'green' | 
   new: { label: 'New', tone: 'amber' },
   contacted: { label: 'Contacted', tone: 'sky' },
   converted: { label: 'Booked', tone: 'green' },
-  closed: { label: 'Closed', tone: 'slate' },
+  closed: { label: 'Resolved', tone: 'slate' },
 };
 
 export default function EnquiriesPage() {

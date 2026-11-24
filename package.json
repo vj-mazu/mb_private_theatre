@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3105",
+    "dev": "node scripts/db-setup.js && next dev -p 3105",
     "build": "next build",
     "vercel-build": "node scripts/db-setup.js && next build",
     "start": "node scripts/db-setup.js && next start",

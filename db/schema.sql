@@ -326,7 +326,7 @@ CREATE INDEX IF NOT EXISTS package_prices_theatre_idx ON package_prices (theatre
 CREATE INDEX IF NOT EXISTS gallery_live_idx         ON gallery (featured DESC, sort_order) WHERE is_active;
 
 -- ─── Extra hours & slot blocks ─────────────────────────────────────────────
-ALTER TABLE theatres ADD COLUMN IF NOT EXISTS extra_hour_price INTEGER NOT NULL DEFAULT 449;
+ALTER TABLE theatres ADD COLUMN IF NOT EXISTS extra_hour_price INTEGER NOT NULL DEFAULT 400;
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS extra_hours INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS extra_hour_amount INTEGER NOT NULL DEFAULT 0;
 

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: { default: 'Movie Bash — Private Theatre Celebrations in Bengaluru', template: '%s · Movie Bash' },
   description:
-    'Book a private theatre for birthdays, anniversaries, proposals and movie nights in Electronic City and BTM 2nd Stage, Bengaluru. Decor, cake and 4K screen included.',
+    'Book a private theatre for birthdays, anniversaries, proposals and movie nights in Electronic City and BTM 1st Stage, Bengaluru. Decor, cake and 4K screen included.',
   openGraph: {
     type: 'website',
     locale: 'en_IN',
@@ -41,7 +41,7 @@ const jsonLd = {
   priceRange: '₹₹',
   address: [
     { '@type': 'PostalAddress', streetAddress: '4th Floor, Srinivasam, Nagananthapura Main Road', addressLocality: 'Electronic City, Bengaluru', postalCode: '560100', addressCountry: 'IN' },
-    { '@type': 'PostalAddress', streetAddress: '2nd Floor, 16th Main Road, Near Udupi Garden Signal', addressLocality: 'BTM 2nd Stage, Bengaluru', postalCode: '560076', addressCountry: 'IN' },
+    { '@type': 'PostalAddress', streetAddress: 'BTM Complex, 9th Main Rd, KEB Colony, New Gurappana Palya', addressLocality: 'BTM 1st Stage, Bengaluru', postalCode: '560029', addressCountry: 'IN' },
   ],
 };
 

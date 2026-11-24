@@ -14,7 +14,7 @@ export default function GalleryAdmin() {
         fields: [
           { key: 'image_url', label: 'Photo', type: 'image' },
           { key: 'caption', label: 'Caption (optional)', type: 'text', half: true },
-          { key: 'category', label: 'Category', type: 'select', half: true, options: ['Electronic City', 'BTM 2nd Stage', 'Celebrations', 'Couples', 'Ambience', 'Decor', 'Cakes'].map((c) => ({ value: c, label: c })) },
+          { key: 'category', label: 'Category', type: 'select', half: true, options: ['Electronic City', 'BTM 1st Stage', 'Celebrations', 'Couples', 'Ambience', 'Decor', 'Cakes'].map((c) => ({ value: c, label: c })) },
           { key: 'sort_order', label: 'Display order', type: 'number', half: true },
           { key: 'featured', label: 'Show on home page', type: 'toggle', half: true },
         ],

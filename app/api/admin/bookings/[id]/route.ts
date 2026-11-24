@@ -86,7 +86,7 @@ export const POST = route(async (req: Request, { params }: Ctx) => {
         extra_hours: body.extra_hours ?? base.extra_hours,
       };
       await updateBooking(b.id, input, staffActor);
-      if (body.final_amount > 0) await addPayment(b.id, body.final_amount, body.method, 'Final payment at closing', s.name);
+      if (body.final_amount > 0) await addPayment(b.id, body.final_amount, body.method, 'Final payment on completion', s.name);
       await setStatus(b.id, 'completed', s.name);
       return ok();
     }

@@ -50,7 +50,7 @@ export function SiteFooter({ settings, branches }: { settings: Settings; branche
       <div className="border-t border-line">
         <div className="container-page flex flex-col gap-2 py-5 text-xs text-navy-soft sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Movie Bash. All rights reserved.</p>
-          <p>Electronic City · BTM 2nd Stage · Bengaluru</p>
+          <p>Electronic City · BTM 1st Stage · Bengaluru</p>
         </div>
       </div>
     </footer>

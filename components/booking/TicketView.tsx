@@ -193,9 +193,9 @@ function TicketCard({ t, notes, advance }: { t: Ticket; notes: string[]; advance
           className={cn('mx-auto flex h-14 w-14 items-center justify-center rounded-full', confirmed ? 'bg-emerald-100 text-emerald-700' : 'bg-brand-100 text-brand-700')}>
           {confirmed ? <PartyPopper className="h-7 w-7" /> : <ShieldCheck className="h-7 w-7" />}
         </motion.div>
-        <h1 className="mt-4 text-3xl sm:text-4xl">{confirmed ? 'Your celebration is booked!' : 'Booking received'}</h1>
+        <h1 className="mt-4 text-3xl sm:text-4xl">{t.status === 'completed' ? 'Thank you for celebrating with us!' : confirmed ? 'Your celebration is booked!' : 'Booking received'}</h1>
         <p className="mt-2 text-navy-soft">
-          {confirmed ? 'See you soon. This ticket is also on your WhatsApp.' : `We received your ${inr(advance)} advance screenshot and are verifying it. You will get the confirmation on WhatsApp.`}
+          {t.status === 'completed' ? 'Your visit is complete. We hope you had a wonderful time.' : confirmed ? 'See you soon. This ticket is also on your WhatsApp.' : `We received your ${inr(advance)} advance screenshot and are verifying it. You will get the confirmation on WhatsApp.`}
         </p>
       </div>
 

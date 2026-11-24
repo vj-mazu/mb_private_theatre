@@ -152,7 +152,7 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
                 set('occasion', other ? '' : e.target.value);
               }}>
                 <option value="">Select occasion</option>
-                {cat.occasions.map((o: any) => <option key={o.id}>{o.name}</option>)}
+                {cat.occasions.filter((o: any) => o.name !== 'Kids Birthday').map((o: any) => <option key={o.id}>{o.name}</option>)}
                 <option>Other</option>
               </Select>
             </Field>
@@ -274,8 +274,8 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
               const qty = v.addons.find((x) => x.addon_id === a.id)?.qty || 0;
               const tiers = priceTiers(a);
               return (
-                <div key={a.id} className={cn('flex items-center justify-between gap-2 rounded-xl border px-3 py-2 transition', qty ? 'border-brand-400 bg-brand-50' : 'border-line bg-white')}>
-                  <div className="min-w-0"><p className="truncate text-sm font-medium">{a.name}</p><p className="text-xs text-navy-soft">{tiers.length ? `from ${inr(tiers[0].price)}` : inr(a.price)}</p></div>
+                <div key={a.id} className={cn('flex items-center justify-between gap-2 rounded-xl border px-3 py-2 transition', tiers.length > 0 && 'sm:col-span-2', qty ? 'border-brand-400 bg-brand-50' : 'border-line bg-white')}>
+                  <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{a.name}</p><p className="text-xs text-navy-soft">{tiers.length ? `from ${inr(tiers[0].price)}` : inr(a.price)}</p></div>
                   {tiers.length
                     ? <TierSelect tiers={tiers} value={qty} onChange={(n) => addonQty(a.id, n - qty)} />
                     : <Stepper value={qty} onChange={(n) => addonQty(a.id, n - qty)} max={20} />}
@@ -378,7 +378,7 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
 /** Pick one pack of a pack-priced add-on (e.g. fog: 1 pot ₹399 … 5 pots ₹1,500), or none. */
 export function TierSelect({ tiers, value, onChange }: { tiers: { qty: number; price: number; label: string }[]; value: number; onChange: (qty: number) => void }) {
   return (
-    <Select aria-label="Option" value={value} onChange={(e) => onChange(Number(e.target.value))} className="w-40 shrink-0">
+    <Select aria-label="Option" value={value} onChange={(e) => onChange(Number(e.target.value))} className="w-48 max-w-[60%] shrink-0">
       <option value={0}>None</option>
       {tiers.map((t) => <option key={t.qty} value={t.qty}>{t.label} · {inr(t.price)}</option>)}
     </Select>

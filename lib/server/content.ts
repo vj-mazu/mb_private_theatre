@@ -1,7 +1,7 @@
 import 'server-only';
 import { q } from './db';
 import { cached } from './cache';
-import type { ShowcaseVideo } from '../room-media';
+import type { ShowcaseVideo } from '../types';
 
 export const getBranches = cached(
   () => q<any>('SELECT name, slug, address, phone, map_url FROM branches WHERE is_active ORDER BY sort_order, id'), 'branches');

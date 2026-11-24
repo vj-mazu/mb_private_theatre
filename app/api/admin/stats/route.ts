@@ -11,12 +11,15 @@ export const GET = route(async () => {
   const today = todayIST();
   const monthStart = `${today.slice(0, 7)}-01`;
   const scope = s.role === 'staff' && s.branch_id ? `AND bk.branch_id=${Number(s.branch_id)}` : '';
-  const live = `NOT bk.is_deleted AND bk.status <> 'cancelled' ${scope}`;
+  // Unpaid website holds (guest opened the payment page, no screenshot sent) are not bookings yet: they stay out of
+  // every count, list and revenue figure until the screenshot arrives.
+  const live = `NOT bk.is_deleted AND bk.status NOT IN ('cancelled','awaiting_payment') ${scope}`;
+  const toVerify = `bk.status='payment_review' AND bk.payment_screenshot <> ''`;
 
   const [[counts], todayList, daily, verify, upcoming, enquiries] = await Promise.all([
     q<any>(`SELECT
         count(*) FILTER (WHERE booking_date=$1)::int AS today,
-        count(*) FILTER (WHERE status='payment_review')::int AS to_verify,
+        count(*) FILTER (WHERE ${toVerify})::int AS to_verify,
         count(*) FILTER (WHERE booking_date >= $1 AND status IN ('confirmed','payment_review'))::int AS upcoming,
         COALESCE(sum(total) FILTER (WHERE booking_date >= $2 AND booking_date <= $1), 0)::int AS month_revenue,
         COALESCE(sum(amount_paid) FILTER (WHERE booking_date >= $2 AND booking_date <= $1), 0)::int AS month_collected,
@@ -29,7 +32,7 @@ export const GET = route(async () => {
        FROM bookings bk WHERE ${live} AND booking_date BETWEEN $1 AND $2 GROUP BY booking_date ORDER BY booking_date`, [addDays(today, -13), today]),
     q(`SELECT bk.id, bk.ref, bk.booking_date, bk.slot_label, bk.customer_name, bk.phone, bk.total, bk.amount_paid, t.name AS theatre_name
        FROM bookings bk JOIN theatres t ON t.id=bk.theatre_id
-       WHERE bk.status='payment_review' AND NOT bk.is_deleted ${scope} ORDER BY bk.created_at LIMIT 6`),
+       WHERE ${toVerify} AND NOT bk.is_deleted ${scope} ORDER BY bk.created_at LIMIT 6`),
     q(`SELECT bk.id, bk.ref, bk.booking_date, bk.slot_label, bk.customer_name, bk.total, bk.amount_paid, bk.status, t.name AS theatre_name
        FROM bookings bk JOIN theatres t ON t.id=bk.theatre_id
        WHERE bk.booking_date > $1 AND ${live} AND bk.status IN ('confirmed','payment_review') ORDER BY bk.booking_date, bk.slot_label LIMIT 6`, [today]),

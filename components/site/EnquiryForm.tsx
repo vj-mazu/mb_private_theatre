@@ -52,7 +52,7 @@ export function EnquiryForm({ branches, occasions }: { branches: any[]; occasion
             <Field label="Occasion">
               <Select value={f.occasion} onChange={(e) => setF({ ...f, occasion: e.target.value })}>
                 <option value="">Select</option>
-                {occasions.map((o) => <option key={o.id}>{o.name}</option>)}
+                {occasions.filter((o) => o.name !== 'Kids Birthday').map((o) => <option key={o.id}>{o.name}</option>)}
                 <option>Other</option>
               </Select>
             </Field>

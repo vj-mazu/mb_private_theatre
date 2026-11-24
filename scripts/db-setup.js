@@ -191,7 +191,7 @@ const FAQS = [
   ['Is alcohol served or smoking permitted?', 'No, both are strictly prohibited across all premises.'],
   ['Are there age restrictions?', '18 and above. Guests below 18 are welcome with family members.'],
   ['Is outside food allowed?', 'Yes, outside food is allowed and you can also order via Swiggy or Zomato.'],
-  ['Is parking available?', 'Electronic City has dedicated 2-wheeler and 4-wheeler parking. BTM 2nd Stage does not have dedicated parking.'],
+  ['Is parking available?', 'Electronic City has dedicated 2-wheeler and 4-wheeler parking. BTM 1st Stage does not have dedicated parking.'],
   ['Can we bring pets?', 'No, pets are not allowed inside the theatres.'],
   ['What if a technical issue occurs during the event?', 'A partial refund or rescheduling is provided as per our terms and conditions.'],
   ['What decorations do you have?', 'Love, Birthday, Anniversary and Celebration themes, plus custom decoration on request.'],
@@ -211,7 +211,7 @@ const TESTIMONIALS = [
 
 const STORY = {
   title: 'Made for moments that matter',
-  body: 'Movie Bash began with a simple idea: celebrations feel bigger when they are private. Today our theatres in Electronic City and BTM 2nd Stage host birthdays, anniversaries, proposals and family movie nights every day.\n\nEvery room has a big 4K screen, Dolby sound, comfortable recliners and a decorated celebration corner. Bring your own movie, choose your cake and decoration, and the whole theatre is yours.',
+  body: 'Movie Bash began with a simple idea: celebrations feel bigger when they are private. Today our theatres in Electronic City and BTM 1st Stage host birthdays, anniversaries, proposals and family movie nights every day.\n\nEvery room has a big 4K screen, Dolby sound, comfortable recliners and a decorated celebration corner. Bring your own movie, choose your cake and decoration, and the whole theatre is yours.',
   quote: 'Walk in, see the setup, hit play on your favourite movie… and watch the moment turn special.',
   image: '/images/story-birthday.webp',
 };
@@ -234,8 +234,8 @@ async function updateContent(client) {
     WHERE name = 'Standard' AND (includes ? 'Premium decoration' OR includes ? 'Happy Birthday neon light')`);
   await client.query(`UPDATE packages SET includes = (
       SELECT jsonb_agg(x ORDER BY i) FROM jsonb_array_elements_text(includes) WITH ORDINALITY AS t(x, i)
-      WHERE x NOT IN ('500 g cake (choose flavour)', 'Fog entry – 2 pots'))
-    WHERE name = 'Premium' AND includes ? 'Everything in Standard' AND (includes ? '500 g cake (choose flavour)' OR includes ? 'Fog entry – 2 pots')`);
+      WHERE x <> '500 g cake (choose flavour)')
+    WHERE name = 'Premium' AND includes ? 'Everything in Standard' AND includes ? '500 g cake (choose flavour)'`);
   await client.query(`UPDATE settings SET value = replace(value::text, '/images/ecity-family-theatre.webp', '/images/story-birthday.webp')::jsonb
     WHERE key='story' AND value->>'image' = '/images/ecity-family-theatre.webp'`);
   await client.query("UPDATE addons SET image_url='/images/addons/bubble-entry-party.webp' WHERE image_url='/images/addons/bubble-entry.webp'");
@@ -284,21 +284,28 @@ async function updateContentNov2026(client) {
       [name, desc, image, 3 + i]);
   }
 
+  // Extra person: couple ₹99, family & celebration ₹150 (was 149 on some rooms).
+  await client.query('UPDATE theatres SET extra_person_price=150 WHERE base_capacity > 2 AND extra_person_price=149');
+  await client.query('UPDATE theatres SET extra_person_price=99 WHERE base_capacity <= 2 AND extra_person_price IN (149, 150)');
+
+  // Couple rooms: extra hour ₹400 (was 449).
+  await client.query('UPDATE theatres SET extra_hour_price=400 WHERE base_capacity <= 2 AND extra_hour_price=449');
+
   // Family & celebration rooms: extra hour ₹750 (couple rooms unchanged).
   await client.query('UPDATE theatres SET extra_hour_price=750 WHERE base_capacity > 2 AND extra_hour_price=449');
 
   // Only Electronic City has dedicated parking; pen drives are not supported.
   await client.query(`UPDATE faqs SET answer=$1 WHERE answer='Yes, 2-wheeler and 4-wheeler parking is available at both branches.'`,
-    ['Electronic City has dedicated 2-wheeler and 4-wheeler parking. BTM 2nd Stage does not have dedicated parking.']);
+    ['Electronic City has dedicated 2-wheeler and 4-wheeler parking. BTM 1st Stage does not have dedicated parking.']);
   await client.query(`UPDATE faqs SET answer=$1 WHERE answer='Yes. Use your own OTT login (Netflix, Prime, Hotstar and more) or bring a pen drive.'`,
     ['Yes. Log in to your own OTT account (Netflix, Prime, Hotstar and more). Pen drives are not supported.']);
-  await client.query(`UPDATE settings SET value = replace(value::text, 'Free 2-wheeler and 4-wheeler parking is available', 'Dedicated parking at Electronic City only (none at BTM 2nd Stage)')::jsonb
+  await client.query(`UPDATE settings SET value = replace(value::text, 'Free 2-wheeler and 4-wheeler parking is available', 'Dedicated parking at Electronic City only (none at BTM 1st Stage)')::jsonb
     WHERE key='visit' AND value::text LIKE '%Free 2-wheeler and 4-wheeler parking is available%'`);
 
   // Occasion list (once): Birthday, Anniversary, Bride to Be, Groom to Be, Date, Love Proposal / Marry Me, Baby Shower,
   // Naming Ceremony. "Other" (custom text) is built into the booking form.
-  const { rowCount: done } = await client.query("SELECT 1 FROM occasions WHERE name='Naming Ceremony'");
-  if (!done) {
+  await once(client, 'occasions_nov2026', async () => {
+    if ((await client.query("SELECT 1 FROM occasions WHERE name='Naming Ceremony'")).rowCount) return; // already applied before this marker existed
     await client.query("UPDATE occasions SET name='Birthday' WHERE name='Birthday Party'");
     await client.query("UPDATE occasions SET name='Bride to Be' WHERE name='Bachelorette Party'");
     await client.query("UPDATE occasions SET name='Love Proposal / Marry Me' WHERE name='Date & Proposal'");
@@ -308,7 +315,7 @@ async function updateContentNov2026(client) {
       await client.query('INSERT INTO occasions (name, sort_order) SELECT $1, $2 WHERE NOT EXISTS (SELECT 1 FROM occasions WHERE name=$1)', [name, i]);
       await client.query('UPDATE occasions SET sort_order=$2, is_active=true WHERE name=$1', [name, i]);
     }
-  }
+  });
   await keepLegacyPackLines(client);
   await updateMediaNov2026(client);
 }
@@ -336,8 +343,8 @@ async function updateMediaNov2026(client) {
   const E = (n) => `/images/ecity/${n}.webp`;
 
   // Occasions (hero + booking): Kids Birthday, Anniversary, Bride to Be, Groom to Be, Mom To Be, Love Proposal / Marry Me, Date, Baby Shower, Naming Ceremony.
-  const { rowCount: occasionsDone } = await client.query("SELECT 1 FROM occasions WHERE name='Mom To Be'");
-  if (!occasionsDone) {
+  await once(client, 'occasions_media_nov2026', async () => {
+    if ((await client.query("SELECT 1 FROM occasions WHERE name IN ('Mom To Be', 'Kids Birthday')")).rowCount) return; // already applied before this marker existed
     await client.query("UPDATE occasions SET name='Kids Birthday' WHERE name IN ('Birthday', 'Birthday Party')");
     await client.query("UPDATE occasions SET name='Bride to Be' WHERE name='Bachelorette Party'");
     const OLD = ['', '/images/couple_3.webp', '/images/couple_6.webp', '/images/rooms/btm-butterfly-blush.webp', '/images/rooms/btm-lavender-mist.webp', '/images/ambience_3.webp', '/images/ambience_1.webp', '/images/occasion-farewell.webp'];
@@ -351,7 +358,7 @@ async function updateMediaNov2026(client) {
       await client.query('UPDATE occasions SET sort_order=$2, is_active=true WHERE name=$1', [name, i]);
       await client.query('UPDATE occasions SET image_url=$2 WHERE name=$1 AND image_url = ANY($3::text[])', [name, image, OLD]);
     }
-  }
+  });
 
   // Electronic City rooms: couple = red, celebration = gold, family = purple.
   const rooms = [
@@ -367,6 +374,17 @@ async function updateMediaNov2026(client) {
   await client.query("UPDATE settings SET value = jsonb_set(value, '{image}', to_jsonb($1::text)) WHERE key='story' AND value->>'image' IN ('/images/story-birthday.webp', '')", [E('celebration-birthday-2')]);
   await client.query('UPDATE branches SET image_url=$1 WHERE slug=$2 AND image_url = ANY($3::text[])', [E('venue-1'), 'electronic-city', ['/images/couple_1.webp', '', E('venue-6')]]);
 
+  await once(client, 'gallery_ecity_nov2026', () => seedEcityGallery(client));
+  await updateContentNov2026c(client);
+}
+
+/**
+ * The Electronic City photos in the gallery. Runs once (a photo deleted in Admin stays deleted) and is skipped
+ * when these photos are already there.
+ */
+async function seedEcityGallery(client) {
+  if ((await client.query("SELECT 1 FROM gallery WHERE image_url LIKE '/images/ecity/%' LIMIT 1")).rowCount) return;
+  const E = (n) => `/images/ecity/${n}.webp`;
   // Gallery: the new photos first (the last 8 inserted are the ones the home page shows, a mix of rooms).
   const files = (prefix, n) => Array.from({ length: n }, (_, i) => `${prefix}-${i + 1}`);
   const home = ['couple-anniversary-1', 'celebration-anniversary-2', 'family-bride-1', 'kids-family-1', 'family-anniversary-2', 'celebration-birthday-2', 'naming-2', 'family-mom-2'];
@@ -388,36 +406,135 @@ async function updateMediaNov2026(client) {
   }
 }
 
+/** Runs a one-time change. A marker row in `settings` stops it from running again, so later edits in Admin are never overwritten. */
+async function once(client, key, change) {
+  const marker = `migrated_${key}`;
+  const { rowCount } = await client.query('SELECT 1 FROM settings WHERE key=$1', [marker]);
+  if (rowCount) return;
+  await change();
+  await client.query("INSERT INTO settings (key, value) VALUES ($1, 'true'::jsonb) ON CONFLICT (key) DO NOTHING", [marker]);
+}
+
+/** Nov 2026, part 3: BTM 1st Stage, occasion names, Premium fog, and each room's birthday video. */
+async function updateContentNov2026c(client) {
+  // The BTM branch is in BTM 1st Stage (its address already said so). Only the display name changes; the link name stays.
+  const OLD = 'BTM 2nd Stage', NEW = 'BTM 1st Stage';
+  await client.query("UPDATE branches SET name = regexp_replace(name, $1, $2, 'gi'), address = regexp_replace(address, $1, $2, 'gi') WHERE name ~* $1 OR address ~* $1", [OLD, NEW]);
+  for (const [table, cols] of [['faqs', ['question', 'answer']], ['testimonials', ['text', 'occasion']], ['promos', ['title', 'text']],
+    ['enquiries', ['branch']], ['gallery', ['caption', 'category']], ['theatres', ['description']], ['packages', ['tagline']]]) {
+    const sets = cols.map((c) => `${c} = regexp_replace(${c}, $1, $2, 'gi')`).join(', ');
+    const any = cols.map((c) => `${c} ~* $1`).join(' OR ');
+    await client.query(`UPDATE ${table} SET ${sets} WHERE ${any}`, [OLD, NEW]);
+  }
+  await client.query("UPDATE settings SET value = regexp_replace(value::text, $1, $2, 'gi')::jsonb WHERE value::text ~* $1", [OLD, NEW]);
+
+  // "Date" is now "Movie Date".
+  await once(client, 'occasion_movie_date', () => client.query("UPDATE occasions SET name='Movie Date' WHERE name='Date'"));
+
+  // "Birthday" is its own occasion next to "Kids Birthday". It has no hero photo, so the home hero keeps exactly the slides it has.
+  await once(client, 'occasion_birthday', async () => {
+    if ((await client.query("SELECT 1 FROM occasions WHERE name='Birthday'")).rowCount) return;
+    const { rows } = await client.query("SELECT sort_order FROM occasions WHERE name='Kids Birthday' LIMIT 1");
+    const at = rows.length ? rows[0].sort_order : 0;
+    await client.query('UPDATE occasions SET sort_order = sort_order + 1 WHERE sort_order >= $1', [at]);
+    await client.query("INSERT INTO occasions (name, sort_order, image_url) VALUES ('Birthday', $1, '')", [at]);
+  });
+
+  // "Kids Birthday" is removed from occasions (booking forms); the home hero shows it as a fixed slide instead.
+  await once(client, 'remove_kids_birthday_occasion', () => client.query("DELETE FROM occasions WHERE name='Kids Birthday'"));
+
+  // Premium includes 2 pots of fog (Standard stays at 1). Before fog was sold in packs, "1 × Fog Entry" meant 2 pots.
+  await once(client, 'premium_fog_2_pots', async () => {
+    const { rows: [fog] } = await client.query("SELECT id FROM addons WHERE name='Fog Entry' AND jsonb_array_length(price_tiers) > 0 ORDER BY id LIMIT 1");
+    if (!fog) return;
+    await client.query(`UPDATE packages SET included_addons = (
+        SELECT jsonb_agg(CASE WHEN (x->>'addon_id')::int = $1 AND (x->>'qty')::int = 1 THEN jsonb_set(x, '{qty}', '2') ELSE x END ORDER BY i)
+        FROM jsonb_array_elements(included_addons) WITH ORDINALITY AS t(x, i))
+      WHERE name='Premium' AND jsonb_typeof(included_addons) = 'array' AND jsonb_array_length(included_addons) > 0`, [fog.id]);
+    await client.query(`UPDATE packages SET includes = (
+        SELECT jsonb_agg(x ORDER BY o) FROM (
+          SELECT to_jsonb(v) AS x, i::numeric AS o FROM jsonb_array_elements_text(includes) WITH ORDINALITY AS t(v, i)
+          UNION ALL SELECT to_jsonb('Fog entry – 2 pots'::text), CASE WHEN includes ? 'Everything in Standard' THEN 1.5 ELSE 0.5 END) s)
+      WHERE name='Premium' AND NOT includes ? 'Fog entry – 2 pots'`);
+  });
+
+  // Mom To Be and Baby Shower were the same occasion: keep Baby Shower only.
+  await once(client, 'occasion_baby_shower_only', async () => {
+    if ((await client.query("SELECT 1 FROM occasions WHERE name='Baby Shower'")).rowCount) await client.query("DELETE FROM occasions WHERE name='Mom To Be'");
+    else await client.query("UPDATE occasions SET name='Baby Shower' WHERE name='Mom To Be'");
+  });
+
+  // Room cover photos show each room's birthday setup (the video that plays is the birthday one). Only replaces the old
+  // anniversary covers, so a cover chosen in Admin is kept; the other photos stay in the room's gallery after it.
+  for (const [name, oldCover, cover] of [
+    ['Couple Theater', '/images/ecity/couple-anniversary-2.webp', '/images/ecity/couple-birthday-2.webp'],
+    ['Celebration Theater', '/images/ecity/celebration-anniversary-4.webp', '/images/ecity/celebration-birthday-4.webp'],
+    ['Family Theatre', '/images/ecity/family-anniversary-2.webp', '/images/ecity/family-birthday-2.webp']]) {
+    await client.query(`UPDATE theatres SET image_url=$3, images = (
+        SELECT jsonb_agg(x ORDER BY o) FROM (
+          SELECT to_jsonb($3::text) AS x, 0 AS o
+          UNION ALL SELECT to_jsonb(v), i FROM jsonb_array_elements_text(images) WITH ORDINALITY AS t(v, i) WHERE v <> $3) s)
+      WHERE name=$1 AND image_url=$2`, [name, oldCover, cover]);
+  }
+
+  // The home page videos are seeded once. (Not "when the table is new": the website creates empty tables itself when it
+  // connects first, so the table can exist before this script has ever run.)
+  await once(client, 'showcase_videos_seed', async () => {
+    if ((await client.query('SELECT 1 FROM showcase_videos LIMIT 1')).rowCount) return; // already has videos
+    await seedShowcaseVideos(client);
+  });
+
+  // Home page "Our celebrations, in motion": Birthday first, then Kids birthday, then Anniversary; nothing else.
+  await once(client, 'showcase_birthday_first', async () => {
+    const url = (f) => `/videos/celebrations/${f}.mp4`;
+    await client.query('DELETE FROM showcase_videos WHERE video_url = ANY($1::text[])',
+      [['couple-marry-me', 'celebration-bride-to-be', 'celebration-groom-to-be', 'couple-i-love-you'].map(url)]);
+    for (const [i, [file]] of SHOWCASE_VIDEOS.entries()) await client.query('UPDATE showcase_videos SET sort_order=$2 WHERE video_url=$1', [url(file), i]);
+    await client.query("UPDATE showcase_videos SET room='Celebration room', title='Kids birthday' WHERE video_url=$1 AND room='' AND title='1st birthday setup'", [url('kids-first-birthday')]);
+  });
+
+  // "Watch room video" plays each Electronic City room's own birthday video: couple = red, celebration = gold, family = purple.
+  // Only replaces the old room-tour defaults, so a video chosen in Admin is kept.
+  for (const [from, to] of [['/videos/couple_theatre.mp4', '/videos/celebrations/couple-birthday.mp4'],
+    ['/videos/celebration_theatre.mp4', '/videos/celebrations/celebration-birthday.mp4'], ['/videos/family_theatre.mp4', '/videos/celebrations/family-birthday.mp4']]) {
+    await client.query('UPDATE theatres SET video_url=$2 WHERE video_url=$1', [from, to]);
+  }
+}
+
 async function ensureContent(client) {
   await updateContent(client);
   const count = async (t) => (await client.query(`SELECT count(*)::int AS n FROM ${t}`)).rows[0].n;
-  if (!(await count('faqs'))) {
+  // Starter FAQs and reviews: once only, so deleting them all in Admin does not bring them back on the next start.
+  await once(client, 'seed_faqs', async () => {
+    if (await count('faqs')) return;
     for (const [i, [q, a]] of FAQS.entries()) await client.query('INSERT INTO faqs (question, answer, sort_order) VALUES ($1,$2,$3)', [q, a, i]);
     console.log('Seeded FAQs.');
-  }
-  if (!(await count('testimonials'))) {
+  });
+  await once(client, 'seed_testimonials', async () => {
+    if (await count('testimonials')) return;
     for (const [i, [n, o, t]] of TESTIMONIALS.entries()) await client.query('INSERT INTO testimonials (name, occasion, text, sort_order) VALUES ($1,$2,$3,$4)', [n, o, t, i]);
     console.log('Seeded testimonials.');
-  }
+  });
   await client.query("INSERT INTO settings (key, value) VALUES ('story', $1) ON CONFLICT (key) DO NOTHING", [JSON.stringify(STORY)]);
-  const btm = ['/images/rooms/btm-butterfly-blush.webp', '/images/rooms/btm-lavender-mist.webp', '/images/rooms/btm-scarlet-red.webp',
-    '/images/rooms/btm-shadow-suit.webp', '/images/rooms/btm-shadow-suit.webp', '/images/btm_celebration_stage.webp',
-    '/images/btm_golden_arch.webp', '/images/btm_wings_arch.webp', '/images/ecity-celebration-theatre.webp', '/images/ecity-family-theatre.webp',
-    '/images/hero_8388.webp', '/images/hero_8441.webp'];
-  for (const url of btm) {
-    if (!fs.existsSync(path.join(root, 'public', url))) continue;
-    const category = url.includes('btm') ? 'BTM 2nd Stage' : 'Electronic City';
-    await client.query('INSERT INTO gallery (image_url, category, sort_order) SELECT $1,$2,-1 WHERE NOT EXISTS (SELECT 1 FROM gallery WHERE image_url=$1)', [url, category]);
-  }
+  // Starter BTM / room photos in the gallery: once only (a photo deleted in Admin stays deleted).
+  await once(client, 'seed_btm_gallery', async () => {
+    const btm = ['/images/rooms/btm-butterfly-blush.webp', '/images/rooms/btm-lavender-mist.webp', '/images/rooms/btm-scarlet-red.webp',
+      '/images/rooms/btm-shadow-suit.webp', '/images/rooms/btm-shadow-suit.webp', '/images/btm_celebration_stage.webp',
+      '/images/btm_golden_arch.webp', '/images/btm_wings_arch.webp', '/images/ecity-celebration-theatre.webp', '/images/ecity-family-theatre.webp',
+      '/images/hero_8388.webp', '/images/hero_8441.webp'];
+    for (const url of btm) {
+      if (!fs.existsSync(path.join(root, 'public', url))) continue;
+      const category = url.includes('btm') ? 'BTM 1st Stage' : 'Electronic City';
+      await client.query('INSERT INTO gallery (image_url, category, sort_order) SELECT $1,$2,-1 WHERE NOT EXISTS (SELECT 1 FROM gallery WHERE image_url=$1)', [url, category]);
+    }
+  });
 }
 
 // Home page videos (Admin → Website → Videos): [file in /public/videos/celebrations, room, title].
 const SHOWCASE_VIDEOS = [
-  ['celebration-anniversary', 'Celebration room', 'Anniversary'], ['couple-marry-me', 'Couple room', 'Marry me'],
-  ['celebration-bride-to-be', 'Celebration room', 'Bride to be'], ['couple-birthday', 'Couple room', 'Birthday'],
-  ['celebration-groom-to-be', 'Celebration room', 'Groom to be'], ['family-birthday', 'Family room', 'Birthday'],
-  ['kids-first-birthday', '', '1st birthday setup'], ['couple-anniversary', 'Couple room', 'Anniversary'],
-  ['couple-i-love-you', 'Couple room', 'I love you'], ['celebration-birthday', 'Celebration room', 'Birthday'],
+  ['couple-birthday', 'Couple room', 'Birthday'], ['celebration-birthday', 'Celebration room', 'Birthday'], ['family-birthday', 'Family room', 'Birthday'],
+  ['kids-first-birthday', 'Celebration room', 'Kids birthday'],
+  ['couple-anniversary', 'Couple room', 'Anniversary'], ['celebration-anniversary', 'Celebration room', 'Anniversary'],
 ];
 
 async function seedShowcaseVideos(client) {
@@ -454,11 +571,8 @@ async function main() {
       await client.query(`DROP TABLE IF EXISTS ${[...LEGACY_TABLES, ...TABLES].join(', ')} CASCADE`);
     }
 
-    const { rows: [{ t: hadVideos }] } = await client.query("SELECT to_regclass('public.showcase_videos') AS t");
     await client.query(fs.readFileSync(path.join(root, 'db', 'schema.sql'), 'utf8'));
     console.log('Schema ready.');
-    // First run with the videos table: start it with the celebration videos shipped in /public (once; admin edits are kept).
-    if (!hadVideos) await seedShowcaseVideos(client);
 
     const { rows: [{ n: branchCount }] } = await client.query('SELECT count(*)::int AS n FROM branches');
     if (branchCount > 0) {
@@ -498,7 +612,7 @@ async function main() {
       await client.query(
         `INSERT INTO theatres (id, branch_id, name, base_capacity, max_capacity, base_price, extra_person_price, image_url, images, video_url, sort_order, is_active)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
-        [t.id, t.branch_id, t.name, t.capacity, isCouple ? 4 : 12, t.custom_price || t.base_price, t.extra_person_price || 150,
+        [t.id, t.branch_id, t.name, t.capacity, isCouple ? 4 : 12, t.custom_price || t.base_price, t.extra_person_price || (isCouple ? 99 : 150),
           t.image_url || '', JSON.stringify(t.images || (t.image_url ? [t.image_url] : [])), /\.mp4$/.test(t.video_url || '') ? t.video_url : '', i, t.is_active !== 0]
       );
     }
@@ -567,7 +681,7 @@ async function main() {
       booking: { slot_cutoff_minutes: 30, hold_minutes: 20, max_extra_hours: 0 },
       hero: {
         title: 'Your private theatre for every celebration',
-        subtitle: 'Birthdays, anniversaries, proposals and movie nights — in Electronic City and BTM 2nd Stage, Bengaluru.',
+        subtitle: 'Birthdays, anniversaries, proposals and movie nights — in Electronic City and BTM 1st Stage, Bengaluru.',
         images: ['/images/hero_8388.webp', '/images/btm_celebration_stage.webp', '/images/couple_2.webp', '/images/celebration_5.webp'],
       },
       announcement: { enabled: !!s.announcement_enabled, text: s.announcement_text || '' },

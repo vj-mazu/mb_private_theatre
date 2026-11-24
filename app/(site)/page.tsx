@@ -19,7 +19,7 @@ import { inr, priceTiers } from '@/lib/booking-rules';
 export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'Private Theatre for Birthdays & Anniversaries in Bengaluru',
-  description: 'Celebrate in your own private theatre at Movie Bash, Electronic City & BTM 2nd Stage. Decor, cake, fog entry and a 4K screen — book online in two minutes.',
+  description: 'Celebrate in your own private theatre at Movie Bash, Electronic City & BTM 1st Stage. Decor, cake, fog entry and a 4K screen — book online in two minutes.',
   alternates: { canonical: '/' },
 };
 
@@ -69,8 +69,10 @@ ${count} private ${count === 1 ? 'theatre' : 'theatres'} · pick a slot online i
   ];
   // Hero slides = active occasions with a photo (Admin → Website → Hero slides), in their display order.
   const withPhoto = occasions.filter((o: any) => o.image_url);
+  // "Kids Birthday" is a hero-only slide: it is not an occasion in the database or in any booking dropdown.
+  const kidsSlide: HeroSlide = { name: 'Kids Birthday', image: '/images/ecity/kids-family-1.webp', href: '/book?occasion=Birthday' };
   const heroSlides: HeroSlide[] = withPhoto.length
-    ? withPhoto.map((o: any) => ({ name: o.name, image: o.image_url, href: `/book?occasion=${encodeURIComponent(o.name)}` }))
+    ? [kidsSlide, ...withPhoto.map((o: any) => ({ name: o.name, image: o.image_url, href: `/book?occasion=${encodeURIComponent(o.name)}` }))]
     : heroImages.map((img, k) => ({ name: ['Kids Birthday', 'Anniversary', 'Date night', 'Celebration'][k % 4], image: img, href: '/book' }));
   const ticker = occasions.length ? occasions.map((o: any) => o.name) : ['Birthdays', 'Anniversaries', 'Proposals', 'Movie nights'];
 

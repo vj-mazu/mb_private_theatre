@@ -1,7 +1,7 @@
 
 export const metadata = {
   title: 'Terms & Conditions',
-  description: 'Terms and conditions for booking private theatre screens at Movie Bash Bengaluru (Electronic City & BTM 2nd Stage).',
+  description: 'Terms and conditions for booking private theatre screens at Movie Bash Bengaluru (Electronic City & BTM 1st Stage).',
   alternates: { canonical: '/terms-and-conditions' },
 };
 
@@ -16,7 +16,7 @@ export default function TermsPage() {
 
         <div className="bg-cream-card p-8 sm:p-10 rounded-3xl border border-line shadow-card text-navy-soft text-sm leading-relaxed space-y-6">
           <p>
-            Welcome to Movie Bash Private Theatre (&ldquo;Movie Bash&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;). By reserving a screening slot or using our services at our Electronic City or BTM 2nd Stage branches in Bengaluru, you agree to comply with and be bound by the following terms and conditions.
+            Welcome to Movie Bash Private Theatre (&ldquo;Movie Bash&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;). By reserving a screening slot or using our services at our Electronic City or BTM 1st Stage branches in Bengaluru, you agree to comply with and be bound by the following terms and conditions.
           </p>
 
           <h2 className="font-bold text-base text-navy">1. Booking &amp; Slot Confirmation</h2>

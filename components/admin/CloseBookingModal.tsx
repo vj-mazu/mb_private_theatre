@@ -64,7 +64,9 @@ export function CloseBookingModal({ open, onClose, booking, input, onDone }: {
     extraHours, extraHourPrice: theatre.extra_hour_price,
   }) : null;
   const total = quote?.total ?? booking.total;
-  const balance = total - booking.amount_paid;
+  const balance = total - booking.amount_paid; // what the customer still owes on the new total
+  const collecting = Math.max(0, Number(amount) || 0);
+  const leftAfter = balance - collecting;
 
   useEffect(() => { if (open) setAmount(String(Math.max(0, balance))); }, [open, balance]);
 
@@ -129,8 +131,8 @@ export function CloseBookingModal({ open, onClose, booking, input, onDone }: {
           const n = selected.find((s) => s.addon_id === a.id)?.qty || 0;
           const tiers = priceTiers(a);
           return (
-            <div key={a.id} className={cn('flex items-center justify-between gap-2 rounded-xl border px-3 py-2', n ? 'border-brand-300 bg-brand-50/50' : 'border-line bg-white')}>
-              <div className="min-w-0"><p className="truncate text-sm font-medium">{a.name}</p><p className="text-xs text-navy-soft">{tiers.length ? `from ${inr(tiers[0].price)}` : `${inr(a.price)} each`}</p></div>
+            <div key={a.id} className={cn('flex items-center justify-between gap-2 rounded-xl border px-3 py-2', tiers.length > 0 && 'sm:col-span-2', n ? 'border-brand-300 bg-brand-50/50' : 'border-line bg-white')}>
+              <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{a.name}</p><p className="text-xs text-navy-soft">{tiers.length ? `from ${inr(tiers[0].price)}` : `${inr(a.price)} each`}</p></div>
               {tiers.length
                 ? <TierSelect tiers={tiers} value={n} onChange={(v) => qty(a.id, v)} />
                 : <Stepper value={n} onChange={(v) => qty(a.id, v)} max={20} />}
@@ -163,9 +165,9 @@ export function CloseBookingModal({ open, onClose, booking, input, onDone }: {
             {discount > 0 && <button type="button" onClick={() => setDiscount(0)} className="rounded-lg px-2 py-1 text-xs text-red-600 hover:bg-red-50">Clear</button>}
           </span>
         </Field>
-        <Field label="Collecting now (₹)"><Input inputMode="numeric" value={amount} onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))} /></Field>
+        <Field label="Amount collected now (₹)" hint={`Balance to collect: ${inr(Math.max(0, balance))}`}><Input inputMode="numeric" value={amount} onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))} /></Field>
         <Field label="Payment type"><Select value={method} onChange={(e) => setMethod(e.target.value)}>{PAYMENT_METHODS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}</Select></Field>
-        <Field label="Closing notes" className="sm:col-span-3"><Textarea value={notes} onChange={(e) => setNotes(e.target.value)} /></Field>
+        <Field label="Completion notes" className="sm:col-span-3"><Textarea value={notes} onChange={(e) => setNotes(e.target.value)} /></Field>
       </div>
 
       {quote && (
@@ -176,11 +178,18 @@ export function CloseBookingModal({ open, onClose, booking, input, onDone }: {
           {cake && <Line label={`Cake · ${cake.name}`} value={quote.cakeAmount ? inr(quote.cakeAmount) : 'Included'} />}
           {[...items, ...customItems].map((it, i) => <Line key={i} label={`${it.name}${it.qty > 1 ? ` × ${it.qty}` : ''}`} value={inr(it.price * it.qty)} />)}
           {quote.discount > 0 && <Line label="Discount" value={`− ${inr(quote.discount)}`} />}
-          <div className="grid grid-cols-3 gap-3 border-t border-line pt-3 text-center">
-            <div><dt className="text-xs text-navy-soft">New total</dt><dd className="text-lg font-bold tabular-nums">{inr(total)}</dd></div>
-            <div><dt className="text-xs text-navy-soft">Already paid</dt><dd className="text-lg font-bold tabular-nums">{inr(booking.amount_paid)}</dd></div>
-            <div><dt className="text-xs text-navy-soft">Balance after</dt><dd className="text-lg font-bold tabular-nums">{inr(Math.max(0, balance - (Number(amount) || 0)))}</dd></div>
+          {/* The bill reads top to bottom: total (after any discount) − advance already paid = what to collect now. */}
+          <div className="space-y-1.5 border-t border-line pt-3">
+            <div className="flex justify-between gap-3 font-semibold"><dt>{quote.discount > 0 ? 'Total (after discount)' : 'Total'}</dt><dd className="tabular-nums">{inr(total)}</dd></div>
+            <Line label="Advance already paid" value={`− ${inr(booking.amount_paid)}`} />
+            <div className="flex items-center justify-between gap-3 rounded-lg bg-amber-50 px-3 py-2 ring-1 ring-amber-200">
+              <dt className="font-semibold text-amber-800">{balance < 0 ? 'Paid extra (to return)' : 'Balance to collect'}</dt>
+              <dd className="text-xl font-bold tabular-nums text-amber-800">{inr(Math.abs(balance))}</dd>
+            </div>
           </div>
+          <p className="text-center text-xs text-navy-soft">
+            Collecting now {inr(collecting)} · {leftAfter > 0 ? `${inr(leftAfter)} will still be due` : leftAfter < 0 ? `${inr(-leftAfter)} more than the balance` : 'nothing left to pay after this'}
+          </p>
         </dl>
       )}
     </Modal>

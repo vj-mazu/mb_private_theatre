@@ -10,7 +10,7 @@ export const GET = route(async () => {
   await releaseExpiredHolds();
   const scope = s.role === 'staff' && s.branch_id ? `AND branch_id=${Number(s.branch_id)}` : '';
   const [[v], enq] = await Promise.all([
-    q<{ n: number }>(`SELECT count(*)::int AS n FROM bookings WHERE status='payment_review' AND NOT is_deleted ${scope}`),
+    q<{ n: number }>(`SELECT count(*)::int AS n FROM bookings WHERE status='payment_review' AND payment_screenshot <> '' AND NOT is_deleted ${scope}`),
     s.role === 'admin' ? q<{ n: number }>("SELECT count(*)::int AS n FROM enquiries WHERE status='new'") : Promise.resolve([{ n: 0 }]),
   ]);
   return ok({ verify: v?.n ?? 0, enquiries: enq[0]?.n ?? 0 });

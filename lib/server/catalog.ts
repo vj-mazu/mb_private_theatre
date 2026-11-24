@@ -37,7 +37,7 @@ export const DEFAULT_SETTINGS: Settings = {
   visit: {
     notes: [
       'Please arrive 10 minutes before your slot',
-      'Dedicated parking at Electronic City only (none at BTM 2nd Stage)',
+      'Dedicated parking at Electronic City only (none at BTM 1st Stage)',
       'Outside food is allowed · alcohol and smoking are not',
       'Carry a valid ID for the booking name',
     ],

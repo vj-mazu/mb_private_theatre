@@ -1,7 +1,7 @@
 # Movie Bash: Product Requirements
 
 ## Purpose
-Movie Bash runs private theatres for celebrations in Bengaluru (Electronic City, BTM 2nd Stage).
+Movie Bash runs private theatres for celebrations in Bengaluru (Electronic City, BTM 1st Stage).
 The product is the public website, where guests discover rooms and book them online, and an admin panel,
 where staff take walk-in, WhatsApp and phone bookings and run the business.
 

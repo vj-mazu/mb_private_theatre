@@ -4,7 +4,7 @@ import Image from '@/components/Img';
 import { useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { cn } from '@/components/ui';
-import type { ShowcaseVideo } from '@/lib/room-media';
+import type { ShowcaseVideo } from '@/lib/types';
 
 /**
  * Strip of short vertical celebration videos, each in a gold frame like a mounted print.

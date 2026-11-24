@@ -9,8 +9,6 @@ import { Button, Field, Input, Modal, Select, Textarea, api, cn } from '@/compon
 import { BranchTabs } from '@/components/site/BranchTabs';
 import { PackageTicket, type BookPackage } from './PackageTicket';
 import { CakeWeight } from './CakeWeight';
-import { OccasionShowcase } from './OccasionShowcase';
-import { roomMedia } from '@/lib/room-media';
 import { addDays, addonItem, priceTiers, isValidPhone, phoneDigits, cakeCharge, chargedQty, computeQuote, kgLabel, formatDate, inr, isSlotExpired, slotLabel, todayIST } from '@/lib/booking-rules';
 
 const STEPS = ['Slot', 'Package', 'Cake & extras', 'Details'];
@@ -87,8 +85,6 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
   const pkgPrice = pkg && theatre ? theatre.prices[pkg.id]?.price : undefined;
   // Package cards always show the chosen theatre's own photos (each package starts on a different one).
   const rotate = (list: string[], k: number) => (list.length ? [...list.slice(k % list.length), ...list.slice(0, k % list.length)] : list);
-  // Photos/videos of this theatre set up for the chosen occasion (Electronic City rooms).
-  const occasionMedia = theatre && form.occasion && form.occasion !== 'Other' ? roomMedia(theatre.name, form.occasion) : null;
   const cake = cakes.find((c) => c.id === cakeId);
 
   const slotState = (t: any, s: any) =>
@@ -406,15 +402,13 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
               )}
 
               {step === 3 && (
-                <div className="space-y-5">
-                {theatre && occasionMedia && <OccasionShowcase media={occasionMedia} room={theatre.name} occasion={form.occasion} />}
                 <div className="card space-y-4 p-5 sm:p-6">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <Field label="Special person's name" required hint="Shown on the screen and LED board"><Input value={form.special_person_name} onChange={(e) => setForm({ ...form, special_person_name: e.target.value })} /></Field>
                     <Field label="Occasion">
                       <Select value={form.occasion} onChange={(e) => setForm({ ...form, occasion: e.target.value })}>
                         <option value="">Select occasion</option>
-                        {occasions.map((o) => <option key={o.id}>{o.name}</option>)}
+                        {occasions.filter((o) => o.name !== 'Kids Birthday').map((o) => <option key={o.id}>{o.name}</option>)}
                         <option>Other</option>
                       </Select>
                     </Field>
@@ -454,7 +448,6 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                       </>
                     )}
                   </div>
-                </div>
                 </div>
               )}
             </motion.div>
