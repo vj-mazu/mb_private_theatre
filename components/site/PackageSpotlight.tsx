@@ -35,7 +35,8 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
       price: (t: any) => ({ price: t.base_price }) }] : []),
   ];
   const n = items.length;
-  const item = items[index];
+  if (!n) return null;
+  const item = items[index] ?? items[0];
   const goTo = (i: number, d?: number) => { setDir(d ?? (i >= index ? 1 : -1)); setIndex(((i % n) + n) % n); };
   // Swipe left / right anywhere on the package area (phones and tablets); vertical scrolling still works.
   const swipe = {
@@ -72,7 +73,7 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
 
   return (
     <section id="packages" className="relative scroll-mt-16 overflow-hidden bg-brand-50/60">
-      <div className="container-page pt-16 lg:hidden">
+      <div className="container-page pt-16 md:hidden">
         <p className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-brand-700"><span className="h-px w-6 bg-brand-700" />The celebration menu</p>
         <h2 className="mt-3 text-3xl">{n} ways to celebrate. <span className="italic" style={{ color: theme.accent }}>One unforgettable night.</span></h2>
         {branches.length > 1 && (
@@ -85,18 +86,18 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
         )}
         <div className="mt-4">{toggle('pkg-toggle-m')}</div>
       </div>
-      <div className="relative grid min-h-[640px] touch-pan-y lg:grid-cols-2" {...swipe}>
+      <div className="relative grid min-h-[560px] touch-pan-y md:grid-cols-2 lg:min-h-[640px]" {...swipe}>
         {/* Left: copy */}
-        <div className="relative z-10 order-2 flex flex-col justify-center px-5 pb-16 pt-6 lg:order-1 sm:px-10 lg:py-24 lg:pl-[max(24px,calc((100vw-72rem)/2+24px))] lg:pr-10">
-          <p className="hidden items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-brand-700 lg:flex"><span className="h-px w-6 bg-brand-700" />The celebration menu</p>
-          <h2 className="mt-4 hidden text-4xl sm:text-5xl lg:block">{n} ways to celebrate. <span className="italic" style={{ color: theme.accent }}>One unforgettable night.</span></h2>
-          <div className="mt-6 hidden max-w-lg lg:block">{toggle('pkg-toggle-d')}</div>
+        <div className="relative z-10 order-2 flex flex-col justify-center px-5 pb-16 pt-6 sm:px-10 md:order-1 md:py-16 md:pl-[max(24px,calc((100vw-72rem)/2+24px))] md:pr-8 lg:py-24 lg:pr-10">
+          <p className="hidden items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-brand-700 md:flex"><span className="h-px w-6 bg-brand-700" />The celebration menu</p>
+          <h2 className="mt-4 hidden text-3xl md:block lg:text-5xl">{n} ways to celebrate. <span className="italic" style={{ color: theme.accent }}>One unforgettable night.</span></h2>
+          <div className="mt-6 hidden max-w-lg md:block">{toggle('pkg-toggle-d')}</div>
 
           <AnimatePresence mode="wait">
             <motion.div key={item.key + branch} initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, y: -10, filter: 'blur(6px)' }}
               transition={{ duration: 0.5, ease }}>
-              <p className="text-sm font-semibold lg:mt-8" style={{ color: theme.accent }}>from {Number.isFinite(from) ? inr(from) : '—'}</p>
-              <h3 className="mt-1 text-4xl sm:text-5xl">{item.name} <span className="italic" style={{ color: theme.accent }}>package</span></h3>
+              <p className="text-sm font-semibold md:mt-6 lg:mt-8" style={{ color: theme.accent }}>from {Number.isFinite(from) ? inr(from) : '—'}</p>
+              <h3 className="mt-1 text-3xl sm:text-4xl lg:text-5xl">{item.name} <span className="italic" style={{ color: theme.accent }}>package</span></h3>
               <p className="mt-3 max-w-lg text-navy-soft">{item.tagline}</p>
               <ul className="mt-5 grid max-w-lg gap-x-5 gap-y-2 text-sm sm:grid-cols-2">
                 {item.includes.map((inc) => (
@@ -111,7 +112,7 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
               Book {item.name} <ArrowRight className="h-4 w-4" />
             </Link>
             {branches.length > 1 && (
-              <div className="hidden rounded-full border border-line bg-white p-1 lg:inline-flex">
+              <div className="hidden rounded-full border border-line bg-white p-1 md:inline-flex">
                 {branches.map((b) => (
                   <button key={b.id} onClick={() => setBranch(b.id)}
                     className={cn('rounded-full px-3.5 py-2 text-xs font-semibold transition-colors', branch === b.id ? 'bg-navy text-white' : 'text-navy-soft hover:text-navy')}>{b.name}</button>
@@ -123,22 +124,22 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
         </div>
 
         {/* Right: stage */}
-        <div className="relative order-1 min-h-[370px] overflow-hidden sm:min-h-[470px] lg:order-2 lg:min-h-0">
-          <motion.div aria-hidden className="absolute -left-[18%] top-1/2 aspect-square w-[118%] -translate-y-1/2 rounded-full max-lg:left-[-10%] max-lg:w-[120%]"
+        <div className="relative order-1 min-h-[370px] overflow-hidden sm:min-h-[470px] md:order-2 md:min-h-0">
+          <motion.div aria-hidden className="absolute -left-[18%] top-1/2 aspect-square w-[118%] -translate-y-1/2 rounded-full max-md:left-[-10%] max-md:w-[120%]"
             animate={{ backgroundColor: theme.circle }} transition={{ duration: 0.8 }} />
           <motion.div aria-hidden className="absolute inset-y-0 left-[38%] right-0 rounded-l-[56px]" animate={{ backgroundColor: theme.panel }} transition={{ duration: 0.8 }} />
 
           {/* Giant outlined name, horizontal along the bottom of the panel */}
           <AnimatePresence mode="wait">
             <motion.span key={'big' + item.key} aria-hidden
-              className="pointer-events-none absolute bottom-4 left-[40%] max-lg:hidden right-3 overflow-hidden whitespace-nowrap text-center font-display text-[3.5rem] leading-[1.1] text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.55)] sm:text-[5rem] xl:text-[6.5rem]"
+              className="pointer-events-none absolute bottom-4 left-[40%] max-md:hidden right-3 overflow-hidden whitespace-nowrap text-center font-display text-[3rem] leading-[1.1] text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.55)] lg:text-[5rem] xl:text-[6.5rem]"
               initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 30 }} transition={{ duration: 0.6, ease }}>
               {item.name}
             </motion.span>
           </AnimatePresence>
 
           {/* Photo with name label on top */}
-          <div className="absolute inset-0 flex items-center justify-center pb-12 lg:pb-0 lg:pl-[6%]" style={{ perspective: 1400 }}>
+          <div className="absolute inset-0 flex items-center justify-center pb-12 md:pb-0 md:pl-[6%]" style={{ perspective: 1400 }}>
             <AnimatePresence mode="popLayout" initial={false} custom={dir}>
               <motion.div key={'img' + item.key + branch} className="relative w-[80%] max-w-[520px] select-none" custom={dir}
                 variants={{
@@ -160,7 +161,7 @@ export function PackageSpotlight({ branches, theatres, packages, customPackage }
 
           {/* Phones / tablets: swipe hint, dots and arrows */}
           {n > 1 && (
-            <div className="absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-3 lg:hidden">
+            <div className="absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-3 md:hidden">
               <button type="button" onClick={() => goTo(index - 1, -1)} aria-label="Previous package"
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-navy shadow-card backdrop-blur"><ChevronLeft className="h-4 w-4" /></button>
               <div className="flex items-center gap-2 rounded-full bg-white/90 px-3.5 py-2 shadow-card backdrop-blur">

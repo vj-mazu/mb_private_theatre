@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, Sparkles } from 'lucide-react';
-import { Badge, Button, Empty, Field, ImageUpload, Input, Modal, Select, Textarea, Toggle, VideoUpload, api, cn, useConfirm, useToast } from '@/components/ui';
+import { Badge, Button, Empty, Field, Input, Modal, Select, Textarea, Toggle, api, cn, useConfirm, useToast } from '@/components/ui';
+import { ImageUpload, VideoUpload } from '@/components/admin/MediaUpload';
 
 export type FieldDef =
   | { key: string; label: string; type: 'text' | 'textarea' | 'number' | 'time' | 'date'; hint?: string; required?: boolean; half?: boolean }

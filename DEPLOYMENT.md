@@ -90,9 +90,27 @@ This **replaces** all data on the server with the backup. A backup made without 
 | Restore a backup | `docker compose exec app node scripts/db-restore.js backups/FILE --yes` |
 | Change settings (WhatsApp keys etc.) | `nano .env` then `docker compose up -d` |
 
-**Backups:** the installer schedules a backup every night at 02:30 into `/opt/moviebash/backups` and keeps the latest 30.
-Each one includes every booking, setting and uploaded image. Download a copy to your PC now and then.
-You can also download a backup any time from **Admin → Settings & backup**.
+**Backups:** the installer sets the server clock to India time and schedules a backup every night at **12:00 midnight**
+into `/opt/moviebash/backups`. It keeps the latest **7** (one week): on the 8th night the new backup is saved first, and only
+then is the oldest one deleted. If a backup fails, nothing is deleted.
+Each file is a full copy of every booking, setting and uploaded image, so the newest one alone restores the whole site.
+Download a copy to your PC now and then. You can also download a backup any time from **Admin → Settings & backup**.
+
+## Get an alert if the site goes down (free, 5 minutes)
+
+The site has a health check at `https://YOUR-DOMAIN/api/health`. It answers OK only when both the website and the database work.
+
+1. Create a free account at [uptimerobot.com](https://uptimerobot.com).
+2. **Add New Monitor** → type **HTTP(s)** → URL `https://YOUR-DOMAIN/api/health` → check every **5 minutes**.
+3. Under alert contacts, choose your email (and install the UptimeRobot mobile app for phone alerts).
+
+If the website or database stops, you get an alert within about 5 minutes, and another one when it is back.
+
+## Automatic tests
+
+Run `npm test` before putting new code live. It checks prices, coupons, slots and extra hours, double booking,
+expired payment holds, cancellations and revenue. The booking tests use a separate `<database>_test` database
+(created automatically), so real bookings are never touched.
 
 ## Environment variables (`.env`)
 
@@ -104,7 +122,27 @@ You can also download a backup any time from **Admin → Settings & backup**.
 | `ADMIN_USERNAME`, `ADMIN_PASSWORD` | first start | First admin account (only used when no users exist) |
 | `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` | optional | Meta WhatsApp Cloud API: automatic messages |
 | `WHATSAPP_TEMPLATE_*` | optional | Approved template names, for messages outside the 24-hour chat window |
-| `WHATSAPP_ADMIN_NUMBER` | optional | Gets an alert for each website booking and enquiry |
+| `WHATSAPP_ADMIN_NUMBER` | recommended | Admin's WhatsApp (e.g. `919448986953`). Gets an alert the moment a guest uploads the payment screenshot (with a link to open the booking), and for each enquiry |
+| `WHATSAPP_TEMPLATE_ADMIN_ALERT` | recommended | Approved template for that alert, so it arrives even if the admin number has not messaged the business number in the last 24 hours (see below) |
+
+### Admin payment alert template
+
+WhatsApp only delivers a normal message to a number that wrote to your business number in the last 24 hours. For the admin alert
+to arrive every time, create a template in Meta (WhatsApp Manager → Message templates → Create, category **Utility**,
+name e.g. `admin_payment_alert`, language English) with this body, then set `WHATSAPP_TEMPLATE_ADMIN_ALERT=admin_payment_alert`:
+
+```
+Payment to verify: {{1}}
+Special person: {{2}}
+WhatsApp: {{3}}
+Occasion: {{4}}
+When: {{5}}
+Room: {{6}}
+Total: {{7}}
+Open to check and confirm: {{8}}
+```
+
+Until it is approved, the alert still arrives whenever the admin number has messaged the business number in the last 24 hours.
 
 ## Security (what is already in place)
 

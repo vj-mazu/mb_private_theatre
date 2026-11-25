@@ -36,7 +36,7 @@ export default function SettingsPage() {
         </Card>
 
         <Card title="Payment (UPI advance)">
-          <Field label="UPI ID"><Input value={s.payment.upi_id} onChange={(e) => upd('payment', 'upi_id', e.target.value.trim())} /></Field>
+          <Field label="UPI ID" hint={/^[\w.\-]{2,}@[a-zA-Z]{2,}$/.test(s.payment.upi_id) ? 'Must be the exact UPI ID from your UPI app (Profile → UPI ID), e.g. name@okicici or 99xxxxxx@ybl' : 'Not a valid UPI ID format — customers will see "not valid UPI". Use the exact ID from your UPI app.'}><Input value={s.payment.upi_id} onChange={(e) => upd('payment', 'upi_id', e.target.value.trim())} /></Field>
           <Field label="Payee name"><Input value={s.payment.payee_name} onChange={(e) => upd('payment', 'payee_name', e.target.value)} /></Field>
           <Field label="Advance amount (₹)"><Input inputMode="numeric" value={s.payment.advance_amount} onChange={(e) => upd('payment', 'advance_amount', num(e.target.value))} /></Field>
         </Card>
@@ -46,7 +46,9 @@ export default function SettingsPage() {
             <Input inputMode="numeric" value={s.booking.slot_cutoff_minutes} onChange={(e) => upd('booking', 'slot_cutoff_minutes', num(e.target.value))} />
           </Field>
           <Field label="Hold a slot for payment (minutes)" hint="If the payment screenshot isn't uploaded in time, the slot is released.">
-            <Input inputMode="numeric" value={s.booking.hold_minutes} onChange={(e) => upd('booking', 'hold_minutes', Math.max(5, num(e.target.value)))} />
+            <Input inputMode="numeric" value={s.booking.hold_minutes}
+              onChange={(e) => upd('booking', 'hold_minutes', num(e.target.value))}
+              onBlur={() => upd('booking', 'hold_minutes', Math.max(5, Number(s.booking.hold_minutes) || 5))} />
           </Field>
         </Card>
 

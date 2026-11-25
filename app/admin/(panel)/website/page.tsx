@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import { ExternalLink } from 'lucide-react';
 import { PageHeader } from '@/components/admin/AdminShell';
 import { CrudManager } from '@/components/admin/CrudManager';
-import { Button, Field, ImageUpload, Input, Textarea, Toggle, api, cn, useToast } from '@/components/ui';
+import { ImageUpload } from '@/components/admin/MediaUpload';
+import { Button, Field, Input, Textarea, Toggle, api, cn, useToast } from '@/components/ui';
 
 const TABS = ['Home & story', 'Hero slides', 'Story cards', 'Videos', 'Testimonials', 'FAQs'] as const;
 const NL = String.fromCharCode(10);
@@ -129,6 +130,7 @@ function HomeContent({ onOpen }: { onOpen: (tab: (typeof TABS)[number]) => void 
   }
   if (!s) return <div className="skeleton h-96" />;
   const num = (v: string) => Number(v.replace(/[^\d.]/g, '')) || 0;
+  const int = (v: string) => Number(v.replace(/\D/g, '')) || 0;
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
@@ -153,9 +155,13 @@ function HomeContent({ onOpen }: { onOpen: (tab: (typeof TABS)[number]) => void 
 
       <Card title="Google rating & numbers">
         <div className="grid grid-cols-3 gap-3">
-          <Field label="Google rating"><Input value={s.stats.rating} onChange={(e) => upd('stats', 'rating', Math.min(5, num(e.target.value)))} /></Field>
-          <Field label="No. of reviews"><Input value={s.stats.reviews || ''} onChange={(e) => upd('stats', 'reviews', num(e.target.value))} /></Field>
-          <Field label="Celebrations"><Input value={s.stats.celebrations || ''} onChange={(e) => upd('stats', 'celebrations', num(e.target.value))} /></Field>
+          <Field label="Google rating">
+            <Input value={s.stats.rating}
+              onChange={(e) => upd('stats', 'rating', e.target.value.replace(/[^\d.]/g, ''))}
+              onBlur={() => upd('stats', 'rating', Math.min(5, num(String(s.stats.rating))))} />
+          </Field>
+          <Field label="No. of reviews"><Input inputMode="numeric" value={s.stats.reviews || ''} onChange={(e) => upd('stats', 'reviews', int(e.target.value))} /></Field>
+          <Field label="Celebrations"><Input inputMode="numeric" value={s.stats.celebrations || ''} onChange={(e) => upd('stats', 'celebrations', int(e.target.value))} /></Field>
         </div>
         <p className="text-xs text-navy-faint">Leave a number empty to hide it on the website.</p>
       </Card>

@@ -31,6 +31,28 @@ export function slotLabel(start: string, end: string, extraHours = 0): string {
 export const MAX_EXTRA_HOURS = 2;
 
 /**
+ * Short slot lengths (minutes), longest first. When an earlier booking's extra hours push a slot so it no longer fits,
+ * the free time left (15 min gap on both sides) is offered as the longest of these that fits.
+ */
+export const SHORT_SLOT_MINUTES = [90, 60];
+
+/** Any slot of 1½ hours or less (a fixed one in the timetable, or one squeezed by extra hours) is a short slot. */
+export const isShortLength = (minutes: number) => minutes <= SHORT_SLOT_MINUTES[0];
+
+/** Package price in a short slot: the theatre's short-slot discount less. The room-only (Custom) price never changes. */
+export const shortPackagePrice = (price: number, short: boolean, discount: number) =>
+  short ? Math.max(0, price - Math.max(0, discount || 0)) : price;
+
+/** "1 hour", "1½ hours", "2 hours" for a slot's start/end. */
+export function durationLabel(start: string, end: string): string {
+  const [a, b] = [start, end].map((t) => t.split(':').map(Number)).map(([h, m]) => h * 60 + m);
+  const mins = ((b - a) % 1440 + 1440) % 1440;
+  const h = Math.floor(mins / 60);
+  const half = mins % 60 === 30 ? '½' : mins % 60 ? ` h ${mins % 60} min` : '';
+  return h === 1 && !half ? '1 hour' : `${h}${half} hours`;
+}
+
+/**
  * The business day runs past midnight: a slot that starts before this time (e.g. 12:00 AM – 1:00 AM)
  * belongs to the night of the booking date, after the evening slots.
  */
@@ -54,8 +76,10 @@ export function slotSpan(start: string, end: string, extraHours = 0): Span {
 
 /** Epoch ms for a slot start on a given IST date (an after-midnight slot starts on the next calendar day). */
 export function slotStartMs(date: string, start: string): number {
+  const [h = '0', m = '0'] = start.split(':');
+  const hhmm = `${h.padStart(2, '0')}:${m.padStart(2, '0')}`;
   const extraDay = dayMinutes(start) >= 1440 ? 86_400_000 : 0;
-  return Date.parse(`${date}T${start}:00+05:30`) + extraDay;
+  return Date.parse(`${date}T${hhmm}:00+05:30`) + extraDay;
 }
 
 /** A slot stops being bookable `cutoffMinutes` after it starts. */

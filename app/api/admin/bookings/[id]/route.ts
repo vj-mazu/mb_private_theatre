@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { q } from '@/lib/server/db';
+import { one, q, tx } from '@/lib/server/db';
 import { addPayment, bookingToInput, getBooking, recordEvent, setStatus, updateBooking } from '@/lib/server/bookings';
 import { getSettings } from '@/lib/server/catalog';
 import { composeText, sendWhatsApp, waLink, type MessageKind } from '@/lib/server/whatsapp';
@@ -9,8 +9,14 @@ import type { Session } from '@/lib/server/auth';
 export const dynamic = 'force-dynamic';
 type Ctx = { params: { id: string } };
 
+function parseId(id: string) {
+  const n = Number(id);
+  if (!Number.isInteger(n) || n <= 0) throw new HttpError(400, 'Invalid booking id');
+  return n;
+}
+
 async function load(id: string, s: Session) {
-  const b = await getBooking({ id: Number(id) });
+  const b = await getBooking({ id: parseId(id) });
   if (!b) throw new HttpError(404, 'Booking not found');
   if (s.role === 'staff' && s.branch_id && b.branch_id !== s.branch_id) throw new HttpError(403, 'This booking belongs to another branch');
   return b;
@@ -24,7 +30,7 @@ export const GET = route(async (_req: Request, { params }: Ctx) => {
     q('SELECT * FROM booking_events WHERE booking_id=$1 ORDER BY created_at DESC', [b.id]),
     q('SELECT id, kind, status, error, created_at FROM whatsapp_messages WHERE booking_id=$1 ORDER BY created_at DESC', [b.id]),
   ]);
-  return ok({ booking: b, input: bookingToInput(b), payments, events, messages, waLink: waLink(b.whatsapp || b.phone, composeText('confirmation', b)) });
+  return ok({ booking: b, input: bookingToInput(b), payments, events, messages, waLink: waLink(b.whatsapp || b.phone, composeText('confirmation', b)), role: s.role });
 });
 
 /** Full edit (also used for reschedule). */
@@ -48,7 +54,7 @@ const actionSchema = z.discriminatedUnion('action', [
     discount: z.coerce.number().int().min(0),
     final_amount: z.coerce.number().int().min(0),
     method: z.string(),
-    notes: z.string().optional().default(''),
+    notes: z.string().optional(),
   }),
   z.object({ action: z.literal('cancel'), reason: z.string().trim().min(2, 'Enter a reason') }),
   z.object({ action: z.literal('reopen') }),
@@ -65,10 +71,21 @@ export const POST = route(async (req: Request, { params }: Ctx) => {
 
   switch (body.action) {
     case 'confirm': {
-      if (!['awaiting_payment', 'payment_review'].includes(b.status)) throw new HttpError(409, 'Booking is already confirmed');
-      const advance = body.advance ?? (await getSettings()).payment.advance_amount;
-      if (advance > 0 && b.amount_paid === 0) await addPayment(b.id, advance, 'upi', 'Advance (verified screenshot)', s.name);
-      await setStatus(b.id, 'confirmed', s.name);
+      const defaultAdv = (await getSettings()).payment.advance_amount;
+      await tx(async (c) => {
+        const locked = await one<any>('SELECT id, status, amount_paid FROM bookings WHERE id=$1 FOR UPDATE', [b.id], c);
+        if (!locked || !['awaiting_payment', 'payment_review'].includes(locked.status)) {
+          throw new HttpError(409, 'Booking is already confirmed');
+        }
+        const advance = body.advance ?? defaultAdv;
+        if (advance > 0 && locked.amount_paid === 0) {
+          await q('INSERT INTO payments (booking_id, amount, method, note, recorded_by) VALUES ($1,$2,$3,$4,$5)',
+            [b.id, Math.round(advance), 'upi', 'Advance (verified screenshot)', s.name], c);
+          await q('UPDATE bookings SET amount_paid = amount_paid + $2, updated_at=now() WHERE id=$1', [b.id, Math.round(advance)], c);
+        }
+        await q("UPDATE bookings SET status='confirmed', updated_at=now(), hold_expires_at=NULL WHERE id=$1", [b.id], c);
+      });
+      await recordEvent(b.id, s.name, 'status_confirmed', {});
       const fresh = await getBooking({ id: b.id });
       const wa = await sendWhatsApp({ to: fresh.whatsapp || fresh.phone, kind: 'confirmation', booking: fresh });
       return ok({ whatsapp: wa.status });
@@ -77,11 +94,15 @@ export const POST = route(async (req: Request, { params }: Ctx) => {
       await addPayment(b.id, body.amount, body.method, body.note, s.name);
       return ok();
     case 'close': {
-      if (b.status === 'completed') throw new HttpError(409, 'Booking is already completed');
-      if (b.status === 'cancelled') throw new HttpError(409, 'Cancelled bookings cannot be completed');
+      await tx(async (c) => {
+        const locked = await one<any>('SELECT status FROM bookings WHERE id=$1 FOR UPDATE', [b.id], c);
+        if (!locked) throw new HttpError(404, 'Booking not found');
+        if (locked.status === 'completed') throw new HttpError(409, 'Booking is already completed');
+        if (locked.status === 'cancelled') throw new HttpError(409, 'Cancelled bookings cannot be completed');
+      });
       const base = bookingToInput(b);
       const input = {
-        ...base, addons: body.addons, custom_items: body.custom_items, discount: body.discount, notes: body.notes || b.notes,
+        ...base, addons: body.addons, custom_items: body.custom_items, discount: body.discount, notes: body.notes ?? base.notes,
         package_id: body.package_id === undefined ? base.package_id : body.package_id, guests: body.guests ?? base.guests,
         extra_hours: body.extra_hours ?? base.extra_hours,
       };
@@ -102,7 +123,13 @@ export const POST = route(async (req: Request, { params }: Ctx) => {
       return ok();
     case 'delete':
       if (s.role !== 'admin') throw new HttpError(403, 'Only admins can delete bookings');
-      await q("UPDATE bookings SET is_deleted=true, status=CASE WHEN status IN ('awaiting_payment','payment_review','confirmed') THEN 'cancelled' ELSE status END, updated_at=now() WHERE id=$1", [b.id]);
+      await tx(async (c) => {
+        const locked = await one<any>('SELECT status, coupon_code FROM bookings WHERE id=$1 FOR UPDATE', [b.id], c);
+        await q("UPDATE bookings SET is_deleted=true, status=CASE WHEN status IN ('awaiting_payment','payment_review','confirmed') THEN 'cancelled' ELSE status END, updated_at=now() WHERE id=$1", [b.id], c);
+        if (locked && ['awaiting_payment', 'payment_review', 'confirmed'].includes(locked.status) && locked.coupon_code) {
+          await q('UPDATE coupons SET used_count = GREATEST(0, used_count - 1) WHERE code=$1', [locked.coupon_code], c);
+        }
+      });
       await recordEvent(b.id, s.name, 'deleted');
       return ok();
     case 'restore':

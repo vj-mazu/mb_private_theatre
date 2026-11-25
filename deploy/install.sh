@@ -30,6 +30,7 @@ else
   ADMIN_PASS=$(ask "Admin password (min 10 chars, Enter = generate)" "$(secret 24 16)")
   WA_TOKEN=$(ask "WhatsApp Cloud API token (optional, Enter to skip)" "")
   WA_PHONE=$(ask "WhatsApp phone-number ID (optional)" "")
+  WA_ADMIN=$(ask "Admin WhatsApp number for payment alerts (10 digits)" "9448986953")
 
   {
     echo "DOMAIN=${DOMAIN}"
@@ -42,6 +43,7 @@ else
     echo "ADMIN_PASSWORD=${ADMIN_PASS}"
     echo "WHATSAPP_TOKEN=${WA_TOKEN}"
     echo "WHATSAPP_PHONE_NUMBER_ID=${WA_PHONE}"
+    echo "WHATSAPP_ADMIN_NUMBER=91${WA_ADMIN: -10}"
     echo "WHATSAPP_API_VERSION=v21.0"
     echo "WHATSAPP_TEMPLATE_LANG=en"
   } > .env
@@ -63,8 +65,12 @@ chown -R 1001:1001 backups   # the app container runs as user 1001 and writes th
 docker compose up -d --build
 docker image prune -f >/dev/null 2>&1 || true
 
-say "Scheduling a daily database backup at 02:30"
-CRON="30 2 * * * cd $(pwd) && docker compose exec -T app node scripts/db-backup.js >> backups/backup.log 2>&1"
+say "Setting the server clock to India time"
+timedatectl set-timezone Asia/Kolkata 2>/dev/null || ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
+systemctl restart cron 2>/dev/null || true   # cron reads the timezone only at start
+
+say "Scheduling a nightly database backup at 12:00 midnight (keeps the latest 7)"
+CRON="0 0 * * * cd $(pwd) && docker compose exec -T app node scripts/db-backup.js >> backups/backup.log 2>&1"
 ( crontab -l 2>/dev/null | grep -v 'scripts/db-backup.js' ; echo "$CRON" ) | crontab -
 
 say "Waiting for the site to become healthy"

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Check, Plus, Trash2 } from 'lucide-react';
 import { Button, Field, Input, Modal, Select, Textarea, api, cn, useToast } from '@/components/ui';
 import { Stepper, TierSelect } from './BookingForm';
-import { PAYMENT_METHODS, addonItem, cakeCharge, computeQuote, inr, priceTiers } from '@/lib/booking-rules';
+import { PAYMENT_METHODS, addonItem, cakeCharge, computeQuote, inr, kgLabel, priceTiers, shortPackagePrice } from '@/lib/booking-rules';
 
 type Custom = { name: string; price: number | ''; qty: number };
 
@@ -31,7 +31,7 @@ export function CloseBookingModal({ open, onClose, booking, input, onDone }: {
 
   useEffect(() => {
     if (!open) return;
-    api('/api/catalog').then(setCat).catch(() => {});
+    api('/api/catalog?all=1').then(setCat).catch(() => {});
     setPackageId(input.package_id ?? null);
     setGuests(input.guests);
     setExtraHours(input.extra_hours || 0);
@@ -44,12 +44,15 @@ export function CloseBookingModal({ open, onClose, booking, input, onDone }: {
   }, [open, input, booking]);
 
   const theatre = cat?.theatres.find((t: any) => t.id === booking.theatre_id);
+  // A short-slot booking keeps its lower package prices at closing (unless the extra hours change, which re-checks the slot).
+  const short = !!booking.short_slot && extraHours === (input.extra_hours || 0);
+  const pkgPrice = (id: number) => (theatre?.prices[id] ? shortPackagePrice(theatre.prices[id].price, short, theatre.short_slot_discount) : undefined);
   const pkg = cat?.packages.find((p: any) => p.id === packageId);
   const cake = cat?.cakes.find((c: any) => c.id === input.cake_id);
   const options = useMemo(() => theatre
-    ? [...(cat?.packages || []).filter((p: any) => theatre.prices[p.id]).map((p: any) => ({ id: p.id, name: p.name, price: theatre.prices[p.id].price })),
+    ? [...(cat?.packages || []).filter((p: any) => theatre.prices[p.id]).map((p: any) => ({ id: p.id, name: p.name, price: pkgPrice(p.id)! })),
       { id: null, name: 'Custom', price: theatre.base_price }]
-    : [], [cat, theatre]);
+    : [], [cat, theatre, short]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const items = selected.flatMap((a) => {
     const ad = cat?.addons.find((x: any) => x.id === a.addon_id);
@@ -58,7 +61,7 @@ export function CloseBookingModal({ open, onClose, booking, input, onDone }: {
   });
   const customItems = customs.filter((c) => c.name.trim() && c.price !== '').map((c) => ({ kind: 'custom' as const, name: c.name, price: Number(c.price), qty: c.qty }));
   const quote = theatre ? computeQuote({
-    basePrice: pkg ? theatre.prices[pkg.id]?.price ?? 0 : theatre.base_price, includesCake: false,
+    basePrice: pkg ? pkgPrice(pkg.id) ?? 0 : theatre.base_price, includesCake: false,
     baseCapacity: theatre.base_capacity, extraPersonPrice: theatre.extra_person_price, guests,
     cakePrice: cakeCharge(cake, input.cake_kg || 0.5, !!pkg?.includes_cake), items: [...items, ...customItems], discount,
     extraHours, extraHourPrice: theatre.extra_hour_price,
@@ -175,7 +178,7 @@ export function CloseBookingModal({ open, onClose, booking, input, onDone }: {
           <Line label={pkg ? `${pkg.name} package` : 'Custom (room)'} value={inr(quote.base)} />
           {quote.extraPersons > 0 && <Line label={`Extra persons × ${quote.extraPersons}`} value={inr(quote.extraPersonAmount)} />}
           {quote.extraHours > 0 && <Line label={`Extra hours × ${quote.extraHours}`} value={inr(quote.extraHourAmount)} />}
-          {cake && <Line label={`Cake · ${cake.name}`} value={quote.cakeAmount ? inr(quote.cakeAmount) : 'Included'} />}
+          {cake && <Line label={`Cake · ${cake.name} · ${kgLabel(input.cake_kg || 0.5)}`} value={quote.cakeAmount ? inr(quote.cakeAmount) : 'Included'} />}
           {[...items, ...customItems].map((it, i) => <Line key={i} label={`${it.name}${it.qty > 1 ? ` × ${it.qty}` : ''}`} value={inr(it.price * it.qty)} />)}
           {quote.discount > 0 && <Line label="Discount" value={`− ${inr(quote.discount)}`} />}
           {/* The bill reads top to bottom: total (after any discount) − advance already paid = what to collect now. */}

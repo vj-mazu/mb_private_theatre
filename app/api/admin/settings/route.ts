@@ -24,6 +24,26 @@ function checkLinks(body: any) {
   if (images !== undefined && (!Array.isArray(images) || images.some((x: unknown) => typeof x !== 'string' || !SAFE_URL.test(x)))) {
     throw new HttpError(400, 'Hero photos must be uploaded images');
   }
+  const reels = body?.reels?.urls;
+  if (reels !== undefined && (!Array.isArray(reels) || reels.some((x: unknown) => typeof x !== 'string' || (x.trim() && !SAFE_URL.test(x.trim()))))) {
+    throw new HttpError(400, 'Reel URLs must start with https://');
+  }
+  const customImg = body?.custom_package?.image_url;
+  if (typeof customImg === 'string' && customImg.trim() && !SAFE_URL.test(customImg.trim())) {
+    throw new HttpError(400, 'Custom package image must be a valid URL');
+  }
+  if (body?.booking?.hold_minutes !== undefined) {
+    const m = Number(body.booking.hold_minutes);
+    if (!Number.isFinite(m) || m < 5 || m > 120) throw new HttpError(400, 'Hold minutes must be between 5 and 120');
+  }
+  if (body?.booking?.slot_cutoff_minutes !== undefined) {
+    const c = Number(body.booking.slot_cutoff_minutes);
+    if (!Number.isFinite(c) || c < 0 || c > 180) throw new HttpError(400, 'Slot cutoff minutes must be between 0 and 180');
+  }
+  if (body?.payment?.advance_amount !== undefined) {
+    const a = Number(body.payment.advance_amount);
+    if (!Number.isFinite(a) || a < 0 || a > 50000) throw new HttpError(400, 'Advance amount must be between ₹0 and ₹50,000');
+  }
 }
 
 export const PUT = route(async (req: Request) => {

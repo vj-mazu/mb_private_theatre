@@ -45,6 +45,7 @@ export const POST = route(async (req: Request) => {
 export const DELETE = route(async (req: Request) => {
   const s = await requireStaff('admin');
   const id = Number(new URL(req.url).searchParams.get('id'));
+  if (!Number.isInteger(id) || id <= 0) throw new HttpError(400, 'Invalid user id');
   if (id === s.id) throw new HttpError(400, 'You cannot delete your own account');
   await q('DELETE FROM users WHERE id=$1', [id]);
   await audit(s.name, 'delete', 'user', id);

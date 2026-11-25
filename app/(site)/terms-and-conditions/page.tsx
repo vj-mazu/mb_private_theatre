@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <main>
+    <div>
 
       <div className="container-page max-w-3xl py-14">
         <h1 className="text-3xl sm:text-4xl font-semibold text-navy mb-6">
@@ -58,6 +58,6 @@ export default function TermsPage() {
 
       
       
-    </main>
+    </div>
   );
 }

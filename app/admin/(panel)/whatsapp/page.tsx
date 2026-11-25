@@ -14,7 +14,7 @@ export default function WhatsAppLog() {
 
   useEffect(() => {
     setData(null);
-    api(`/api/admin/whatsapp?page=${page}${status ? `&status=${status}` : ''}`).then(setData).catch(() => {});
+    api(`/api/admin/whatsapp?page=${page}${status ? `&status=${status}` : ''}`).then(setData).catch((e) => setData({ error: e.message || 'Failed to load logs' }));
   }, [page, status]);
   const pages = data ? Math.max(1, Math.ceil(data.total / data.per)) : 1;
 
@@ -25,10 +25,14 @@ export default function WhatsAppLog() {
           <option value="">All</option><option value="sent">Sent</option><option value="delivered">Delivered</option><option value="read">Read</option><option value="failed">Failed</option><option value="not_configured">Not configured</option>
         </Select>} />
 
-      {data && !data.configured && (
+      {data && !data.error && !data.configured && (
         <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           WhatsApp API is not connected yet. Add <code>WHATSAPP_TOKEN</code> and <code>WHATSAPP_PHONE_NUMBER_ID</code> to the server environment. Messages are still logged here.
         </div>
+      )}
+
+      {data?.error && (
+        <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{data.error}</div>
       )}
 
       <div className="card overflow-hidden">
@@ -39,7 +43,7 @@ export default function WhatsAppLog() {
             </thead>
             <tbody className="divide-y divide-line bg-white">
               {!data && <tr><td colSpan={6} className="p-3"><div className="skeleton h-5" /></td></tr>}
-              {data?.rows.map((m: any) => (
+              {data?.rows?.map((m: any) => (
                 <tr key={m.id} className="align-top">
                   <td className="whitespace-nowrap px-3 py-2.5 text-navy-soft">{new Date(m.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })}</td>
                   <td className="whitespace-nowrap px-3 py-2.5 font-mono text-xs">+{m.to_phone}</td>
@@ -55,7 +59,7 @@ export default function WhatsAppLog() {
             </tbody>
           </table>
         </div>
-        {data?.rows.length === 0 && <div className="p-6"><Empty title="No messages yet" /></div>}
+        {data?.rows?.length === 0 && <div className="p-6"><Empty title="No messages yet" /></div>}
         {data?.total > data?.per && (
           <div className="flex items-center justify-between border-t border-line px-4 py-3 text-sm">
             <span className="text-navy-soft">Page {page} of {pages}</span>

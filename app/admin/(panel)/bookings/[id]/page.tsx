@@ -148,9 +148,9 @@ export default function BookingDetail({ params }: { params: { id: string } }) {
 
           <div className="flex flex-wrap gap-2">
             {open && <Button variant="ghost" size="sm" onClick={() => setModal('cancel')}><XCircle className="h-4 w-4" />Cancel booking</Button>}
-            {!b.is_deleted
+            {d.role === 'admin' && (!b.is_deleted
               ? <Button variant="ghost" size="sm" className="text-red-600" onClick={async () => (await ask({ title: 'Delete booking?', message: 'The slot is freed. You can restore it later from "Show deleted bookings".', confirmLabel: 'Delete', danger: true })) && act({ action: 'delete' }, 'Booking deleted')}><Trash2 className="h-4 w-4" />Delete</Button>
-              : <Button variant="ghost" size="sm" onClick={() => act({ action: 'restore' }, 'Booking restored')}><RotateCcw className="h-4 w-4" />Restore</Button>}
+              : <Button variant="ghost" size="sm" onClick={() => act({ action: 'restore' }, 'Booking restored')}><RotateCcw className="h-4 w-4" />Restore</Button>)}
           </div>
         </div>
       </div>
@@ -167,11 +167,13 @@ export default function BookingDetail({ params }: { params: { id: string } }) {
           <Button variant="secondary" onClick={() => setModal('cancel')}>Reject</Button>
           <Button onClick={() => act({ action: 'confirm' }, 'Payment verified — booking confirmed')} loading={busy}>Payment received · Confirm</Button>
         </> : undefined}>
-        {b.payment_screenshot
-          // eslint-disable-next-line @next/next/no-img-element
-          ? <img src={b.payment_screenshot} alt="Payment screenshot" className="mx-auto max-h-[65vh] rounded-xl" />
-          : <p className="text-sm text-navy-soft">No screenshot uploaded.</p>}
-        <a href={b.payment_screenshot} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1 text-xs text-brand-700"><ExternalLink className="h-3 w-3" />Open full size</a>
+        {b.payment_screenshot ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={b.payment_screenshot} alt="Payment screenshot" className="mx-auto max-h-[65vh] rounded-xl" />
+            <a href={b.payment_screenshot} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1 text-xs text-brand-700"><ExternalLink className="h-3 w-3" />Open full size</a>
+          </>
+        ) : <p className="text-sm text-navy-soft">No screenshot uploaded.</p>}
       </Modal>
     </>
   );
@@ -214,6 +216,7 @@ function PaymentModal({ open, onClose, balance, busy, onSubmit }: { open: boolea
 
 function CancelModal({ open, onClose, busy, onSubmit }: { open: boolean; onClose: () => void; busy: boolean; onSubmit: (reason: string) => void }) {
   const [reason, setReason] = useState('');
+  useEffect(() => { if (open) setReason(''); }, [open]);
   return (
     <Modal open={open} onClose={onClose} title="Cancel booking" size="sm"
       footer={<><Button variant="secondary" onClick={onClose}>Keep booking</Button><Button variant="danger" loading={busy} onClick={() => onSubmit(reason)}>Cancel booking</Button></>}>

@@ -70,7 +70,7 @@ export default function StaffPage() {
             <Field label="Username"><Input value={draft.username} onChange={(e) => setDraft({ ...draft, username: e.target.value })} /></Field>
             <Field label="Phone"><Input value={draft.phone} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} /></Field>
             <Field label="Role">
-              <Select value={draft.role} onChange={(e) => setDraft({ ...draft, role: e.target.value })}>
+              <Select value={draft.role} onChange={(e) => setDraft({ ...draft, role: e.target.value, branch_id: e.target.value === 'admin' ? null : draft.branch_id })}>
                 <option value="staff">Staff</option><option value="admin">Admin</option>
               </Select>
             </Field>

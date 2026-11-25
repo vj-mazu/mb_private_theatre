@@ -16,13 +16,15 @@ export function GalleryGrid({ photos }: { photos: { id: number; image_url: strin
 
   useEffect(() => {
     if (open === null) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(null);
       if (e.key === 'ArrowRight') setOpen((i) => (i! + 1) % list.length);
       if (e.key === 'ArrowLeft') setOpen((i) => (i! - 1 + list.length) % list.length);
     };
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    return () => { document.body.style.overflow = prev; document.removeEventListener('keydown', onKey); };
   }, [open, list.length]);
 
   return (
@@ -53,7 +55,7 @@ export function GalleryGrid({ photos }: { photos: { id: number; image_url: strin
 
       <AnimatePresence>
         {open !== null && list[open] && (
-          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-navy/90 p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(null)}>
+          <motion.div role="dialog" aria-modal="true" aria-label="Photo lightbox" className="fixed inset-0 z-50 flex items-center justify-center bg-navy/90 p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(null)}>
             <button className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20" aria-label="Close"><X className="h-5 w-5" /></button>
             <button onClick={(e) => { e.stopPropagation(); setOpen((open - 1 + list.length) % list.length); }} className="absolute left-3 rounded-full bg-white/10 p-2 text-white hover:bg-white/20" aria-label="Previous"><ChevronLeft className="h-6 w-6" /></button>
             <motion.div key={list[open].id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}

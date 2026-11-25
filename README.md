@@ -47,5 +47,5 @@ for the variable order. Every message (sent, failed or not configured) is listed
 ## Backups
 
 - Admin → Settings → Backup downloads a full JSON backup (optionally with images).
-- `npm run db:backup` writes a gzipped backup to `./backups` and keeps the latest 30 (the server installer schedules it nightly). `npm run db:restore -- FILE --yes` restores one.
+- `npm run db:backup` writes a gzipped backup to `./backups` and keeps the latest 7 (the server installer schedules it nightly at 12:00 midnight IST). `npm test` runs the automatic tests (see DEPLOYMENT.md). `npm run db:restore -- FILE --yes` restores one.
 - Uploaded images (payment screenshots, gallery, packages) are stored in PostgreSQL, so database backups include them.

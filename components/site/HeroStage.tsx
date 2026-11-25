@@ -125,7 +125,7 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
     const el = rootRef.current;
     if (!el) return;
     const W = el.clientWidth, H = el.clientHeight;
-    const m: Mode = W < 1024 || H > W ? 'm' : 'd';
+    const m: Mode = W < 768 || H > W * 1.05 ? 'm' : 'd';
     const g = GEO[m];
     const [r0, r1] = g.region;
     const band = Math.max(200, H - g.top - g.bottom);
@@ -421,25 +421,25 @@ export function HeroStage({ title, slides, rating, from }: { title: string; slid
         </div>
 
         {mode === 'd' ? (
-          <>
-            <div data-rise className="absolute bottom-8 left-10 max-w-[420px] xl:max-w-[520px]">
+          <div className="absolute inset-x-0 bottom-6 grid grid-cols-[1fr_auto_1fr] items-end gap-4 px-6 lg:bottom-8 lg:px-10">
+            <div data-rise className="max-w-[260px] lg:max-w-[380px] xl:max-w-[480px]">
               {eyebrow}
-              <h1 style={{ color: 'inherit' }} className="mt-2.5 font-display text-[clamp(26px,2.4vw,40px)] leading-[1.05]">
+              <h1 style={{ color: 'inherit' }} className="mt-2 font-display text-[clamp(20px,2.4vw,40px)] leading-[1.06]">
                 <span className="whitespace-nowrap">{head}</span><br /><em style={{ color: th.accent, transition: 'color 0.6s ease' }}>{tail}</em>
               </h1>
             </div>
-            <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2.5">
-              <Link data-rise href={item?.href || '/book'} className={`pointer-events-auto inline-flex items-center gap-2 whitespace-nowrap rounded-full px-7 py-3.5 text-base font-semibold transition hover:-translate-y-0.5 hover:brightness-105 ${ctaCls}`} style={{ textShadow: 'none' }}>
+            <div className="flex flex-col items-center gap-2">
+              <Link data-rise href={item?.href || '/book'} className={`pointer-events-auto inline-flex items-center gap-2 whitespace-nowrap rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:brightness-105 lg:px-7 lg:py-3.5 lg:text-base ${ctaCls}`} style={{ textShadow: 'none' }}>
                 Book your slot <ArrowRight className="h-4 w-4" />
               </Link>
-              <p data-rise className="flex items-center gap-2.5 whitespace-nowrap text-[13px] opacity-90">from {from}<span className="opacity-50">•</span>{ratingEl}</p>
+              <p data-rise className="flex items-center gap-2 whitespace-nowrap text-xs opacity-90 lg:gap-2.5 lg:text-[13px]">from {from}<span className="opacity-50">•</span>{ratingEl}</p>
             </div>
-            <div className="absolute bottom-8 right-[104px] flex items-center gap-3">
-              <span data-rise className="mr-1 text-sm font-medium tabular-nums opacity-85">{pad(active + 1)} <span className="opacity-50">/ {pad(n)}</span></span>
+            <div className="flex items-center justify-end gap-2.5 pr-14 lg:gap-3 lg:pr-16">
+              <span data-rise className="mr-1 text-xs font-medium tabular-nums opacity-85 lg:text-sm">{pad(active + 1)} <span className="opacity-50">/ {pad(n)}</span></span>
               {arrow(-1)}
               {arrow(1)}
             </div>
-          </>
+          </div>
         ) : (
           <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-5 text-center">
             {/* arrows + dots + swipe hint (clear of the props and the WhatsApp button) */}

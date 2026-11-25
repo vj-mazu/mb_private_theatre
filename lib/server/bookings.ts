@@ -7,7 +7,7 @@ import { getSettings } from './catalog';
 import { invalidateContent } from './cache';
 import { reserveTime } from './occupancy';
 import { sendWhatsApp } from './whatsapp';
-import { MAX_EXTRA_HOURS, addonItem, priceTiers, isValidPhone, cakeCharge, kgLabel, normalizeKg, CAKE_MAX_KG, CAKE_MIN_KG, computeQuote, couponDiscount, isSlotExpired, slotLabel, todayIST, type BookingItem } from '../booking-rules';
+import { MAX_EXTRA_HOURS, shortPackagePrice, addonItem, priceTiers, isValidPhone, cakeCharge, kgLabel, normalizeKg, CAKE_MAX_KG, CAKE_MIN_KG, computeQuote, couponDiscount, isSlotExpired, slotLabel, todayIST, type BookingItem } from '../booking-rules';
 
 export class BookingError extends Error {
   constructor(message: string, public status = 400) { super(message); }
@@ -48,9 +48,9 @@ export const bookingInput = z.object({
   custom_items: z.array(z.object({ name: z.string().trim().min(1).max(80), price: z.coerce.number().int().min(0), qty: z.coerce.number().int().min(1).max(50).default(1) })).max(30).optional().default([]),
   coupon_code: z.string().trim().toUpperCase().max(30).optional().default(''),
   discount: z.coerce.number().int().min(0).optional().default(0), // staff only
-  source: z.string().optional().default('website'),
+  source: z.enum(['website', 'whatsapp', 'phone', 'walkin', 'instagram', 'other']).optional().default('website'),
   advance: z.coerce.number().int().min(0).optional().default(0), // staff only
-  payment_method: z.string().optional().default('upi'),
+  payment_method: z.enum(['upi', 'cash', 'card', 'bank']).optional().default('upi'),
   notes: z.string().trim().max(1000).optional().default(''),
 });
 export type BookingInput = z.infer<typeof bookingInput>;
@@ -62,16 +62,26 @@ function makeRef(branchSlug: string) {
   return `MB${code}-${Array.from(bytes, (b) => alphabet[b % alphabet.length]).join('')}`;
 }
 
-/** Cancels website holds whose payment window has passed, freeing the slot. */
+/** Cancels website holds whose payment window has passed, freeing the slot and any held coupon usage. */
 export async function releaseExpiredHolds(ex?: PoolClient) {
-  await q(
+  const released = await q<{ coupon_code: string }>(
     `UPDATE bookings SET status='cancelled', cancel_reason='Payment not completed in time', updated_at=now()
-     WHERE status='awaiting_payment' AND hold_expires_at IS NOT NULL AND hold_expires_at < now()`,
+     WHERE status='awaiting_payment' AND hold_expires_at IS NOT NULL AND hold_expires_at < now()
+     RETURNING coupon_code`,
     [], ex
   );
+  const counts = new Map<string, number>();
+  for (const r of released) {
+    if (r.coupon_code) counts.set(r.coupon_code, (counts.get(r.coupon_code) || 0) + 1);
+  }
+  for (const [code, n] of Array.from(counts.entries())) {
+    await q('UPDATE coupons SET used_count = GREATEST(0, used_count - $2) WHERE code=$1', [code, n], ex);
+  }
+  if (counts.size) invalidateContent();
 }
 
-async function priceBooking(input: BookingInput, actor: Actor, ex: PoolClient) {
+/** `short`: the booking is in a short slot, so packages cost the theatre's short-slot discount less. */
+async function priceBooking(input: BookingInput, actor: Actor, ex: PoolClient, short = false) {
   const theatre = await one<any>(
     `SELECT t.*, b.slug AS branch_slug, b.name AS branch_name FROM theatres t JOIN branches b ON b.id=t.branch_id
      WHERE t.id=$1 AND t.branch_id=$2`, [input.theatre_id, input.branch_id], ex);
@@ -92,10 +102,10 @@ async function priceBooking(input: BookingInput, actor: Actor, ex: PoolClient) {
   if (input.package_id) {
     const pkg = await one<any>(
       `SELECT p.name, p.includes, p.includes_cake, pp.price FROM packages p JOIN package_prices pp ON pp.package_id=p.id AND pp.theatre_id=$2
-       WHERE p.id=$1 AND p.is_active`, [input.package_id, input.theatre_id], ex);
+       WHERE p.id=$1${actor.kind === 'customer' ? ' AND p.is_active' : ''}`, [input.package_id, input.theatre_id], ex);
     if (!pkg) throw new BookingError('Selected package is not available for this theatre');
     packageName = pkg.name;
-    basePrice = pkg.price;
+    basePrice = shortPackagePrice(pkg.price, short, theatre.short_slot_discount);
     includesCake = pkg.includes_cake;
     packageIncludes = Array.isArray(pkg.includes) ? pkg.includes : [];
   } else {
@@ -172,13 +182,14 @@ function uniqueViolation(err: any) {
 export async function createBooking(raw: unknown, actor: Actor) {
   const input = bookingInput.parse(raw);
   const settings = await getSettings();
-  await releaseExpiredHolds();
 
   try {
     const booking = await tx(async (c) => {
-      const p = await priceBooking(input, actor, c);
+      await releaseExpiredHolds(c);
+      let p = await priceBooking(input, actor, c);
       const time = await reserveTime(c, input.theatre_id, input.booking_date, input.slot_id, input.extra_hours);
       if (!time.ok) throw new BookingError(time.error, 409);
+      if (time.short) p = await priceBooking(input, actor, c, true);
       assertSlotOpen(input.booking_date, time.start, settings.booking.slot_cutoff_minutes, actor);
 
       const isStaff = actor.kind === 'staff';
@@ -202,14 +213,18 @@ export async function createBooking(raw: unknown, actor: Actor) {
             input.notes, actorName(actor), p.cake?.id ?? null], c);
       }
       if (!row) throw new BookingError('Could not generate a booking reference, please retry', 500);
-      await q('UPDATE bookings SET cake_kg=$2, package_includes=$3, extra_hours=$4, extra_hour_amount=$5, slot_start=$6, slot_end=$7 WHERE id=$1',
-        [row.id, normalizeKg(input.cake_kg), JSON.stringify(p.packageIncludes), p.quote.extraHours, p.quote.extraHourAmount, time.start, time.end], c);
+      await q('UPDATE bookings SET cake_kg=$2, package_includes=$3, extra_hours=$4, extra_hour_amount=$5, slot_start=$6, slot_end=$7, short_slot=$8 WHERE id=$1',
+        [row.id, normalizeKg(input.cake_kg), JSON.stringify(p.packageIncludes), p.quote.extraHours, p.quote.extraHourAmount, time.start, time.end, time.short], c);
 
       if (advance > 0) {
         await q('INSERT INTO payments (booking_id, amount, method, note, recorded_by) VALUES ($1,$2,$3,$4,$5)',
           [row.id, advance, input.payment_method, 'Advance', actorName(actor)], c);
       }
-      if (p.couponCode) { await q('UPDATE coupons SET used_count = used_count + 1 WHERE code=$1', [p.couponCode], c); invalidateContent(); }
+      if (p.couponCode) {
+        const inc = await one('UPDATE coupons SET used_count = used_count + 1 WHERE code=$1 AND (usage_limit IS NULL OR used_count < usage_limit) RETURNING code', [p.couponCode], c);
+        if (!inc) throw new BookingError('This coupon has reached its usage limit', 409);
+        invalidateContent();
+      }
       await q('INSERT INTO booking_events (booking_id, actor, action, details) VALUES ($1,$2,$3,$4)',
         [row.id, actorName(actor), 'created', JSON.stringify({ source: row.source, total: row.total })], c);
       return row;
@@ -233,16 +248,29 @@ export async function updateBooking(id: number, raw: unknown, actor: Extract<Act
     return await tx(async (c) => {
       const before = await one<any>('SELECT * FROM bookings WHERE id=$1 FOR UPDATE', [id], c);
       if (!before) throw new BookingError('Booking not found', 404);
+      if (before.is_deleted) throw new BookingError('Deleted bookings cannot be edited');
       if (before.status === 'completed') throw new BookingError('Completed bookings cannot be edited');
+      if (before.status === 'cancelled') throw new BookingError('Cancelled bookings cannot be edited');
       // The form's discount is the full discount; a coupon is only applied again when a new code is entered.
       const couponChanged = Boolean(input.coupon_code) && input.coupon_code !== before.coupon_code;
-      const p = await priceBooking({ ...input, coupon_code: couponChanged ? input.coupon_code : '' }, actor, c);
-      // Reschedule / extension safety: the new time must be free of other bookings and blocks.
-      const time = await reserveTime(c, input.theatre_id, input.booking_date, input.slot_id, input.extra_hours, id);
-      if (!time.ok) throw new BookingError(time.error, 409);
+      const couponRemoved = Boolean(before.coupon_code) && !input.coupon_code;
+      const sameTime = before.booking_date === input.booking_date && before.theatre_id === input.theatre_id
+        && before.slot_id === input.slot_id && Number(before.extra_hours) === input.extra_hours;
+      let time: { start: string; end: string; short: boolean };
+      if (sameTime) {
+        // Unchanged time: keep what the guest was given (a moved or short slot stays as booked).
+        const s = await one<any>('SELECT start_time, end_time FROM slots WHERE id=$1', [input.slot_id], c);
+        time = { start: before.slot_start || s?.start_time, end: before.slot_end || s?.end_time, short: !!before.short_slot };
+      } else {
+        // Reschedule / extension safety: the new time must be free of other bookings and blocks.
+        const r = await reserveTime(c, input.theatre_id, input.booking_date, input.slot_id, input.extra_hours, id);
+        if (!r.ok) throw new BookingError(r.error, 409);
+        time = r;
+      }
+      const p = await priceBooking({ ...input, coupon_code: couponChanged ? input.coupon_code : '', discount: couponChanged ? 0 : input.discount }, actor, c, time.short);
       const discount = p.quote.discount;
       const total = p.quote.total;
-      const couponCode = couponChanged ? p.couponCode : before.coupon_code;
+      const couponCode = couponChanged ? p.couponCode : couponRemoved ? '' : before.coupon_code;
 
       const rescheduled = before.booking_date !== input.booking_date || before.slot_id !== input.slot_id || before.theatre_id !== input.theatre_id
         || before.extra_hours !== input.extra_hours;
@@ -257,9 +285,16 @@ export async function updateBooking(id: number, raw: unknown, actor: Extract<Act
           input.package_id, p.packageName, p.quote.base, input.guests, p.quote.extraPersons, p.quote.extraPersonAmount,
           p.cake?.label || '', p.quote.cakeAmount, JSON.stringify(p.items), p.quote.itemsAmount,
           couponCode, discount, total, input.source, input.notes, p.cake?.id ?? null], c);
-      await q('UPDATE bookings SET cake_kg=$2, package_includes=$3, extra_hours=$4, extra_hour_amount=$5, slot_start=$6, slot_end=$7 WHERE id=$1',
-        [id, normalizeKg(input.cake_kg), JSON.stringify(p.packageIncludes), p.quote.extraHours, p.quote.extraHourAmount, time.start, time.end], c);
-      if (couponChanged) await q('UPDATE coupons SET used_count = used_count + 1 WHERE code=$1', [couponCode], c);
+      await q('UPDATE bookings SET cake_kg=$2, package_includes=$3, extra_hours=$4, extra_hour_amount=$5, slot_start=$6, slot_end=$7, short_slot=$8 WHERE id=$1',
+        [id, normalizeKg(input.cake_kg), JSON.stringify(p.packageIncludes), p.quote.extraHours, p.quote.extraHourAmount, time.start, time.end, time.short], c);
+      if (couponChanged && couponCode) {
+        const inc = await one('UPDATE coupons SET used_count = used_count + 1 WHERE code=$1 AND (usage_limit IS NULL OR used_count < usage_limit) RETURNING code', [couponCode], c);
+        if (!inc) throw new BookingError('This coupon has reached its usage limit', 409);
+      }
+      if ((couponChanged || couponRemoved) && before.coupon_code) {
+        await q('UPDATE coupons SET used_count = GREATEST(0, used_count - 1) WHERE code=$1', [before.coupon_code], c);
+      }
+      if (couponChanged || couponRemoved) invalidateContent();
 
       await q('INSERT INTO booking_events (booking_id, actor, action, details) VALUES ($1,$2,$3,$4)', [id, actor.name, rescheduled ? 'rescheduled' : 'edited',
         JSON.stringify(rescheduled ? { from: `${before.booking_date} ${before.slot_label}`, to: `${row.booking_date} ${row.slot_label}` } : { total: [before.total, row.total] })], c);
@@ -316,11 +351,22 @@ export async function addPayment(bookingId: number, amount: number, method: stri
   await recordEvent(bookingId, by, 'payment_added', { amount, method, note });
 }
 
+const VALID_STATUSES = new Set(['awaiting_payment', 'payment_review', 'confirmed', 'completed', 'cancelled']);
+
 export async function setStatus(bookingId: number, status: string, by: string, extra: Record<string, unknown> = {}) {
-  const params: unknown[] = [bookingId, status];
-  const sets = ['status=$2', 'updated_at=now()', 'hold_expires_at=NULL'];
-  if (status === 'completed') { params.push(by); sets.push('closed_at=now()', `closed_by=$${params.length}`); }
-  if (status === 'cancelled') { params.push(String(extra.reason || '')); sets.push(`cancel_reason=$${params.length}`); }
-  await q(`UPDATE bookings SET ${sets.join(', ')} WHERE id=$1`, params);
+  if (!VALID_STATUSES.has(status)) throw new BookingError('Invalid booking status');
+  await tx(async (c) => {
+    const before = await one<any>('SELECT status, coupon_code FROM bookings WHERE id=$1 FOR UPDATE', [bookingId], c);
+    if (!before) throw new BookingError('Booking not found', 404);
+    const params: unknown[] = [bookingId, status];
+    const sets = ['status=$2', 'updated_at=now()', 'hold_expires_at=NULL'];
+    if (status === 'completed') { params.push(by); sets.push('closed_at=now()', `closed_by=$${params.length}`); }
+    if (status === 'cancelled') { params.push(String(extra.reason || '')); sets.push(`cancel_reason=$${params.length}`); }
+    await q(`UPDATE bookings SET ${sets.join(', ')} WHERE id=$1`, params, c);
+    if (status === 'cancelled' && before.status !== 'cancelled' && before.coupon_code) {
+      await q('UPDATE coupons SET used_count = GREATEST(0, used_count - 1) WHERE code=$1', [before.coupon_code], c);
+      invalidateContent();
+    }
+  });
   await recordEvent(bookingId, by, `status_${status}`, extra);
 }

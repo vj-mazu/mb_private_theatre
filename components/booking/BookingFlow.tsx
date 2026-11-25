@@ -4,12 +4,13 @@ import Image from '@/components/Img';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, ChevronLeft, Users, Minus, Plus, TicketPercent, X, PlayCircle } from 'lucide-react';
+import { Check, ChevronLeft, Users, TicketPercent, X, PlayCircle } from 'lucide-react';
 import { Button, Field, Input, Modal, Select, Textarea, api, cn } from '@/components/ui';
 import { BranchTabs } from '@/components/site/BranchTabs';
 import { PackageTicket, type BookPackage } from './PackageTicket';
 import { CakeWeight } from './CakeWeight';
-import { addDays, addonItem, priceTiers, isValidPhone, phoneDigits, cakeCharge, chargedQty, computeQuote, kgLabel, formatDate, inr, isSlotExpired, slotLabel, todayIST } from '@/lib/booking-rules';
+import { Counter, Summary, TheatrePreview } from './BookingParts';
+import { addDays, addonItem, priceTiers, isValidPhone, phoneDigits, cakeCharge, computeQuote, durationLabel, formatDate, inr, isSlotExpired, shortPackagePrice, slotLabel, todayIST } from '@/lib/booking-rules';
 
 const STEPS = ['Slot', 'Package', 'Cake & extras', 'Details'];
 
@@ -50,9 +51,9 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
   const [blocked, setBlocked] = useState<string[]>([]);
   const [extraMax, setExtraMax] = useState<Record<string, number>>({});
   const [extraHours, setExtraHours] = useState(0);
-  const [times, setTimes] = useState<Record<string, { start: string; end: string; shifted: boolean }>>({});
-  // Actual time of a slot today (it moves later when an earlier booking was extended).
-  const at = (tid: number, s: any) => times[`${tid}:${s.id}`] || { start: s.start_time as string, end: s.end_time as string, shifted: false };
+  const [times, setTimes] = useState<Record<string, { start: string; end: string; shifted: boolean; short?: boolean }>>({});
+  // Actual time of a slot today (it moves later when an earlier booking was extended, and may then be a short slot).
+  const at = (tid: number, s: any) => times[`${tid}:${s.id}`] || { start: s.start_time as string, end: s.end_time as string, shifted: false, short: false };
   const [loadingSlots, setLoadingSlots] = useState(true);
   const [now, setNow] = useState(Date.now());
   const [error, setError] = useState('');
@@ -82,7 +83,9 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
   const pkg = packages.find((p) => p.id === packageId);
   // The chosen room's own photos (admin → Theatres), main photo first.
   const roomPhotos: string[] = theatre ? Array.from(new Set([theatre.image_url, ...(theatre.images || [])].filter(Boolean))) : [];
-  const pkgPrice = pkg && theatre ? theatre.prices[pkg.id]?.price : undefined;
+  // Short slot (squeezed by an earlier booking's extra hours): packages cost the theatre's short-slot discount less.
+  const short = theatre && slot ? !!at(theatre.id, slot).short : false;
+  const pkgPrice = pkg && theatre && theatre.prices[pkg.id] ? shortPackagePrice(theatre.prices[pkg.id].price, short, theatre.short_slot_discount) : undefined;
   // Package cards always show the chosen theatre's own photos (each package starts on a different one).
   const rotate = (list: string[], k: number) => (list.length ? [...list.slice(k % list.length), ...list.slice(0, k % list.length)] : list);
   const cake = cakes.find((c) => c.id === cakeId);
@@ -101,7 +104,8 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [booked, now, date]);
 
-  useEffect(() => { if (theatre) setGuests((g) => Math.min(Math.max(g, theatre.base_capacity), theatre.max_capacity)); }, [theatre]);
+  // A new room starts at its own included guests (no extra guests carried over from another room).
+  useEffect(() => { if (theatre) setGuests(theatre.base_capacity); }, [theatre?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (pkg && theatre && theatre.prices[pkg.id] === undefined) setPackageId(null); }, [pkg, theatre]);
 
   const includedQty = (addonId: number): number => (pkg?.included_addons || []).find((x: any) => x.addon_id === addonId)?.qty || 0;
@@ -118,20 +122,36 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
   }) : null;
 
   // Coupon depends on the subtotal; drop it if the bill changes below its minimum.
-  useEffect(() => { setCoupon(null); setCouponMsg(''); }, [packageId, theatreId, guests, cakeId, cakeKg, picked]);
+  useEffect(() => { setCoupon(null); setCouponMsg(''); }, [packageId, theatreId, guests, extraHours, cakeId, cakeKg, picked]);
 
   const dates = useMemo(() => Array.from({ length: 30 }, (_, i) => addDays(todayIST(), i)), []);
 
+  // Each step is a history entry, so the browser's Back button goes to the previous step instead of leaving the booking page.
+  useEffect(() => {
+    const onPop = (e: PopStateEvent) => {
+      const n = typeof e.state?.bookStep === 'number' ? e.state.bookStep : 0;
+      setError('');
+      setStep((cur) => { setDir(n > cur ? 1 : -1); return n; });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
   function go(n: number) {
+    if (n === step) return;
     setError('');
     setDir(n > step ? 1 : -1);
     setStep(n);
+    if (n > step) window.history.pushState({ ...window.history.state, bookStep: n }, '');
+    else window.history.replaceState({ ...window.history.state, bookStep: n }, '');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  const allowCustom = !!catalog.customPackage?.enabled;
   const canNext = [
     !!(theatre && slot),
-    !!theatre && (!pkg || pkgPrice !== undefined),
+    !!theatre && (pkg ? pkgPrice !== undefined : allowCustom),
     !pkg?.includes_cake || cakeId !== null,
     form.special_person_name.trim().length > 1 && isValidPhone(form.phone) && (form.occasion !== 'Other' || occasionOther.trim().length > 1),
   ][step];
@@ -169,7 +189,16 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
     } catch (e: any) {
       setError(e.message);
       setBusy(false);
-      if (/slot/i.test(e.message)) { setSlotId(null); go(0); }
+      if (/slot/i.test(e.message)) {
+        setSlotId(null);
+        setExtraHours(0);
+        setDir(-1);
+        setStep(0);
+        window.history.replaceState({ ...window.history.state, bookStep: 0 }, '');
+        api(`/api/availability?branch=${branchId}&date=${date}`)
+          .then((d) => { setBooked(d.booked); setBlocked(d.blocked || []); setExtraMax(d.extraMax || {}); setTimes(d.times || {}); })
+          .catch(() => {});
+      }
     }
   }
 
@@ -230,7 +259,9 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                         <div key={t.id} className={cn('card overflow-hidden transition-shadow duration-300', theatreId === t.id && 'ring-2 ring-brand-300')}>
                           <div className="flex flex-col gap-4 p-4 sm:flex-row">
                             <div className="group relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-2xl bg-cream-deep sm:aspect-[4/3] sm:w-60 lg:w-72">
-                              {t.image_url && <Image src={t.image_url} alt={t.name} fill priority={branchTheatres.indexOf(t) === 0} sizes="(min-width: 1024px) 288px, (min-width: 640px) 240px, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />}
+                              {t.image_url
+                                ? <Image src={t.image_url} alt={t.name} fill priority={branchTheatres.indexOf(t) === 0} sizes="(min-width: 1024px) 288px, (min-width: 640px) 240px, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                                : <span className="absolute inset-0 flex items-center justify-center text-sm text-navy-soft">Photos coming soon</span>}
                               {t.video_url && (
                                 <button type="button" onClick={() => setVideo({ src: t.video_url, poster: t.image_url, name: t.name })}
                                   className="absolute inset-x-3 bottom-3 flex items-center justify-center gap-2 rounded-full bg-white/95 py-2 text-xs font-semibold text-navy shadow-lift backdrop-blur transition hover:bg-white">
@@ -255,10 +286,13 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                                     active ? 'border-brand-600 bg-brand-600 text-white shadow-sm' :
                                       st === 'open' ? 'border-line bg-white hover:border-brand-400 hover:bg-brand-50' :
                                         'cursor-not-allowed border-transparent bg-cream-deep/70 text-navy-faint')}>
-                                  {slotLabel(at(t.id, s).start, at(t.id, s).end)}
-                                  {at(t.id, s).shifted && st === 'open' && <span className="block text-[10px] font-medium text-amber-600">new timing</span>}
+                                  {/* A slot pushed out by an earlier booking's extra hours shows its normal time with the reason. */}
+                                  {st === 'blocked' && at(t.id, s).shifted ? slotLabel(s.start_time, s.end_time) : slotLabel(at(t.id, s).start, at(t.id, s).end)}
+                                  {st === 'open' && at(t.id, s).short
+                                    ? <span className={cn('block text-[10px] font-semibold', active ? 'text-white' : 'text-amber-600')}>{durationLabel(at(t.id, s).start, at(t.id, s).end)} slot · packages {inr(t.short_slot_discount)} less</span>
+                                    : at(t.id, s).shifted && st === 'open' && <span className="block text-[10px] font-medium text-amber-600">new timing</span>}
                                   <span className={cn('block text-[10px] font-medium', active ? 'text-white' : st === 'open' ? 'text-emerald-700' : 'text-navy-faint')}>
-                                    {st === 'booked' ? 'Booked' : st === 'blocked' ? 'Unavailable' : st === 'closed' ? 'Expired' : st === 'loading' ? '…' : 'Available'}
+                                    {st === 'booked' ? 'Booked' : st === 'blocked' ? (at(t.id, s).shifted ? 'Not available · previous booking extended' : 'Unavailable') : st === 'closed' ? 'Expired' : st === 'loading' ? '…' : 'Available'}
                                   </span>
                                 </button>
                               );
@@ -280,9 +314,9 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                     onChange={setPackageId}
                     items={[
                       ...packages.filter((p) => theatre.prices[p.id]).map((p, k): BookPackage => ({
-                        id: p.id, name: p.name, tagline: p.tagline, includes: p.includes, price: theatre.prices[p.id].price,
-                        original_price: theatre.prices[p.id].original_price, images: rotate(roomPhotos, k), highlight: p.highlight, includesCake: p.includes_cake,
-                        meta: `2 hours · up to ${theatre.base_capacity} people · extra person ${inr(theatre.extra_person_price)}`,
+                        id: p.id, name: p.name, tagline: p.tagline, includes: p.includes, price: shortPackagePrice(theatre.prices[p.id].price, short, theatre.short_slot_discount),
+                        original_price: short ? theatre.prices[p.id].price : theatre.prices[p.id].original_price, images: rotate(roomPhotos, k), highlight: p.highlight, includesCake: p.includes_cake,
+                        meta: `${slot ? durationLabel(at(theatre.id, slot).start, at(theatre.id, slot).end) : '2 hours'}${short ? ` short slot · ${inr(theatre.short_slot_discount)} less` : ''} · up to ${theatre.base_capacity} people · extra person ${inr(theatre.extra_person_price)}`,
                       })),
                       ...(customPackage.enabled ? [{ id: null, name: 'Custom', tagline: customPackage.tagline, price: theatre.base_price, original_price: null,
                         images: rotate(roomPhotos, packages.filter((p) => theatre.prices[p.id]).length), highlight: false, includesCake: false, meta: `Room only · up to ${theatre.base_capacity} people · extra person ${inr(theatre.extra_person_price)}`,
@@ -300,9 +334,11 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                     <div>
                       <p className="font-semibold">Extra time <span className="font-normal text-navy-soft">· optional</span></p>
                       <p className="text-sm text-navy-soft">
-                        {maxExtra > 0
-                          ? `${inr(theatre.extra_hour_price)} per extra hour · up to ${maxExtra} hour${maxExtra > 1 ? 's' : ''} available for this slot`
-                          : 'Not available for this slot — the next slot is already booked'}
+                        {short && maxExtra === 0 && slot && at(theatre.id, slot).shifted
+                          ? 'Not available for a short slot'
+                          : maxExtra > 0
+                            ? `${inr(theatre.extra_hour_price)} per extra hour · up to ${maxExtra} hour${maxExtra > 1 ? 's' : ''} available for this slot`
+                            : 'Not available for this slot — the next slot is already booked'}
                       </p>
                       {extraHours > 0 && slot && <p className="mt-1 text-sm font-medium text-brand-700">New timing: {slotLabel(at(theatre.id, slot).start, at(theatre.id, slot).end, extraHours)}</p>}
                     </div>
@@ -357,7 +393,7 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                       </div>
                     )}
                     <h2 className="font-sans text-sm font-bold">Add-ons <span className="font-normal text-navy-soft">· extra, optional</span></h2>
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2">
                       {addons.map((a) => {
                         const qty = picked[a.id] || 0;
                         const tiers = priceTiers(a);
@@ -465,7 +501,7 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
 
         {/* Summary (desktop) */}
         <aside className="card sticky top-24 hidden p-5 lg:block">
-          <Summary {...{ theatre, slot: slot && theatre ? { ...slot, start_time: at(theatre.id, slot).start, end_time: at(theatre.id, slot).end } : slot, date, pkg, cake, cakeKg, extraHours, items, quote, coupon, advance, branch: branches.find((b) => b.id === branchId) }} />
+          <Summary {...{ theatre, slot: slot && theatre ? { ...slot, start_time: at(theatre.id, slot).start, end_time: at(theatre.id, slot).end } : slot, date, pkg, cake, cakeKg, extraHours, items, quote: step >= 1 ? quote : null, coupon, advance, short, branch: branches.find((b) => b.id === branchId) }} />
         </aside>
       </div>
 
@@ -473,79 +509,17 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
         {video && <video src={video.src} poster={video.poster || undefined} controls autoPlay playsInline className="w-full rounded-xl bg-black" />}
       </Modal>
 
-      {/* Bottom bar (mobile) */}
+      {/* Bottom bar (mobile & tablet) */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-cream-card/95 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
-        <div className="flex items-center gap-3">
+        <div className="mx-auto flex max-w-2xl items-center gap-3">
           {step > 0 && <button onClick={() => go(step - 1)} className="flex h-12 w-12 items-center justify-center rounded-xl border border-line" aria-label="Back"><ChevronLeft className="h-5 w-5" /></button>}
           <div className="min-w-0 flex-1">
             <p className="text-xs text-navy-soft">{canNext ? (slot ? `${formatDate(date, { day: 'numeric', month: 'short' })} · ${slotLabel(at(theatre!.id, slot).start, at(theatre!.id, slot).end, extraHours)}` : '') : hints[step]}</p>
-            <p className="text-lg font-bold tabular-nums">{quote && slot ? inr(quote.total) : '—'}</p>
+            <p className="text-lg font-bold tabular-nums">{step >= 1 && quote && slot ? inr(quote.total) : '—'}</p>
           </div>
           {step < 3
             ? <Button size="lg" disabled={!canNext} onClick={() => go(step + 1)}>Continue</Button>
             : <Button size="lg" disabled={!canNext} loading={busy} onClick={submit}>Pay advance</Button>}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Summary({ theatre, slot, date, pkg, cake, cakeKg, extraHours, items, quote, coupon, advance, branch }: any) {
-  if (!theatre || !slot) return <p className="text-sm text-navy-soft">Pick a theatre and time slot to see your booking summary.</p>;
-  return (
-    <div>
-      <p className="eyebrow">Your booking</p>
-      <h3 className="mt-2 text-xl">{theatre.name}</h3>
-      <p className="text-sm text-navy-soft">{branch?.name}</p>
-      <p className="mt-2 text-sm font-medium">{formatDate(date, { weekday: 'long', day: 'numeric', month: 'long' })}<br />{slotLabel(slot.start_time, slot.end_time, extraHours)}</p>
-      {quote && (
-        <dl className="mt-5 space-y-2 border-t border-line pt-4 text-sm">
-          <Line label={pkg ? `${pkg.name} package` : 'Custom (room only)'} value={inr(quote.base)} />
-          {quote.extraPersons > 0 && <Line label={`Extra guests × ${quote.extraPersons}`} value={inr(quote.extraPersonAmount)} />}
-          {quote.extraHours > 0 && <Line label={`Extra hours × ${quote.extraHours}`} value={inr(quote.extraHourAmount)} />}
-          {cake && <Line label={`${cake.name} cake · ${kgLabel(cakeKg)}`} value={quote.cakeAmount ? inr(quote.cakeAmount) : 'Included'} />}
-          {items.map((i: any) => <Line key={i.name} label={`${i.name}${i.qty > 1 ? ` × ${i.qty}` : ''}`} value={chargedQty(i) ? inr(i.price * chargedQty(i)) : 'Included'} />)}
-          {coupon && <Line label={`Coupon ${coupon.code}`} value={`− ${inr(quote.discount)}`} />}
-          <div className="flex justify-between border-t border-dashed border-line pt-3 text-base font-bold"><dt>Total</dt><dd className="tabular-nums">{inr(quote.total)}</dd></div>
-          <div className="flex justify-between rounded-lg bg-brand-50 px-3 py-2 text-brand-700"><dt>Advance to pay now</dt><dd className="font-bold tabular-nums">{inr(Math.min(advance, quote.total))}</dd></div>
-        </dl>
-      )}
-    </div>
-  );
-}
-
-function Line({ label, value }: { label: string; value: string }) {
-  return <div className="flex justify-between gap-3"><dt className="min-w-0 truncate text-navy-soft">{label}</dt><dd className="shrink-0 tabular-nums">{value}</dd></div>;
-}
-
-function Counter({ value, min, max, onChange }: { value: number; min: number; max: number; onChange: (n: number) => void }) {
-  return (
-    <div className="flex items-center gap-1 rounded-xl border border-line bg-white p-1">
-      <button onClick={() => onChange(Math.max(min, value - 1))} disabled={value <= min} className="flex h-8 w-8 items-center justify-center rounded-lg transition hover:bg-cream-deep disabled:opacity-30" aria-label="Decrease"><Minus className="h-4 w-4" /></button>
-      <span className="w-8 text-center font-semibold tabular-nums">{value}</span>
-      <button onClick={() => onChange(Math.min(max, value + 1))} disabled={value >= max} className="flex h-8 w-8 items-center justify-center rounded-lg transition hover:bg-cream-deep disabled:opacity-30" aria-label="Increase"><Plus className="h-4 w-4" /></button>
-    </div>
-  );
-}
-
-/** Walk-through video (or photo) of the chosen theatre, shown while picking a package. */
-function TheatrePreview({ theatre, branch }: { theatre: any; branch?: string }) {
-  return (
-    <div className="overflow-hidden rounded-3xl bg-navy text-cream shadow-lift">
-      <div className="grid sm:grid-cols-[1.4fr_1fr]">
-        <div className="relative aspect-video bg-black">
-          {theatre.video_url ? (
-            <video key={theatre.video_url} src={theatre.video_url} poster={theatre.image_url || undefined} playsInline controls preload="none"
-              className="h-full w-full object-cover" />
-          ) : theatre.image_url ? (
-            <Image src={theatre.image_url} alt={theatre.name} fill sizes="(min-width: 640px) 60vw, 100vw" className="object-cover" />
-          ) : null}
-        </div>
-        <div className="flex flex-col justify-center p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-300">{branch}</p>
-          <h2 className="mt-1 text-2xl text-cream">{theatre.name}</h2>
-          {theatre.description && <p className="mt-2 text-sm text-cream/70">{theatre.description}</p>}
-          <p className="mt-3 flex items-center gap-1.5 text-sm text-cream/80"><Users className="h-4 w-4 text-brand-300" />{theatre.base_capacity} included · up to {theatre.max_capacity}</p>
         </div>
       </div>
     </div>

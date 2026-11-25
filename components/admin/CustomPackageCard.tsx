@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
-import { Badge, Button, Field, ImageUpload, Input, Modal, Toggle, api, cn, useToast } from '@/components/ui';
+import { Badge, Button, Field, Input, Modal, Toggle, api, cn, useToast } from '@/components/ui';
+import { ImageUpload } from '@/components/admin/MediaUpload';
 import { inr } from '@/lib/booking-rules';
 
 interface Custom { enabled: boolean; tagline: string; includes: string[]; image_url: string }

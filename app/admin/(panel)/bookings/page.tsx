@@ -47,6 +47,11 @@ function Bookings() {
   }
 
   useEffect(() => {
+    const q = sp.get('q') || '';
+    setSearch((cur) => (cur === q ? cur : q));
+  }, [sp]);
+
+  useEffect(() => {
     const t = setTimeout(() => { if (search !== (sp.get('q') || '')) setParam('q', search); }, 350);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -81,10 +86,12 @@ function Bookings() {
             <option value="">All statuses</option>
             {Object.entries(STATUS_META).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
           </Select>
-          <Select value={sp.get('branch') || ''} onChange={(e) => setParam('branch', e.target.value)}>
-            <option value="">All branches</option>
-            {branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-          </Select>
+          {!data?.branchScoped && (
+            <Select value={sp.get('branch') || ''} onChange={(e) => setParam('branch', e.target.value)}>
+              <option value="">All branches</option>
+              {branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+            </Select>
+          )}
           <Select value={sp.get('source') || ''} onChange={(e) => setParam('source', e.target.value)}>
             <option value="">All sources</option>
             {SOURCES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
@@ -159,11 +166,13 @@ function Bookings() {
           </div>
         )}
       </div>
-      <div className="mt-3 text-right">
-        <button onClick={() => setParam('deleted', sp.get('deleted') ? '' : '1')} className="text-xs text-navy-faint hover:text-navy">
-          {sp.get('deleted') ? '← Back to active bookings' : 'Show deleted bookings'}
-        </button>
-      </div>
+      {data?.role === 'admin' && (
+        <div className="mt-3 text-right">
+          <button onClick={() => setParam('deleted', sp.get('deleted') ? '' : '1')} className="text-xs text-navy-faint hover:text-navy">
+            {sp.get('deleted') ? '← Back to active bookings' : 'Show deleted bookings'}
+          </button>
+        </div>
+      )}
     </>
   );
 }

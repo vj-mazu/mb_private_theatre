@@ -16,7 +16,7 @@ import { getSettings } from './catalog';
  *                             Template body variables, in order:
  *                             {{1}} name {{2}} ref {{3}} date {{4}} time {{5}} theatre
  *                             {{6}} branch {{7}} total {{8}} paid {{9}} balance {{10}} ticket link
- *   WHATSAPP_ADMIN_NUMBER     optional, receives a copy of every new website booking
+ *   WHATSAPP_ADMIN_NUMBER     optional, gets an alert when a guest uploads a payment screenshot (and for each enquiry)
  *
  * Without a template, a plain text message is sent. Meta only delivers plain text
  * inside the 24-hour customer service window, so templates are recommended.
@@ -30,6 +30,7 @@ export function whatsappConfigured() {
 
 export function normalizePhone(phone: string): string {
   const digits = String(phone || '').replace(/\D/g, '');
+  if (digits.length === 11 && digits.startsWith('0')) return `91${digits.slice(1)}`;
   if (digits.length === 10) return `91${digits}`;
   return digits;
 }
@@ -83,6 +84,19 @@ export function ticketUrl(ref: string) {
   return `${base}/ticket/${ref}`;
 }
 
+export function adminBookingUrl(id: number) {
+  const base = (process.env.NEXT_PUBLIC_APP_URL || 'https://moviebash.in').replace(/\/$/, '');
+  return `${base}/admin/bookings/${id}`;
+}
+
+/** {{1}}..{{8}} of the WHATSAPP_TEMPLATE_ADMIN_ALERT template (see DEPLOYMENT.md). */
+function adminParams(b: BookingForMessage) {
+  return [
+    b.ref, b.special_person_name || b.customer_name, `+${normalizePhone(b.whatsapp || b.phone)}`, b.occasion || '—',
+    `${formatDate(b.booking_date)} · ${b.slot_label}`, `${b.theatre_name}, ${b.branch_name}`, inr(b.total), adminBookingUrl(b.id),
+  ];
+}
+
 function params(b: BookingForMessage) {
   return [
     b.customer_name, b.ref, formatDate(b.booking_date), b.slot_label, b.theatre_name, b.branch_name,
@@ -107,7 +121,20 @@ export function composeText(kind: MessageKind, b: BookingForMessage): string {
     case 'reminder':
       return `Hi ${name}, a reminder of your celebration at Movie Bash today 🎬\n\n${details}${location}${notes}\n\nBalance to pay: ${balance}`;
     case 'admin_alert':
-      return `New website booking ${ref}\n${name} · ${b.phone}\n${date} · ${time}\n${theatre}, ${branch}\nTotal ${total}. Verify the payment screenshot in admin.`;
+      return [
+        `🔔 *Payment to verify* · ${ref}`,
+        '',
+        `*Special person:* ${b.special_person_name || name}`,
+        `*WhatsApp:* +${normalizePhone(b.whatsapp || b.phone)}`,
+        `*Occasion:* ${b.occasion || '—'}`,
+        `*When:* ${date} · ${time}`,
+        `*Room:* ${theatre}, ${branch}`,
+        `*Package:* ${b.package_name || 'Custom'}`,
+        `*Total:* ${total}`,
+        '',
+        'The guest uploaded the advance payment screenshot and is waiting. Check it and confirm:',
+        adminBookingUrl(b.id),
+      ].join('\n');
     default:
       return '';
   }
@@ -150,7 +177,7 @@ export async function sendWhatsApp(opts: { to: string; kind: MessageKind; bookin
           template: {
             name: template,
             language: { code: process.env.WHATSAPP_TEMPLATE_LANG || 'en' },
-            components: [{ type: 'body', parameters: params(opts.booking).map((t) => ({ type: 'text', text: String(t) })) }],
+            components: [{ type: 'body', parameters: (opts.kind === 'admin_alert' ? adminParams(opts.booking) : params(opts.booking)).map((t) => ({ type: 'text', text: String(t) })) }],
           },
         })
       : await callApi({ to, type: 'text', text: { preview_url: true, body: text } });

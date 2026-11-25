@@ -26,7 +26,11 @@ async function loadAnnouncement(custom: { enabled: boolean; text: string }): Pro
     `SELECT c.code, c.discount_type, c.value, c.show_on_site, (${LIVE_COUPON}) AS live FROM coupons c ORDER BY c.value DESC`);
   if (custom.enabled && custom.text.trim()) {
     const text = custom.text.toUpperCase();
-    const mentionsDeadCoupon = coupons.some((c) => text.includes(c.code) && !(c.live && c.show_on_site));
+    const mentionsDeadCoupon = coupons.some((c) => {
+      if (c.live && c.show_on_site) return false;
+      const esc = c.code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp(`(^|[^A-Z0-9])${esc}([^A-Z0-9]|$)`).test(text);
+    });
     if (!mentionsDeadCoupon) return custom.text;
   }
   const best = coupons.find((c) => c.live && c.show_on_site);

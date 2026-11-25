@@ -21,14 +21,14 @@ export const GET = route(async () => {
         count(*) FILTER (WHERE booking_date=$1)::int AS today,
         count(*) FILTER (WHERE ${toVerify})::int AS to_verify,
         count(*) FILTER (WHERE booking_date >= $1 AND status IN ('confirmed','payment_review'))::int AS upcoming,
-        COALESCE(sum(total) FILTER (WHERE booking_date >= $2 AND booking_date <= $1), 0)::int AS month_revenue,
+        COALESCE(sum(amount_paid) FILTER (WHERE status='completed' AND booking_date >= $2 AND booking_date <= $1), 0)::int AS month_revenue,
         COALESCE(sum(amount_paid) FILTER (WHERE booking_date >= $2 AND booking_date <= $1), 0)::int AS month_collected,
         COALESCE(sum(total - amount_paid) FILTER (WHERE status='confirmed' AND booking_date <= $1), 0)::int AS pending_balance
       FROM bookings bk WHERE ${live}`, [today, monthStart]),
     q(`SELECT bk.id, bk.ref, bk.slot_label, bk.customer_name, bk.phone, bk.status, bk.total, bk.amount_paid, t.name AS theatre_name, br.name AS branch_name
        FROM bookings bk JOIN theatres t ON t.id=bk.theatre_id JOIN branches br ON br.id=bk.branch_id
        WHERE bk.booking_date=$1 AND ${live} ORDER BY t.name, bk.slot_label`, [today]),
-    q(`SELECT booking_date AS date, count(*)::int AS bookings, COALESCE(sum(total),0)::int AS revenue
+    q(`SELECT booking_date AS date, count(*)::int AS bookings, COALESCE(sum(amount_paid) FILTER (WHERE status='completed'),0)::int AS revenue
        FROM bookings bk WHERE ${live} AND booking_date BETWEEN $1 AND $2 GROUP BY booking_date ORDER BY booking_date`, [addDays(today, -13), today]),
     q(`SELECT bk.id, bk.ref, bk.booking_date, bk.slot_label, bk.customer_name, bk.phone, bk.total, bk.amount_paid, t.name AS theatre_name
        FROM bookings bk JOIN theatres t ON t.id=bk.theatre_id

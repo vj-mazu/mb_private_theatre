@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 /** Meta signs every webhook call with the app secret (X-Hub-Signature-256: sha256=<hex HMAC of the raw body>). */
 function signedByMeta(raw: string, header: string | null): boolean {
   const secret = process.env.WHATSAPP_APP_SECRET?.trim();
-  if (!secret) return true; // not configured: accept (only delivery labels can change)
+  if (!secret) return false;
   const expected = Buffer.from(`sha256=${crypto.createHmac('sha256', secret).update(raw).digest('hex')}`);
   const got = Buffer.from(header || '');
   return got.length === expected.length && crypto.timingSafeEqual(got, expected);

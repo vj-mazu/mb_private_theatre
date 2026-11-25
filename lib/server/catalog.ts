@@ -56,7 +56,7 @@ export async function loadSettings(): Promise<Settings> {
 
 export interface Theatre {
   id: number; branch_id: number; name: string; description: string; base_capacity: number; max_capacity: number;
-  base_price: number; extra_person_price: number; extra_hour_price: number; image_url: string; images: string[]; video_url: string;
+  base_price: number; extra_person_price: number; extra_hour_price: number; short_slot_discount: number; image_url: string; images: string[]; video_url: string;
   slots: { id: number; start_time: string; end_time: string }[];
   prices: Record<number, { price: number; original_price: number | null }>; // packageId -> price
 }
@@ -66,7 +66,7 @@ export const getCatalog = cached(loadCatalog, 'catalog');
 async function loadCatalog() {
   const [branches, theatres, slots, packages, prices, cakes, addons, occasions, coupons, settings, testimonials, faqs] = await Promise.all([
     q('SELECT id, name, slug, address, phone, map_url, image_url, story_text, story_image FROM branches WHERE is_active ORDER BY sort_order, id'),
-    q('SELECT id, branch_id, name, description, base_capacity, max_capacity, base_price, extra_person_price, extra_hour_price, image_url, images, video_url FROM theatres WHERE is_active ORDER BY sort_order, id'),
+    q('SELECT id, branch_id, name, description, base_capacity, max_capacity, base_price, extra_person_price, extra_hour_price, short_slot_discount, image_url, images, video_url FROM theatres WHERE is_active ORDER BY sort_order, id'),
     q('SELECT id, theatre_id, start_time, end_time FROM slots WHERE is_active ORDER BY sort_order, start_time'),
     q('SELECT id, name, tagline, includes, includes_cake, included_addons, image_url, highlight FROM packages WHERE is_active ORDER BY sort_order, id'),
     q('SELECT package_id, theatre_id, price, original_price FROM package_prices'),

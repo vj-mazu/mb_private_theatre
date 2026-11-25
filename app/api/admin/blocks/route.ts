@@ -44,6 +44,7 @@ export const POST = route(async (req: Request) => {
 export const DELETE = route(async (req: Request) => {
   const s = await requireStaff('admin');
   const id = Number(new URL(req.url).searchParams.get('id'));
+  if (!Number.isInteger(id) || id <= 0) throw new HttpError(400, 'Invalid block id');
   await q('DELETE FROM slot_blocks WHERE id=$1', [id]);
   await audit(s.name, 'delete', 'slot_block', id);
   return ok();

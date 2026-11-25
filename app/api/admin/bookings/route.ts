@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export const GET = route(async (req: Request) => {
   const s = await requireStaff();
-  return ok(await listBookings(parseFilters(req.url), s));
+  return ok({ ...(await listBookings(parseFilters(req.url), s)), role: s.role, branchScoped: s.role === 'staff' && Boolean(s.branch_id) });
 });
 
 /** Manual booking (walk-in / WhatsApp / phone) — confirmed immediately. */

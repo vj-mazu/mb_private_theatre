@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import QRCode from 'qrcode';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Upload, MapPin, Phone, Printer, Share2, Clock, ShieldCheck, PartyPopper, Loader2 } from 'lucide-react';
 import { Button, cn, resizeImage } from '@/components/ui';
@@ -23,10 +23,10 @@ export function TicketView({ initial, payment, whatsapp, notes = [] }: { initial
     return () => clearInterval(id);
   }, [t.ref, t.status]);
 
-  const refresh = async () => {
-    const res = await fetch(`/api/bookings/${t.ref}`).then((r) => r.json());
-    if (res.ok) setT(res.data);
-  };
+  const refresh = useCallback(async () => {
+    const res = await fetch(`/api/bookings/${t.ref}`).then((r) => r.json()).catch(() => null);
+    if (res?.ok) setT(res.data);
+  }, [t.ref]);
 
   return (
     <div className="container-page max-w-3xl py-8 sm:py-12 print:max-w-none print:p-0">
@@ -42,7 +42,7 @@ export function TicketView({ initial, payment, whatsapp, notes = [] }: { initial
             <p className="mt-2 text-navy-soft">{t.has_screenshot ? 'The booking was cancelled. Please contact us for help.' : 'The payment time ran out, so the slot was released.'}</p>
             <div className="mt-6 flex justify-center gap-3">
               <Link href="/book"><Button size="lg">Book again</Button></Link>
-              {whatsapp && <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(`Hi, about booking ${t.ref}`)}`} target="_blank" rel="noreferrer"><Button size="lg" variant="secondary">WhatsApp us</Button></a>}
+              {whatsapp && <a href={`https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, about booking ${t.ref}`)}`} target="_blank" rel="noreferrer"><Button size="lg" variant="secondary">WhatsApp us</Button></a>}
             </div>
           </motion.div>
         )}
@@ -68,22 +68,29 @@ function useCountdown(until: string | null) {
 
 function PaymentStep({ ticket: t, payment, onUploaded }: { ticket: Ticket; payment: { upi_id: string; payee_name: string; advance_amount: number }; onUploaded: () => void }) {
   const amount = Math.min(payment.advance_amount, t.total);
-  const upi = `upi://pay?pa=${encodeURIComponent(payment.upi_id)}&pn=${encodeURIComponent(payment.payee_name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(`Movie Bash ${t.ref}`)}`;
+  // UPI apps reject an encoded "@" in the payee address (pa=name%40bank), so it is kept as a plain "@".
+  const upi = `upi://pay?pa=${encodeURIComponent(payment.upi_id.trim()).replace(/%40/g, '@')}&pn=${encodeURIComponent(payment.payee_name)}&am=${Number(amount).toFixed(2)}&cu=INR&tn=${encodeURIComponent(`Movie Bash ${t.ref}`)}`;
   const [qr, setQr] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const input = useRef<HTMLInputElement>(null);
+  const expiredOnce = useRef(false);
   const left = useCountdown(t.hold_expires_at);
 
   useEffect(() => { QRCode.toDataURL(upi, { width: 520, margin: 1, color: { dark: '#0E2A47', light: '#FFFFFF' } }).then(setQr); }, [upi]);
-  useEffect(() => { if (t.hold_expires_at && left === 0) onUploaded(); }, [left, t.hold_expires_at, onUploaded]);
+  useEffect(() => {
+    if (!t.hold_expires_at || left > 0 || expiredOnce.current) return;
+    expiredOnce.current = true;
+    onUploaded();
+  }, [left, t.hold_expires_at, onUploaded]);
+  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
 
   function choose(f?: File) {
     if (!f) return;
     setFile(f);
-    setPreview(URL.createObjectURL(f));
+    setPreview((prev) => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(f); });
     setError('');
   }
 
@@ -93,7 +100,7 @@ function PaymentStep({ ticket: t, payment, onUploaded }: { ticket: Ticket; payme
     setError('');
     try {
       const fd = new FormData();
-      fd.append('screenshot', await resizeImage(file, 1280, 0.72), 'payment.webp');
+      fd.append('screenshot', await resizeImage(file, 1600, 0.85), 'payment.webp');
       const res = await fetch(`/api/bookings/${t.ref}/payment`, { method: 'POST', body: fd }).then((r) => r.json());
       if (!res.ok) throw new Error(res.error);
       onUploaded();

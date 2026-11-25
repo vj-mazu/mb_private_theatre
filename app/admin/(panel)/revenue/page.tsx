@@ -39,10 +39,11 @@ export default function RevenuePage() {
   const t = d?.totals;
   const max = Math.max(1, ...(d?.daily || []).map((x: any) => x.revenue));
   const kpis = [
-    ['Bookings', t?.bookings, `${t?.closed ?? 0} completed`],
-    ['Booked revenue', t && inr(t.revenue), 'Total bill value'],
-    ['Collected', t && inr(t.collected), t ? `${t.revenue ? Math.round((t.collected / t.revenue) * 100) : 0}% of revenue` : ''],
-    ['Pending', t && inr(t.revenue - t.collected), 'Balance not yet paid'],
+    ['Closed bookings', t?.bookings, 'Only completed bookings count'],
+    ['Revenue', t && inr(t.revenue), 'Money received at closing (advance + final)'],
+    ['Average per booking', t && inr(t.bookings ? Math.round(t.revenue / t.bookings) : 0), 'Revenue ÷ closed bookings'],
+    ['Advance · upcoming', d?.advances && inr(d.advances.upcoming), `${d?.advances?.upcoming_count ?? 0} bookings paid advance, not yet closed`],
+    ['Advance · guest did not come', d?.advances && inr(d.advances.no_show), `${d?.advances?.no_show_count ?? 0} past bookings never closed — not in revenue`],
     ['Add-ons & cakes', t && inr(t.addons), 'Extra sales'],
     ['Discounts given', t && inr(t.discounts), 'Coupons + manual'],
   ];
@@ -68,8 +69,8 @@ export default function RevenuePage() {
         </Select>
       </div>
 
-      {d?.error && <p className="text-sm text-red-600">{d.error}</p>}
-
+      {d?.error ? <p className="text-sm text-red-600">{d.error}</p> : (
+      <>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
         {kpis.map(([label, value, hint], i) => (
           <motion.div key={label as string} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} className="card p-4">
@@ -115,6 +116,8 @@ export default function RevenuePage() {
           </div>
         </section>
       </div>
+      </>
+      )}
     </>
   );
 }

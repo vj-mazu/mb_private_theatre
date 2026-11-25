@@ -7,12 +7,22 @@ export interface ListFilters {
   page?: number; per?: number; deleted?: boolean;
 }
 
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
 export function parseFilters(url: string): ListFilters {
   const sp = new URL(url).searchParams;
+  const rawBranch = sp.get('branch') || '';
+  const rawFrom = sp.get('from') || '';
+  const rawTo = sp.get('to') || '';
   return {
-    q: sp.get('q') || undefined, status: sp.get('status') || undefined, branch: sp.get('branch') || undefined,
-    source: sp.get('source') || undefined, from: sp.get('from') || undefined, to: sp.get('to') || undefined,
-    page: Math.max(1, Number(sp.get('page')) || 1), per: Math.min(200, Math.max(10, Number(sp.get('per')) || 25)),
+    q: sp.get('q') || undefined,
+    status: sp.get('status') || undefined,
+    branch: /^\d+$/.test(rawBranch) ? rawBranch : undefined,
+    source: sp.get('source') || undefined,
+    from: ISO_DATE.test(rawFrom) ? rawFrom : undefined,
+    to: ISO_DATE.test(rawTo) ? rawTo : undefined,
+    page: Math.max(1, Number(sp.get('page')) || 1),
+    per: Math.min(200, Math.max(10, Number(sp.get('per')) || 25)),
     deleted: sp.get('deleted') === '1',
   };
 }

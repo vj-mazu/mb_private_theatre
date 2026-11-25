@@ -26,8 +26,9 @@ export const GET = route(async (req: Request) => {
     booked: day.filter((d) => d.status === 'booked').map(key),
     blocked: day.filter((d) => d.status === 'blocked' || d.status === 'unavailable').map(key),
     extraMax: Object.fromEntries(day.filter((d) => d.status === 'open').map((d) => [key(d), d.maxExtra])),
-    // Actual times today (free slots move later when an earlier booking takes extra hours).
-    times: Object.fromEntries(day.map((d) => [key(d), { start: minToTime(d.start), end: minToTime(d.end), shifted: d.shifted }])),
+    // Actual times today (free slots move later when an earlier booking takes extra hours; a squeezed one may be a short slot).
+    // An unavailable slot with shifted=true was pushed out by an earlier booking's extra hours.
+    times: Object.fromEntries(day.map((d) => [key(d), { start: minToTime(d.start), end: minToTime(d.end), shifted: d.shifted, short: d.short }])),
     serverTime: Date.now(),
   });
 });

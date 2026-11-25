@@ -6,7 +6,7 @@ import { Minus, Plus, Trash2, Check } from 'lucide-react';
 import { Button, Field, Input, Select, Textarea, api, cn, useToast } from '@/components/ui';
 import { CakeWeight } from '@/components/booking/CakeWeight';
 import {
-  PAYMENT_METHODS, SOURCES, addonItem, priceTiers, phoneDigits, cakeCharge, chargedQty, kgLabel, computeQuote, formatDate, inr, isSlotExpired, slotLabel, todayIST, type BookingItem,
+  PAYMENT_METHODS, SOURCES, addonItem, priceTiers, phoneDigits, isValidPhone, cakeCharge, chargedQty, kgLabel, computeQuote, durationLabel, formatDate, inr, isSlotExpired, shortPackagePrice, slotLabel, todayIST, type BookingItem,
 } from '@/lib/booking-rules';
 
 type Catalog = any;
@@ -20,7 +20,10 @@ export interface BookingFormValue {
   advance: number; payment_method: string; notes: string;
 }
 
-export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: BookingFormValue; bookingId?: number; amountPaid?: number }) {
+/** `booked`: the booking's stored time when editing (kept while date, room, slot and extra hours stay the same). */
+export function BookingForm({ initial, bookingId, amountPaid = 0, booked: bookedTime }: {
+  initial?: BookingFormValue; bookingId?: number; amountPaid?: number; booked?: { start: string; end: string; short: boolean };
+}) {
   const router = useRouter();
   const toast = useToast();
   const [now, setNow] = useState(() => Date.now());
@@ -29,8 +32,8 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
   const [booked, setBooked] = useState<string[]>([]);
   const [blocked, setBlocked] = useState<string[]>([]);
   const [extraMax, setExtraMax] = useState<Record<string, number>>({});
-  const [times, setTimes] = useState<Record<string, { start: string; end: string; shifted: boolean }>>({});
-  const at = (tid: number, s: any) => times[`${tid}:${s.id}`] || { start: s.start_time as string, end: s.end_time as string, shifted: false };
+  const [times, setTimes] = useState<Record<string, { start: string; end: string; shifted: boolean; short?: boolean }>>({});
+  const liveAt = (tid: number, s: any) => times[`${tid}:${s.id}`] || { start: s.start_time as string, end: s.end_time as string, shifted: false, short: false };
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -50,7 +53,7 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
   }, [cat]);
 
   useEffect(() => {
-    api('/api/catalog').then((c) => {
+    api(bookingId ? '/api/catalog?all=1' : '/api/catalog').then((c) => {
       setCat(c);
       setV((s) => {
         if (s.branch_id) return s;
@@ -64,13 +67,28 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
   useEffect(() => {
     if (!v.branch_id || !v.booking_date) return;
     api(`/api/availability?branch=${v.branch_id}&date=${v.booking_date}${bookingId ? `&exclude=${bookingId}` : ''}`)
-      .then((d) => { setBooked(d.booked); setBlocked(d.blocked || []); setExtraMax(d.extraMax || {}); setTimes(d.times || {}); }).catch(() => setBooked([]));
+      .then((d) => {
+        const em = d.extraMax || {};
+        setBooked(d.booked); setBlocked(d.blocked || []); setExtraMax(em); setTimes(d.times || {});
+        setV((s) => {
+          if (!s.slot_id || !s.extra_hours) return s;
+          const cap = em[`${s.theatre_id}:${s.slot_id}`];
+          return typeof cap === 'number' && s.extra_hours > cap ? { ...s, extra_hours: cap } : s;
+        });
+      }).catch(() => setBooked([]));
   }, [v.branch_id, v.booking_date, bookingId]);
 
   const theatres = useMemo(() => cat?.theatres.filter((t: any) => t.branch_id === v.branch_id) || [], [cat, v.branch_id]);
   const theatre = theatres.find((t: any) => t.id === v.theatre_id);
   const pkg = cat?.packages.find((p: any) => p.id === v.package_id);
-  const pkgPrice = pkg && theatre ? theatre.prices[pkg.id]?.price : undefined;
+  // Editing without changing date, room, slot or extra hours keeps the booked time and its short-slot price (as the server does).
+  const sameTime = !!(bookingId && initial && bookedTime?.start) && v.booking_date === initial!.booking_date && v.theatre_id === initial!.theatre_id
+    && v.slot_id === initial!.slot_id && (v.extra_hours || 0) === (initial!.extra_hours || 0);
+  const at = (tid: number, s: any) => (sameTime && tid === initial!.theatre_id && s.id === initial!.slot_id
+    ? { start: bookedTime!.start, end: bookedTime!.end, shifted: false, short: bookedTime!.short } : liveAt(tid, s));
+  const chosen = theatre?.slots.find((x: any) => x.id === v.slot_id);
+  const short = theatre && chosen ? !!at(theatre.id, chosen).short : false;
+  const pkgPrice = pkg && theatre && theatre.prices[pkg.id] ? shortPackagePrice(theatre.prices[pkg.id].price, short, theatre.short_slot_discount) : undefined;
   const cake = cat?.cakes.find((c: any) => c.id === v.cake_id);
   const extraPersons = theatre ? Math.max(0, v.guests - theatre.base_capacity) : 0;
 
@@ -91,11 +109,11 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
 
   function pickBranch(id: number) {
     const t = cat.theatres.find((x: any) => x.branch_id === id);
-    setV((s) => ({ ...s, branch_id: id, theatre_id: t?.id || 0, slot_id: 0, guests: t?.base_capacity || 2 }));
+    setV((s) => ({ ...s, branch_id: id, theatre_id: t?.id || 0, slot_id: 0, extra_hours: 0, guests: t?.base_capacity || 2 }));
   }
   function pickTheatre(id: number) {
     const t = cat.theatres.find((x: any) => x.id === id);
-    setV((s) => ({ ...s, theatre_id: id, slot_id: 0, guests: Math.min(Math.max(s.guests, t.base_capacity), t.max_capacity) }));
+    setV((s) => ({ ...s, theatre_id: id, slot_id: 0, extra_hours: 0, guests: t.base_capacity }));
   }
   function addonQty(id: number, delta: number) {
     setV((s) => {
@@ -109,6 +127,9 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    if (v.special_person_name.trim().length < 2) return setError("Enter the special person's name (at least 2 characters)");
+    if (!isValidPhone(v.whatsapp)) return setError('Enter a valid 10-digit WhatsApp mobile number');
+    if (v.phone.trim() && !isValidPhone(v.phone)) return setError('Calling phone must be a valid 10-digit mobile number');
     if (!v.slot_id) return setError('Choose a time slot');
     if (otherOccasion && v.occasion.trim().length < 2) return setError('Type the occasion');
     if (pkg && pkgPrice === undefined) return setError(`${pkg.name} has no price for ${theatre?.name}. Choose Custom or set a price in Packages.`);
@@ -143,8 +164,9 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
       <div className="space-y-5 lg:col-span-2">
         <Section n={1} title="Guest">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Special person's name" required><Input value={v.special_person_name} onChange={(e) => set('special_person_name', e.target.value)} required /></Field>
+            <Field label="Special person's name" required><Input minLength={2} value={v.special_person_name} onChange={(e) => set('special_person_name', e.target.value)} required /></Field>
             <Field label="WhatsApp number" required><Input type="tel" inputMode="numeric" value={v.whatsapp} onChange={(e) => set('whatsapp', phoneDigits(e.target.value))} placeholder="10-digit mobile" required /></Field>
+            <Field label="Calling phone (if different)"><Input type="tel" inputMode="numeric" value={v.phone} onChange={(e) => set('phone', phoneDigits(e.target.value))} placeholder="Same as WhatsApp if blank" /></Field>
             <Field label="Occasion">
               <Select value={otherOccasion ? 'Other' : v.occasion} onChange={(e) => {
                 const other = e.target.value === 'Other';
@@ -179,7 +201,7 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
                 {theatres.map((t: any) => <option key={t.id} value={t.id}>{t.name} ({t.base_capacity}–{t.max_capacity} guests)</option>)}
               </Select>
             </Field>
-            <Field label="Date"><Input type="date" value={v.booking_date} onChange={(e) => setV((x) => ({ ...x, booking_date: e.target.value, slot_id: 0, extra_hours: 0 }))} /></Field>
+            <Field label="Date"><Input type="date" min={bookingId ? undefined : todayIST()} value={v.booking_date} onChange={(e) => setV((x) => ({ ...x, booking_date: e.target.value, slot_id: 0, extra_hours: 0 }))} /></Field>
           </div>
           <p className="mb-2 mt-4 text-xs font-semibold text-navy-soft">Timings</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -193,8 +215,9 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
                   className={cn('rounded-xl border px-3 py-2.5 text-left text-sm transition-all duration-200',
                     active ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-200' : 'border-line bg-white hover:border-brand-300',
                     taken && 'cursor-not-allowed bg-cream-deep text-navy-faint line-through hover:border-line')}>
-                  <span className="font-semibold">{slotLabel(at(theatre.id, s).start, at(theatre.id, s).end)}</span>
-                  <span className="block text-xs text-navy-soft">{isBlocked ? 'Unavailable' : taken ? 'Booked' : started ? 'Expired' : 'Available'}</span>
+                  <span className="font-semibold">{isBlocked && at(theatre.id, s).shifted ? slotLabel(s.start_time, s.end_time) : slotLabel(at(theatre.id, s).start, at(theatre.id, s).end)}</span>
+                  {!taken && at(theatre.id, s).short && <span className="block text-xs font-semibold text-amber-600 no-underline">{durationLabel(at(theatre.id, s).start, at(theatre.id, s).end)} short slot · packages {inr(theatre.short_slot_discount)} less</span>}
+                  <span className="block text-xs text-navy-soft">{isBlocked ? (at(theatre.id, s).shifted ? 'Not available · previous booking extended' : 'Unavailable') : taken ? 'Booked' : started ? 'Expired' : 'Available'}</span>
                 </button>
               );
             })}
@@ -204,7 +227,8 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
         <Section n={3} title="Package or custom">
           <div className="grid gap-2 sm:grid-cols-3">
             {[...cat.packages, null].map((p: any) => {
-              const price = p ? theatre?.prices[p.id]?.price : theatre?.base_price;
+              const listed = p ? theatre?.prices[p.id]?.price : theatre?.base_price;
+              const price = p && listed !== undefined ? shortPackagePrice(listed, short, theatre.short_slot_discount) : listed;
               const active = (p?.id ?? null) === v.package_id;
               return (
                 <button type="button" key={p?.id ?? 'custom'} onClick={() => set('package_id', p?.id ?? null)} disabled={p && price === undefined}
@@ -212,7 +236,7 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
                     active ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-200' : 'border-line bg-white hover:border-brand-300')}>
                   <span className="flex items-center justify-between text-sm font-semibold">{p ? p.name : 'Custom'}{active && <Check className="h-4 w-4 text-brand-600" />}</span>
                   <span className="block text-xs text-navy-soft">{p ? (p.includes_cake ? 'Cake included' : p.tagline) : 'Room only'}</span>
-                  <span className="mt-1 block font-bold tabular-nums">{price !== undefined ? inr(price) : 'No price'}</span>
+                  <span className="mt-1 block font-bold tabular-nums">{price !== undefined ? inr(price) : 'No price'}{p && short && listed !== undefined && <span className="ml-1.5 text-xs font-normal text-navy-faint line-through">{inr(listed)}</span>}</span>
                 </button>
               );
             })}
@@ -234,7 +258,7 @@ export function BookingForm({ initial, bookingId, amountPaid = 0 }: { initial?: 
                 <div>
                   <p className="text-sm font-semibold">Extra hours</p>
                   <p className="text-xs text-navy-soft">
-                    {max > 0 ? `${inr(theatre.extra_hour_price)} per hour · up to ${max} available` : 'Next slot is booked — no extra time possible'}
+                    {short && max === 0 && slot && at(theatre.id, slot).shifted ? 'Short slot — no extra time possible' : max > 0 ? `${inr(theatre.extra_hour_price)} per hour · up to ${max} available` : 'Next slot is booked — no extra time possible'}
                     {(v.extra_hours || 0) > 0 && slot && ` · ends ${slotLabel(at(theatre.id, slot).start, at(theatre.id, slot).end, v.extra_hours).split('– ')[1]}`}
                   </p>
                 </div>

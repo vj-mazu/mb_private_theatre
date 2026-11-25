@@ -27,6 +27,7 @@ export function TheatresSection({ branches, theatres }: { branches: any[]; theat
                 <div className="relative aspect-[4/3] overflow-hidden bg-cream-deep">
                   {t.image_url && <Image src={t.image_url} alt={t.name} fill sizes="(min-width: 1024px) 38vw, (min-width: 640px) 56vw, 100vw"
                     className="object-cover transition-transform duration-700 ease-smooth group-hover:scale-[1.05]" />}
+                  {!t.image_url && <span className="absolute inset-0 flex items-center justify-center text-sm text-navy-soft">Photos coming soon</span>}
                 </div>
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-3">

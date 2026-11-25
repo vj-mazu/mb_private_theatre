@@ -10,6 +10,7 @@ const schema = z.object({ username: z.string().trim().toLowerCase().min(1), pass
 export const POST = route(async (req: Request) => {
   rateLimit(req, 'login', 8, 5 * 60_000);
   const { username, password } = schema.parse(await req.json());
+  rateLimit(req, 'login-user', 10, 5 * 60_000, username);
   const user = await one<any>('SELECT * FROM users WHERE lower(username)=$1 AND is_active', [username]);
   if (!user || !(await checkPassword(password, user.password_hash))) throw new HttpError(401, 'Wrong username or password');
 

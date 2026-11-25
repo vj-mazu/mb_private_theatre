@@ -43,7 +43,7 @@ export default function CatalogPage() {
     },
     Theatres: {
       entity: 'theatres', noun: 'Theatre', layout: 'grid',
-      defaults: { branch_id: branches[0]?.id, name: '', description: '', base_capacity: 2, max_capacity: 6, base_price: 1499, extra_person_price: 150, extra_hour_price: 400, image_url: '', images: [], video_url: '', sort_order: 0, is_active: true },
+      defaults: { branch_id: branches[0]?.id, name: '', description: '', base_capacity: 2, max_capacity: 6, base_price: 1499, extra_person_price: 150, extra_hour_price: 400, short_slot_discount: 400, image_url: '', images: [], video_url: '', sort_order: 0, is_active: true },
       title: (r) => r.name, image: (r) => r.image_url,
       subtitle: (r) => <>{branchName(r.branch_id)} · {r.base_capacity}–{r.max_capacity} guests · Custom {inr(r.base_price)}</>,
       fields: [
@@ -55,6 +55,7 @@ export default function CatalogPage() {
         { key: 'base_price', label: 'Custom (room only) price ₹', type: 'number', half: true },
         { key: 'extra_person_price', label: 'Extra person price ₹', type: 'number', half: true },
         { key: 'extra_hour_price', label: 'Extra hour price ₹', type: 'number', hint: 'Guests can add up to 2 extra hours if the next slot is free', half: true },
+        { key: 'short_slot_discount', label: 'Short slot: packages ₹ less', type: 'number', hint: 'For 1-hour and 1½-hour slots (fixed ones, and time left when extra hours squeeze a slot). Packages cost this much less; room-only price stays the same. Couple rooms ₹300, others ₹400.', half: true },
         { key: 'video_url', label: 'Room video (optional)', type: 'video', hint: 'Plays from "Watch room video" on the booking page. Upload an MP4 or iPhone video: it is compressed automatically.' },
         { key: 'sort_order', label: 'Display order', type: 'number', half: true },
         { key: 'image_url', label: 'Main photo', type: 'image' },

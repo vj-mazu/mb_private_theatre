@@ -1,7 +1,7 @@
 import 'server-only';
 import fs from 'fs';
 import path from 'path';
-import { Pool, PoolClient, types } from 'pg';
+import { Pool, types, type PoolClient } from 'pg';
 
 // Return DATE columns as plain 'YYYY-MM-DD' strings (no timezone shifting) and counts as numbers.
 types.setTypeParser(1082, (v) => v);

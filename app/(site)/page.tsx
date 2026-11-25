@@ -250,7 +250,7 @@ ${count} private ${count === 1 ? 'theatre' : 'theatres'} · pick a slot online i
       {/* ---------- FAQ ---------- */}
       {faqs.length > 0 && (
         <section id="faq" className="scroll-mt-20 bg-cream-deep/50 py-24">
-          <div className="container-page grid gap-12 lg:grid-cols-[1fr_1.4fr]">
+          <div className="container-page grid gap-12 md:grid-cols-[1fr_1.3fr] lg:grid-cols-[1fr_1.4fr]">
             <Heading eyebrow="FAQ" title="Good" accent="to know" text="Anything else? Message us on WhatsApp — we reply fast." center={false} />
             <Reveal className="divide-y divide-line rounded-3xl border border-line bg-cream-card">
               {faqs.map((f: any) => (
@@ -269,7 +269,7 @@ ${count} private ${count === 1 ? 'theatre' : 'theatres'} · pick a slot online i
 
       {/* ---------- Enquiry / contact ---------- */}
       <section id="contact" className="container-page scroll-mt-20 py-24">
-        <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
           <div>
             <Heading eyebrow="Enquire" title="Plan your" accent="celebration" text="Tell us what you have in mind and we'll get back to you with the best slot and setup." center={false} />
             <div className="mt-8 space-y-4">

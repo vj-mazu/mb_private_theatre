@@ -346,6 +346,11 @@ ALTER TABLE bookings ADD COLUMN IF NOT EXISTS slot_end TEXT NOT NULL DEFAULT '';
 -- Pack-priced add-ons, e.g. fog entry: [{"qty":1,"price":399,"label":"1 pot"},{"qty":2,"price":699,"label":"2 pots"}]. Empty = per piece at price.
 ALTER TABLE addons ADD COLUMN IF NOT EXISTS price_tiers JSONB NOT NULL DEFAULT '[]';
 
+-- Short slots: when an earlier booking's extra hours squeeze a slot, the free time left is sold as a 1 h or 1.5 h slot,
+-- with packages at this much less. The room-only (Custom) price stays the same.
+ALTER TABLE theatres ADD COLUMN IF NOT EXISTS short_slot_discount INTEGER NOT NULL DEFAULT 400;
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS short_slot BOOLEAN NOT NULL DEFAULT false;
+
 -- Sessions signed before this time are rejected (set when a password changes).
 ALTER TABLE users ADD COLUMN IF NOT EXISTS sessions_valid_after TIMESTAMPTZ;
 

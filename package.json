@@ -8,6 +8,7 @@
     "vercel-build": "node scripts/db-setup.js && next build",
     "start": "node scripts/db-setup.js && next start",
     "lint": "next lint",
+    "test": "node --conditions=react-server --experimental-transform-types --no-warnings --import ./tests/loader.mjs --test tests/*.test.ts",
     "db:setup": "node scripts/db-setup.js",
     "db:backup": "node scripts/db-backup.js",
     "db:restore": "node scripts/db-restore.js"

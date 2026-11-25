@@ -26,6 +26,9 @@ export default function Dashboard() {
       <PageHeader title="Dashboard" subtitle={data?.date ? formatDate(data.date, { weekday: 'long', day: 'numeric', month: 'long' }) : ' '}
         actions={<Link href="/admin/bookings/new"><Button><PlusCircle className="h-4 w-4" />New booking</Button></Link>} />
 
+      {data?.error ? (
+        <div className="card p-6 text-sm text-red-600">Could not load dashboard stats. Please refresh the page.</div>
+      ) : (
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {cards.map(({ label, value, icon: Icon, href, alert }, i) => (
           <Link key={label} href={href} style={{ animationDelay: `${i * 60}ms` }}
@@ -38,6 +41,7 @@ export default function Dashboard() {
           </Link>
         ))}
       </div>
+      )}
 
       {(data?.verify?.length > 0 || data?.enquiries?.length > 0) && (
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
@@ -104,10 +108,10 @@ export default function Dashboard() {
         <section className="card p-5 lg:col-span-2">
           <div className="flex items-baseline justify-between">
             <h2 className="font-sans text-sm font-bold">This month</h2>
-            <span className="text-xs text-navy-soft">Collected {c ? inr(c.month_collected) : '—'}</span>
+            <span className="text-xs text-navy-soft">All payments received {c ? inr(c.month_collected) : '—'}</span>
           </div>
           <p className="mt-2 text-3xl font-bold tabular-nums">{c ? inr(c.month_revenue) : '—'}</p>
-          <p className="text-xs text-navy-soft">Booked value</p>
+          <p className="text-xs text-navy-soft">Revenue from closed bookings</p>
           <div className="mt-6 flex h-32 items-end gap-1.5" aria-label="Revenue, last 14 days">
             {(data?.daily || []).map((d: any) => (
               <div key={d.date} className="group relative flex-1">

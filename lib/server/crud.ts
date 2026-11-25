@@ -14,7 +14,7 @@ export const ENTITIES: Record<string, Entity> = {
     cols: { name: 'text', slug: 'text', address: 'text', phone: 'text', map_url: 'url', image_url: 'url', story_text: 'text', story_image: 'url', ...common } },
   theatres: { table: 'theatres', order: 'branch_id, sort_order, id', required: ['name', 'branch_id'],
     cols: { branch_id: 'int', name: 'text', description: 'text', base_capacity: 'int', max_capacity: 'int', base_price: 'int',
-      extra_person_price: 'int', extra_hour_price: 'int', image_url: 'url', images: 'json', video_url: 'url', ...common } },
+      extra_person_price: 'int', extra_hour_price: 'int', short_slot_discount: 'int', image_url: 'url', images: 'json', video_url: 'url', ...common } },
   slots: { table: 'slots', order: 'theatre_id, start_time', required: ['theatre_id', 'start_time', 'end_time'],
     cols: { theatre_id: 'int', start_time: 'time', end_time: 'time', ...common } },
   packages: { table: 'packages', order: 'sort_order, id', required: ['name'],
@@ -49,10 +49,24 @@ export function entity(name: string): Entity {
   return e;
 }
 
+const NON_NEGATIVE_COLS = new Set(['price', 'base_price', 'extra_person_price', 'extra_hour_price', 'short_slot_discount', 'value', 'min_amount', 'max_discount', 'base_capacity', 'max_capacity', 'usage_limit', 'sort_order']);
+
 function coerce(type: ColType, v: unknown, col: string) {
   switch (type) {
-    case 'int': { const n = Math.round(Number(v)); if (!Number.isFinite(n)) throw new HttpError(400, `${col.replace(/_/g, ' ')} must be a number`); return n; }
-    case 'int?': return v === '' || v === null || v === undefined ? null : Math.round(Number(v));
+    case 'int': {
+      if (v === '' || v === null || v === undefined) throw new HttpError(400, `${col.replace(/_/g, ' ')} is required`);
+      const n = Math.round(Number(v));
+      if (!Number.isFinite(n)) throw new HttpError(400, `${col.replace(/_/g, ' ')} must be a number`);
+      if (NON_NEGATIVE_COLS.has(col) && n < 0) throw new HttpError(400, `${col.replace(/_/g, ' ')} cannot be negative`);
+      return n;
+    }
+    case 'int?': {
+      if (v === '' || v === null || v === undefined) return null;
+      const n = Math.round(Number(v));
+      if (!Number.isFinite(n)) throw new HttpError(400, `${col.replace(/_/g, ' ')} must be a number`);
+      if (NON_NEGATIVE_COLS.has(col) && n < 0) throw new HttpError(400, `${col.replace(/_/g, ' ')} cannot be negative`);
+      return n;
+    }
     case 'bool': return v === true || v === 'true' || v === 1 || v === '1';
     case 'json': return JSON.stringify(Array.isArray(v) || typeof v === 'object' ? v : []);
     case 'time': { const s = String(v); if (!/^\d{2}:\d{2}$/.test(s)) throw new HttpError(400, 'Time must be HH:MM'); return s; }
@@ -147,7 +161,8 @@ export async function remove(name: string, id: number, actor: string) {
     const used = await one<{ n: number }>(`SELECT count(*)::int AS n FROM bookings WHERE ${col}=$1`, [id]);
     if (used && used.n > 0) throw new HttpError(409, `This has ${used.n} booking(s). Turn it off (inactive) instead of deleting.`);
   }
-  await q(`DELETE FROM ${e.table} WHERE id=$1`, [id]);
+  const deleted = await one(`DELETE FROM ${e.table} WHERE id=$1 RETURNING id`, [id]);
+  if (!deleted) throw new HttpError(404, 'Not found');
   invalidateContent();
   await audit(actor, 'delete', name, id);
 }
