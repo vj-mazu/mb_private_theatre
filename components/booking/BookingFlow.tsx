@@ -286,13 +286,13 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                                     active ? 'border-brand-600 bg-brand-600 text-white shadow-sm' :
                                       st === 'open' ? 'border-line bg-white hover:border-brand-400 hover:bg-brand-50' :
                                         'cursor-not-allowed border-transparent bg-cream-deep/70 text-navy-faint')}>
-                                  {/* A slot pushed out by an earlier booking's extra hours shows its normal time with the reason. */}
+                                  {/* A slot pushed out by an earlier booking's extra hours shows its normal time (the reason is shown to staff only). */}
                                   {st === 'blocked' && at(t.id, s).shifted ? slotLabel(s.start_time, s.end_time) : slotLabel(at(t.id, s).start, at(t.id, s).end)}
                                   {st === 'open' && at(t.id, s).short
                                     ? <span className={cn('block text-[10px] font-semibold', active ? 'text-white' : 'text-amber-600')}>{durationLabel(at(t.id, s).start, at(t.id, s).end)} slot · packages {inr(t.short_slot_discount)} less</span>
                                     : at(t.id, s).shifted && st === 'open' && <span className="block text-[10px] font-medium text-amber-600">new timing</span>}
                                   <span className={cn('block text-[10px] font-medium', active ? 'text-white' : st === 'open' ? 'text-emerald-700' : 'text-navy-faint')}>
-                                    {st === 'booked' ? 'Booked' : st === 'blocked' ? (at(t.id, s).shifted ? 'Not available · previous booking extended' : 'Unavailable') : st === 'closed' ? 'Expired' : st === 'loading' ? '…' : 'Available'}
+                                    {st === 'booked' ? 'Booked' : st === 'blocked' ? 'Unavailable' : st === 'closed' ? 'Expired' : st === 'loading' ? '…' : 'Available'}
                                   </span>
                                 </button>
                               );
