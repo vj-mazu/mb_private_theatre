@@ -86,7 +86,7 @@ export function SiteHeader({ business, branches, bar }: { business: Business; br
       <header data-site-chrome ref={ref} className="fixed inset-x-0 top-0 z-40">
         {bar && <div className="bg-navy px-4 py-2 text-center text-xs font-medium text-cream sm:text-sm">{bar}</div>}
         <div className={cn('relative border-b transition-all duration-500 ease-smooth',
-          scrolled ? 'border-line/80 bg-cream/90 shadow-[0_6px_20px_-12px_rgba(14,42,71,0.25)] backdrop-blur-md' : 'border-transparent bg-cream')}>
+          scrolled ? 'glass glass-glow border-white/30' : 'border-transparent bg-cream')}>
           <div className="container-page flex h-[72px] items-center justify-between gap-4">
             <Link href="/" aria-label="Movie Bash home"><Logo className="h-10" /></Link>
 
@@ -128,7 +128,7 @@ export function SiteHeader({ business, branches, bar }: { business: Business; br
                 <motion.div className="container-page origin-top"
                   initial={{ opacity: 0, rotateX: -14, y: -8 }} animate={{ opacity: 1, rotateX: 0, y: 0 }} exit={{ opacity: 0, rotateX: -10, y: -6 }}
                   transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}>
-                  <div className="mt-2 grid grid-cols-[1.2fr_1fr_1fr] gap-6 overflow-hidden rounded-3xl border border-line bg-cream-card p-6 shadow-lift">
+                  <div className="mt-2 grid grid-cols-[1.2fr_1fr_1fr] gap-6 overflow-hidden rounded-3xl glass-strong glass-glow-strong p-6">
                     <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.08 }}>
                       <p className="eyebrow">About Movie Bash</p>
                       <p className="mt-3 font-display text-2xl leading-snug">Private theatres made for celebrations.</p>
@@ -169,7 +169,7 @@ export function SiteHeader({ business, branches, bar }: { business: Business; br
         <AnimatePresence>
           {open && (
             <motion.nav initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="max-h-[80vh] overflow-y-auto border-b border-line bg-cream xl:hidden">
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="max-h-[80vh] overflow-y-auto border-b border-white/30 glass xl:hidden">
               <div className="container-page py-3">
                 {NAV_LINKS.map((l, i) => (
                   <motion.div key={l.href} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.035 * i }}>

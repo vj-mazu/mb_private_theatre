@@ -113,10 +113,10 @@ export function Modal({ open, onClose, title, children, footer, size = 'md' }: {
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
-          <motion.div className="absolute inset-0 bg-navy/40 backdrop-blur-[2px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} />
+          <motion.div className="absolute inset-0 bg-navy/30 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} />
           <motion.div
             role="dialog" aria-modal="true" aria-label={title}
-            className={cn('relative flex max-h-[92vh] w-full flex-col rounded-t-3xl bg-cream-card shadow-lift sm:rounded-3xl', width)}
+            className={cn('relative flex max-h-[92vh] w-full flex-col rounded-t-3xl glass-strong glass-glow-strong sm:rounded-3xl', width)}
             initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           >

@@ -264,7 +264,7 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                                 : <span className="absolute inset-0 flex items-center justify-center text-sm text-navy-soft">Photos coming soon</span>}
                               {t.video_url && (
                                 <button type="button" onClick={() => setVideo({ src: t.video_url, poster: t.image_url, name: t.name })}
-                                  className="absolute inset-x-3 bottom-3 flex items-center justify-center gap-2 rounded-full bg-white/95 py-2 text-xs font-semibold text-navy shadow-lift backdrop-blur transition hover:bg-white">
+                                  className="absolute inset-x-3 bottom-3 flex items-center justify-center gap-2 rounded-full glass glass-glow py-2 text-xs font-semibold text-navy transition hover:bg-white/80">
                                   <PlayCircle className="h-4 w-4 text-brand-600" />Watch room video
                                 </button>
                               )}
@@ -323,14 +323,14 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
                         includes: customPackage.includes }] : []),
                     ]}
                   />
-                  <div className="card flex flex-wrap items-center justify-between gap-4 p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl glass glass-glow p-5">
                     <div>
                       <p className="font-semibold">Number of guests</p>
                       <p className="text-sm text-navy-soft">{theatre.base_capacity} included · {inr(theatre.extra_person_price)} per extra guest · max {theatre.max_capacity}</p>
                     </div>
                     <Counter value={guests} min={1} max={theatre.max_capacity} onChange={setGuests} />
                   </div>
-                  <div className="card flex flex-wrap items-center justify-between gap-4 p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl glass glass-glow p-5">
                     <div>
                       <p className="font-semibold">Extra time <span className="font-normal text-navy-soft">· optional</span></p>
                       <p className="text-sm text-navy-soft">
@@ -500,7 +500,7 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
         </div>
 
         {/* Summary (desktop) */}
-        <aside className="card sticky top-24 hidden p-5 lg:block">
+        <aside className="sticky top-24 hidden rounded-2xl glass-strong glass-glow-strong p-5 lg:block">
           <Summary {...{ theatre, slot: slot && theatre ? { ...slot, start_time: at(theatre.id, slot).start, end_time: at(theatre.id, slot).end } : slot, date, pkg, cake, cakeKg, extraHours, items, quote: step >= 1 ? quote : null, coupon, advance, short, branch: branches.find((b) => b.id === branchId) }} />
         </aside>
       </div>
@@ -510,7 +510,7 @@ export function BookingFlow({ catalog, coupons, cutoffMinutes, advance, initial 
       </Modal>
 
       {/* Bottom bar (mobile & tablet) */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-cream-card/95 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-white/30 glass-strong glass-glow px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 lg:hidden">
         <div className="mx-auto flex max-w-2xl items-center gap-3">
           {step > 0 && <button onClick={() => go(step - 1)} className="flex h-12 w-12 items-center justify-center rounded-xl border border-line" aria-label="Back"><ChevronLeft className="h-5 w-5" /></button>}
           <div className="min-w-0 flex-1">
